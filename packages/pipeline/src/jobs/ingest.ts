@@ -40,7 +40,18 @@ async function main() {
     if (all.length >= limit) break;
   }
 
-  // W3c:skills.sh 头部榜单(--skills-sh [N]);需公网可达 skills.sh
+  // W3c:GitHub 全域(--github-search [N]);按 skill topic 搜头部仓库,需 api.github.com 可达
+  if (process.argv.includes("--github-search")) {
+    const n = Number(arg("github-search")) || 100;
+    console.log(`\n▶ 采集 GitHub 全域头部 ${n} 个仓库 …`);
+    const { discoverFromGitHub } = await import("../sources/github-search.ts");
+    const { candidates, cleanup } = await discoverFromGitHub(n);
+    cleanups.push(cleanup);
+    console.log(`  发现 ${candidates.length} 个 skill`);
+    all.push(...candidates);
+  }
+
+  // skills.sh 私有 registry(--skills-sh [N]);endpoint 未公开文档化,需自行确认 SKILLS_SH_REGISTRY
   if (process.argv.includes("--skills-sh")) {
     const n = Number(arg("skills-sh")) || 200;
     console.log(`\n▶ 采集 skills.sh 头部 ${n} 条 …`);
