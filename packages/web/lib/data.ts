@@ -3,6 +3,10 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 export interface Factor { present: boolean | null; detail?: string }
+export interface EvalData {
+  category: string; runner: string; score: number; lift_pp: number;
+  tasks: { task: string; with_skill: { score: number }; without_skill: { score: number }; delta: number }[];
+}
 export interface Skill {
   id: string; owner: string; name: string; description?: string;
   license: string; hosting: string; publisher: string; upstream: string;
@@ -11,6 +15,7 @@ export interface Skill {
   review?: { verdict: string; by: string; at: string; note: string };
   l3?: { model: string; verdict?: { intent_summary: string } };
   tokens: number; stars?: number | null;
+  eval?: EvalData | null;
 }
 
 const CATALOG = join(process.cwd(), "../../catalog/skills");
@@ -28,6 +33,7 @@ export function allSkills(): Skill[] {
           upstream: r.meta.upstream, status: sa.status, risk: sa.risk_factors ?? {},
           evidence: sa.evidence ?? [], review: sa.review, l3: sa.l3,
           tokens: r.token_cost?.body_tokens ?? 0, stars: r.signals?.stars_github,
+          eval: r.eval ?? null,
         });
       } catch { /* skip */ }
     }
@@ -37,6 +43,13 @@ export function allSkills(): Skill[] {
 
 export function getSkill(owner: string, name: string): Skill | undefined {
   return allSkills().find((s) => s.owner === owner && s.name === name);
+}
+
+/** 同品类已评测的 skill,按评测分降序(横评用) */
+export function peersByEval(category: string): Skill[] {
+  return allSkills()
+    .filter((s) => s.eval?.category === category)
+    .sort((a, b) => (b.eval!.score - a.eval!.score));
 }
 
 export const FACTOR_LABELS: Record<string, [string, string]> = {

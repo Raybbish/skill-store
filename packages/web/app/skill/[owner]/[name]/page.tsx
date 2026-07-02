@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { allSkills, getSkill, FACTOR_LABELS } from "@/lib/data";
+import { allSkills, getSkill, peersByEval, FACTOR_LABELS } from "@/lib/data";
 
 export function generateStaticParams() {
   return allSkills().map((s) => ({ owner: s.owner, name: s.name }));
@@ -29,15 +29,48 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
         </div>
         <div className="stats">
           <div className="stat">
+            <b style={{ color: "var(--accent)" }}>{s.eval ? `${s.eval.score}` : "–"}<span style={{ fontSize: 12, color: "var(--faint)" }}>/10</span></b>
+            <span>评测分</span>
+          </div>
+          <div className="stat">
             <b className={s.status === "pass" ? "ok" : "warn"}>{s.status === "pass" ? "已通过" : s.status === "needs_review" ? "待复核" : s.status}</b>
             <span>三层审计</span>
           </div>
           <div className="stat"><b>{s.hosting === "mirrored" ? "镜像" : "索引"}</b><span>托管方式</span></div>
-          <div className="stat"><b style={{ fontSize: 13 }}>{s.license}</b><span>许可证</span></div>
           <div className="stat"><b>~{Math.round(s.tokens / 100) / 10}K</b><span>token / 次加载</span></div>
           <div className="stat"><b>{s.stars ?? "–"}</b><span>GitHub stars</span></div>
         </div>
       </div>
+
+      {s.eval && (() => {
+        const peers = peersByEval(s.eval.category).slice(0, 6);
+        const CAT_LABEL: Record<string, string> = { "doc-generation": "文档生成" };
+        return (
+          <>
+            <div className="sec-title">同类横评<small>{CAT_LABEL[s.eval.category] ?? s.eval.category} · {s.eval.tasks.length} 个标准任务 · {s.eval.runner}</small></div>
+            <div className="card">
+              <div className="review-box" style={{ marginTop: 0, marginBottom: 14 }}>
+                🤖 在标准任务集上得分 <b>{s.eval.score}/10</b>,相对未安装净增益 <b>+{s.eval.lift_pp}pp</b>。评分由确定性校验器产出,可复现。
+              </div>
+              {peers.map((p) => (
+                <div className="bench" key={p.id}>
+                  <Link href={`/skill/${p.owner}/${p.name}/`} className={`bench-name ${p.id === s.id ? "self" : ""}`}>{p.id}</Link>
+                  <div className="track"><div className="fill" style={{ width: `${p.eval!.score * 10}%`, background: p.id === s.id ? "var(--accent)" : "#b9b9c2" }} /></div>
+                  <span className="bench-score" style={p.id === s.id ? { color: "var(--accent)", fontWeight: 700 } : {}}>{p.eval!.score}</span>
+                </div>
+              ))}
+            </div>
+            <div className="sec-title" style={{ fontSize: 14 }}>逐任务明细</div>
+            <div className="card">
+              {s.eval.tasks.map((t) => (
+                <div className="ev" key={t.task}>
+                  <code>{t.task}</code> · 装 {Math.round(t.with_skill.score * 100)}% vs 不装 {Math.round(t.without_skill.score * 100)}% · 增益 +{Math.round(t.delta * 100)}pp
+                </div>
+              ))}
+            </div>
+          </>
+        );
+      })()}
 
       <div className="sec-title">权限与安全<small>结构化披露 · 不是安全背书</small></div>
       <div className="perm">

@@ -10,6 +10,7 @@ function Row({ s }: { s: Skill }) {
         <div className="n">{s.id}</div>
         <div className="tg">{s.description ?? "(无描述)"}</div>
         <div className="badges">
+          {s.eval && <span className="mini acc">评测 {s.eval.score}/10</span>}
           <span className={`mini ${s.status === "pass" ? "ok" : "warn"}`}>
             {s.status === "pass" ? "✓ 已审计" : s.status === "needs_review" ? "⚠ 待复核" : s.status}
           </span>
