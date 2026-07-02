@@ -15,6 +15,7 @@ export interface Skill {
   review?: { verdict: string; by: string; at: string; note: string };
   l3?: { model: string; verdict?: { intent_summary: string } };
   tokens: number; stars?: number | null;
+  curatedBy?: { list: string; category: string }[];
   eval?: EvalData | null;
 }
 
@@ -33,6 +34,7 @@ export function allSkills(): Skill[] {
           upstream: r.meta.upstream, status: sa.status, risk: sa.risk_factors ?? {},
           evidence: sa.evidence ?? [], review: sa.review, l3: sa.l3,
           tokens: r.token_cost?.body_tokens ?? 0, stars: r.signals?.stars_github,
+          curatedBy: r.signals?.curated_by ?? [],
           eval: r.eval ?? null,
         });
       } catch { /* skip */ }

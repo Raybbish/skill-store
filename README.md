@@ -52,3 +52,10 @@ npm run ingest -- --limit 10           # 限量试跑
 - [x] `npm run eval -- --category doc-generation`(mock runner 跑通,横评有梯度 6.8–10)
 - [ ] 真实 agent runner(接 agent runtime 执行任务,替换 `eval/runner/mock.ts`)
 - [ ] 扩展到 20 个标准任务 / 覆盖更多品类
+
+## Hub 精选信号线(架构图落地)
+
+- [x] `npm run ingest -- --hub-signals 300` — 解析社区 awesome-list(VoltAgent/awesome-agent-skills 等,`HUB_LISTS` 可配)
+- 情报不当货:只读「哪些 skill 被收录 + 归为什么类」,内容一律回上游 GitHub 采集
+- 注入 `signals.curated_by`(收录来源+分类)并补 `meta.category`;详情页显示「★ 社区精选收录」
+- 需本机/CI 跑(拉 raw.githubusercontent + clone 上游);解析逻辑已沙箱验证

@@ -56,6 +56,8 @@ export interface SkillReport {
   signals: {
     stars_github?: number | null;
     installs_skills_sh?: number | null;
+    /** 被哪些社区精选清单收录(Hub 情报:精选信号,内容仍回上游采集) */
+    curated_by?: { list: string; category: string }[];
     fetched_at: string;
   };
   token_cost: {

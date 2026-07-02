@@ -40,6 +40,17 @@ async function main() {
     if (all.length >= limit) break;
   }
 
+  // Hub 精选信号(--hub-signals [N]);解析社区 awesome-list,回上游采集,注入 curated_by + category
+  if (process.argv.includes("--hub-signals")) {
+    const n = Number(arg("hub-signals")) || 300;
+    console.log(`\n▶ 采集 Hub 精选信号(awesome-list)上限 ${n} …`);
+    const { discoverFromHubSignals } = await import("../sources/hub-signals.ts");
+    const { candidates, cleanup } = await discoverFromHubSignals(n);
+    cleanups.push(cleanup);
+    console.log(`  发现 ${candidates.length} 个 skill`);
+    all.push(...candidates);
+  }
+
   // W3c:GitHub 全域(--github-search [N]);按 skill topic 搜头部仓库,需 api.github.com 可达
   if (process.argv.includes("--github-search")) {
     const n = Number(arg("github-search")) || 100;

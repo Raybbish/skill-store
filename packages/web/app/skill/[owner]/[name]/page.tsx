@@ -24,6 +24,14 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
             <h1>{s.id}</h1>
             <div className="tagline">{s.description ?? "(无描述)"}</div>
             <div className="dev">{s.publisher} · <a href={s.upstream} style={{ color: "var(--accent)" }}>上游仓库 ↗</a></div>
+            {s.curatedBy && s.curatedBy.length > 0 && (
+              <div style={{ marginTop: 6 }}>
+                <span className="mini acc">★ 社区精选收录</span>
+                <span style={{ fontSize: 12, color: "var(--faint)", marginLeft: 6 }}>
+                  {[...new Set(s.curatedBy.map((c) => c.category).filter(Boolean))].join(" · ")}
+                </span>
+              </div>
+            )}
             <div className="cli">npx oh-my-skill add {s.id}</div>
           </div>
         </div>
