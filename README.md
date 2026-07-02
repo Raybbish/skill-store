@@ -42,5 +42,5 @@ npm run ingest -- --limit 10           # 限量试跑
       (`LLM_BASE_URL`/`LLM_API_KEY`/`LLM_MODEL`;`LLM_MOCK=1` 测管路;fail-closed,只升不降,不覆盖人工签名)
 - [x] W3b Supabase 同步:`npm run sync`(增量,游标存 sync_state;infra/schema.sql 建表;sync.yml 自动触发)
 - [ ] W3c skills.sh adapter
-- [ ] W4 商店前端(Next.js SSG)
+- [x] W4 商店前端:Next.js 纯静态导出,构建时直读 catalog;`npm run web` 本地预览,`npm run web:build` 出静态站
 - [ ] W5 npx CLI(哈希校验 + 安装前权限确认)
