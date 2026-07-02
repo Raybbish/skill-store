@@ -37,7 +37,7 @@ npm run ingest -- --limit 10           # 限量试跑
 ## 路线
 
 - [x] W1 骨架 + official adapter(clone 模式,首批 27 条:12 mirrored / 15 indexed)
-- [ ] W2 审计 L1(YARA/正则)+ L2(semgrep / skill-scanner 容器)
+- [x] W2 审计 L1(critical 签名)+ L2(五因子静态分析)— 首轮 27 条:19 pass / 8 needs_review;`npm run audit`
 - [ ] W3 审计 L3(LLM 意图审查)+ Supabase 同步 + skills.sh adapter
 - [ ] W4 商店前端(Next.js SSG)
 - [ ] W5 npx CLI(哈希校验 + 安装前权限确认)

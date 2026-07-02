@@ -19,46 +19,56 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "security_audit": {
-    "status": "pending",
-    "audited_at": null,
+    "status": "needs_review",
+    "audited_at": "2026-07-02T06:34:24.736Z",
+    "scanner_versions": {
+      "l1": "rules-v1",
+      "l2": "static-v1"
+    },
     "risk_factors": {
       "scripts": {
         "present": true,
-        "detail": "4 个脚本文件(采集期静态清点)"
+        "detail": "4 个脚本文件"
       },
       "network": {
-        "present": null
+        "present": true,
+        "detail": "原始 socket 连接(1 处证据)"
       },
       "filesystem": {
-        "present": null
+        "present": true,
+        "detail": "Python 文件写/删(1 处证据)"
       },
       "env_access": {
-        "present": null
+        "present": false
       },
       "external_commands": {
-        "present": null
+        "present": true,
+        "detail": "Python 执行外部命令(1 处证据)"
       }
     },
     "evidence": [
       {
-        "factor": "scripts",
+        "factor": "filesystem",
         "file": "examples/console_logging.py",
-        "note": "inventory"
+        "line": 31,
+        "note": "fs-write-py: Python 文件写/删"
       },
       {
-        "factor": "scripts",
-        "file": "examples/element_discovery.py",
-        "note": "inventory"
-      },
-      {
-        "factor": "scripts",
-        "file": "examples/static_html_automation.py",
-        "note": "inventory"
-      },
-      {
-        "factor": "scripts",
+        "factor": "network",
         "file": "scripts/with_server.py",
-        "note": "inventory"
+        "line": 28,
+        "note": "net-socket: 原始 socket 连接"
+      },
+      {
+        "factor": "external_commands",
+        "file": "scripts/with_server.py",
+        "line": 69,
+        "note": "cmd-py: Python 执行外部命令"
+      },
+      {
+        "factor": "review_reason",
+        "file": "-",
+        "note": "含外部网络请求(红线:人工放行)"
       }
     ]
   },
