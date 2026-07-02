@@ -1,0 +1,44 @@
+name: Sync to Supabase
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "catalog/**"
+  workflow_dispatch:
+    inputs:
+      full:
+        description: "全量同步(忽略增量游标)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 增量 diff 需要完整历史
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Sync catalog to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ "${{ inputs.full }}" = "true" ]; then
+            npm run sync -- --full
+          else
+            npm run sync
+          fi
