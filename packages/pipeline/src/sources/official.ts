@@ -1,0 +1,113 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import type { SkillReport } from "@skill-store/schemas";
+import { cloneShallow } from "../git.ts";
+import { parseFrontmatter, normalizeName } from "../frontmatter.ts";
+import { classifyLicense } from "../license.ts";
+import { contentHash, inventoryScripts } from "../hash.ts";
+
+export interface SkillCandidate {
+  report: SkillReport;
+  /** mirrored 时:本地克隆中该 skill 目录的绝对路径,ingest 负责整体拷贝 */
+  mirrorSrcDir: string | null;
+}
+
+export interface DiscoverResult {
+  candidates: SkillCandidate[];
+  cleanup: () => Promise<void>;
+}
+
+/** shallow clone 一个 GitHub 仓库,发现全部 SKILL.md 并产出规范化候选 */
+export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult> {
+  const owner = repoSlug.split("/")[0].toLowerCase();
+  const repoName = repoSlug.split("/")[1];
+  const clone = await cloneShallow(repoSlug);
+  const now = new Date().toISOString();
+
+  // 仓库级 LICENSE(根目录)
+  const repoLicenseEntry = clone.entries.find((e) =>
+    /^(LICENSE|LICENCE)(\.(txt|md))?$/i.test(e.path),
+  );
+  const repoLicenseText = repoLicenseEntry
+    ? await readFile(join(clone.dir, repoLicenseEntry.path), "utf8")
+    : null;
+
+  const skillMdPaths = clone.entries
+    .filter((e) => /(^|\/)SKILL\.md$/.test(e.path))
+    .map((e) => e.path);
+
+  const candidates: SkillCandidate[] = [];
+  for (const skillMdPath of skillMdPaths) {
+    const dir = skillMdPath.replace(/SKILL\.md$/, ""); // 含尾部 "/",根目录时为 ""
+    try {
+      const md = await readFile(join(clone.dir, skillMdPath), "utf8");
+      const { data: fm, issues } = parseFrontmatter(md);
+
+      const rawName =
+        (typeof fm?.name === "string" && fm.name) ||
+        dir.split("/").filter(Boolean).pop() ||
+        repoName;
+      const name = normalizeName(rawName);
+
+      // 目录级 LICENSE 优先;没有则回落仓库级
+      const localLicenseEntry = clone.entries.find(
+        (e) =>
+          e.path.startsWith(dir) &&
+          /^(LICENSE|LICENCE)(\.(txt|md))?$/i.test(e.path.slice(dir.length)),
+      );
+      const licenseText = localLicenseEntry
+        ? await readFile(join(clone.dir, localLicenseEntry.path), "utf8")
+        : repoLicenseText;
+      const { license, hosting } = classifyLicense(null, licenseText);
+
+      const scripts = inventoryScripts(dir, clone.entries);
+
+      const report: SkillReport = {
+        schema_version: "1",
+        meta: {
+          id: `${owner}/${name}`,
+          name,
+          description: typeof fm?.description === "string" ? fm.description.slice(0, 1024) : undefined,
+          upstream: `https://github.com/${repoSlug}/tree/${clone.branch}/${dir.replace(/\/$/, "")}`,
+          upstream_commit: clone.headCommit,
+          content_hash: contentHash(dir, clone.entries),
+          license,
+          hosting,
+          mirror_complete: hosting === "mirrored" ? true : undefined,
+          category: null,
+          version: typeof fm?.version === "string" ? fm.version : null,
+          publisher: owner,
+          publisher_verified: false,
+          duplicate_of: null,
+        },
+        frontmatter_valid: issues.length === 0,
+        frontmatter_issues: issues,
+        security_audit: {
+          status: "pending",
+          audited_at: null,
+          risk_factors: {
+            scripts: scripts.length
+              ? { present: true, detail: `${scripts.length} 个脚本文件(采集期静态清点)` }
+              : { present: false },
+            network: { present: null },
+            filesystem: { present: null },
+            env_access: { present: null },
+            external_commands: { present: null },
+          },
+          evidence: scripts.slice(0, 20).map((f) => ({ factor: "scripts", file: f, note: "inventory" })),
+        },
+        signals: { stars_github: null, installs_skills_sh: null, fetched_at: now },
+        token_cost: { body_tokens: Math.round(md.length / 4), method: "chars/4-estimate" },
+        eval: null,
+      };
+
+      candidates.push({
+        report,
+        mirrorSrcDir: hosting === "mirrored" ? join(clone.dir, dir) : null,
+      });
+    } catch (e) {
+      console.warn(`  ✗ 跳过 ${repoSlug}:${dir || "(root)"} — ${(e as Error).message}`);
+    }
+  }
+  return { candidates, cleanup: clone.cleanup };
+}

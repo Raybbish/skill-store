@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Raybbish/skill-store/packages/schemas/skill-report.schema.json",
+  "title": "SkillReport",
+  "description": "Skill Store catalog entry, v1. One file per skill under catalog/skills/<owner>/<name>/skill-report.json",
+  "type": "object",
+  "required": ["schema_version", "meta", "security_audit"],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "meta": {
+      "type": "object",
+      "required": ["id", "name", "upstream", "upstream_commit", "content_hash", "license", "hosting"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9._-]+$", "description": "规范 ID:owner/name" },
+        "name": { "type": "string", "maxLength": 64 },
+        "description": { "type": "string", "maxLength": 1024 },
+        "upstream": { "type": "string", "description": "上游仓库内路径 URL" },
+        "upstream_commit": { "type": "string", "description": "采集时上游 HEAD commit,每日 diff 锚点" },
+        "content_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$", "description": "对 skill 目录内 (path, git blob sha) 排序集合的 sha256;CLI 安装时校验" },
+        "license": { "type": "string", "description": "SPDX id 或 local-file(needs-review) / none(all-rights-reserved)" },
+        "hosting": { "enum": ["mirrored", "indexed"], "description": "宽松 licence 镜像托管;否则仅索引跳转上游" },
+        "mirror_complete": { "type": "boolean", "description": "mirrored 时:mirror/ 是否含全部文件(M0 仅镜像 SKILL.md 时为 false)" },
+        "category": { "type": ["string", "null"] },
+        "version": { "type": ["string", "null"], "description": "frontmatter 声明的版本(如有)" },
+        "publisher": { "type": "string" },
+        "publisher_verified": { "type": "boolean", "default": false },
+        "duplicate_of": { "type": ["string", "null"], "description": "content_hash 相同的既有条目 id" }
+      }
+    },
+    "frontmatter_valid": { "type": "boolean", "description": "是否通过 agentskills.io 最小规范校验(name+description)" },
+    "frontmatter_issues": { "type": "array", "items": { "type": "string" } },
+    "security_audit": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["pending", "pass", "needs_review", "rejected"] },
+        "audited_at": { "type": ["string", "null"], "format": "date-time" },
+        "scanner_versions": { "type": "object", "additionalProperties": { "type": "string" } },
+        "risk_factors": {
+          "type": "object",
+          "description": "五风险因子。status=pending 时为采集期静态清点(仅 scripts 可判),审计后由 L1-L3 填充",
+          "properties": {
+            "scripts": { "$ref": "#/$defs/factor" },
+            "network": { "$ref": "#/$defs/factor" },
+            "filesystem": { "$ref": "#/$defs/factor" },
+            "env_access": { "$ref": "#/$defs/factor" },
+            "external_commands": { "$ref": "#/$defs/factor" }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["factor", "file"],
+            "properties": {
+              "factor": { "type": "string" },
+              "file": { "type": "string" },
+              "line": { "type": ["integer", "null"] },
+              "note": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "signals": {
+      "type": "object",
+      "properties": {
+        "stars_github": { "type": ["integer", "null"] },
+        "installs_skills_sh": { "type": ["integer", "null"] },
+        "fetched_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "token_cost": {
+      "type": "object",
+      "properties": {
+        "body_tokens": { "type": "integer", "description": "SKILL.md 正文 token 估算(chars/4)" },
+        "method": { "type": "string" }
+      }
+    },
+    "eval": { "type": "null", "description": "M1 基准评测占位" }
+  },
+  "$defs": {
+    "factor": {
+      "type": "object",
+      "required": ["present"],
+      "properties": {
+        "present": { "type": ["boolean", "null"], "description": "null = 尚未审计,无法判断" },
+        "detail": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+/** Skill Store catalog types — 与 skill-report.schema.json 保持一致(单一来源) */
+
+export type Hosting = "mirrored" | "indexed";
+export type AuditStatus = "pending" | "pass" | "needs_review" | "rejected";
+
+export interface RiskFactor {
+  /** null = 尚未审计,无法判断 */
+  present: boolean | null;
+  detail?: string;
+}
+
+export interface RiskFactors {
+  scripts?: RiskFactor;
+  network?: RiskFactor;
+  filesystem?: RiskFactor;
+  env_access?: RiskFactor;
+  external_commands?: RiskFactor;
+}
+
+export interface Evidence {
+  factor: keyof RiskFactors | string;
+  file: string;
+  line?: number | null;
+  note?: string;
+}
+
+export interface SkillReport {
+  schema_version: "1";
+  meta: {
+    /** owner/name */
+    id: string;
+    name: string;
+    description?: string;
+    upstream: string;
+    upstream_commit: string;
+    /** sha256 over sorted (path, blob sha) pairs */
+    content_hash: string;
+    license: string;
+    hosting: Hosting;
+    mirror_complete?: boolean;
+    category?: string | null;
+    version?: string | null;
+    publisher: string;
+    publisher_verified: boolean;
+    duplicate_of?: string | null;
+  };
+  frontmatter_valid: boolean;
+  frontmatter_issues: string[];
+  security_audit: {
+    status: AuditStatus;
+    audited_at: string | null;
+    scanner_versions?: Record<string, string>;
+    risk_factors: RiskFactors;
+    evidence: Evidence[];
+  };
+  signals: {
+    stars_github?: number | null;
+    installs_skills_sh?: number | null;
+    fetched_at: string;
+  };
+  token_cost: {
+    body_tokens: number;
+    method: string;
+  };
+  eval: null;
+}
+
+/** 宽松 licence 集合:可镜像托管 */
+export const PERMISSIVE_LICENSES = new Set([
+  "MIT",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Unlicense",
+  "CC0-1.0",
+  "0BSD",
+  "MIT-0",
+]);
