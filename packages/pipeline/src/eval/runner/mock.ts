@@ -49,6 +49,26 @@ function goodXlsx(q: number): Buffer {
   return zip([{ name: "[Content_Types].xml", data: CT_XLSX }, { name: "_rels/.rels", data: XLSX_RELS }, { name: "xl/workbook.xml", data: WB }, { name: "xl/worksheets/sheet1.xml", data: sheet }]);
 }
 
+const CT_PPTX = `<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/></Types>`;
+
+function goodPptx(q: number): Buffer {
+  const sections = ["市场机会", "产品定位", "增长路径"];
+  const files: { name: string; data: string }[] = [
+    { name: "[Content_Types].xml", data: CT_PPTX },
+    { name: "_rels/.rels", data: `<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/></Relationships>` },
+    { name: "ppt/presentation.xml", data: `<?xml version="1.0"?><p:presentation xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"/>` },
+  ];
+  // 标题页(q>=0.6 才有 ctrTitle 占位符)
+  const titlePh = q >= 0.6 ? `<p:ph type="ctrTitle"/>` : "";
+  files.push({ name: "ppt/slides/slide1.xml", data: `<?xml version="1.0"?><p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:sp><p:nvSpPr><p:nvPr>${titlePh}</p:nvPr></p:nvSpPr><p:txBody><a:p><a:r><a:t>产品发布会</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>` });
+  // 内容页:q 低时合并/漏页
+  const n = q >= 0.7 ? sections.length : q >= 0.6 ? 2 : 1;
+  for (let i = 0; i < n; i++) {
+    files.push({ name: `ppt/slides/slide${i + 2}.xml`, data: `<?xml version="1.0"?><p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:sp><p:txBody><a:p><a:r><a:t>${sections[i]}</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>` });
+  }
+  return zip(files);
+}
+
 export const mockRunner: EvalRunner = {
   name: "mock-v1",
   async run({ skillId, task, workDir, condition }) {
@@ -61,7 +81,9 @@ export const mockRunner: EvalRunner = {
       return { artifactPath };
     }
     const q = quality(skillId);
-    const data = task.artifact.endsWith(".xlsx") ? goodXlsx(q) : goodDocx(q);
+    const data = task.artifact.endsWith(".xlsx") ? goodXlsx(q)
+      : task.artifact.endsWith(".pptx") ? goodPptx(q)
+      : goodDocx(q);
     await writeFile(artifactPath, data);
     return { artifactPath };
   },

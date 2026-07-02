@@ -40,6 +40,17 @@ async function main() {
     if (all.length >= limit) break;
   }
 
+  // W3c:skills.sh 头部榜单(--skills-sh [N]);需公网可达 skills.sh
+  if (process.argv.includes("--skills-sh")) {
+    const n = Number(arg("skills-sh")) || 200;
+    console.log(`\n▶ 采集 skills.sh 头部 ${n} 条 …`);
+    const { discoverFromSkillsSh } = await import("../sources/skills-sh.ts");
+    const { candidates, cleanup } = await discoverFromSkillsSh(n);
+    cleanups.push(cleanup);
+    console.log(`  发现 ${candidates.length} 个 skill`);
+    all.push(...candidates);
+  }
+
   // 跨源哈希去重:同 content_hash 保留先到者,后到者标 duplicate_of
   const byHash = new Map<string, string>();
   for (const c of all) {

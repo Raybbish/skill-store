@@ -14,7 +14,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="nav">
           <div className="nav-inner">
             <Link href="/" className="logo">oh-my<span>-skill</span></Link>
-            <span className="nav-note">M0 可信目录 · 审计报告全部公开可验证</span>
+            <nav className="nav-tabs">
+              <Link href="/">今日</Link>
+              <Link href="/browse/">浏览</Link>
+              <Link href="/charts/">榜单</Link>
+            </nav>
+            <span className="nav-note">M0 可信目录 · 审计报告公开可验证</span>
           </div>
         </div>
         <div className="wrap">{children}</div>
