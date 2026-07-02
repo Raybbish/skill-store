@@ -3,7 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Skill Store — 可信的 Agent Skills 目录",
+  title: "oh-my-skill — 可信的 Agent Skills 目录",
   description: "每个 skill 都经过三层安全审计与人工复核,权限行为结构化披露。已扫描,不等于保证安全——但我们把能查的都查了,并把证据给你看。",
 };
 
@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <div className="nav">
           <div className="nav-inner">
-            <Link href="/" className="logo">Skill<span>Store</span></Link>
+            <Link href="/" className="logo">oh-my<span>-skill</span></Link>
             <span className="nav-note">M0 可信目录 · 审计报告全部公开可验证</span>
           </div>
         </div>

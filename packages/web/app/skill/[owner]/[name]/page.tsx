@@ -24,7 +24,7 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
             <h1>{s.id}</h1>
             <div className="tagline">{s.description ?? "(无描述)"}</div>
             <div className="dev">{s.publisher} · <a href={s.upstream} style={{ color: "var(--accent)" }}>上游仓库 ↗</a></div>
-            <div className="cli">npx skillstore add {s.id}(W5 上线)</div>
+            <div className="cli">npx oh-my-skill add {s.id}</div>
           </div>
         </div>
         <div className="stats">

@@ -1,4 +1,4 @@
-# Skill Store
+# oh-my-skill
 
 以**标准化评测、安全透明、效果可见**为核心的 Agent Skills 商店。发现是红海,我们卖信任。
 
@@ -43,4 +43,4 @@ npm run ingest -- --limit 10           # 限量试跑
 - [x] W3b Supabase 同步:`npm run sync`(增量,游标存 sync_state;infra/schema.sql 建表;sync.yml 自动触发)
 - [ ] W3c skills.sh adapter
 - [x] W4 商店前端:Next.js 纯静态导出,构建时直读 catalog;`npm run web` 本地预览,`npm run web:build` 出静态站
-- [x] W5 CLI:`node packages/cli/bin/skillstore.mjs add <owner/name>` — 安装前营养标签确认,逐文件复算 blob sha 校验 content_hash,篡改即拒装
+- [x] W5 CLI:`node packages/cli/bin/oh-my-skill.mjs add <owner/name>` — 安装前营养标签确认,逐文件复算 blob sha 校验 content_hash,篡改即拒装

@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
- * skillstore CLI — 别家 npx 是盲装,我们不是:
+ * oh-my-skill CLI — 别家 npx 是盲装,我们不是:
  *   1. 安装前展示权限营养标签(五因子 + 审计状态 + 复核签名),要求确认
  *   2. 安装时对每个文件复算 git blob sha,与货架 content_hash 比对(防上游被篡改)
  *   3. 校验失败 → 拒装,绝不落盘
  *
  * 用法:
- *   skillstore add <owner/name> [--yes] [--to <dir>]
- *   skillstore list / remove <owner/name>
- * 数据源:默认 Supabase(SKILLSTORE_API/SKILLSTORE_KEY 可覆盖);
+ *   oh-my-skill add <owner/name> [--yes] [--to <dir>]
+ *   oh-my-skill list / remove <owner/name>
+ * 数据源:默认 Supabase(OMS_API/OMS_KEY 可覆盖);
  *   --from-dir <catalog路径> 用本地 catalog(开发/测试)。
  */
 import { createHash } from "node:crypto";
@@ -20,8 +20,8 @@ import { promisify } from "node:util";
 import { createInterface } from "node:readline/promises";
 
 const exec = promisify(execFile);
-const API = process.env.SKILLSTORE_API ?? "https://xlrvinquhuyobewenrlo.supabase.co";
-const KEY = process.env.SKILLSTORE_KEY ?? ""; // anon key,公开只读;发布 npm 前填默认值
+const API = process.env.OMS_API ?? "https://xlrvinquhuyobewenrlo.supabase.co";
+const KEY = process.env.OMS_KEY ?? ""; // anon key,公开只读;发布 npm 前填默认值
 const args = process.argv.slice(2);
 const cmd = args[0];
 const target = args[1];
@@ -105,7 +105,7 @@ async function add(id) {
   } else if (!(await confirm("确认安装?"))) return console.log("已取消");
 
   // 获取文件:本地 catalog 的 mirror/,或 clone 上游
-  const work = join(tmpdir(), `skillstore-${Date.now()}`);
+  const work = join(tmpdir(), `oh-my-skill-${Date.now()}`);
   await mkdir(work, { recursive: true });
   let srcDir;
   const local = opt("from-dir");
@@ -147,7 +147,7 @@ async function remove(id) {
 
 const run = { add, list, remove }[cmd];
 if (!run || (cmd !== "list" && !target)) {
-  console.log("用法: skillstore add <owner/name> [--yes] [--to <dir>] [--from-dir <catalog>] | list | remove <name>");
+  console.log("用法: oh-my-skill add <owner/name> [--yes] [--to <dir>] [--from-dir <catalog>] | list | remove <name>");
   process.exit(1);
 }
 run(target).catch((e) => { console.error(e.message); process.exit(1); });
