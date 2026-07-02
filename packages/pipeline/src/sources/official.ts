@@ -73,7 +73,8 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
           content_hash: contentHash(dir, clone.entries),
           license,
           hosting,
-          mirror_complete: hosting === "mirrored" ? true : undefined,
+          // 两段式:默认只索引(不下载 mirror);INGEST_MIRROR=1 时才实际镜像
+          mirror_complete: hosting === "mirrored" ? process.env.INGEST_MIRROR === "1" : undefined,
           category: null,
           version: typeof fm?.version === "string" ? fm.version : null,
           publisher: owner,
@@ -103,7 +104,8 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
 
       candidates.push({
         report,
-        mirrorSrcDir: hosting === "mirrored" ? join(clone.dir, dir) : null,
+        // 索引阶段不镜像(海量、近零成本);仅 INGEST_MIRROR=1 且 licence 允许时下载副本
+        mirrorSrcDir: process.env.INGEST_MIRROR === "1" && hosting === "mirrored" ? join(clone.dir, dir) : null,
       });
     } catch (e) {
       console.warn(`  ✗ 跳过 ${repoSlug}:${dir || "(root)"} — ${(e as Error).message}`);

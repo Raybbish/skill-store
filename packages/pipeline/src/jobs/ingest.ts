@@ -40,6 +40,11 @@ async function main() {
   const limit = arg("limit") ? Number(arg("limit")) : Infinity;
   const onlySource = arg("source");
 
+  // 两段式采集:默认「索引层」——只写元数据,不下载 mirror 副本(海量、近零成本、不炸);
+  // 加 --mirror 才进「托管层」——为 licence 允许的 skill 下载完整副本(仅少量认证 skill 需要)。
+  if (process.argv.includes("--mirror")) process.env.INGEST_MIRROR = "1";
+  console.log(`采集模式: ${process.env.INGEST_MIRROR === "1" ? "托管层(索引 + 镜像副本)" : "索引层(仅元数据,不镜像)"}`);
+
   const sourcesFile = parse(await readFile(join(ROOT, "sources.yaml"), "utf8")) as {
     sources: { type: string; repo: string }[];
   };
