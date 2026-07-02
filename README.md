@@ -38,6 +38,8 @@ npm run ingest -- --limit 10           # 限量试跑
 
 - [x] W1 骨架 + official adapter(clone 模式,首批 27 条:12 mirrored / 15 indexed)
 - [x] W2 审计 L1(critical 签名)+ L2(五因子静态分析)— 首轮 27 条:19 pass / 8 needs_review;`npm run audit`
-- [ ] W3 审计 L3(LLM 意图审查)+ Supabase 同步 + skills.sh adapter
+- [x] W3a 审计 L3(LLM 意图审查):`npm run audit:l3`,OpenAI 兼容任意供应商
+      (`LLM_BASE_URL`/`LLM_API_KEY`/`LLM_MODEL`;`LLM_MOCK=1` 测管路;fail-closed,只升不降,不覆盖人工签名)
+- [ ] W3b Supabase 同步 + skills.sh adapter
 - [ ] W4 商店前端(Next.js SSG)
 - [ ] W5 npx CLI(哈希校验 + 安装前权限确认)
