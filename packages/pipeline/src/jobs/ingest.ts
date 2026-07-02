@@ -135,7 +135,11 @@ async function main() {
     const dir = join(CATALOG, owner, name);
     await mkdir(dir, { recursive: true });
     await writeFile(join(dir, "skill-report.json"), JSON.stringify(c.report, null, 2) + "\n");
-    if (c.mirrorSrcDir) await cp(c.mirrorSrcDir, join(dir, "mirror"), { recursive: true });
+    if (c.mirrorSrcDir) {
+      // force 覆盖已存在;dereference 把源里的 symlink 落成真实文件(合集仓常用软链共享)
+      await cp(c.mirrorSrcDir, join(dir, "mirror"), { recursive: true, force: true, dereference: true })
+        .catch((e) => console.warn(`  ⚠ 镜像 ${c.report.meta.id} 失败(降级为索引): ${(e as Error).message}`));
+    }
 
     written++;
     if (c.report.meta.duplicate_of) stats.dup++;

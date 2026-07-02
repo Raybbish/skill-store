@@ -66,25 +66,31 @@ export async function discoverFromHubSignals(limit = 300): Promise<{ candidates:
   const byRepo = new Map<string, CuratedEntry[]>();
   for (const e of entries) (byRepo.get(e.repoSlug) ?? byRepo.set(e.repoSlug, []).get(e.repoSlug)!).push(e);
 
+  // 每仓最多收多少 skill(防单个巨型合集仓炸出几万条);env MAX_PER_REPO 可调
+  const maxPerRepo = Number(process.env.MAX_PER_REPO) || 50;
   const out: SkillCandidate[] = [];
   const cleanups: (() => Promise<void>)[] = [];
-  let repoCount = 0;
+  console.log(`  候选仓 ${byRepo.size} 个;skill 上限 ${limit},每仓上限 ${maxPerRepo}`);
+
   for (const [repoSlug, group] of byRepo) {
-    if (out.length >= limit) break;
-    if (++repoCount > 500) break; // 防御:awesome-list 可能列上千仓
+    if (out.length >= limit) { console.log(`  达到 skill 上限 ${limit},停止`); break; }
     try {
       const { candidates, cleanup } = await discoverFromRepo(repoSlug);
       cleanups.push(cleanup);
+      let fromThisRepo = 0;
       for (const c of candidates) {
+        if (out.length >= limit || fromThisRepo >= maxPerRepo) break;
         const sub = c.report.meta.upstream.match(/\/tree\/[^/]+\/(.*)$/)?.[1] ?? "";
-        // 匹配该 skill 对应的收录条目(subpath 命中,或整仓收录)
         const hits = group.filter((g) => g.subpath === sub || g.subpath === "");
-        if (!hits.length && group.some((g) => g.subpath)) continue; // 指定了子路径但都不匹配→跳过
+        if (!hits.length && group.some((g) => g.subpath)) continue;
         const r = c.report as SkillReport;
         r.signals.curated_by = hits.map((h) => ({ list: h.list, category: h.category }));
         if (!r.meta.category && hits[0]?.category) r.meta.category = hits[0].category;
         out.push(c);
+        fromThisRepo++;
       }
+      if (candidates.length > maxPerRepo)
+        console.warn(`  ⚠ ${repoSlug} 是合集仓(${candidates.length} skill),仅取前 ${maxPerRepo};如需全量设 MAX_PER_REPO`);
     } catch (e) {
       console.warn(`  ✗ ${repoSlug} 采集失败: ${(e as Error).message}`);
     }
