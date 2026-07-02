@@ -36,6 +36,8 @@ export const RULES: Rule[] = [
   { id: "net-py", factor: "network", scope: "script", re: /\b(requests|httpx|aiohttp|urllib\.request|urllib3|http\.client)\b/, note: "Python HTTP 库" },
   { id: "net-js", factor: "network", scope: "script", re: /\b(fetch\s*\(|axios|XMLHttpRequest|https?\.request|net\.connect|WebSocket\s*\()/, note: "JS 网络调用" },
   { id: "net-socket", factor: "network", scope: "script", re: /\bsocket\s*\.\s*(socket|create_connection)|new\s+Socket\b/, note: "原始 socket 连接" },
+  { id: "net-sdk", factor: "network", scope: "script", re: /\b(import\s+anthropic|from\s+anthropic|import\s+openai|from\s+openai|require\(['"](anthropic|openai)['"]\)|from\s+['"]@anthropic-ai|from\s+['"]openai['"])/, note: "LLM SDK 网络调用(anthropic/openai 客户端)" },
+  { id: "net-remote-inst", factor: "network", scope: "fence", re: /\b(WebFetch|web_fetch|fetch)\b[^\n]{0,120}https?:\/\//i, note: "指令要求拉取远程 URL 内容并遵循(远程指令面)" },
   { id: "net-cli", factor: "network", scope: "fence", re: /\b(curl|wget|nc|ncat|ssh|scp|rsync)\s+/, note: "指令要求执行网络命令" },
   { id: "net-cli-script", factor: "network", scope: "script", re: /\b(curl|wget|nc|ncat)\s+/, note: "脚本调用网络命令" },
 

@@ -81,16 +81,20 @@ async function main() {
           reasons.push("env_access + external_commands 组合风险");
         if (drifted) { reasons.push("content_hash 漂移:上游已变更,需重新采集"); stats.drift++; }
 
+        // 保留人工签名与 L3 结果:重审只更新 L1/L2 产出,人工决定优先于机器
+        const prev = r.security_audit as typeof r.security_audit & { review?: unknown; l3?: unknown };
         r.security_audit = {
-          status: reasons.length ? "needs_review" : "pass",
+          status: prev.review ? prev.status : reasons.length ? "needs_review" : "pass",
           audited_at: now,
-          scanner_versions: SCANNER_VERSIONS,
+          scanner_versions: { ...prev.scanner_versions, ...SCANNER_VERSIONS },
           risk_factors: analysis.factors,
           evidence: [
             ...analysis.evidence,
             ...reasons.map((note) => ({ factor: "review_reason", file: "-", note })),
           ],
-        };
+          ...(prev.review ? { review: prev.review } : {}),
+          ...(prev.l3 ? { l3: prev.l3 } : {}),
+        } as typeof r.security_audit;
         stats[reasons.length ? "needs_review" : "pass"]++;
 
         await writeFile(e.path, JSON.stringify(r, null, 2) + "\n");

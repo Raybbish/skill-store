@@ -23,7 +23,8 @@
     "audited_at": "2026-07-02T06:34:24.736Z",
     "scanner_versions": {
       "l1": "rules-v1",
-      "l2": "static-v1"
+      "l2": "static-v1",
+      "l3_model": "deepseek-v4-flash"
     },
     "risk_factors": {
       "scripts": {
@@ -43,7 +44,40 @@
         "present": false
       }
     },
-    "evidence": []
+    "evidence": [
+      {
+        "factor": "review_reason",
+        "file": "-",
+        "note": "L3: 文档与代码不一致"
+      },
+      {
+        "factor": "review_reason",
+        "file": "-",
+        "note": "L3: 疑似外传路径"
+      }
+    ],
+    "l3": {
+      "model": "deepseek-v4-flash",
+      "at": "2026-07-02T06:50:30.476Z",
+      "verdict": {
+        "intent_summary": "该skill的真实意图是提供MCP服务器开发的参考指南，并包含一个用于通过Anthropic API测试MCP服务器性能的评估工具。",
+        "doc_code_consistent": false,
+        "hidden_instructions": false,
+        "injection_suspected": false,
+        "exfiltration_path": true,
+        "notes": [
+          "文档本身是MCP服务器开发指南（Phase 1-4），但实际提供的代码是评估工具(scripts/evaluation.py)和连接管理工具(scripts/connections.py)，文档中未说明该评估工具的使用，存在行为不一致。",
+          "评估脚本(evaluation.py)通过Anthropic客户端将读取的XML问题数据发送到外部API(Anthropic)，可能包含用户敏感信息，构成外传路径。",
+          "connections.py支持多种传输方式(stdio/sse/http)，可连接到外部MCP服务器，但属于正常功能。"
+        ]
+      }
+    },
+    "review": {
+      "verdict": "pass",
+      "by": "Wittgenstein",
+      "at": "2026-07-02T06:54:59.195Z",
+      "note": "evaluation.py调用Anthropic API为评估工具功能本身,官方仓;L2已补SDK网络规则,货架如实披露network因子"
+    }
   },
   "signals": {
     "stars_github": null,

@@ -95,13 +95,18 @@ export async function l3Review(skillContent: string): Promise<L3Result> {
   return { ok: false, model, error: "unreachable" };
 }
 
-/** 组装送审内容:SKILL.md 全文 + 脚本文件(每个截断)+ L1/L2 摘要 */
+/** 组装送审内容:SKILL.md 全文 + 完整文件清单 + 脚本文件(每个截断)+ L1/L2 摘要。
+ *  文件清单必须给全:否则模型看到文档引用了某文件却没收到,会误报「文档与代码不一致」。 */
 export function buildReviewContent(
   skillMd: string,
   scripts: { path: string; content: string }[],
   l2Summary: string,
+  allFiles: string[] = [],
 ): string {
   const parts = [`=== SKILL.md ===\n${skillMd}`];
+  if (allFiles.length) {
+    parts.push(`=== 目录完整文件清单(未随附内容的文件以此为准,勿因未见内容而判定缺失)===\n${allFiles.slice(0, 200).join("\n")}`);
+  }
   for (const s of scripts.slice(0, 12)) {
     parts.push(`=== 脚本: ${s.path} ===\n${s.content.slice(0, 6000)}`);
   }

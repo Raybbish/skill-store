@@ -71,7 +71,10 @@ async function main() {
           scripts.push({ path: relative(base, p), content: await readFile(p, "utf8").catch(() => "") });
         }
         const l2Summary = JSON.stringify(e.report.security_audit.risk_factors);
-        const result = await l3Review(buildReviewContent(skillMd, scripts, l2Summary));
+        const allFiles = clone.entries
+          .filter((x) => x.path.startsWith(dir))
+          .map((x) => x.path.slice(dir.length));
+        const result = await l3Review(buildReviewContent(skillMd, scripts, l2Summary, allFiles));
 
         const sa = e.report.security_audit as Entry["report"]["security_audit"];
         const at = new Date().toISOString();
