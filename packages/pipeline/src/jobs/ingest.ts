@@ -10,6 +10,7 @@ import { parse } from "yaml";
 import type { CollectionReport, SkillReport } from "@skill-store/schemas";
 import { discoverFromRepo, type SkillCandidate } from "../sources/official.ts";
 import { CATALOG, loadCatalogEntries, entryDir } from "../catalog.ts";
+import { categorize } from "../categorize.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const COLLECTIONS = join(ROOT, "catalog", "collections");
@@ -36,7 +37,15 @@ async function main() {
   console.log(`采集模式: ${process.env.INGEST_MIRROR === "1" ? "托管层(索引 + 镜像副本)" : "索引层(仅元数据,不镜像)"}`);
 
   const sourcesFile = parse(await readFile(join(ROOT, "sources.yaml"), "utf8")) as {
-    sources: { type: string; repo: string }[];
+    sources: { type: string; repo: string; category?: string }[];
+  };
+  // per-source 分类覆盖:sources.yaml 的 category 字段(用于同质垂直仓,如 microsoft/azure-skills → cloud),
+  // 优先于启发式。异质仓(anthropics/vercel 等混合品类)不要设,交给引擎逐条判。
+  const catOverride = new Map<string, string>();
+  for (const s of sourcesFile.sources) if (s.category) catOverride.set(s.repo.toLowerCase(), s.category);
+  const overrideFor = (id: string): string | undefined => {
+    const [owner, repo] = id.split("/");
+    return catOverride.get(`${owner}/${repo}`.toLowerCase());
   };
   const repos = sourcesFile.sources
     .filter((s) => s.type === "github-repo")
@@ -128,13 +137,15 @@ async function main() {
   for (const c of all.slice(0, limit)) if (!byId.has(c.report.meta.id)) byId.set(c.report.meta.id, c);
 
   let written = 0;
-  const stats = { added: 0, updated: 0, unchanged: 0, dup: 0, preserved: 0, fmInvalid: 0 };
+  const stats = { added: 0, updated: 0, unchanged: 0, dup: 0, preserved: 0, fmInvalid: 0, uncategorized: 0 };
   for (const c of byId.values()) {
     const prev = existing.get(c.report.meta.id);
 
-    // 内容与上游 commit 都没变 → 跳过,连文件都不重写(幂等,不产生噪音 diff)
+    // 内容与上游 commit 都没变、且已归类 → 跳过(幂等,不产生噪音 diff)。
+    // 加 category != null 是为了给旧条目回填分类:首次接入后,存量条目会被重新归类一次。
     if (prev && prev.meta.content_hash === c.report.meta.content_hash &&
-        prev.meta.upstream_commit === c.report.meta.upstream_commit) {
+        prev.meta.upstream_commit === c.report.meta.upstream_commit &&
+        prev.meta.category != null) {
       stats.unchanged++;
       continue;
     }
@@ -148,6 +159,20 @@ async function main() {
         stats.preserved++;
       }
       if (prev.eval) c.report.eval = prev.eval;
+    }
+
+    // 归类:采集期打 meta.category + meta.tags(启发式引擎;sources.yaml 可 per-source 覆盖)。
+    // 人工锁定(category_locked)的分类不被采集覆盖——与「采集不冲掉下游成果」一致。
+    // uncategorized / 平票(引擎已判)保持 category="uncategorized",由分类复核挑走人工补标。
+    if (prev?.meta.category_locked) {
+      c.report.meta.category = prev.meta.category ?? "uncategorized";
+      c.report.meta.tags = prev.meta.tags ?? [];
+      c.report.meta.category_locked = true;
+    } else {
+      const { category, tags } = categorize(c.report.meta, overrideFor(c.report.meta.id));
+      c.report.meta.category = category;
+      c.report.meta.tags = tags;
+      if (category === "uncategorized") stats.uncategorized++;
     }
 
     const dir = entryDir(c.report.meta.id); // catalog/skills/<owner>/<repo>/<name>
@@ -190,6 +215,7 @@ async function main() {
   console.log(`  重复(标记 duplicate_of): ${stats.dup}`);
   console.log(`  保留了已有审计结果: ${stats.preserved}`);
   console.log(`  frontmatter 不合规: ${stats.fmInvalid}`);
+  console.log(`  待归类(uncategorized,需人工补标): ${stats.uncategorized}`);
   console.log(`输出目录: ${CATALOG}`);
   await Promise.all(cleanups.map((fn) => fn().catch(() => {})));
 }

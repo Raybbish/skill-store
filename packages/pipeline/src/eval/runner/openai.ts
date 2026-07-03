@@ -14,6 +14,7 @@
  */
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { tmpdir } from "node:os";
 import { zip } from "../ooxml.ts";
 import { entryDir } from "../../catalog.ts";
 import type { EvalRunner } from "../types.ts";
@@ -97,6 +98,7 @@ function safeRel(p: string): string {
 
 export const openaiRunner: EvalRunner = {
   name: `openai:${MODEL}`,
+  model: MODEL,
   async run({ skillId, task, prompt, inputsDir, workDir, condition }) {
     if (!KEY) throw new Error("需 LLM_API_KEY(OpenAI 兼容端点;LLM_BASE_URL/LLM_MODEL 可配)");
     await mkdir(workDir, { recursive: true });
@@ -109,11 +111,13 @@ export const openaiRunner: EvalRunner = {
       }
     } catch { /* 无输入 */ }
 
-    let sys = "你是一个通用 agent,用工具完成用户任务。";
+    const ENV_NOTE =
+      "环境约束:本环境只有 write_text_file 和 write_ooxml 两个工具,没有 shell/python/node,无法执行任何脚本或安装依赖。产出 docx/xlsx/pptx 的唯一方式是调用 write_ooxml 直接给出 XML parts。";
+    let sys = `你是一个通用 agent,用工具完成用户任务。${ENV_NOTE}`;
     if (condition === "with_skill") {
       const body = await skillBody(skillId);
       if (!body) throw new Error(`无法获取 ${skillId} 的 SKILL.md(本地 mirror 与上游 raw 均失败)`);
-      sys = `你是一个通用 agent,用工具完成用户任务。用户已安装 skill「${skillId}」,其内容如下,请严格遵循其中的流程与格式知识:\n\n<skill>\n${body}\n</skill>`;
+      sys = `你是一个通用 agent,用工具完成用户任务。${ENV_NOTE}\n\n用户已安装 skill「${skillId}」,其内容如下。请吸收其中的格式与领域知识来提升产出质量;若其建议的执行方式(如运行脚本)在本环境不可用,改用本环境的工具达成同等效果:\n\n<skill>\n${body}\n</skill>`;
     }
 
     const messages: ChatMsg[] = [
@@ -125,7 +129,10 @@ export const openaiRunner: EvalRunner = {
     ];
 
     let artifactPath: string | null = null;
+    let turns = 0;
+    const toolLog: string[] = [];
     for (let turn = 0; turn < MAX_TURNS; turn++) {
+      turns++;
       const msg = await chat(messages);
       messages.push(msg);
       if (!msg.tool_calls?.length) break; // 模型自认完成
@@ -140,6 +147,9 @@ export const openaiRunner: EvalRunner = {
           await mkdir(dirname(p), { recursive: true });
           if (tc.function.name === "write_text_file") {
             await writeFile(p, String(args.content ?? ""));
+            // 环境反馈:写脚本/依赖清单时明确告知无法执行(真实环境会在执行时报错,这里前置)
+            if (/\.(sh|bash|js|mjs|cjs|ts|py|rb)$/.test(rel) || /(^|\/)package\.json$/.test(rel))
+              result = "文件已写入,但注意:本环境没有 shell/python/node,该脚本不会被执行,依赖也无法安装。请改用 write_ooxml 直接产出文档。";
           } else if (tc.function.name === "write_ooxml") {
             if (!Array.isArray(args.parts) || !args.parts.length) throw new Error("parts 为空");
             await writeFile(p, zip(args.parts.map((x) => ({ name: safeRel(x.name), data: x.content }))));
@@ -147,11 +157,22 @@ export const openaiRunner: EvalRunner = {
             result = `未知工具 ${tc.function.name}`;
           }
           if (rel === task.artifact) artifactPath = p;
+          toolLog.push(`${tc.function.name}(${rel}) → ${result}`);
         } catch (e) {
           result = `error: ${(e as Error).message}`;
+          toolLog.push(`${tc.function.name} → ${result}`);
         }
         messages.push({ role: "tool", tool_call_id: tc.id, content: result });
       }
+    }
+
+    // 诊断:产物缺失始终告警;EVAL_DEBUG=1 时完整对话落盘 /tmp 供排查
+    if (!artifactPath)
+      console.warn(`    ⚠ [${task.id}/${condition}] ${turns} 轮未产出 ${task.artifact};工具调用: ${toolLog.join("; ") || "(无)"}`);
+    if (process.env.EVAL_DEBUG === "1") {
+      const f = join(tmpdir(), `eval-debug-${task.id}-${condition}-${Date.now()}.json`);
+      await writeFile(f, JSON.stringify({ skillId, condition, turns, toolLog, artifact: !!artifactPath, messages }, null, 2));
+      console.warn(`    [debug] ${f}`);
     }
     return { artifactPath };
   },

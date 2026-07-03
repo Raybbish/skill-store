@@ -20,7 +20,9 @@
         "license": { "type": "string", "description": "SPDX id 或 local-file(needs-review) / none(all-rights-reserved)" },
         "hosting": { "enum": ["mirrored", "indexed"], "description": "宽松 licence 镜像托管;否则仅索引跳转上游" },
         "mirror_complete": { "type": "boolean", "description": "mirrored 时:mirror/ 是否含全部文件(M0 仅镜像 SKILL.md 时为 false)" },
-        "category": { "type": ["string", "null"] },
+        "category": { "type": ["string", "null"], "description": "主分类:featured 标签 slug(见 packages/schemas/src/labels.ts);未达标为 \"uncategorized\" 或 null" },
+        "tags": { "type": "array", "items": { "type": "string" }, "description": "标签:featured:false 标签 slug 列表(桶内二级筛选;与 category 同一套词表)" },
+        "category_locked": { "type": "boolean", "description": "人工锁定分类:true 时 ingest 不再用启发式覆盖 category/tags" },
         "version": { "type": ["string", "null"], "description": "frontmatter 声明的版本(如有)" },
         "publisher": { "type": "string" },
         "publisher_verified": { "type": "boolean", "default": false },
@@ -87,7 +89,7 @@
         "method": { "type": "string" }
       }
     },
-    "eval": { "type": ["object", "null"], "description": "M1 基准评测结果(category/runner/score/lift_pp/tasks);未评测为 null" }
+    "eval": { "type": ["object", "null"], "description": "M1 基准评测结果(category/runner/model/score/lift_pp/evaluable_tasks/total_tasks/tasks);未评测为 null。产物缺失记 N/A(不计 0 分);仅带模型元数据且无 N/A 任务的真实结果才回写(见 pipeline jobs/eval.ts 写入闸)" }
   },
   "$defs": {
     "factor": {
