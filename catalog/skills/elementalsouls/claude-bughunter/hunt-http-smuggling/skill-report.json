@@ -1,0 +1,55 @@
+{
+  "schema_version": "1",
+  "meta": {
+    "id": "elementalsouls/claude-bughunter/hunt-http-smuggling",
+    "name": "hunt-http-smuggling",
+    "description": "Hunt HTTP request smuggling (CL.TE, TE.CL, H2.CL, H2.TE). Cause: front-end proxy and back-end server disagree on where one request ends and the next begins (Content-Length vs Transfer-Encoding header parsing inconsistency). CL.TE: front-end uses CL, back uses TE → smuggle by sending TE: chunked but with body that fits CL count. TE.CL: opposite. H2.CL: HTTP/2 downgrade, smuggle CL into HTTP/1.1 back-end. Detection tools: Burp HTTP Request Smuggler extension, smuggler.py, h2csmuggler. Confirm: time-delay technique (smuggled GET with 30s timeout) — if front-end returns slow on next victim request, smuggling works. Validate: cache poisoning chain (smuggle request that gets cached for victim), credential theft (smuggle X-Forwarded-For override that captures next user's cookies), bypass auth (smuggled internal-path request). Real paid examples from major CDN deployments. Use when hunting H1 paid programs running CDN+origin stacks, when targeting load balancer / WAF bypass.",
+    "upstream": "https://github.com/elementalsouls/Claude-BugHunter/tree/main/skills/hunt-http-smuggling",
+    "upstream_commit": "05098fc78842ec23fb96be4d07bd9cdc128a443b",
+    "content_hash": "sha256:84887bc8bceeec295dd7bca57c75f252667645858ac9ad72d3f14b00310bd278",
+    "license": "MIT",
+    "hosting": "mirrored",
+    "mirror_complete": false,
+    "category": null,
+    "version": null,
+    "publisher": "elementalsouls",
+    "publisher_verified": false,
+    "duplicate_of": null
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "security_audit": {
+    "status": "pending",
+    "audited_at": null,
+    "risk_factors": {
+      "scripts": {
+        "present": false
+      },
+      "network": {
+        "present": null
+      },
+      "filesystem": {
+        "present": null
+      },
+      "env_access": {
+        "present": null
+      },
+      "external_commands": {
+        "present": null
+      }
+    },
+    "evidence": []
+  },
+  "signals": {
+    "stars_github": 2846,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-07-03T06:27:19.742Z",
+    "repo_skill_count": 71,
+    "bulk_source": true
+  },
+  "token_cost": {
+    "body_tokens": 1576,
+    "method": "chars/4-estimate"
+  },
+  "eval": null
+}
