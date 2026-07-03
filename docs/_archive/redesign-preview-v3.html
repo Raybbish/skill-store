@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>oh-my-skill — 重设计预览 v3(去盒子 · 编辑向)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14161d; --ink-2:#39414f; --sub:#5c6473; --faint:#9aa1af;
+  --bg:#fcfcfd; --line:#ececef; --line-2:#e0e2e8; --hair:#eeeff2;
+  --blue:#3b6cf0; --violet:#7a5af8; --green:#12905f; --amber:#b5730a; --gold:#f0a318; --danger:#d5453b;
+  --display:"Space Grotesk",sans-serif;
+  --ui:"Manrope",-apple-system,"PingFang SC",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.55}
+a{color:inherit;text-decoration:none}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1020px;margin:0 auto;padding:0 26px 100px}
+
+/* nav — borderless */
+.nav{position:sticky;top:0;z-index:40;background:rgba(252,252,253,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--hair)}
+.nav-in{max-width:1020px;margin:0 auto;padding:16px 26px;display:flex;align-items:center;gap:26px}
+.logo{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.logo .mk{width:26px;height:26px;border-radius:50%;background:conic-gradient(from 210deg,#3b6cf0,#7a5af8,#3b6cf0);color:#fff;display:grid;place-items:center;font-size:13px}
+.logo em{font-style:normal;color:var(--blue)}
+.tabs{display:flex;gap:20px}
+.tabs a{font-size:14.5px;color:var(--sub);font-weight:600;padding-bottom:2px;border-bottom:2px solid transparent}
+.tabs a.on{color:var(--ink);border-color:var(--ink)}
+.tabs a:hover{color:var(--ink)}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:18px;color:var(--faint);font-size:13px}
+.nav-r .s{border-bottom:1px solid var(--line-2);padding-bottom:3px}
+.nav-r .new{color:var(--blue);font-weight:700}
+
+/* hero — asymmetric, no boxes */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:center;padding:56px 0 30px;position:relative}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue)}
+h1{font-family:var(--display);font-weight:700;font-size:52px;line-height:1.02;letter-spacing:-.03em;margin-top:20px}
+h1 .hl{position:relative;white-space:nowrap}
+h1 .hl:after{content:"";position:absolute;left:-2px;right:-2px;bottom:6px;height:12px;background:linear-gradient(90deg,#d9e4fe,#e7ddfd);z-index:-1;border-radius:2px}
+.lede{font-size:17px;color:var(--sub);margin-top:20px;max-width:31ch}
+.cli{margin-top:24px;font-family:var(--mono);font-size:13.5px;color:var(--ink-2);border-bottom:1px dashed var(--line-2);padding-bottom:6px;display:inline-block}
+.cli .p{color:var(--green)} .cli .cp{color:var(--blue);margin-left:10px;font-family:var(--ui);font-weight:700;font-size:12px}
+.hero-cta{margin-top:26px;display:flex;align-items:center;gap:20px}
+.pill{background:var(--ink);color:#fff;font-weight:800;font-size:13.5px;border:none;border-radius:999px;padding:12px 26px;cursor:pointer}
+.pill:hover{transform:translateY(-1px)}
+.hero-cta .st{font-size:13px;color:var(--sub)}
+.hero-cta .st b{font-family:var(--display);color:var(--ink)}
+.emblem{justify-self:center;width:100%;max-width:300px}
+.emblem text{font-family:var(--ui)}
+.leg{display:flex;gap:16px;justify-content:center;margin-top:6px;font-size:11.5px;color:var(--sub)}
+.leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+
+/* provenance timeline — horizontal, no box */
+.tl-wrap{margin-top:22px;padding:22px 0 6px;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.tl-cap{font-size:12.5px;color:var(--faint);margin-bottom:16px;font-family:var(--mono);letter-spacing:.02em}
+.tl-cap b{color:var(--ink-2)}
+.timeline{position:relative;display:flex;justify-content:space-between;overflow-x:auto;padding-bottom:6px}
+.timeline:before{content:"";position:absolute;left:16px;right:16px;top:15px;height:2px;background:linear-gradient(90deg,#cfe6db,#d3ddfb 70%,var(--blue));z-index:0}
+.node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:9px;min-width:88px}
+.node .d{width:32px;height:32px;border-radius:50%;background:var(--bg);border:2px solid var(--green);color:var(--green);display:grid;place-items:center;font-size:14px;font-weight:700}
+.node.end .d{background:var(--blue);border-color:var(--blue);color:#fff}
+.node .l{font-size:11.5px;color:var(--sub);font-weight:600;white-space:nowrap}
+.node .l small{display:block;font-family:var(--mono);color:var(--faint);font-weight:400;font-size:10px}
+
+/* section head */
+.sec{margin-top:46px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.sec-h h2{font-family:var(--display);font-size:23px;font-weight:700;letter-spacing:-.02em}
+.sec-h .k{font-size:12.5px;color:var(--faint);font-weight:600}
+.sec-h a{margin-left:auto;font-size:13.5px;color:var(--blue);font-weight:700}
+
+/* category text rail — understated */
+.rail{display:flex;gap:22px;flex-wrap:wrap;padding:14px 0 2px;border-bottom:1px solid var(--hair)}
+.rail a{font-size:14px;color:var(--sub);font-weight:600}
+.rail a.on{color:var(--ink)}
+.rail a b{font-family:var(--mono);color:var(--faint);font-weight:500;font-size:12px;margin-left:3px}
+.rail a:hover{color:var(--blue)}
+
+/* editorial list — hairlines, circular avatars, no card box */
+.row{display:flex;align-items:center;gap:17px;padding:20px 2px;border-top:1px solid var(--hair)}
+.row:first-child{border-top:none}
+.av{width:48px;height:48px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;font-size:19px}
+.a-blue{background:radial-gradient(120% 120% at 30% 20%,#5c86f5,#2f57d8)}
+.a-teal{background:radial-gradient(120% 120% at 30% 20%,#22b3a6,#0e8f6a)}
+.a-violet{background:radial-gradient(120% 120% at 30% 20%,#9b7cf9,#6b46e0)}
+.a-slate{background:radial-gradient(120% 120% at 30% 20%,#5b6480,#2b3040)}
+.a-amber{background:radial-gradient(120% 120% at 30% 20%,#eaa03f,#d5453b)}
+.row .main{flex:1;min-width:0}
+.row .nm{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.row .nm .vf{color:var(--blue);font-size:14px}
+.row .ds{font-size:13.5px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52ch}
+.row .au{font-size:12px;color:var(--faint);margin-top:3px}
+.mini{display:flex;gap:5px;align-items:center}
+.mini i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.mini span{font-size:10.5px;color:var(--faint);margin-left:2px}
+.rt{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.rt .score{font-family:var(--display);font-weight:700;font-size:15px}
+.rt .score .gold{color:var(--gold)}
+.rt .dl{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+.go{color:var(--blue);font-weight:700;font-size:13.5px}
+.trust{font-size:11.5px;font-weight:700;color:var(--green)}
+.trust.rev{color:var(--amber)}
+
+/* charts — big ghosted index numbers */
+.chart .crow{display:flex;align-items:center;gap:16px;padding:15px 2px;border-top:1px solid var(--hair)}
+.chart .crow:first-child{border-top:none}
+.idx{font-family:var(--display);font-weight:700;font-size:30px;color:#e9ebf1;width:40px;text-align:center;flex-shrink:0}
+.idx.top{color:#c7d3f7}
+
+/* collection — tinted full-bleed band, no border */
+.band{margin-top:16px;background:linear-gradient(115deg,#eef2fe,#f4f0ff 60%,#fdeef4);border-radius:24px;padding:22px 24px}
+.band .bh{display:flex;align-items:center;gap:13px;margin-bottom:6px}
+.band .bh .av{box-shadow:0 6px 16px -6px rgba(122,90,248,.5)}
+.band .bh .bt{font-family:var(--display);font-weight:700;font-size:17px}
+.band .bh .bt small{font-family:var(--mono);font-size:11px;color:var(--violet);background:#fff;border-radius:6px;padding:1px 7px;margin-left:8px;font-weight:600}
+.band .bh .bs{font-size:12px;color:var(--sub)}
+.band .bh .allget{margin-left:auto;color:var(--violet);font-weight:700;font-size:13px}
+.subs{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:14px}
+.subs .s{background:rgba(255,255,255,.75);border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:7px}
+.subs .s .d{font-family:var(--mono);font-size:11px;color:var(--faint);font-weight:400}
+
+/* why — columns split by hairlines, no boxes */
+.why{display:grid;grid-template-columns:repeat(3,1fr);margin-top:18px}
+.why .w{padding:6px 24px}
+.why .w+.w{border-left:1px solid var(--hair)}
+.why .w .e{font-size:24px;margin-bottom:10px}
+.why .w h4{font-family:var(--display);font-size:16px;font-weight:700;margin-bottom:5px}
+.why .w p{font-size:13px;color:var(--sub)}
+
+/* community list */
+.cm .row{padding:16px 2px}
+.cm .fl{font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--sub);border:1px solid var(--line-2);border-radius:6px;padding:1px 7px;margin-right:8px}
+.cm .fl.ok{color:var(--green);border-color:#bfe3d3}
+.cm .fl.warn{color:var(--amber);border-color:#ecd8ac}
+
+footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--hair);font-size:12px;color:var(--faint);text-align:center}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;padding:36px 0 20px} h1{font-size:38px}
+  .emblem{max-width:260px;margin-top:10px}
+  .why{grid-template-columns:1fr} .why .w+.w{border-left:none;border-top:1px solid var(--hair)}
+  .nav-r .s{display:none}
+}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="nav"><div class="nav-in">
+  <div class="logo"><span class="mk">◆</span>oh-my<em>-skill</em></div>
+  <nav class="tabs"><a class="on">今日</a><a>浏览</a><a>榜单</a><a>社区</a></nav>
+  <div class="nav-r"><span class="s">🔍 搜索</span><span class="new">＋ 发布</span></div>
+</div></div>
+
+<div class="wrap">
+
+  <!-- HERO: editorial type + circular permission emblem -->
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Agent Skills · 认证商店</div>
+      <h1>装之前,<br>先看清它<span class="hl">能碰什么</span></h1>
+      <p class="lede">每个 skill 都过三层审计、权限逐项披露、评测走可复现协议。发现是红海——我们卖可验证的信任。</p>
+      <div class="cli"><span class="p">$</span> npx oh-my-skill add anthropics/skills/pdf <span class="cp">复制 ⧉</span></div>
+      <div class="hero-cta">
+        <button class="pill">浏览 79 个已审计 skill</button>
+        <div class="st"><b>0</b> 确认恶意 · <b>100%</b> 权限已标注</div>
+      </div>
+    </div>
+
+    <div>
+      <svg class="emblem" viewBox="0 0 260 260" role="img" aria-label="权限徽章:5 项权限已披露,三层审计通过">
+        <circle cx="130" cy="130" r="102" fill="none" stroke="#e6e8ee" stroke-width="1.5" stroke-dasharray="2 7"/>
+        <circle cx="130" cy="130" r="84" fill="none" stroke="#f0f2f8" stroke-width="12"/>
+        <circle cx="130" cy="130" r="58" fill="#ffffff" stroke="#e6e8ee" stroke-width="1"/>
+        <text x="130" y="120" text-anchor="middle" font-size="34" fill="#12905f" font-weight="700">✓</text>
+        <text x="130" y="143" text-anchor="middle" font-size="15" fill="#14161d" font-weight="700">三层审计</text>
+        <text x="130" y="160" text-anchor="middle" font-size="10" fill="#9aa1af" font-family="IBM Plex Mono">权限 5 项已披露</text>
+        <!-- factor dots on the ring -->
+        <g font-size="11" fill="#5c6473" text-anchor="middle" font-weight="600">
+          <circle cx="130" cy="38"  r="7" fill="#12905f" stroke="#fff" stroke-width="2"/><text x="130" y="20">网络</text>
+          <circle cx="217" cy="102" r="7" fill="#b5730a" stroke="#fff" stroke-width="2"/><text x="234" y="98">脚本</text>
+          <circle cx="184" cy="204" r="7" fill="#3b6cf0" stroke="#fff" stroke-width="2"/><text x="198" y="226">文件</text>
+          <circle cx="76"  cy="204" r="7" fill="#12905f" stroke="#fff" stroke-width="2"/><text x="62"  y="226">命令</text>
+          <circle cx="43"  cy="102" r="7" fill="#12905f" stroke="#fff" stroke-width="2"/><text x="26"  y="98">环境</text>
+        </g>
+      </svg>
+      <div class="leg"><span><i style="background:#12905f"></i>清白</span><span><i style="background:#b5730a"></i>含·需注意</span><span><i style="background:#3b6cf0"></i>受限访问</span></div>
+    </div>
+  </section>
+
+  <!-- PROVENANCE TIMELINE -->
+  <div class="tl-wrap">
+    <div class="tl-cap">每个 skill 上架前,都走完这条<b>可公开复核</b>的链路 —— 变更走 PR,每条记录带 commit 溯源</div>
+    <div class="timeline">
+      <div class="node"><div class="d">✓</div><div class="l">采集<small>官方仓/榜单</small></div></div>
+      <div class="node"><div class="d">✓</div><div class="l">去重·哈希<small>content_hash</small></div></div>
+      <div class="node"><div class="d">✓</div><div class="l">L1 签名<small>YARA/正则</small></div></div>
+      <div class="node"><div class="d">✓</div><div class="l">L2 数据流<small>脚本追踪</small></div></div>
+      <div class="node"><div class="d">✓</div><div class="l">L3 意图<small>LLM 审查</small></div></div>
+      <div class="node"><div class="d">✓</div><div class="l">人工复核<small>含外联必过</small></div></div>
+      <div class="node end"><div class="d">↑</div><div class="l">上架<small>货架可验证</small></div></div>
+    </div>
+  </div>
+
+  <!-- category text rail -->
+  <div class="sec">
+    <div class="rail">
+      <a class="on">全部 <b>79</b></a><a>文档生成 <b>12</b></a><a>数据分析 <b>9</b></a><a>开发工具 <b>18</b></a><a>安全合规 <b>6</b></a><a>媒体处理 <b>7</b></a><a>云与部署 <b>11</b></a><a>办公自动化 <b>8</b></a>
+    </div>
+  </div>
+
+  <!-- editor's picks — editorial rows -->
+  <div class="sec">
+    <div class="sec-h"><h2>编辑精选</h2><span class="k">已验证发布者</span><a>查看全部 ›</a></div>
+    <div class="list">
+
+      <div class="row">
+        <div class="av a-blue">S</div>
+        <div class="main">
+          <div class="nm">skill-creator <span class="vf">✓</span></div>
+          <div class="ds">从零创建、改进并评测你自己的 skill,内置最佳实践模板。</div>
+          <div class="au">@anthropics · 已认证发布者</div>
+        </div>
+        <div class="mini"><i style="background:#12905f"></i><i style="background:#12905f"></i><i style="background:#3b6cf0"></i><i style="background:#12905f"></i><i style="background:#12905f"></i></div>
+        <div class="rt"><div class="score"><span class="gold">★</span> 4.9</div><div class="dl">⬇ 7.3K</div><span class="go">获取 ›</span></div>
+      </div>
+
+      <div class="row">
+        <div class="av a-teal">X</div>
+        <div class="main">
+          <div class="nm">xlsx <span class="vf">✓</span></div>
+          <div class="ds">脏数据进,分析级模型出:清洗管线 + 透视 + 校验公式。</div>
+          <div class="au">@anthropics · 已认证发布者</div>
+        </div>
+        <div class="mini"><i style="background:#b5730a"></i><i style="background:#12905f"></i><i style="background:#3b6cf0"></i><i style="background:#12905f"></i><i style="background:#12905f"></i></div>
+        <div class="rt"><div class="score"><span class="gold">★</span> 4.8</div><div class="dl">⬇ 62.5K</div><span class="go">获取 ›</span></div>
+      </div>
+
+      <div class="row">
+        <div class="av a-violet">D</div>
+        <div class="main">
+          <div class="nm">deploy-to-vercel <span class="vf">✓</span></div>
+          <div class="ds">一句话把项目部署到 Vercel,自动探测框架与构建配置。</div>
+          <div class="au">@vercel-labs · 已认证发布者</div>
+        </div>
+        <div class="mini"><i style="background:#b5730a"></i><i style="background:#b5730a"></i><i style="background:#3b6cf0"></i><i style="background:#12905f"></i><i style="background:#12905f"></i></div>
+        <div class="rt"><div class="score"><span class="gold">★</span> 4.5</div><div class="dl">⬇ 18.9K</div><span class="go">获取 ›</span></div>
+      </div>
+
+      <div class="row">
+        <div class="av a-amber">O</div>
+        <div class="main">
+          <div class="nm">openclaw-secure-linux-cloud</div>
+          <div class="ds">在隔离云环境里安全运行不可信 skill 与脚本。</div>
+          <div class="au">@xixu-me · <span class="trust rev">外联待人工复核</span></div>
+        </div>
+        <div class="mini"><i style="background:#b5730a"></i><i style="background:#b5730a"></i><i style="background:#3b6cf0"></i><i style="background:#12905f"></i><i style="background:#b5730a"></i></div>
+        <div class="rt"><div class="score"><span class="gold">★</span> 4.3</div><div class="dl">⬇ 6.0K</div><span class="go">获取 ›</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- charts + collection -->
+  <div class="sec">
+    <div class="sec-h"><h2>大家都在装</h2><span class="k">流行度 · 安装量</span></div>
+    <div class="chart">
+      <div class="crow"><div class="idx top">01</div><div class="av a-teal" style="width:40px;height:40px;font-size:16px">X</div><div class="main"><div class="nm" style="font-size:15.5px">xlsx</div><div class="au">@anthropics</div></div><div class="rt"><div class="score"><span class="gold">★</span>4.8</div><div class="dl">⬇ 62.5K</div></div></div>
+      <div class="crow"><div class="idx top">02</div><div class="av a-slate" style="width:40px;height:40px;font-size:16px">C</div><div class="main"><div class="nm" style="font-size:15.5px">azure-compute</div><div class="au">@microsoft</div></div><div class="rt"><div class="score"><span class="gold">★</span>4.6</div><div class="dl">⬇ 51.4K</div></div></div>
+      <div class="crow"><div class="idx top">03</div><div class="av a-blue" style="width:40px;height:40px;font-size:16px">P</div><div class="main"><div class="nm" style="font-size:15.5px">pdf</div><div class="au">@anthropics</div></div><div class="rt"><div class="score"><span class="gold">★</span>4.9</div><div class="dl">⬇ 48.2K</div></div></div>
+      <div class="crow"><div class="idx">04</div><div class="av a-violet" style="width:40px;height:40px;font-size:16px">D</div><div class="main"><div class="nm" style="font-size:15.5px">deploy-to-vercel</div><div class="au">@vercel-labs</div></div><div class="rt"><div class="score"><span class="gold">★</span>4.5</div><div class="dl">⬇ 18.9K</div></div></div>
+    </div>
+  </div>
+
+  <!-- collection band -->
+  <div class="sec">
+    <div class="sec-h"><h2>官方合集</h2><span class="k">一行命令装齐</span></div>
+    <div class="band">
+      <div class="bh">
+        <div class="av a-violet">飞</div>
+        <div><div class="bt">飞书 CLI Skills <small>合集</small></div><div class="bs">@larksuite · 10 个 skill 一次装齐,统一鉴权</div></div>
+        <span class="allget">全部获取 ›</span>
+      </div>
+      <div class="subs">
+        <span class="s">lark-base <span class="d">⬇2.1K</span></span>
+        <span class="s">lark-doc <span class="d">⬇1.6K</span></span>
+        <span class="s">lark-approval <span class="d">⬇980</span></span>
+        <span class="s">lark-workflow-meeting-summary <span class="d">⬇740</span></span>
+        <span class="s" style="color:var(--violet)">+ 还有 6 个 ›</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- why trust — columns, hairline dividers -->
+  <div class="sec">
+    <div class="sec-h"><h2>为什么在这儿装</h2><span class="k">发现是红海,我们卖信任</span></div>
+    <div class="why">
+      <div class="w"><div class="e">🛡️</div><h4>三层安全审计</h4><p>L1 签名 · L2 脚本数据流 · L3 意图审查,含外联一律人工复核。</p></div>
+      <div class="w"><div class="e">🏷️</div><h4>权限营养标签</h4><p>脚本 / 网络 / 文件 / 环境 / 命令 五因子逐项披露,附文件级证据。</p></div>
+      <div class="w"><div class="e">🧪</div><h4>可复现评测</h4><p>分数带 runner 与模型元数据,谁都能复跑挑战——不是平台背书。</p></div>
+    </div>
+  </div>
+
+  <!-- community -->
+  <div class="sec cm">
+    <div class="sec-h"><h2>社区</h2><span class="k">评价需已验证安装</span><a>进入社区 ›</a></div>
+    <div class="list">
+      <div class="row"><div class="av a-teal" style="width:38px;height:38px;font-size:14px">B</div><div class="main"><div class="nm" style="font-size:14.5px"><span class="fl ok">已复现</span>第二模型交叉跑 xlsx,9.1 稳定复现</div><div class="au">anthropics/skills/xlsx · benchmark_joe · 1 天前</div></div><div class="rt"><span class="dl">💬 5</span></div></div>
+      <div class="row"><div class="av a-blue" style="width:38px;height:38px;font-size:14px">R</div><div class="main"><div class="nm" style="font-size:14.5px"><span class="fl warn">存疑</span>复现 pptx 版式还原:我这边跑到 8.1,元数据已附</div><div class="au">anthropics/skills/pptx · repro_kate · 4 小时前</div></div><div class="rt"><span class="dl">💬 11</span></div></div>
+      <div class="row"><div class="av a-slate" style="width:38px;height:38px;font-size:14px">◆</div><div class="main"><div class="nm" style="font-size:14.5px"><span class="fl">置顶</span>下架公告:quick-mailer 含 base64 外传指令,已移除并复盘</div><div class="au">oh-my-skill 安全组 · 2 天前</div></div></div>
+    </div>
+  </div>
+
+  <footer>已扫描 ≠ 保证安全:标签是披露,不是背书 · 重设计预览 v3(去盒子·编辑向)· 招牌:圆形权限徽章 + 溯源时间线 · 应用 frontend-design 技能</footer>
+
+</div>
+</body>
+</html>

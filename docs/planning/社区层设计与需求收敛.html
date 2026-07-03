@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Store 社区层设计 & 需求收敛</title>
+<style>
+  :root{
+    --accent:#3b6cf0; --accent-soft:#edf2fe; --accent-line:#c9d8fb;
+    --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --sub:#6e6e73; --faint:#86868b;
+    --line:#e6e6ea; --ok:#2e9e5b; --ok-soft:#e7f5ec; --warn:#c77b12; --warn-soft:#fbf1e2;
+    --bad:#d0342c; --new:#3b6cf0; --new-soft:#e8effe;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-font-smoothing:antialiased}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.62; font-size:15.5px;
+  }
+  .wrap{max-width:940px; margin:0 auto; padding:40px 26px 90px}
+  header.doc{
+    background:linear-gradient(135deg,#eef2fb 0%,#f7f9fe 100%);
+    border:1px solid var(--line); border-radius:20px; padding:34px 34px 30px; margin-bottom:30px;
+  }
+  header.doc .eyebrow{color:var(--accent); font-weight:600; letter-spacing:.02em; font-size:13px; margin-bottom:8px}
+  header.doc h1{font-size:30px; line-height:1.2; margin:0 0 12px; letter-spacing:-.01em}
+  header.doc .meta{color:var(--sub); font-size:13.5px}
+  header.doc .meta b{color:var(--ink); font-weight:600}
+  .tldr{
+    margin-top:22px; background:var(--accent-soft); border:1px solid var(--accent-line);
+    border-radius:14px; padding:18px 20px; font-size:15px;
+  }
+  .tldr .k{font-weight:700; color:var(--accent); display:block; margin-bottom:4px; font-size:13px; letter-spacing:.02em}
+  h2{font-size:20px; margin:44px 0 14px; letter-spacing:-.01em; display:flex; align-items:baseline; gap:10px}
+  h2 .n{color:var(--accent); font-weight:700; font-size:15px; font-variant-numeric:tabular-nums}
+  h3{font-size:16px; margin:26px 0 10px}
+  p{margin:10px 0}
+  .sub{color:var(--sub)}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px 24px; margin:16px 0}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:14px}
+  th,td{text-align:left; padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{background:var(--accent-soft); color:#2b3a63; font-weight:600; font-size:12.5px; letter-spacing:.02em}
+  tr:last-child td{border-bottom:none}
+  td.dim{color:var(--sub)}
+  .pill{display:inline-block; padding:2px 9px; border-radius:999px; font-size:11.5px; font-weight:600; white-space:nowrap}
+  .p-ok{background:var(--ok-soft); color:var(--ok)}
+  .p-new{background:var(--new-soft); color:var(--new)}
+  .p-warn{background:var(--warn-soft); color:var(--warn)}
+  .fork{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0}
+  .fork .opt{border:1px solid var(--line); border-radius:16px; padding:20px; background:var(--card)}
+  .fork .opt.pick{border:1.5px solid var(--accent); background:linear-gradient(180deg,#f7faff,#ffffff)}
+  .fork .tag{font-size:12px; font-weight:700; letter-spacing:.03em; text-transform:uppercase}
+  .fork .opt .tag{color:var(--faint)}
+  .fork .opt.pick .tag{color:var(--accent)}
+  .fork h4{margin:6px 0 10px; font-size:16px}
+  .fork ul{margin:8px 0 0; padding-left:18px}
+  .fork li{margin:6px 0; font-size:13.5px; color:#37373a}
+  .rec{background:var(--accent-soft); border:1px solid var(--accent-line); border-radius:14px; padding:18px 20px; margin:16px 0}
+  .rec .k{font-weight:700; color:var(--accent); font-size:13px; letter-spacing:.02em; display:block; margin-bottom:6px}
+  ul.clean{list-style:none; padding-left:0; margin:12px 0}
+  ul.clean>li{padding:10px 0 10px 26px; border-bottom:1px solid var(--line); position:relative}
+  ul.clean>li:last-child{border-bottom:none}
+  ul.clean>li:before{content:"→"; color:var(--accent); position:absolute; left:0; top:10px; font-weight:700}
+  ul.clean b{font-weight:650}
+  .lane{border-left:3px solid var(--accent); padding:2px 0 2px 16px; margin:14px 0}
+  .lane .m{font-weight:700; font-size:14px}
+  .lane .m span{font-weight:600; color:var(--accent); font-size:12px; margin-left:8px; padding:1px 8px; background:var(--accent-soft); border-radius:999px}
+  .redline{background:var(--warn-soft); border:1px solid #e7d4ac; border-radius:12px; padding:14px 18px; font-size:13.5px; color:#6b4c14}
+  .redline b{color:#5a3f10}
+  code{background:#f0f0f3; border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-size:12.5px; font-family:"SF Mono",ui-monospace,Menlo,monospace}
+  footer{margin-top:46px; padding-top:18px; border-top:1px solid var(--line); color:var(--faint); font-size:12.5px}
+  @media(max-width:680px){.fork{grid-template-columns:1fr} header.doc h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="doc">
+    <div class="eyebrow">DESIGN NOTE · 承接 PRD v1.1 / M0 详细设计</div>
+    <h1>Skill Store 社区层设计 &amp; 需求收敛</h1>
+    <div class="meta"><b>v0.1</b> · 2026-07-03 · 作者:Wittgenstein · 上游:<b>Skill Store PRD v1.1</b>、<b>M0 详细设计</b>、交互原型 · 视觉语言沿用 <code>#3b6cf0</code> Apple 风</div>
+    <div class="tldr">
+      <span class="k">一句话结论</span>
+      三轮问答的答案里,除「社区权重」外<b>几乎全部与 PRD 一致</b>。唯一张力:你把「世界最好的 skill 社区」当主角,而 PRD 主张「发现是红海,我们卖信任」。建议<b>不改「卖信任」主线,把社区做成信任的放大器 —— 信任原生社区</b>。本次交付这份收敛文档;下一步扩原型。
+    </div>
+  </header>
+
+  <h2><span class="n">01</span> 需求收敛表(三轮问答 → 产品决策)</h2>
+  <p class="sub">把你选的每一项落成具体产品决策,并与现有 PRD 交叉核对。<span class="pill p-ok">一致</span> = PRD 已覆盖;<span class="pill p-new">新增</span> = 需在文档/路线图补;<span class="pill p-warn">需收敛</span> = 存在张力,见 §2。</p>
+  <table>
+    <thead><tr><th style="width:15%">维度</th><th style="width:22%">你的选择</th><th style="width:41%">落成产品决策</th><th style="width:22%">与 PRD 关系</th></tr></thead>
+    <tbody>
+      <tr><td>核心用户</td><td>双边并重</td><td>双入口(逛 / 发布);但发布端权重 M1 才上,M0 先把「逛 + 信任」立住</td><td><span class="pill p-ok">一致</span> <span class="dim">PRD:供给端开发者列 M1</span></td></tr>
+      <tr><td>首版目标</td><td>世界最好的 skill 社区与平台</td><td>北极星仍是「可信」(经本站安装且 30 天留存);社区是<b>留存与内容引擎</b>,非定位替换</td><td><span class="pill p-warn">需收敛</span> <span class="dim">见 §2</span></td></tr>
+      <tr><td>页面范围</td><td>详情 / 浏览 / 投稿 / 创作者 / 评论论坛</td><td>详情 + 浏览 + 榜单 = M0 已设计;投稿 + 创作者 + 社区 = 新增层(§3)</td><td><span class="pill p-new">部分新增</span> <span class="dim">社区 PRD 列 P1</span></td></tr>
+      <tr><td>安装方式</td><td>听建议 → 一键为主 + 命令兜底</td><td><code>npx skillstore add</code> + 一键按钮;安装前哈希校验 + 权限确认</td><td><span class="pill p-ok">一致</span> <span class="dim">M0 CLI 已含</span></td></tr>
+      <tr><td>社区形态</td><td>评分 + 论坛 + 问答 + 晒用法</td><td>四类都要,但全部<b>绑定「已验证安装」与「评测挑战」</b>做信任化改造(§3)</td><td><span class="pill p-new">新增</span> <span class="dim">需信任化</span></td></tr>
+      <tr><td>安全呈现</td><td>醒目徽章</td><td>详情页以<b>权限营养标签 + 审计徽章</b>为主角(五因子 + 文件级证据)</td><td><span class="pill p-ok">一致</span> <span class="dim">M0 详情页主角即此</span></td></tr>
+      <tr><td>冷启动</td><td>混合</td><td>官方精选仓打底 → skills.sh 头部 → 全域;自动采集 + 人工精选置顶</td><td><span class="pill p-ok">一致</span> <span class="dim">PRD 供给漏斗</span></td></tr>
+      <tr><td>变现</td><td>全免费</td><td>M0–M1 免费,只攒信任与评测数据;认证/付费留到 M1–M2</td><td><span class="pill p-ok">一致</span> <span class="dim">PRD 商业模式</span></td></tr>
+      <tr><td>登录身份</td><td>多方式都支持</td><td>GitHub + 邮箱/OAuth;<b>GitHub 关联 = 认领 skill + 「已验证安装」信号来源</b></td><td><span class="pill p-new">新增</span> <span class="dim">M0 无账号层,需提前量</span></td></tr>
+      <tr><td>排序发现</td><td>精选 + 热度 + 总量榜 + 最新</td><td>首页四条发现轴;<b>可复现评测榜标「开发中」</b>,先上流行度榜</td><td><span class="pill p-ok">一致</span> <span class="dim">PRD 今日 + 榜单</span></td></tr>
+      <tr><td>语言</td><td>支持多国语言</td><td>i18n;翻译走异步 fire-and-forget,不阻塞主链路</td><td><span class="pill p-ok">一致</span> <span class="dim">PRD 已含异步翻译</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2><span class="n">02</span> 核心张力:社区优先 vs 信任优先</h2>
+  <p>你的答案把社区当主角,PRD 却写着「发现已是红海,我们卖的是信任」,并把社区列 P1、冷启动期评论区用<b>审计摘要占位</b>。这不是措辞问题,是两条会长成不同产品的路:</p>
+
+  <div class="fork">
+    <div class="opt">
+      <div class="tag">路线 A</div>
+      <h4>社区优先(TapTap 路线)</h4>
+      <p class="sub" style="font-size:13px;margin:2px 0 4px">赌互动与内容的网络效应。</p>
+      <ul>
+        <li>正面硬刚 skills.sh / SkillHub 等 8+ 家已有目录 + 社区</li>
+        <li>没有信任资产时,社区 = 「又一个目录 + 论坛」,仍是红海</li>
+        <li>直接踩中 PRD 风险表的「平台截流」——官方渠道能复制</li>
+        <li>灌水内容对「信任」品牌是稀释而非增益</li>
+      </ul>
+    </div>
+    <div class="opt pick">
+      <div class="tag">路线 B · 建议</div>
+      <h4>信任优先 + 信任原生社区</h4>
+      <p class="sub" style="font-size:13px;margin:2px 0 4px">主线不变,社区挂在信任资产上。</p>
+      <ul>
+        <li><b>评价</b>=已验证安装才可评,杜绝刷评(PRD 已有)</li>
+        <li><b>求助/问答</b>=绑定 skill + 版本 + 权限因子,沉淀为使用知识库</li>
+        <li><b>评测挑战</b>=用户可复现跑分、质疑货架分——别家零覆盖</li>
+        <li><b>晒用法</b>=效果对比的 UGC 版,喂「效果可见」叙事</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rec">
+    <span class="k">建议</span>
+    不要做「又一个 TapTap」,做「围绕可复现信任的开发者社区」。最好的专业社区(Stack Overflow、Hugging Face)都有一个<b>硬价值锚</b>,不是纯灌水论坛——你的锚就是<b>评测 + 安全审计</b>。这样既满足你「世界最好社区」的野心,社区又<b>反向加固护城河</b>(评测众包、内容营销素材、马太效应可控),差异化仍是零竞品覆盖。
+  </div>
+
+  <h2><span class="n">03</span> 社区 / 创作者层设计(净新增部分)</h2>
+
+  <h3>3.1 详情页新增「社区」分区</h3>
+  <p class="sub">位置在现有五指标栏 / 效果对比 / 权限营养标签<b>之下</b>,不抢安全信号的主角位。</p>
+  <ul class="clean">
+    <li><b>评价</b> — 星级 + 文字,仅「已验证安装」可评,评论卡带安装徽章。冷启动期沿用 PRD:<b>审计摘要置顶占位</b>。</li>
+    <li><b>求助 Q&amp;A</b> — 每条问题绑定 skill 版本;空态引导「成为第一个提问的人」。答案沉淀成该 skill 的长尾 SEO 内容。</li>
+    <li><b>评测挑战</b> — 用户可 <code>npm run eval</code> 复现货架分、提交失败案例回放、质疑存疑分数。把「赛道非裁判」变成社区共创。</li>
+    <li><b>晒用法</b> — 用户贴自己的输入/输出,作为「效果对比」的众包补充。</li>
+  </ul>
+
+  <h3>3.2 社区页 <code>/community</code></h3>
+  <p>四个板块:<b>求助台 · 晒用法 · 评测挑战 · 公告&amp;复盘</b>。「公告&amp;复盘」把恶意 skill 下架的公开复盘做成固定栏目——这是最强的信任叙事。每个帖子可挂一张 skill 卡(带权限徽章),帖子本身是可被搜索引擎索引的获客资产,对齐 PRD 的「SEO 是主要获客渠道」。</p>
+
+  <h3>3.3 创作者主页 <code>/publisher/[id]</code></h3>
+  <p>认证发布者徽章、作品集(每个带各自审计状态)、被第三方复现的评测记录、<b>响应求助的速度分</b>——把「负责任的作者」变成货架上可见的信号。投稿流程入口:提交 → 自动过审(L1–L3)→ 审计状态可见 → GitHub 关联认领。</p>
+
+  <h3>3.4 机制红线(承接 PRD 措辞纪律)</h3>
+  <div class="redline">
+    <b>① 措辞:</b>全站只说「已扫描 / 已评测」,禁用「保证安全」;权限标签定位是结构化披露,不是背书。<br>
+    <b>② 防刷:</b>社区不得展示未经「已验证安装」的评分。<br>
+    <b>③ 安全优先级:</b>含 <code>network</code> 因子的 skill,社区页顶部保留「待复核 / 结构化披露」提示,<b>不因社区热度冲淡安全信号</b>。
+  </div>
+
+  <h2><span class="n">04</span> 对 M0 / 路线图的影响</h2>
+  <p>社区在 PRD 里是 P1,M0 的 P0 不含社区。建议 <b>M0 主体不动</b>(先把「可信目录」立住),只做两件预留,然后把「信任原生社区」的最小切片和评测协议一起在 M1 上——因为<b>评测挑战本就依赖可复现评测协议</b>,顺序天然对齐。</p>
+  <div class="card">
+    <div class="lane"><div class="m">M0 · 可信目录 <span>不动 + 2 处预留</span></div>
+      详情页评价位 = 审计摘要占位;数据库为社区预留 schema(<code>threads / comments</code> 关联 <code>skill_id + version + verified_install</code>)。</div>
+    <div class="lane"><div class="m">M1 · 评测商店 + 社区最小切片 <span>净新增</span></div>
+      已验证安装评价 + 求助 Q&amp;A + 评测挑战(依赖可复现评测协议);创作者主页 v1;引入轻量账号层(Supabase Auth,GitHub + 邮箱)。</div>
+    <div class="lane"><div class="m">M2 · 生态与变现 <span>完整社区</span></div>
+      完整论坛板块 + 晒用法动态流 + 创作者数据看板 + i18n 全量 + 付费/认证。</div>
+  </div>
+  <p class="sub"><b>登录提前量提示:</b>社区 / 投稿 / 创作者都需账号。M0 仍保持无登录可浏览(SSG + SEO),账号层在 M1 引入即可,不必提前进 M0 拖慢「可信目录」交付。</p>
+
+  <h2><span class="n">05</span> 本次交付 &amp; 下一步</h2>
+  <p><b>本次交付:</b>这份「需求收敛 + 社区层设计」文档(HTML,沿用现有视觉语言)。</p>
+  <p><b>下一步可选(告诉我选哪个,我直接做):</b></p>
+  <ul class="clean">
+    <li><b>A · 扩展原型</b> — 在现有 <code>skill-store-prototype.html</code> 上加「详情页社区分区 + <code>/community</code> + 创作者主页」三块可点原型,同一 Apple 视觉。</li>
+    <li><b>B · 单页做精</b> — 先只把「详情页社区分区」做成高保真单页,验证信任化社区的观感。</li>
+    <li><b>C · 落进代码</b> — 直接在 <code>packages/web</code> 里加 <code>/community</code> 与 <code>/publisher/[id]</code> 路由骨架(Next.js App Router)。</li>
+  </ul>
+
+  <footer>
+    Skill Store 社区层设计 &amp; 需求收敛 v0.1 · 2026-07-03 · 与 PRD v1.1 / M0 详细设计 / 交互原型同一视觉语言 · 措辞遵循「已扫描 / 已评测,不承诺保证安全」
+  </footer>
+
+</div>
+</body>
+</html>

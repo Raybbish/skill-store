@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Store — 可交互原型</title>
+<style>
+  :root{
+    --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --sub:#6e6e73; --faint:#86868b;
+    --line:#e6e6ea; --accent:#3b6cf0; --accent-soft:#edf2fe; --ok:#2e9e5b; --warn:#c77b12; --bad:#d0342c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.5;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 64px;}
+  a{color:var(--accent);text-decoration:none;cursor:pointer;}
+
+  /* ===== nav ===== */
+  .nav{position:sticky;top:0;z-index:50;background:rgba(245,245,247,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+  .nav-inner{max-width:960px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:18px;}
+  .logo{font-weight:800;font-size:17px;cursor:pointer;white-space:nowrap;}
+  .logo span{color:var(--accent);}
+  .tabs{display:flex;gap:4px;}
+  .tab{border:none;background:transparent;font-size:14px;color:var(--sub);padding:6px 14px;border-radius:14px;cursor:pointer;font-family:inherit;}
+  .tab.on{background:var(--ink);color:#fff;font-weight:600;}
+  .search{margin-left:auto;position:relative;}
+  .search input{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px 7px 30px;font-size:13px;width:200px;outline:none;font-family:inherit;}
+  .search input:focus{border-color:var(--accent);}
+  .search::before{content:"🔍";position:absolute;left:9px;top:7px;font-size:12px;opacity:.55;}
+
+  .view{display:none;padding-top:26px;}
+  .view.on{display:block;}
+  .h2{font-size:21px;font-weight:800;margin-bottom:4px;}
+  .h2-sub{font-size:13px;color:var(--faint);margin-bottom:16px;}
+  .section{margin-top:30px;}
+  .sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
+  .sec-title{font-size:17px;font-weight:700;}
+  .sec-note{font-weight:400;font-size:12px;color:var(--faint);margin-left:8px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;}
+
+  /* ===== today hero ===== */
+  .heroes{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .hero-card{border-radius:20px;padding:22px;color:#fff;cursor:pointer;min-height:190px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;transition:transform .15s;}
+  .hero-card:hover{transform:scale(1.015);}
+  .hero-card .kicker{font-size:11px;letter-spacing:.14em;opacity:.75;text-transform:uppercase;}
+  .hero-card .t{font-size:22px;font-weight:800;margin-top:2px;}
+  .hero-card .d{font-size:13px;opacity:.85;margin-top:4px;max-width:340px;}
+  .hero-card .big-icon{position:absolute;right:18px;top:14px;font-size:56px;opacity:.9;}
+
+  /* ===== skill rows ===== */
+  .row-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 22px;}
+  .srow{display:flex;gap:13px;align-items:center;padding:11px 8px;border-radius:14px;cursor:pointer;}
+  .srow:hover{background:#ececf0;}
+  .srow .num{width:18px;font-size:14px;font-weight:700;color:var(--faint);text-align:center;flex-shrink:0;}
+  .s-icon{width:52px;height:52px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;}
+  .srow .info{flex:1;min-width:0;}
+  .srow .n{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .srow .tg{font-size:12px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .srow .badges{display:flex;gap:6px;margin-top:3px;font-size:11px;color:var(--faint);}
+  .mini{background:#f0f0f3;border-radius:6px;padding:1px 6px;}
+  .mini.score{background:var(--accent-soft);color:var(--accent);font-weight:700;}
+  .mini.safe{color:var(--ok);}
+  .mini.warn{color:var(--warn);}
+  .getbtn{border:none;background:#ececf0;color:var(--accent);font-weight:700;font-size:12.5px;border-radius:14px;padding:6px 16px;cursor:pointer;flex-shrink:0;font-family:inherit;}
+  .getbtn.got{background:transparent;color:var(--faint);border:1px solid var(--line);}
+
+  /* ===== category chips ===== */
+  .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .cat-card{border-radius:14px;padding:14px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;min-height:74px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .15s;}
+  .cat-card:hover{transform:scale(1.03);}
+  .cat-card small{font-weight:400;font-size:11px;opacity:.8;}
+
+  /* ===== browse filters ===== */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center;}
+  .fchip{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:5px 13px;font-size:12.5px;color:var(--sub);cursor:pointer;font-family:inherit;}
+  .fchip.on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:600;}
+  .filters select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:5px 8px;font-size:12.5px;color:var(--sub);font-family:inherit;outline:none;}
+  .fcount{font-size:12px;color:var(--faint);margin-left:auto;}
+  .empty{color:var(--faint);font-size:14px;text-align:center;padding:40px 0;}
+
+  /* ===== charts view ===== */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+  /* ===== detail (沿用 mockup) ===== */
+  .topnav{font-size:13px;color:var(--accent);margin:0 0 18px;cursor:pointer;}
+  .hero{display:flex;gap:20px;align-items:flex-start;}
+  .icon{width:100px;height:100px;border-radius:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:44px;color:#fff;}
+  .hero h1{font-size:24px;font-weight:700;}
+  .hero .tagline{font-size:15px;color:var(--sub);margin-top:2px;}
+  .hero .dev{font-size:13px;color:var(--accent);margin-top:4px;}
+  .cta-row{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap;}
+  .btn{border:none;border-radius:18px;padding:9px 26px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .btn.get{background:var(--accent);color:#fff;}
+  .btn.get.got{background:#ececf0;color:var(--faint);}
+  .btn.try{background:transparent;border:1.5px solid #d2d2d7;color:var(--ink);}
+  .cli{font-size:12px;color:var(--faint);background:#f0f0f3;border-radius:8px;padding:6px 10px;font-family:ui-monospace,Menlo,monospace;cursor:pointer;}
+  .cli:hover{background:#e6e6ea;}
+
+  .stats{display:flex;margin-top:22px;border-top:1px solid var(--line);padding-top:16px;text-align:center;}
+  .stat{flex:1;}
+  .stat + .stat{border-left:1px solid var(--line);}
+  .stat b{display:block;font-size:19px;font-weight:700;}
+  .stat span{font-size:11px;color:var(--faint);letter-spacing:.03em;}
+  .stat .ok{color:var(--ok);}
+  .stat .warn{color:var(--warn);}
+
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .pane{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;}
+  .pane.after{border:2px solid var(--accent);}
+  .pane .label{font-size:12px;color:var(--faint);margin-bottom:10px;}
+  .pane.after .label{color:var(--accent);font-weight:600;}
+  .fake{border-radius:10px;height:120px;padding:12px;overflow:hidden;}
+  .fake.plain{background:#f0f0f3;}
+  .bar{border-radius:4px;background:#dcdce1;height:7px;margin-top:8px;}
+  .bar.title{background:#c9c9cf;height:10px;width:60%;margin-top:0;}
+  .fake.rich{background:linear-gradient(135deg,#1a2b5c,#2d4a8a);display:flex;flex-direction:column;justify-content:space-between;}
+  .rich-title{height:10px;width:45%;background:#fff;border-radius:4px;opacity:.95;}
+  .chart{display:flex;gap:8px;align-items:flex-end;height:60px;}
+  .chart i{display:block;width:18%;background:#6d8df7;border-radius:3px 3px 0 0;}
+  .chart i:nth-child(3){background:#9db4fa;}
+  .fake.table{background:#fff;border:1px solid var(--line);padding:8px;}
+  .trow{display:flex;gap:6px;margin-top:6px;}
+  .trow i{display:block;height:9px;border-radius:3px;background:#e3ecfd;flex:1;}
+  .trow.head i{background:var(--accent);opacity:.85;}
+  .trow i:first-child{flex:0 0 26%;background:#eef2f8;}
+  .trow.head i:first-child{background:var(--accent);}
+  .fake.code{background:#14181f;padding:12px;font-family:ui-monospace,Menlo,monospace;}
+  .cline{height:8px;border-radius:3px;margin-top:7px;background:#2c3442;}
+  .cline.g{background:#2e9e5b77;}
+  .cline.c{background:#6d8df766;}
+  .pane .caption{font-size:12px;color:var(--faint);margin-top:10px;}
+  .pane.after .caption{color:var(--accent);}
+  .prompt-chip{display:inline-block;font-size:12px;background:#f0f0f3;border-radius:8px;padding:4px 10px;color:var(--sub);margin-bottom:12px;}
+
+  .perm{display:flex;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 8px;text-align:center;}
+  .perm > div{flex:1;padding:0 8px;}
+  .perm > div + div{border-left:1px solid var(--line);}
+  .perm .em{font-size:22px;}
+  .perm .t{font-size:13px;font-weight:600;margin-top:5px;}
+  .perm .t.ok{color:var(--ok);}
+  .perm .t.warn{color:var(--warn);}
+  .perm .d{font-size:11px;color:var(--faint);}
+
+  .bench-row{display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:10px;}
+  .bench-row .name{width:110px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
+  .bench-row.self .name{color:var(--ink);font-weight:600;cursor:default;}
+  .track{flex:1;height:8px;border-radius:4px;background:#f0f0f3;overflow:hidden;}
+  .fill{height:100%;border-radius:4px;background:#b9b9c2;}
+  .bench-row.self .fill{background:var(--accent);}
+  .score{width:30px;text-align:right;color:var(--sub);}
+  .bench-row.self .score{color:var(--accent);font-weight:700;}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:4px 11px;font-size:12px;}
+  .link{color:var(--accent);font-size:12px;cursor:pointer;}
+
+  .review{border-top:1px solid var(--line);padding:14px 0;}
+  .review:first-of-type{border-top:none;padding-top:0;}
+  .review .head{display:flex;justify-content:space-between;font-size:13px;}
+  .stars{color:#f5a623;letter-spacing:1px;}
+  .review .meta{color:var(--faint);font-size:12px;}
+  .review p{font-size:13.5px;color:var(--ink);margin-top:6px;}
+  .autoeval{background:var(--accent-soft);border-radius:12px;padding:14px 16px;font-size:13px;margin-bottom:14px;}
+  .autoeval b{color:var(--accent);}
+
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;font-size:13px;padding:10px 20px;border-radius:14px;opacity:0;transition:all .25s;z-index:99;}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+  footer{margin-top:44px;font-size:12px;color:var(--faint);text-align:center;}
+
+  @media (max-width:680px){
+    .heroes,.compare,.duo,.row-grid{grid-template-columns:1fr;}
+    .cat-grid{grid-template-columns:repeat(2,1fr);}
+    .stats{flex-wrap:wrap;}
+    .stat{flex:1 1 33%;margin-bottom:10px;}
+    .stat + .stat{border-left:none;}
+    .search input{width:120px;}
+    .tabs{gap:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="nav"><div class="nav-inner">
+  <div class="logo" onclick="go('today')">Skill<span>Store</span></div>
+  <div class="tabs">
+    <button class="tab" id="tab-today" onclick="go('today')">今日</button>
+    <button class="tab" id="tab-browse" onclick="go('browse')">分类</button>
+    <button class="tab" id="tab-charts" onclick="go('charts')">榜单</button>
+  </div>
+  <div class="search"><input id="q" placeholder="搜索 skill…" oninput="onSearch(this.value)"></div>
+</div></div>
+
+<div class="wrap">
+  <div class="view" id="v-today"></div>
+  <div class="view" id="v-browse"></div>
+  <div class="view" id="v-charts"></div>
+  <div class="view" id="v-detail"></div>
+  <footer>Skill Store 交互原型 · 数据为演示用假数据 · 2026-07-03 对齐可复现评测新叙事(评测降级为可复现协议)· 交互范式借鉴 App Store</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 数据 ================= */
+const GRADS = {
+  blue:"linear-gradient(135deg,#3b6cf0,#7a4ff0)", teal:"linear-gradient(135deg,#0e9f8f,#2bc48a)",
+  orange:"linear-gradient(135deg,#f08a3b,#f0563b)", pink:"linear-gradient(135deg,#e0489a,#8a4ff0)",
+  navy:"linear-gradient(135deg,#1a2b5c,#3b6cf0)", green:"linear-gradient(135deg,#2e9e5b,#0e9f8f)",
+  red:"linear-gradient(135deg,#d0342c,#f08a3b)", slate:"linear-gradient(135deg,#4a5568,#1d1d1f)"
+};
+const CATS = [
+  {id:"doc", n:"文档生成", g:GRADS.blue, em:"📄"},
+  {id:"data", n:"数据分析", g:GRADS.teal, em:"📈"},
+  {id:"dev", n:"开发工具", g:GRADS.slate, em:"🛠️"},
+  {id:"mkt", n:"营销内容", g:GRADS.pink, em:"📣"},
+  {id:"office", n:"办公自动化", g:GRADS.orange, em:"🗂️"},
+  {id:"fin", n:"金融法务", g:GRADS.navy, em:"⚖️"},
+  {id:"design", n:"设计创意", g:GRADS.red, em:"🎨"},
+  {id:"sec", n:"安全合规", g:GRADS.green, em:"🛡️"}
+];
+const AGENTS = ["Claude Code","Codex CLI","Cursor","Gemini CLI","Copilot","Cline"];
+// afterType: chart | table | code | doc
+const S = [
+ {id:"slide-craft", n:"PPT 大师 · slide-craft", icon:"📊", g:GRADS.blue, tag:"把一段话变成投资人级别的幻灯片", dev:"aideas-labs", v:true, cat:"doc",
+  installs:48200, score:8.7, tokens:"~3K", agents:6, ver:"2.3.1",
+  perm:[["📜","含脚本执行","warn","2 个 Python 脚本"],["📂","读写文件","","仅限工作目录"],["🌐","无外部请求","ok","不联网、无外传"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-28"]],
+  cmp:{prompt:"做一份 Q3 业绩汇报", afterType:"chart", before:"纯文字堆砌,无版式、无图表", after:"母版版式 + 数据图表 + 品牌配色"},
+  auto:"在版式还原、图表准确性、多语言支持等 20 个标准任务上得分 <b>8.7/10</b>,强于同类 92% 的 skill。图片素材处理为主要短板。",
+  reviews:[[5,"HK_Builder","3 天前","给保险客户做季度汇报,原来两小时的排版现在五分钟出稿,母版一致性很稳。"],[4,"datawonk","1 周前","图表生成很强,但插入自定义图片时偶尔错位,希望下版本修。"]]},
+ {id:"deck-genius", n:"deck-genius", icon:"🎭", g:GRADS.pink, tag:"叙事驱动的提案框架生成", dev:"storyline-ai", v:true, cat:"doc",
+  installs:21300, score:7.4, tokens:"~5K", agents:5, ver:"1.8.0",
+  perm:[["📜","含脚本执行","warn","1 个 Node 脚本"],["📂","读写文件","","仅限工作目录"],["🌐","无外部请求","ok","不联网"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-25"]],
+  cmp:{prompt:"写一份产品提案", afterType:"doc", before:"平铺直叙的要点罗列", after:"金字塔结构 + 冲突-解决叙事线"},
+  auto:"在 20 个标准任务上得分 <b>7.4/10</b>。叙事结构突出,数据图表能力偏弱。",
+  reviews:[[4,"ppt_ninja","5 天前","讲故事的框架确实高级,但图表要自己补。"]]},
+ {id:"pptx-basic", n:"pptx-basic", icon:"📋", g:GRADS.slate, tag:"轻量 PPTX 读写基础包", dev:"oss-community", v:false, cat:"doc",
+  installs:9800, score:6.1, tokens:"~1K", agents:6, ver:"0.9.2",
+  perm:[["📜","无脚本","ok","纯指令文件"],["📂","读写文件","","仅限工作目录"],["🌐","无外部请求","ok","不联网"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-20"]],
+  cmp:{prompt:"生成一份周报幻灯片", afterType:"doc", before:"格式经常出错", after:"结构正确的基础版式"},
+  auto:"得分 <b>6.1/10</b>。胜在轻量省 token,无设计能力。",
+  reviews:[[3,"minimalist","2 周前","能用,但仅仅是能用。"]]},
+ {id:"excel-alchemist", n:"表格炼金 · excel-alchemist", icon:"🧪", g:GRADS.teal, tag:"脏数据进,分析级模型出", dev:"datasmiths", v:true, cat:"data",
+  installs:62500, score:9.1, tokens:"~4K", agents:6, ver:"3.1.0",
+  perm:[["📜","含脚本执行","warn","3 个 Python 脚本"],["📂","读写文件","","仅限工作目录"],["🌐","无外部请求","ok","不联网"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-30"]],
+  cmp:{prompt:"清洗这份 2 万行的销售流水并建透视表", afterType:"table", before:"直接硬算,格式混乱且常超时", after:"清洗管线 + 透视模型 + 校验公式"},
+  auto:"在数据清洗、公式准确性、大表性能等 20 个标准任务上得分 <b>9.1/10</b>,居同类第一。",
+  reviews:[[5,"fp&a_lily","2 天前","财务月结数据清洗从一下午变成十分钟,公式审计功能是杀手锏。"],[5,"卷王本王","6 天前","transpose 后引用全对,离谱地稳。"]]},
+ {id:"chart-whisperer", n:"chart-whisperer", icon:"📉", g:GRADS.navy, tag:"一句话生成出版级图表", dev:"vizlab", v:true, cat:"data",
+  installs:28900, score:7.8, tokens:"~2K", agents:5, ver:"2.0.3",
+  perm:[["📜","含脚本执行","warn","1 个 Python 脚本"],["📂","读写文件","","仅限工作目录"],["🌐","无外部请求","ok","不联网"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-27"]],
+  cmp:{prompt:"把这组增长数据画成图", afterType:"chart", before:"默认 matplotlib 样式", after:"出版级配色 + 标注 + 双轴处理"},
+  auto:"得分 <b>7.8/10</b>。静态图表极强,交互式图表支持有限。",
+  reviews:[[4,"paper_mill","4 天前","论文图一次过审,导师没挑刺,神了。"]]},
+ {id:"code-sentinel", n:"代码哨兵 · code-sentinel", icon:"🦉", g:GRADS.slate, tag:"PR 级安全与性能审查", dev:"nightowl-sec", v:true, cat:"dev",
+  installs:91400, score:8.9, tokens:"~6K", agents:6, ver:"4.2.0",
+  perm:[["📜","含脚本执行","warn","静态分析工具链"],["📂","读写文件","","仅限仓库目录"],["🌐","无外部请求","ok","不联网"],["🛡️","8 项扫描通过","ok","最近扫描 2026-07-01"]],
+  cmp:{prompt:"审查这个 PR", afterType:"code", before:"泛泛的 LGTM 式评论", after:"逐行标注:注入风险 + N+1 查询 + 修复建议"},
+  auto:"在漏洞检出率、误报控制等 20 个标准任务上得分 <b>8.9/10</b>,漏洞检出率强于同类 95%。",
+  reviews:[[5,"cto_wang","1 天前","抓出了一个我们人工 review 三轮都没发现的越权漏洞。"],[4,"rustacean","1 周前","对 Rust 支持稍弱,JS/Python 无敌。"]]},
+ {id:"pr-butler", n:"pr-butler", icon:"🤵", g:GRADS.orange, tag:"自动生成规范的 PR 描述与变更日志", dev:"gitflow-tools", v:false, cat:"dev",
+  installs:34700, score:7.2, tokens:"~2K", agents:6, ver:"1.5.1",
+  perm:[["📜","无脚本","ok","纯指令文件"],["📂","读写文件","","仅限仓库目录"],["🌐","无外部请求","ok","不联网"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-22"]],
+  cmp:{prompt:"给这次提交写 PR 描述", afterType:"code", before:"一句话流水账", after:"结构化描述 + 破坏性变更标注 + 测试清单"},
+  auto:"得分 <b>7.2/10</b>。格式规范性满分,变更语义理解中等。",
+  reviews:[[4,"merge_queen","3 天前","团队 PR 模板合规率从 40% 到 100%。"]]},
+ {id:"seo-scribe", n:"文案引擎 · seo-scribe", icon:"✒️", g:GRADS.pink, tag:"搜索意图驱动的长文与落地页", dev:"growthkit", v:true, cat:"mkt",
+  installs:33100, score:8.2, tokens:"~4K", agents:5, ver:"2.7.0",
+  perm:[["📜","无脚本","ok","纯指令文件"],["📂","读写文件","","仅限工作目录"],["🌐","含外部请求","warn","抓取 SERP 数据"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-29"]],
+  cmp:{prompt:"写一篇「无代码建站」主题文章", afterType:"doc", before:"通用 AI 味文章", after:"意图分层 + 结构化标题簇 + 内链策略"},
+  auto:"得分 <b>8.2/10</b>。搜索意图覆盖度突出;注意:该 skill 会发起外部请求,已在权限标签中披露。",
+  reviews:[[5,"indie_hacker","4 天前","三篇文章两篇进了首页,内链建议尤其值钱。"]]},
+ {id:"mail-merge-pro", n:"mail-merge-pro", icon:"✉️", g:GRADS.orange, tag:"个性化批量邮件与跟进序列", dev:"outreach-labs", v:false, cat:"office",
+  installs:18600, score:7.6, tokens:"~2K", agents:4, ver:"1.3.0",
+  perm:[["📜","含脚本执行","warn","1 个 Python 脚本"],["📂","读写文件","","仅限工作目录"],["🌐","无外部请求","ok","生成草稿,不代发"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-26"]],
+  cmp:{prompt:"给 50 个客户写续约提醒", afterType:"doc", before:"千篇一律的模板", after:"按客户历史个性化 + 分级跟进序列"},
+  auto:"得分 <b>7.6/10</b>。个性化变量处理稳定,多语言语气把控中等。",
+  reviews:[[4,"sales_ops","1 周前","回复率肉眼可见地涨了,就是中文敬语偶尔怪。"]]},
+ {id:"scrape-master", n:"scrape-master", icon:"🕷️", g:GRADS.red, tag:"结构化网页数据采集管线", dev:"crawlworks", v:false, cat:"data",
+  installs:41200, score:8.4, tokens:"~5K", agents:5, ver:"2.2.0",
+  perm:[["📜","含脚本执行","warn","2 个 Python 脚本"],["📂","读写文件","","仅限工作目录"],["🌐","含外部请求","warn","访问目标站点"],["🛡️","1 项待人工复核","warn","外联行为复核中"]],
+  cmp:{prompt:"抓取竞品定价页做对比表", afterType:"table", before:"复制粘贴 + 手工整理", after:"选择器自愈 + 反爬处理 + 结构化输出"},
+  auto:"得分 <b>8.4/10</b>。注意:含外部请求且有 1 项扫描待人工复核,安装前请阅读权限标签。",
+  reviews:[[5,"growth_lead","2 天前","竞品监控从周报变日报,选择器自愈真的省心。"],[3,"cautious_dev","5 天前","功能强,但外联权限让我犹豫,希望平台尽快完成复核。"]]},
+ {id:"fin-modeler", n:"财务建模 · fin-modeler", icon:"🏦", g:GRADS.navy, tag:"三表联动与估值模型自动搭建", dev:"ledgerworks", v:true, cat:"fin",
+  installs:12700, score:8.8, tokens:"~7K", agents:4, ver:"1.9.0",
+  perm:[["📜","含脚本执行","warn","2 个 Python 脚本"],["📂","读写文件","","仅限工作目录"],["🌐","无外部请求","ok","不联网"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-28"]],
+  cmp:{prompt:"给这家公司搭一个 DCF 模型", afterType:"table", before:"公式断链、表间不平", after:"三表联动 + 敏感性分析 + 审计留痕"},
+  auto:"在报表勾稽、公式完整性等 20 个标准任务上得分 <b>8.8/10</b>,资产负债表配平通过率 100%。",
+  reviews:[[5,"ib_analyst","3 天前","BS 一次配平,老板以为我通宵了。"]]},
+ {id:"contract-lens", n:"合同透镜 · contract-lens", icon:"🔍", g:GRADS.green, tag:"条款风险标注与偏离度对比", dev:"lexware", v:true, cat:"fin",
+  installs:8900, score:8.5, tokens:"~5K", agents:4, ver:"1.2.0",
+  perm:[["📜","无脚本","ok","纯指令文件"],["📂","只读文件","ok","仅读取合同文件"],["🌐","无外部请求","ok","文件不外传"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-30"]],
+  cmp:{prompt:"审查这份采购合同", afterType:"doc", before:"漏看关键限制条款", after:"逐条风险分级 + 与标准模板偏离度"},
+  auto:"得分 <b>8.5/10</b>。风险条款召回率高;不构成法律意见,已在描述中声明。",
+  reviews:[[5,"inhouse_counsel","1 周前","初筛效率翻倍,当然最终还是要律师把关。"]]},
+ {id:"i18n-polyglot", n:"i18n-polyglot", icon:"🌐", g:GRADS.teal, tag:"术语表驱动的本地化翻译", dev:"localize-co", v:false, cat:"mkt",
+  installs:15400, score:8.0, tokens:"~3K", agents:6, ver:"2.1.0",
+  perm:[["📜","无脚本","ok","纯指令文件"],["📂","读写文件","","仅限工作目录"],["🌐","无外部请求","ok","不联网"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-24"]],
+  cmp:{prompt:"把产品文档翻译成日语", afterType:"doc", before:"术语前后不一致", after:"术语表锁定 + 语域统一 + 占位符保护"},
+  auto:"得分 <b>8.0/10</b>。术语一致性接近满分,小语种覆盖一般。",
+  reviews:[[4,"docs_lead","6 天前","占位符再也没被翻译坏过。"]]},
+ {id:"brand-palette", n:"brand-palette", icon:"🎨", g:GRADS.red, tag:"从一个 logo 生成整套品牌视觉规范", dev:"hue-studio", v:false, cat:"design",
+  installs:11200, score:6.9, tokens:"~4K", agents:4, ver:"0.8.0",
+  perm:[["📜","含脚本执行","warn","1 个 Python 脚本"],["📂","读写文件","","仅限工作目录"],["🌐","无外部请求","ok","不联网"],["🛡️","8 项扫描通过","ok","最近扫描 2026-06-18"]],
+  cmp:{prompt:"基于这个 logo 出一套品牌色", afterType:"chart", before:"随机撞色", after:"对比度合规的色阶 + 深浅模式"},
+  auto:"得分 <b>6.9/10</b>。配色理论扎实,字体搭配建议偏保守。",
+  reviews:[[4,"solo_designer","2 周前","给小客户出方案够用了。"]]},
+ {id:"skill-auditor", n:"skill-auditor", icon:"🛡️", g:GRADS.green, tag:"安装前审计第三方 skill 的注入与外联风险", dev:"trustlayer", v:true, cat:"sec",
+  installs:26800, score:8.6, tokens:"~3K", agents:6, ver:"1.4.0",
+  perm:[["📜","无脚本","ok","纯指令文件"],["📂","只读文件","ok","仅读取被审计对象"],["🌐","无外部请求","ok","不联网"],["🛡️","8 项扫描通过","ok","最近扫描 2026-07-01"]],
+  cmp:{prompt:"检查这个第三方 skill 安不安全", afterType:"code", before:"肉眼看不出隐藏指令", after:"提示注入 + 数据外传路径逐条标注"},
+  auto:"在注入检出、混淆识别等 20 个标准任务上得分 <b>8.6/10</b>。注意:扫描不能替代人工复核。",
+  reviews:[[5,"paranoid_ops","4 天前","抓到过一个藏在 base64 里的外传指令,值回票价。"]]}
+];
+
+/* ================= 状态 ================= */
+let state = {view:"today", cat:null, q:"", agent:null, safeOnly:false, sort:"installs", detail:null};
+let installed = {};
+const $ = id => document.getElementById(id);
+const fmt = n => n>=1000 ? (n/1000).toFixed(1).replace(/\.0$/,"")+"K" : n;
+const catOf = id => CATS.find(c=>c.id===id);
+
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1800); }
+function toggleInstall(ev,id){ ev.stopPropagation(); installed[id]=!installed[id]; toast(installed[id]?"已获取 "+id+"(演示)":"已移除 "+id); render(); }
+function copyCli(id){ navigator.clipboard && navigator.clipboard.writeText("npx skills add "+id).then(()=>toast("命令已复制")); }
+
+/* ================= 组件 ================= */
+function securityBadge(s){
+  const pending = s.perm.some(p=>p[1].includes("复核"));
+  return pending ? '<span class="mini warn">⚠︎ 待复核</span>' : '<span class="mini safe">✓ 已扫描</span>';
+}
+function srow(s, num){
+  return `<div class="srow" onclick="openDetail('${s.id}')">
+    ${num?`<div class="num">${num}</div>`:""}
+    <div class="s-icon" style="background:${s.g}">${s.icon}</div>
+    <div class="info">
+      <div class="n">${s.n}</div>
+      <div class="tg">${s.tag}</div>
+      <div class="badges">${securityBadge(s)}<span class="mini">${s.tokens} tok</span><span class="mini">${fmt(s.installs)} 安装</span></div>
+    </div>
+    <button class="getbtn ${installed[s.id]?"got":""}" onclick="toggleInstall(event,'${s.id}')">${installed[s.id]?"已获取":"获取"}</button>
+  </div>`;
+}
+function rowGrid(list, numbered){ return `<div class="row-grid">${list.map((s,i)=>srow(s, numbered?i+1:0)).join("")}</div>`; }
+
+/* ================= 视图:今日 ================= */
+function renderToday(){
+  const ed = S.find(s=>s.id==="excel-alchemist"), ed2 = S.find(s=>s.id==="code-sentinel");
+  const fresh = S.filter(s=>s.v).slice(0,6);
+  const trending = [...S].sort((a,b)=>b.installs-a.installs).slice(0,6);
+  $("v-today").innerHTML = `
+    <div class="h2">今日</div><div class="h2-sub">7 月 2 日 星期四 · 每个 skill 都经过三层安全审计与人工复核;评测走可复现协议(开发中)</div>
+    <div class="heroes">
+      <div class="hero-card" style="background:${ed.g}" onclick="openDetail('${ed.id}')">
+        <div class="big-icon">${ed.icon}</div>
+        <div class="kicker">编辑推荐</div><div class="t">${ed.n}</div><div class="d">${ed.tag} · ✓ 已审计 · ${fmt(ed.installs)} 安装</div>
+      </div>
+      <div class="hero-card" style="background:${ed2.g}" onclick="openDetail('${ed2.id}')">
+        <div class="big-icon">${ed2.icon}</div>
+        <div class="kicker">本周最热</div><div class="t">${ed2.n}</div><div class="d">${ed2.tag} · ${fmt(ed2.installs)} 安装</div>
+      </div>
+    </div>
+    <div class="section"><div class="sec-head"><div class="sec-title">编辑精选<span class="sec-note">已验证发布者</span></div><a class="link" onclick="go('charts')">查看榜单 ›</a></div>${rowGrid(fresh)}</div>
+    <div class="section"><div class="sec-head"><div class="sec-title">大家都在装</div><a class="link" onclick="go('charts')">查看榜单 ›</a></div>${rowGrid(trending)}</div>
+    <div class="section"><div class="sec-title" style="margin-bottom:12px;">分类浏览</div>
+      <div class="cat-grid">${CATS.map(c=>{
+        const n = S.filter(s=>s.cat===c.id).length;
+        return `<div class="cat-card" style="background:${c.g}" onclick="openCat('${c.id}')"><div>${c.em} ${c.n}</div><small>${n} 个 skill</small></div>`;
+      }).join("")}</div>
+    </div>`;
+}
+
+/* ================= 视图:分类/搜索 ================= */
+function renderBrowse(){
+  let list = [...S];
+  if(state.cat) list = list.filter(s=>s.cat===state.cat);
+  if(state.agent) list = list.filter(s=>s.agents >= 5 || AGENTS.slice(0,s.agents).includes(state.agent));
+  if(state.safeOnly) list = list.filter(s=>!s.perm.some(p=>p[1].includes("外部请求")&&p[2]==="warn") && !s.perm.some(p=>p[1].includes("复核")));
+  if(state.q){ const q=state.q.toLowerCase(); list = list.filter(s=>(s.n+s.tag+s.dev+s.id).toLowerCase().includes(q)); }
+  if(state.sort==="installs") list.sort((a,b)=>b.installs-a.installs);
+  if(state.sort==="tokens") list.sort((a,b)=>parseInt(a.tokens.replace(/\D/g,""))-parseInt(b.tokens.replace(/\D/g,"")));
+  const cname = state.cat ? catOf(state.cat).n : "全部";
+  $("v-browse").innerHTML = `
+    <div class="h2">${state.q?`“${state.q}” 的搜索结果`:cname}</div>
+    <div class="h2-sub">${state.q?"跨全部分类检索":"按安装量或 token 成本排序"}</div>
+    <div class="filters">
+      <button class="fchip ${!state.cat?"on":""}" onclick="setCat(null)">全部</button>
+      ${CATS.map(c=>`<button class="fchip ${state.cat===c.id?"on":""}" onclick="setCat('${c.id}')">${c.em} ${c.n}</button>`).join("")}
+    </div>
+    <div class="filters">
+      <select onchange="state.sort=this.value;render()">
+        <option value="installs" ${state.sort==="installs"?"selected":""}>按安装量</option>
+        <option value="tokens" ${state.sort==="tokens"?"selected":""}>按 token 成本(低→高)</option>
+      </select>
+      <select onchange="state.agent=this.value||null;render()">
+        <option value="">全部 Agent</option>
+        ${AGENTS.map(a=>`<option ${state.agent===a?"selected":""}>${a}</option>`).join("")}
+      </select>
+      <button class="fchip ${state.safeOnly?"on":""}" onclick="state.safeOnly=!state.safeOnly;render()">🛡️ 仅无外联且扫描通过</button>
+      <span class="fcount">${list.length} 个结果</span>
+    </div>
+    ${list.length ? `<div class="card" style="padding:10px 14px;">${list.map(s=>srow(s)).join("")}</div>` : `<div class="empty">没有符合条件的 skill,试试放宽筛选</div>`}`;
+}
+function setCat(c){ state.cat=c; render(); }
+function openCat(c){ state.cat=c; state.q=""; $("q").value=""; go("browse"); }
+
+/* ================= 视图:榜单 ================= */
+function renderCharts(){
+  const byInstall=[...S].sort((a,b)=>b.installs-a.installs).slice(0,7);
+  $("v-charts").innerHTML = `
+    <div class="h2">榜单</div><div class="h2-sub">左:可复现评测(开发中) · 右:累计安装量</div>
+    <div class="duo">
+      <div class="card"><div class="sec-title" style="margin-bottom:10px;">🧪 可复现评测榜</div>
+        <div class="autoeval">首批评测结果即将上线。分数将来自<b>可复现协议</b>(任务集 + 确定性校验器 + runner 开放),每条标注 runner 与模型、带元数据可复现可挑战——不是平台单方背书。</div>
+      </div>
+      <div class="card"><div class="sec-title" style="margin-bottom:10px;">🔥 安装量榜</div>${byInstall.map((s,i)=>srow(s,i+1)).join("")}</div>
+    </div>
+    <div class="section card" style="font-size:13px;color:var(--sub);">
+      💡 <b style="color:var(--ink)">为什么强调可复现?</b> 安装量反映流行度但有马太效应;评测分只有在「可复现、可挑战」时才有公信力——所以本店不做裁判,做赛道:开放协议、分数带元数据,谁都能复跑验证。
+    </div>`;
+}
+
+/* ================= 视图:详情 ================= */
+function fakeAfter(type){
+  if(type==="chart") return `<div class="fake rich"><div class="rich-title"></div><div class="chart"><i style="height:40%"></i><i style="height:65%"></i><i style="height:100%"></i><i style="height:78%"></i><i style="height:55%"></i></div></div>`;
+  if(type==="table") return `<div class="fake table"><div class="trow head"><i></i><i></i><i></i><i></i></div><div class="trow"><i></i><i></i><i></i><i></i></div><div class="trow"><i></i><i></i><i></i><i></i></div><div class="trow"><i></i><i></i><i></i><i></i></div><div class="trow"><i></i><i></i><i></i><i></i></div></div>`;
+  if(type==="code") return `<div class="fake code"><div class="cline" style="width:70%"></div><div class="cline g" style="width:88%"></div><div class="cline g" style="width:60%"></div><div class="cline" style="width:80%"></div><div class="cline c" style="width:50%"></div><div class="cline g" style="width:74%"></div></div>`;
+  return `<div class="fake rich" style="justify-content:flex-start;gap:10px;"><div class="rich-title"></div><div class="bar" style="background:#ffffff55;width:90%"></div><div class="bar" style="background:#ffffff55;width:82%"></div><div class="bar" style="background:#ffffff33;width:70%"></div><div class="bar" style="background:#ffffff33;width:76%"></div></div>`;
+}
+function renderDetail(){
+  const s = S.find(x=>x.id===state.detail); if(!s) return;
+  const c = catOf(s.cat);
+  const secPending = s.perm.some(p=>p[1].includes("复核"));
+  const riskCount = s.perm.filter(p=>p[2]==="warn").length;
+  $("v-detail").innerHTML = `
+    <div class="topnav" onclick="go(state.from||'browse')">‹ ${c.em} ${c.n}</div>
+    <div class="card">
+      <div class="hero">
+        <div class="icon" style="background:${s.g}">${s.icon}</div>
+        <div style="flex:1;min-width:0;">
+          <h1>${s.n}</h1>
+          <div class="tagline">${s.tag}</div>
+          <div class="dev">${s.dev}${s.v?" · 已验证发布者 ✓":""}</div>
+          <div class="cta-row">
+            <button class="btn get ${installed[s.id]?"got":""}" onclick="toggleInstall(event,'${s.id}')">${installed[s.id]?"已获取 ✓":"获取"}</button>
+            <button class="btn try" onclick="toast('在线试玩:沙箱环境演示(原型未实现)')">🧪 在线试玩</button>
+            <span class="cli" onclick="copyCli('${s.dev}/${s.id}')" title="点击复制">npx skills add ${s.dev}/${s.id}</span>
+          </div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>${fmt(s.installs)}</b><span>安装量</span></div>
+        <div class="stat"><b class="${riskCount?"warn":"ok"}">${riskCount}<span style="font-size:12px;color:var(--faint);">项</span></b><span>风险因子披露</span></div>
+        <div class="stat"><b class="${secPending?"warn":"ok"}">${secPending?"待复核":"已通过"}</b><span>安全扫描</span></div>
+        <div class="stat"><b>${s.tokens}</b><span>token / 次调用</span></div>
+        <div class="stat"><b>${s.agents}</b><span>兼容 Agent</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">效果对比<span class="sec-note">同一 prompt,装与不装</span></div>
+      <span class="prompt-chip">同一 prompt:"${s.cmp.prompt}"</span>
+      <div class="compare">
+        <div class="pane"><div class="label">❌ 未安装 skill</div>
+          <div class="fake plain"><div class="bar title"></div><div class="bar" style="width:92%"></div><div class="bar" style="width:86%"></div><div class="bar" style="width:71%"></div><div class="bar" style="width:80%"></div></div>
+          <div class="caption">${s.cmp.before}</div></div>
+        <div class="pane after"><div class="label">✅ 安装后</div>${fakeAfter(s.cmp.afterType)}<div class="caption">${s.cmp.after}</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">权限与安全<span class="sec-note">结构化披露,安装前请阅读</span></div>
+      <div class="perm">${s.perm.map(p=>`<div><div class="em">${p[0]}</div><div class="t ${p[2]}">${p[1]}</div><div class="d">${p[3]}</div></div>`).join("")}</div>
+    </div>
+
+    <div class="section duo">
+      <div class="card">
+        <div class="sec-title" style="font-size:15px;">标准化评测<span class="sec-note">可复现协议 · 开发中</span></div>
+        <div class="autoeval">🧪 任务集 + 确定性校验器 + runner 开放成<b>可复现评测协议</b>。上线后货架分数将标注 runner 与模型、带元数据可复现可挑战——公信力来自可复现性,而非平台背书。首批结果前不展示任何分数。</div>
+      </div>
+      <div class="card">
+        <div class="sec-title" style="font-size:15px;">兼容性</div>
+        <div class="chips">${AGENTS.slice(0,s.agents).map(a=>`<span class="chip">${a}</span>`).join("")}</div>
+        <div style="margin-top:14px;font-size:12px;color:var(--faint);">版本 ${s.ver} · <span class="link" onclick="toast('SKILL.md diff 视图(原型未实现)')">查看 SKILL.md 变更 diff ›</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">评分与评论<span class="sec-note">冷启动期由审计摘要占位</span></div>
+      <div class="card">
+        <div class="autoeval">🔎 <b>平台审计摘要</b>:已通过 L1 签名 / L2 五因子 / L3 意图三层审计与人工复核,权限见上。标准化评测走可复现协议(开发中),成熟后此处并入带元数据的跑分摘要。</div>
+        ${s.reviews.map(r=>`<div class="review"><div class="head"><span class="stars">${"★".repeat(r[0])}${"☆".repeat(5-r[0])}</span><span class="meta">${r[1]} · ${r[2]} · 已验证安装</span></div><p>${r[3]}</p></div>`).join("")}
+      </div>
+    </div>`;
+  window.scrollTo(0,0);
+}
+
+/* ================= 路由 ================= */
+function go(v){ state.from = state.view==="detail" ? state.from : state.view; state.view=v; render(); window.scrollTo(0,0); }
+function openDetail(id){ state.from = state.view==="detail" ? state.from : state.view; state.detail=id; state.view="detail"; render(); }
+function onSearch(q){ state.q=q.trim(); if(state.q && state.view!=="browse"){ state.cat=null; state.view="browse"; } render(); }
+function render(){
+  ["today","browse","charts","detail"].forEach(v=>{ $("v-"+v).classList.toggle("on", state.view===v); const t=$("tab-"+v); if(t) t.classList.toggle("on", state.view===v); });
+  if(state.view==="today") renderToday();
+  if(state.view==="browse") renderBrowse();
+  if(state.view==="charts") renderCharts();
+  if(state.view==="detail") renderDetail();
+}
+render();
+</script>
+</body>
+</html>

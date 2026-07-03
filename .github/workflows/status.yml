@@ -1,0 +1,26 @@
+# 自动刷新 docs/STATUS.generated.md(可选;不想要就删掉本文件)
+name: status
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/status.mjs
+      - name: commit if changed
+        run: |
+          if ! git diff --quiet -- docs/STATUS.generated.md docs/STATUS.html; then
+            git config user.name "status-bot"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add docs/STATUS.generated.md docs/STATUS.html
+            git commit -m "chore: refresh status snapshot [skip ci]"
+            git push
+          fi

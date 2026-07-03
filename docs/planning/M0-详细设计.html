@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M0 详细设计 — 可信目录</title>
+<style>
+  :root{
+    --bg:#f5f5f7; --card:#fff; --ink:#1d1d1f; --sub:#6e6e73; --faint:#86868b;
+    --line:#e6e6ea; --accent:#3b6cf0; --accent-soft:#edf2fe; --ok:#2e9e5b; --warn:#c77b12; --bad:#d0342c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;}
+  .wrap{max-width:880px;margin:0 auto;padding:40px 20px 64px;}
+  a{color:var(--accent);text-decoration:none;} a:hover{text-decoration:underline;}
+  .kicker{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;text-transform:uppercase;}
+  h1{font-size:28px;font-weight:800;margin:6px 0 4px;}
+  .meta{font-size:13px;color:var(--faint);margin-bottom:18px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;margin-top:22px;}
+  h2{font-size:19px;font-weight:800;margin-bottom:14px;}
+  h2 .no{color:var(--accent);margin-right:8px;}
+  h3{font-size:14.5px;font-weight:700;margin:18px 0 8px;}
+  p{font-size:14px;margin-bottom:10px;}
+  p:last-child{margin-bottom:0;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;}
+  th{text-align:left;color:var(--faint);font-weight:600;font-size:11.5px;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--sub);}
+  tr:last-child td{border-bottom:none;}
+  td:first-child{color:var(--ink);font-weight:600;}
+  .pill{display:inline-block;font-size:11px;border-radius:8px;padding:1px 8px;background:#f0f0f3;color:var(--sub);white-space:nowrap;}
+  .pill.ok{background:#e7f5ec;color:var(--ok);font-weight:700;}
+  .pill.warn{background:#fdf3e4;color:var(--warn);font-weight:700;}
+  .pill.bad{background:#fdeae8;color:var(--bad);font-weight:700;}
+  .callout{background:var(--accent-soft);border-radius:12px;padding:13px 16px;font-size:13.5px;margin:12px 0;}
+  .callout b{color:var(--accent);}
+  .callout.risk{background:#fdf3e4;} .callout.risk b{color:var(--warn);}
+  pre{background:#14181f;color:#d6dde6;border-radius:12px;padding:16px;font-size:12px;line-height:1.6;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;margin:10px 0;}
+  pre .c{color:#6e7a8a;} pre .k{color:#8ab4f8;} pre .s{color:#9ecb88;}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f0f0f3;border-radius:5px;padding:1px 6px;}
+  .flow{font-size:13px;background:var(--bg);border-radius:12px;padding:12px 16px;margin:10px 0;color:var(--ink);}
+  .flow b{color:var(--accent);}
+  footer{margin-top:30px;font-size:12px;color:var(--faint);text-align:center;}
+  @media (max-width:680px){.tbox{overflow-x:auto;}table{min-width:620px;}}
+  @media print{body{background:#fff;}.card{border:none;padding:14px 0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="kicker">M0 Design Doc · 可信目录</div>
+  <h1>M0 详细设计</h1>
+  <div class="meta">v1.0 · 2026-07-02 · 上游文档:Skill Store PRD v1.0 · 设计原则:长期最优架构,M0 只做骨架的第一层肉</div>
+
+  <div class="card">
+    <h2><span class="no">0</span>目标与范围</h2>
+    <p><b>M0 交付「可信目录」:</b>500+ 个经过 L1-L3 安全审计、带权限营养标签的 skill,可浏览、可搜索、可一键安装,审计报告公开可验证。周期 4-6 周。</p>
+    <div class="tbox"><table>
+      <tr><th>范围内</th><th>范围外(留给 M1/M2)</th></tr>
+      <tr><td>采集管线:官方精选仓 + skills.sh 头部榜单两个 source adapter;托管/索引双轨;哈希去重;每日增量同步</td><td>GitHub 全域索引、第三方 Hub 信号聚合</td></tr>
+      <tr><td>安全审计 L1(静态签名)L2(脚本分析)L3(LLM 意图审查);风险五因子标签 + 文件级证据;人工复核队列</td><td>L4 动态沙箱;可复现评测协议(赛道非裁判);效果对比自动产出</td></tr>
+      <tr><td>商店前端 P0:今日 / 分类搜索 / 榜单(仅安装量榜)/ 详情页(权限标签为主角);全站 SSG</td><td>可复现评测榜、评论系统、在线试玩、开发者中心</td></tr>
+      <tr><td>npx CLI:add / list / remove + 安装时哈希校验</td><td>付费、私有货架、企业功能</td></tr>
+    </table></div>
+    <div class="callout">M0 详情页的「主角」暂时是<b>权限营养标签 + 安全审计报告</b>(可复现评测 M1 才有)。这决定了 M0 的营销叙事:「第一个把每个 skill 的权限行为讲清楚的目录」——先立信任,再谈质量。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">1</span>总体架构</h2>
+    <div class="flow">GitHub <b>catalog 仓(事实源)</b> ←(PR)← pipeline workers(采集/审计,GitHub Actions 调度)<br>catalog 仓 →(增量同步,commit 溯源)→ <b>Postgres</b>(Supabase)→ <b>Next.js 前端</b>(SSG + ISR)+ <b>REST API</b> → <b>npx CLI</b></div>
+    <p>四个部件放一个 monorepo,加上独立的 catalog 数据仓:</p>
+    <pre>skillstore/                <span class="c"># monorepo(pnpm workspaces)</span>
+├─ packages/
+│  ├─ pipeline/            <span class="c"># 采集 + 审计编排(TypeScript)</span>
+│  │  ├─ sources/          <span class="c">#   source adapters: official.ts / skills-sh.ts</span>
+│  │  ├─ scanners/         <span class="c">#   L1/L2/L3 扫描器适配层(调用容器化扫描工具)</span>
+│  │  └─ jobs/             <span class="c">#   ingest / audit / sync 三个入口</span>
+│  ├─ web/                 <span class="c"># Next.js 商店前端 + API routes</span>
+│  ├─ cli/                 <span class="c"># npx 安装器(npm 包)</span>
+│  └─ schemas/             <span class="c"># skill-report JSON Schema、DB 类型(单一来源,四端共享)</span>
+└─ .github/workflows/      <span class="c"># ingest.yml / audit.yml / sync.yml</span>
+
+skillstore-catalog/        <span class="c"># 独立数据仓(公开,事实源)</span>
+└─ skills/&lt;owner&gt;/&lt;name&gt;/
+   ├─ skill-report.json    <span class="c"># 元数据 + 审计结果(所有条目必有)</span>
+   └─ mirror/              <span class="c"># 托管型才有:SKILL.md 及资源的镜像副本</span></pre>
+    <h3>为什么这个架构长期对</h3>
+    <p>① catalog 仓公开 = 审计报告天然可被第三方验证,每次变更走 PR 留痕,这是信任产品的地基;② DB 是 catalog 的派生视图(每条记录带 <code>upstream_commit</code>),坏了可全量重建,没有「DB 和仓库不一致」这类长期债;③ M1 加评测只是往 <code>skill-report.json</code> 里加一个 <code>eval</code> 字段 + 一个新 worker,前端加一列,架构零改动;④ 扫描器容器化(见 §4),未来换更强的扫描工具不动编排层。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">2</span>技术选型</h2>
+    <div class="tbox"><table>
+      <tr><th>部件</th><th>选型</th><th>理由(长期视角)</th></tr>
+      <tr><td>编排/前端/CLI 语言</td><td>TypeScript 单语言</td><td>四端共享 schemas 包,类型一路贯通;招人/AI 结对都最顺</td></tr>
+      <tr><td>扫描工具</td><td>容器化调用(Python 生态:cisco skill-scanner、semgrep、YARA)</td><td>安全生态在 Python,不迁就语言统一;容器边界=随时可替换</td></tr>
+      <tr><td>数据库</td><td>Postgres(Supabase 托管)</td><td>RLS、PostgREST、全文搜索一站式;规模到了迁自管 PG 无缝</td></tr>
+      <tr><td>前端</td><td>Next.js(App Router)+ Vercel/Cloudflare</td><td>skill 详情页 SSG(SEO 是获客主渠道),增量再生成(ISR)对齐每日同步节奏</td></tr>
+      <tr><td>搜索</td><td>M0 用 Postgres FTS;预留 Meilisearch 接口</td><td>500-5000 条量级 FTS 足够,不提前引入运维负担</td></tr>
+      <tr><td>调度</td><td>GitHub Actions(cron + workflow_dispatch)</td><td>aiskillstore 验证过千级规模可行;M2 量级再迁队列(Temporal/Inngest),编排层已按 job 抽象,迁移面小</td></tr>
+      <tr><td>L3 模型</td><td>可插拔(env 配置),默认 Claude + 第二模型抽查交叉</td><td>单模型审计会被针对性绕过;交叉审计不一致 → 自动进人工队列</td></tr>
+      <tr><td>CLI 分发</td><td>npm 公开包</td><td>npx 零安装体验,与 skills.sh 用户习惯一致</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">3</span>数据模型</h2>
+    <h3>skill-report.json(Schema v1,catalog 仓内每 skill 一份)</h3>
+    <pre>{
+  <span class="k">"schema_version"</span>: <span class="s">"1"</span>,
+  <span class="k">"meta"</span>: {
+    <span class="k">"id"</span>: <span class="s">"aideas-labs/slide-craft"</span>,          <span class="c">// 规范 ID:owner/name</span>
+    <span class="k">"upstream"</span>: <span class="s">"github.com/aideas-labs/skills/tree/main/slide-craft"</span>,
+    <span class="k">"upstream_commit"</span>: <span class="s">"a1b2c3d"</span>,               <span class="c">// 同步锚点,每日 diff</span>
+    <span class="k">"content_hash"</span>: <span class="s">"sha256:…"</span>,                 <span class="c">// 去重 + CLI 安装校验</span>
+    <span class="k">"license"</span>: <span class="s">"MIT"</span>,
+    <span class="k">"hosting"</span>: <span class="s">"mirrored"</span>,                      <span class="c">// mirrored | indexed</span>
+    <span class="k">"category"</span>: <span class="s">"doc-generation"</span>,
+    <span class="k">"version"</span>: <span class="s">"2.3.1"</span>, <span class="k">"publisher_verified"</span>: false
+  },
+  <span class="k">"security_audit"</span>: {
+    <span class="k">"status"</span>: <span class="s">"pass"</span>,             <span class="c">// pass | needs_review | rejected</span>
+    <span class="k">"audited_at"</span>: <span class="s">"2026-07-10T…"</span>, <span class="c">// 新鲜度截止线判据</span>
+    <span class="k">"scanner_versions"</span>: { <span class="k">"l1"</span>: <span class="s">"…"</span>, <span class="k">"l2"</span>: <span class="s">"…"</span>, <span class="k">"l3_model"</span>: <span class="s">"…"</span> },
+    <span class="k">"risk_factors"</span>: {             <span class="c">// 五因子,详情页权限标签直接渲染</span>
+      <span class="k">"scripts"</span>:  { <span class="k">"present"</span>: true,  <span class="k">"detail"</span>: <span class="s">"2 个 Python 脚本"</span> },
+      <span class="k">"network"</span>:  { <span class="k">"present"</span>: false },
+      <span class="k">"filesystem"</span>: { <span class="k">"present"</span>: true, <span class="k">"detail"</span>: <span class="s">"仅工作目录读写"</span> },
+      <span class="k">"env_access"</span>: { <span class="k">"present"</span>: false },
+      <span class="k">"external_commands"</span>: { <span class="k">"present"</span>: false }
+    },
+    <span class="k">"evidence"</span>: [ { <span class="k">"factor"</span>: <span class="s">"scripts"</span>, <span class="k">"file"</span>: <span class="s">"scripts/render.py"</span>, <span class="k">"line"</span>: 42, <span class="k">"note"</span>: <span class="s">"…"</span> } ]
+  },
+  <span class="k">"signals"</span>: { <span class="k">"installs_skills_sh"</span>: 48200, <span class="k">"stars_github"</span>: 1200, <span class="k">"fetched_at"</span>: <span class="s">"…"</span> },
+  <span class="k">"token_cost"</span>: { <span class="k">"body_tokens"</span>: 2950, <span class="k">"method"</span>: <span class="s">"tokenizer-estimate"</span> },
+  <span class="k">"eval"</span>: null                    <span class="c">// M1 填充,M0 预留</span>
+}</pre>
+    <p>DB 侧四张核心表:<code>skills</code>(report 的扁平投影 + FTS 列)、<code>publishers</code>、<code>audit_queue</code>(人工复核工单)、<code>sync_state</code>(每源 adapter 的游标与上次成功 commit)。全部由 <code>packages/schemas</code> 单一来源生成类型。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">4</span>采集与审计管线</h2>
+    <h3>4.1 ingest(每日 cron)</h3>
+    <div class="flow">source adapter 拉清单 → agentskills.io Schema 校验 → licence 探测 → 规范 ID + content_hash → <b>去重合并</b>(同 hash 并条目、聚合信号)→ 双轨分流(mirrored/indexed)→ 写 catalog 仓分支 → PR「ingest: N skills」</div>
+    <p>M0 两个 adapter:<code>official.ts</code> 读一份手维护的 <code>sources.yaml</code>(anthropics/skills、vercel-labs/agent-skills、合作伙伴仓清单);<code>skills-sh.ts</code> 读其开源注册表取 top N(N=500 起步),按安装量降序。每个 adapter 实现统一接口 <code>discover() → SkillCandidate[]</code>,后续加 GitHub 全域只是新增一个文件。</p>
+    <h3>4.2 audit(ingest PR 合并后触发 + 每日对过期报告重审)</h3>
+    <div class="tbox"><table>
+      <tr><th>层</th><th>M0 实现</th><th>产出</th></tr>
+      <tr><td>L1 静态签名</td><td>YARA + 正则规则集:密钥模式、<code>curl|bash</code>、大段 base64、eval/exec、已知 C2 域名</td><td>命中即 <span class="pill bad">rejected</span> 或标记证据</td></tr>
+      <tr><td>L2 脚本分析</td><td>semgrep 规则:网络调用、路径逃逸(<code>../</code>、家目录)、env 读取、子进程;cisco skill-scanner 容器作为基线</td><td>风险五因子 present/detail + 文件级证据</td></tr>
+      <tr><td>L3 LLM 意图审查</td><td>模型读 SKILL.md 全文 + 脚本摘要,判断指令意图与文档声称是否一致、有无隐藏指令;抽样 20% 用第二模型交叉</td><td>意图结论;与 L1/L2 或交叉模型矛盾 → <span class="pill warn">needs_review</span></td></tr>
+    </table></div>
+    <p>状态机:<code>pending → pass / needs_review / rejected</code>。<b>含 network 因子的一律至少 needs_review</b>,由人工在 <code>audit_queue</code> 里放行——M0 期人工量可控(预估 &lt;15%),这条规则是「认证恶意数恒为 0」反指标的第一道闸。批处理继承已验证模式:分片并行、单项隔离、指数退避、<code>audited_at</code> 新鲜度截止线(30 天过期重审,上游 commit 变更立即重审)。</p>
+    <h3>4.3 sync(catalog main 分支 push 触发)</h3>
+    <p>diff 上次成功同步的 commit → 变更条目 upsert 进 Postgres(带 <code>--marketplace-commit</code> 溯源)→ 触发前端 ISR 再验证。关键路径分层:sync 硬失败告警;缓存/搜索索引刷新失败仅 warning。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">5</span>前端与 CLI</h2>
+    <h3>页面(复用交互原型的设计,SSG 全静态)</h3>
+    <p><code>/</code> 今日(编辑推荐 + 热门 + 分类)· <code>/browse</code> 分类/搜索/筛选(含「仅无外联且扫描通过」)· <code>/charts</code> 安装量榜(可复现评测榜位留占位,标「M1 上线」制造预期)· <code>/skill/[id]</code> 详情页 · <code>/audit/[id]</code> 审计报告全文(链接到 catalog 仓对应文件,可验证)。详情页布局沿用原型,评测位置 M0 显示「三层审计:通过 ✓」+ 风险因子披露。每页 SSG + 结构化数据(SoftwareApplication schema),SEO 是 M0 主要获客渠道。</p>
+    <h3>npx CLI</h3>
+    <pre><span class="c"># 安装(自动探测 agent:.claude/ .codex/ .cursor/…)</span>
+npx skillstore add aideas-labs/slide-craft
+<span class="c"># 安装时行为:</span>
+<span class="c"># 1. 拉 API 元数据 → 2. mirrored 从 catalog 下载 / indexed 从上游拉取</span>
+<span class="c"># 3. 校验 content_hash 与货架一致(防上游被替换的供应链攻击)★M0 就要有</span>
+<span class="c"># 4. 展示权限营养标签,含 network/scripts 因子时要求确认 → 5. 落盘对应目录</span></pre>
+    <div class="callout">哈希校验 + 安装前权限确认是 CLI 的灵魂:别家 <code>npx skills add</code> 是盲装,我们的安装动作本身就在传递「这家店不一样」。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">6</span>周计划与验收</h2>
+    <div class="tbox"><table>
+      <tr><th>周</th><th>目标</th><th>关键产出</th></tr>
+      <tr><td>W1</td><td>骨架</td><td>monorepo + schemas 包 + catalog 仓建立;official adapter 跑通,首批 ~100 条(官方仓)入 catalog</td></tr>
+      <tr><td>W2</td><td>审计 L1/L2</td><td>规则集 v1 + skill-scanner 容器接入;首批全量出 risk_factors;audit_queue 表与最简复核界面(可先用 GitHub Issue)</td></tr>
+      <tr><td>W3</td><td>审计 L3 + 同步</td><td>LLM 审查 worker(批量/重试/截止线);sync worker + Supabase;skills.sh adapter 上线,货架扩到 500+</td></tr>
+      <tr><td>W4</td><td>前端</td><td>四个页面 SSG 上线,详情页权限标签完整;域名 + Analytics</td></tr>
+      <tr><td>W5</td><td>CLI + 收尾</td><td>npm 包发布(add/list/remove + 哈希校验 + 权限确认);全链路演练:上游改动 → 重审 → 同步 → 前端更新</td></tr>
+      <tr><td>W6</td><td>缓冲/打磨</td><td>规则误报调优、文案合规复查(「已扫描」措辞)、发布首篇内容(「我们审计了 500 个 skill,发现了什么」)</td></tr>
+    </table></div>
+    <h3>验收标准(退出 M0)</h3>
+    <p>① 500+ skill 上架且权限标签覆盖率 100%;② 审计报告全部公开可访问且与货架一致;③ 每日同步连续 7 天无人工干预跑通;④ CLI 在 Claude Code 与 Codex 两个 agent 真机安装成功;⑤ needs_review 队列处理时长中位数 &lt; 48h;⑥ 全站无一处「保证安全」类措辞。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">7</span>成本与关键决策记录</h2>
+    <h3>M0 成本量级</h3>
+    <p>基础设施(Supabase/Vercel/GitHub Actions 免费或个位数美元档)近零;主要成本是 L3:按 500-1000 skill、每个 SKILL.md+脚本摘要平均 ~8K token 输入、双模型抽查,首轮全量审计约在<b>数十美元量级</b>,月度增量(新增+过期重审)更低。真正的成本大头在 M1 评测(每 skill 20 任务 × 多次 × 跨模型),M0 不承担。</p>
+    <h3>ADR(决策记录)</h3>
+    <div class="tbox"><table>
+      <tr><th>决策</th><th>选择</th><th>被否方案与原因</th></tr>
+      <tr><td>事实源</td><td>公开 Git catalog 仓</td><td>直接写 DB:丢失可验证性与 PR 留痕,信任产品不可接受</td></tr>
+      <tr><td>托管策略</td><td>mirrored/indexed 双轨</td><td>全托管:licence 风险;全索引:上游可被篡改,无法做哈希校验</td></tr>
+      <tr><td>语言</td><td>TS 编排 + 容器化 Python 扫描器</td><td>全 Python:前端/CLI 生态劣势;全 TS:放弃安全扫描生态</td></tr>
+      <tr><td>network 因子处理</td><td>一律人工放行</td><td>纯自动:ClawHub 漏网教训,M0 信任成本远高于人工成本</td></tr>
+      <tr><td>搜索</td><td>Postgres FTS 起步</td><td>Meilisearch:当前量级纯增负担;接口已预留</td></tr>
+      <tr><td>调度</td><td>GitHub Actions 起步</td><td>自建队列:aiskillstore 证明 GHA 千级够用;编排按 job 抽象保迁移性</td></tr>
+    </table></div>
+  </div>
+
+  <footer>M0 详细设计 v1.0 · 2026-07-02 · 上游:Skill Store PRD v1.0 · 关联:供给聚合架构图 / 交互原型</footer>
+</div>
+</body>
+</html>

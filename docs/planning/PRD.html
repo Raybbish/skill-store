@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Store PRD v1.0</title>
+<style>
+  :root{
+    --bg:#f5f5f7; --card:#fff; --ink:#1d1d1f; --sub:#6e6e73; --faint:#86868b;
+    --line:#e6e6ea; --accent:#3b6cf0; --accent-soft:#edf2fe; --ok:#2e9e5b; --warn:#c77b12; --bad:#d0342c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;}
+  .wrap{max-width:880px;margin:0 auto;padding:40px 20px 64px;}
+  a{color:var(--accent);text-decoration:none;} a:hover{text-decoration:underline;}
+  .kicker{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;text-transform:uppercase;}
+  h1{font-size:28px;font-weight:800;margin:6px 0 4px;}
+  .meta{font-size:13px;color:var(--faint);margin-bottom:8px;}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 20px;font-size:13px;color:var(--sub);margin:18px 0 6px;}
+  .toc b{color:var(--ink);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;margin-top:22px;}
+  h2{font-size:19px;font-weight:800;margin-bottom:14px;}
+  h2 .no{color:var(--accent);margin-right:8px;}
+  h3{font-size:14.5px;font-weight:700;margin:18px 0 8px;}
+  p{font-size:14px;margin-bottom:10px;}
+  p:last-child{margin-bottom:0;}
+  .tldr{background:linear-gradient(135deg,#1a2b5c,#2d4a8a);color:#fff;border-radius:18px;padding:22px 24px;margin-top:20px;}
+  .tldr .label{font-size:11px;letter-spacing:.14em;opacity:.72;text-transform:uppercase;margin-bottom:6px;}
+  .tldr p{font-size:15px;font-weight:500;}
+  .tldr b{color:#9db4fa;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;}
+  th{text-align:left;color:var(--faint);font-weight:600;font-size:11.5px;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--sub);}
+  tr:last-child td{border-bottom:none;}
+  td:first-child{color:var(--ink);font-weight:600;}
+  .pill{display:inline-block;font-size:11px;border-radius:8px;padding:1px 8px;background:#f0f0f3;color:var(--sub);white-space:nowrap;}
+  .pill.p0{background:#fdeae8;color:var(--bad);font-weight:700;}
+  .pill.p1{background:#fdf3e4;color:var(--warn);font-weight:700;}
+  .pill.p2{background:#f0f0f3;color:var(--faint);font-weight:700;}
+  .pill.ok{background:#e7f5ec;color:var(--ok);}
+  .callout{background:var(--accent-soft);border-radius:12px;padding:13px 16px;font-size:13.5px;margin:12px 0;}
+  .callout b{color:var(--accent);}
+  .callout.risk{background:#fdf3e4;} .callout.risk b{color:var(--warn);}
+  .callout.hard{background:#fdeae8;} .callout.hard b{color:var(--bad);}
+  .kv{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0;}
+  .kv div{background:var(--bg);border-radius:12px;padding:12px;text-align:center;}
+  .kv b{display:block;font-size:19px;font-weight:800;color:var(--accent);}
+  .kv span{font-size:11px;color:var(--faint);}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f0f0f3;border-radius:5px;padding:1px 6px;}
+  .src{font-size:12.5px;color:var(--sub);columns:2;column-gap:28px;}
+  .src li{margin:0 0 7px 16px;break-inside:avoid;}
+  footer{margin-top:30px;font-size:12px;color:var(--faint);text-align:center;}
+  @media (max-width:680px){.kv{grid-template-columns:repeat(2,1fr);}.src{columns:1;}.tbox{overflow-x:auto;}table{min-width:620px;}}
+  @media print{body{background:#fff;}.card,.toc{border:none;padding:14px 0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="kicker">Product Requirements Document</div>
+  <h1>Skill Store — skill 界的 App Store</h1>
+  <div class="meta">v1.1 · 2026-07-03 · 作者:Wittgenstein · 状态:草案(v1.1:评测降级为可复现协议——平台做赛道不做裁判;整合竞品调研、交互原型、供给架构与管线精读)</div>
+
+  <div class="toc"><b>目录</b> · 1 概述 · 2 问题与机会 · 3 目标用户 · 4 定位与差异化 · 5 功能需求 · 6 供给管线 · 7 评测与安全系统 · 8 非功能需求 · 9 商业模式 · 10 冷启动 · 11 路线图 · 12 成功指标 · 13 风险 · 14 附录</div>
+
+  <div class="tldr">
+    <div class="label">一句话</div>
+    <p>为所有兼容 Agent Skills 标准的 AI agent 建一个以<b>安全透明、可复现评测、效果可见</b>为核心的 skill 商店:发现已是红海,我们卖的是<b>信任</b>。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">1</span>概述与背景</h2>
+    <p>Agent Skills(SKILL.md)自 2025 年 10 月由 Anthropic 发布、2026 年初开放为独立标准后,已被约 40 个产品兼容(Claude Code、Codex、Cursor、Copilot、Gemini CLI 等)。生态供给在 20 天内增长 18.5 倍,skills.sh 半年索引约 67 万个 skill。但供给爆发的另一面是:47,150 个公开 skill 平均质量分仅 6.2/12,36.8% 至少含一个安全缺陷,13.4% 含严重问题,已确认 76 个恶意 skill。现有 8+ 家市场全部聚集在「目录/发现」层,没有一家把质量与安全做成可比较、可验证的货架信号。</p>
+    <div class="kv">
+      <div><b>67 万</b><span>skills.sh 索引量</span></div>
+      <div><b>6.2/12</b><span>公开 skill 平均质量</span></div>
+      <div><b>36.8%</b><span>含安全缺陷比例</span></div>
+      <div><b>0 家</b><span>做可复现评测的商店</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">2</span>问题定义与机会</h2>
+    <h3>用户侧痛点</h3>
+    <p>① 不敢装:SKILL.md 里三行 markdown 即可外传 SSH 密钥,用户无从判断;② 不会选:同类 skill 十几个,没有可比较的质量信号,只能看安装量(马太效应+可刷);③ 不知道有什么用:纯文字描述无法传达「装了之后输出会变成什么样」;④ 成本不透明:skill 增加每次调用的 token 消耗,无任何平台披露。</p>
+    <h3>市场空白</h3>
+    <p>竞品全景(详见附录调研报告):skills.sh/SkillsMP 是无审核目录;ClawHub 审计属事后补救且多次失守;Agensi 有安全检查但无质量评测;SkillHub(中文市场)只有粗粒度 S/A/B/C 评级。<b>「可复现评测协议 + 结构化安全披露 + 效果对比」三件套在全市场为空白</b>,且均已被学术界(SkillsBench)和安全界(Snyk)验证为真实需求。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">3</span>目标用户</h2>
+    <div class="tbox"><table>
+      <tr><th>角色</th><th>典型场景</th><th>核心诉求</th><th>阶段</th></tr>
+      <tr><td>Agent 重度开发者</td><td>用 Claude Code/Cursor 日常开发,想扩展 agent 能力</td><td>快速找到「真的有用且不会偷数据」的 skill</td><td><span class="pill p0">首发</span></td></tr>
+      <tr><td>非技术办公用户</td><td>用 Cowork/Copilot 做文档、表格、汇报</td><td>看得懂的效果对比与一键安装,不想读代码</td><td><span class="pill p0">首发</span></td></tr>
+      <tr><td>Skill 开发者(供给端)</td><td>写了 skill 想获得分发和回报</td><td>公平的曝光机制(靠质量而非刷量)、认证背书</td><td><span class="pill p1">M1</span></td></tr>
+      <tr><td>企业买家</td><td>为团队统一采购/管控 skill</td><td>安全合规审计、私有货架、权限管控</td><td><span class="pill p2">M2+</span></td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">4</span>定位与差异化</h2>
+    <p>定位:<b>多 agent 中立的「认证商店」</b>,与纯目录的关系类似 App Store 与「网上随便下软件」的关系。五个差异化点全部零竞品覆盖:</p>
+    <div class="tbox"><table>
+      <tr><th>#</th><th>差异化</th><th>说明</th><th>验证依据</th></tr>
+      <tr><td>1</td><td>可复现评测协议(赛道非裁判)</td><td>任务集 + 确定性校验器 + runner 开放成可复现协议(<code>npm run eval</code> 谁都能跑);货架分数带 runner/模型元数据、可复现可挑战,平台不做单方裁判</td><td>SkillsBench 证明质量差异真实(+16.6pp);公信力锚在可复现性而非背书</td></tr>
+      <tr><td>2</td><td>权限营养标签</td><td>结构化披露五风险因子:scripts / network / filesystem / env / commands,附文件级证据</td><td>Snyk 证明单一「通过/不通过」不可信;aiskillstore 已有同款数据模型可继承</td></tr>
+      <tr><td>3</td><td>效果对比替代截图</td><td>同一 prompt 装/不装的输出对比,评测管线自动产出</td><td>原型已验证展示形态</td></tr>
+      <tr><td>4</td><td>Token 成本标注</td><td>标注每次调用的上下文加载量(如 ~3K token/次)</td><td>GPT Store 教训:token 成本吃掉收益是头号坑</td></tr>
+      <tr><td>5</td><td>跨平台热度聚合</td><td>同一 skill 在 skills.sh / ClawHub 等各平台的安装量合并视图</td><td>各 hub 数据孤岛,无人做合并</td></tr>
+    </table></div>
+    <div class="callout">平台做「赛道」不做「裁判」是核心产品表达:评测协议开放、分数带元数据<b>可复现可挑战</b>,公信力锚在可复现性而非官方背书,与「已扫描≠保证安全」同构。评测榜在协议成熟前以「可复现评测·开发中」路线图态呈现,流行度(安装量/stars)榜先行。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">5</span>功能需求(商店端)</h2>
+    <p>交互原型已完成(见 <code>skill-store-prototype.html</code>),以下为需求清单:</p>
+    <div class="tbox"><table>
+      <tr><th>模块</th><th>需求</th><th>优先级</th></tr>
+      <tr><td>详情页</td><td>头部(图标/名称/发布者认证/获取/CLI 命令)、五指标栏(安装量·安全状态·风险因子披露·token 成本·兼容数)、效果对比区、权限营养标签、标准化评测入口(可复现协议·开发中)、兼容性矩阵、版本 diff 入口、评论区(冷启动期以审计摘要占位)</td><td><span class="pill p0">P0</span></td></tr>
+      <tr><td>今日/首页</td><td>编辑推荐 hero、流行度榜、可复现评测榜(开发中)、分类入口</td><td><span class="pill p0">P0</span></td></tr>
+      <tr><td>搜索与筛选</td><td>全文搜索;按分类、兼容 agent、token 成本排序;「仅无外联且扫描通过」安全筛选器</td><td><span class="pill p0">P0</span></td></tr>
+      <tr><td>榜单</td><td>流行度榜(安装量/stars)+ 可复现评测榜(协议成熟前为路线图态),附机制说明</td><td><span class="pill p0">P0</span></td></tr>
+      <tr><td>安装分发</td><td><code>npx</code> 一键安装 CLI;各 agent 的安装路径适配(.claude/.codex/.cursor…);复制命令</td><td><span class="pill p0">P0</span></td></tr>
+      <tr><td>评论系统</td><td>已验证安装才可评论;星级+文字;审计摘要置顶(评测成熟后并入可复现跑分摘要)</td><td><span class="pill p1">P1</span></td></tr>
+      <tr><td>在线试玩</td><td>沙箱环境内用固定 prompt 体验 skill 效果</td><td><span class="pill p1">P1</span></td></tr>
+      <tr><td>开发者中心</td><td>提交流程、审核状态、认证发布者申请、数据看板</td><td><span class="pill p1">P1</span></td></tr>
+      <tr><td>完整评测报告页</td><td>逐任务得分(不可评估记 N/A 非 0)、runner/模型元数据、失败案例回放</td><td><span class="pill p1">P1</span></td></tr>
+      <tr><td>企业私有货架</td><td>组织白名单、私有 skill 托管、审计报告导出</td><td><span class="pill p2">P2</span></td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">6</span>供给管线</h2>
+    <p>详见架构图(<code>供给聚合架构图.html</code>)。要点:</p>
+    <p><b>供给源与优先级</b>:① 官方精选仓(anthropics/skills、vercel-labs、合作伙伴仓,licence 清晰,第一批搬)→ ② skills.sh 头部榜单(注册表开源,安装量=免费预筛)→ ③ awesome 精选仓(按需)→ ④ GitHub 全域(Code Search <code>filename:SKILL.md</code> + topic,最后接入)。第三方 Hub(ClawHub/SkillsMP/SkillHub)<b>只取榜单热度信号、不搬内容</b>,回上游仓库采集;ClawHub 来源一律全量过审,无免检通道。</p>
+    <p><b>采集管线</b>(定时 GitHub Action):API 拉取 → agentskills.io JSON Schema 校验 → 元数据提取(licence/scripts)→ 规范 ID(owner/repo/path)→ 内容哈希去重(fork/复制合并溯源)→ 记录上游 commit SHA;每日 diff 上游,变更即重审。</p>
+    <p><b>许可证分流</b>(数据模型第一天就要区分):<span class="pill ok">托管型</span> MIT/Apache 等宽松 licence → 镜像副本、可打包分发;<span class="pill">索引型</span> 无 licence/专有 → 只存元数据 + 跳转上游,配 DMCA 下架流程。</p>
+    <p><b>质量漏斗</b>:全量索引(~100 万,只存元数据,近零成本)→ 头部候选(~5 千,按安装量/星标/活跃度)→ 审计+评测 → 认证货架(~2 千)。「已索引 100 万 / 已认证 2 千」的稀缺性本身即品牌叙事。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">7</span>评测与安全系统(核心资产)</h2>
+    <h3>7.1 质量评测</h3>
+    <p>方法对齐 SkillsBench:按品类构建标准任务集(prompt + 预置输入 + <b>确定性校验器</b>,不用 LLM 主观打分);隔离沙箱执行,装/不装双跑。<b>平台做「赛道」不做「裁判」</b>:任务集 + 校验器 + runner 开放成<b>可复现评测协议</b>(<code>npm run eval</code> 谁都能跑),货架分数标注 runner 与模型、带元数据可复现可挑战——公信力锚在可复现性,而非平台单方背书。<b>诚实性红线</b>:产物缺失 / 环境不匹配记 <b>N/A(不计 0 分)</b>并排除出统计;只有带模型元数据、且无 N/A 任务的真实结果才回写货架(写入闸);平台只对少数精选条目跑分兜底。评测协议与历史数据本身沉淀为核心资产。</p>
+    <h3>7.2 安全审计(四层 + 人工分级)</h3>
+    <div class="tbox"><table>
+      <tr><th>层</th><th>手段</th><th>作用</th></tr>
+      <tr><td>L1 静态签名</td><td>YARA 规则 + 正则(密钥、危险命令)</td><td>拦已知恶意模式,近零成本</td></tr>
+      <tr><td>L2 脚本分析</td><td>附带 Python/Node 脚本的数据流追踪</td><td>抓「读凭证→外传」路径</td></tr>
+      <tr><td>L3 LLM-as-judge</td><td>模型审查 SKILL.md 指令意图</td><td>唯一能抓新型提示注入的一层(实测 19/19),最贵但不可省</td></tr>
+      <tr><td>L4 动态沙箱</td><td>实际执行,校验「文档声称 vs 代码实际」一致性</td><td>对付「说明人畜无害、脚本藏后门」</td></tr>
+    </table></div>
+    <p>产出风险五因子标签(<code>scripts / network / filesystem / env_access / external_commands</code>)+ 文件级证据,继承 aiskillstore 的 <code>skill-report.json</code> 数据模型;审计报告随 Git 仓库公开、PR 留痕。含外联或扫描存疑的 skill 进入人工复核队列,货架显示「待复核」而非绿勾。开源扫描器(Cisco skill-scanner、SkillScan)可作为 L1-L3 的起点。</p>
+    <div class="callout hard"><b>措辞红线:</b>四层叠加仍拦不住全部 LLM 生成的隐蔽攻击(ClawHub 漏网为证)。全站永远用「已扫描/已评测」,禁用「保证安全」;权限标签的定位是结构化披露、辅助用户自行判断,不是安全背书。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">8</span>非功能需求</h2>
+    <p><b>架构</b>:继承 aiskillstore 验证过的三条——Git 仓库为唯一事实源(变更走 PR)、每条 DB 记录带 commit 溯源、关键/非关键路径分层(同步硬失败重试,算分容忍部分失败,缓存失效仅告警,翻译异步 fire-and-forget)。所有批处理做单项隔离 + 指数退避,部分成功永远好过整体失败。<b>成本</b>:LLM 审计与评测是主要边际成本,做批量/分片调度与新鲜度截止线(过期才重审),按「头部候选」规模而非全量做预算。<b>合规</b>:DMCA 响应流程、审计证据不含用户数据、只镜像宽松 licence 内容。<b>性能</b>:目录页静态化 + CDN,详情页数据缓存 24h 自然过期。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">9</span>商业模式</h2>
+    <p>核心教训(GPT Store):变现必须跟着高质量供给走,不能反过来。分三阶段:</p>
+    <div class="tbox"><table>
+      <tr><th>阶段</th><th>模式</th><th>说明</th></tr>
+      <tr><td>M0-M1 免费</td><td>不收费,攒信任与数据</td><td>评测数据与安全报告积累是唯一目标;LLM 审计有边际成本,天然构成后续付费的价值基础</td></tr>
+      <tr><td>M1-M2 认证服务</td><td>开发者付费加急审计/认证徽章;买断制付费 skill(创作者 70% 分成,对标 Agensi)</td><td>认证含金量取决于评测公信力,先有公信力再收费</td></tr>
+      <tr><td>M2+ 企业订阅</td><td>私有货架 + 合规审计报告 + 团队管控</td><td>企业是安全审计付费意愿最强的客群</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">10</span>冷启动策略</h2>
+    <p>供给侧:按第 6 节顺序,首周用官方精选仓保证货架不空,第二批接 skills.sh 头部(自带安装量数据可展示)。信任侧:冷启动期评论区由「平台审计摘要」占位(原型已含此设计),解决无评价的鸡生蛋问题;审计报告全部公开在 GitHub 仓库,可被第三方验证。需求侧:以「可复现评测报告」做增长——每周发布一个品类的评测(如「6 个 PPT skill 实测,附可复现跑法与元数据」),评测数据即内容营销素材,天然可被搜索引擎与社区引用。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">11</span>里程碑路线图</h2>
+    <div class="tbox"><table>
+      <tr><th>里程碑</th><th>周期</th><th>范围</th><th>退出标准</th></tr>
+      <tr><td>M0 · 可信目录</td><td>4-6 周</td><td>采集管线(官方仓+skills.sh 头部)、L1-L3 安全扫描、权限标签、商店前端 P0(静态数据)、npx 安装</td><td>500+ 已审计 skill 上架;权限标签覆盖率 100%</td></tr>
+      <tr><td>M1 · 评测商店</td><td>+8-10 周</td><td>3 个头部品类的标准任务集与可复现评测协议(赛道非裁判)、效果对比自动产出、开发者提交流程、L4 动态沙箱</td><td>3 品类可复现评测上线;首批认证徽章发放;周活跃安装量可统计</td></tr>
+      <tr><td>M2 · 生态与变现</td><td>+12 周</td><td>付费 skill 与分成、加急认证、跨平台热度聚合、企业私有货架试点</td><td>首笔创作者分成发放;1 家企业试点</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">12</span>成功指标</h2>
+    <p><b>北极星:经由本站安装且 30 天后仍在使用的 skill 数</b>(信任的最终度量)。过程指标:认证 skill 数与覆盖品类、评测报告被外部引用次数、安装→评论转化率、开发者主动提交数。<b>反指标(需守住)</b>:认证 skill 被确认恶意的数量(目标恒为 0,出现即触发公开复盘)、评测分与真实好评率的背离度(防评测集被针对性过拟合)。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">13</span>风险与对策</h2>
+    <div class="tbox"><table>
+      <tr><th>风险</th><th>可能性/影响</th><th>对策</th></tr>
+      <tr><td>平台截流:Anthropic/Vercel 把评测+安全做进官方渠道</td><td>中 / 致命</td><td>多 agent 中立聚合(官方各管自家);评测任务集与历史数据沉淀为独占资产;跨平台热度聚合官方做不了</td></tr>
+      <tr><td>认证 skill 漏网恶意,信任崩塌</td><td>中 / 致命</td><td>四层审计+人工分级;措辞留余地;出现即 24h 内下架+公开复盘;高危来源(ClawHub)无免检</td></tr>
+      <tr><td>评测被刷:开发者针对开放任务集过拟合</td><td>高 / 中</td><td>可复现协议下靠定期轮换任务 + 多 runner/模型交叉 + 评测分与用户评价背离监控(而非靠保密);社区可复跑挑战存疑分</td></tr>
+      <tr><td>审计/评测成本失控</td><td>中 / 高</td><td>漏斗控制受审规模;新鲜度截止线避免重复审计;批量调度用低价模型跑 L1-L2 预筛</td></tr>
+      <tr><td>许可证纠纷</td><td>低 / 中</td><td>托管/索引双轨制;DMCA 流程;只镜像宽松 licence</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="no">14</span>附录</h2>
+    <p><b>关联文档</b>:竞品调研报告(<code>Skill Store 竞品调研报告.html</code>)、交互原型(<code>skill-store-prototype.html</code>)、供给聚合架构图(<code>供给聚合架构图.html</code>)。</p>
+    <h3>skill 条目数据模型草案</h3>
+    <p><code>id</code>(owner/repo/path)· <code>content_hash</code> · <code>upstream_commit</code> · <code>license</code> · <code>hosting_type</code>(托管/索引)· <code>eval</code>{runner,model,score(可空),lift_pp,evaluable_tasks,tasks}(未评测/全 N/A 为 null) · <code>risk_factors{scripts,network,filesystem,env_access,external_commands}</code> + <code>evidence[]</code> · <code>audit_status</code>(通过/待复核/拒绝)+ <code>audited_at</code> · <code>token_cost_estimate</code> · <code>compatible_agents[]</code> · <code>installs_by_platform{}</code> · <code>category</code> · <code>version</code> · <code>publisher</code> + <code>verified</code></p>
+    <h3>主要来源</h3>
+    <ol class="src">
+      <li><a href="https://arxiv.org/abs/2602.12670">SkillsBench (arXiv 2602.12670)</a></li>
+      <li><a href="https://snyk.io/blog/toxicskills-malicious-ai-agent-skills-clawhub/">Snyk ToxicSkills</a></li>
+      <li><a href="https://snyk.io/blog/skill-scanner-false-security/">Snyk: Skill Scanner Is False Security</a></li>
+      <li><a href="https://unit42.paloaltonetworks.com/openclaw-ai-supply-chain-risk/">Unit 42: OpenClaw Supply Chain</a></li>
+      <li><a href="https://github.com/aiskillstore/marketplace">aiskillstore/marketplace(参考架构)</a></li>
+      <li><a href="https://github.com/cisco-ai-defense/skill-scanner">Cisco skill-scanner</a></li>
+      <li><a href="https://vercel.com/changelog/introducing-skills-the-open-agent-skills-ecosystem">Vercel skills.sh</a></li>
+      <li><a href="https://agentskills.io/specification">Agent Skills 规范</a></li>
+      <li><a href="https://www.xmsumi.com/detail/2925">10 大 Skill 市场横评(中文)</a></li>
+      <li><a href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills">Anthropic: Agent Skills</a></li>
+    </ol>
+  </div>
+
+  <footer>Skill Store PRD v1.1 · 2026-07-03 · 与调研报告、原型、架构图同一视觉语言</footer>
+</div>
+</body>
+</html>

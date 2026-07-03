@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供给与采集设计 — 架构图①②层实现</title>
+<style>
+  :root{
+    --bg:#f5f5f7; --card:#fff; --ink:#1d1d1f; --sub:#6e6e73; --faint:#86868b;
+    --line:#e6e6ea; --accent:#3b6cf0; --accent-soft:#edf2fe; --ok:#2e9e5b; --warn:#c77b12; --bad:#d0342c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;}
+  .wrap{max-width:880px;margin:0 auto;padding:40px 20px 64px;}
+  a{color:var(--accent);text-decoration:none;} a:hover{text-decoration:underline;}
+  .kicker{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;text-transform:uppercase;}
+  h1{font-size:28px;font-weight:800;margin:6px 0 4px;}
+  .meta{font-size:13px;color:var(--faint);margin-bottom:18px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;margin-top:22px;}
+  h2{font-size:19px;font-weight:800;margin-bottom:14px;}
+  h2 .no{color:var(--accent);margin-right:8px;}
+  h3{font-size:14.5px;font-weight:700;margin:18px 0 8px;}
+  p{font-size:14px;margin-bottom:10px;}
+  p:last-child{margin-bottom:0;}
+  ul,ol{font-size:14px;margin:0 0 10px 20px;}
+  li{margin-bottom:6px;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;}
+  th{text-align:left;color:var(--faint);font-weight:600;font-size:11.5px;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--sub);}
+  tr:last-child td{border-bottom:none;}
+  td:first-child{color:var(--ink);font-weight:600;}
+  .pill{display:inline-block;font-size:11px;border-radius:8px;padding:1px 8px;background:#f0f0f3;color:var(--sub);white-space:nowrap;}
+  .pill.ok{background:#e7f5ec;color:var(--ok);font-weight:700;}
+  .pill.warn{background:#fdf3e4;color:var(--warn);font-weight:700;}
+  .pill.bad{background:#fdeae8;color:var(--bad);font-weight:700;}
+  .callout{background:var(--accent-soft);border-radius:12px;padding:13px 16px;font-size:13.5px;margin:12px 0;}
+  .callout b{color:var(--accent);}
+  .callout.risk{background:#fdf3e4;} .callout.risk b{color:var(--warn);}
+  pre{background:#14181f;color:#d6dde6;border-radius:12px;padding:16px;font-size:12px;line-height:1.6;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;margin:10px 0;}
+  pre .c{color:#6e7a8a;} pre .k{color:#8ab4f8;} pre .s{color:#9ecb88;}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f0f0f3;border-radius:5px;padding:1px 6px;}
+  .flow{font-size:13px;background:var(--bg);border-radius:12px;padding:12px 16px;margin:10px 0;color:var(--ink);}
+  .flow b{color:var(--accent);}
+  footer{margin-top:30px;font-size:12px;color:var(--faint);text-align:center;}
+  @media (max-width:680px){.tbox{overflow-x:auto;}table{min-width:620px;}}
+  @media print{body{background:#fff;}.card{border:none;padding:14px 0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="kicker">Skill Store · Pipeline Design</div>
+<h1>供给与采集设计</h1>
+<div class="meta">架构图「① 供给源 + ② 采集」两层的实现文档 · 以代码实际行为为准 · 2026-07-02 · <code>packages/pipeline/src/</code> · 同步维护于仓库 <code>docs/供给采集设计.md</code></div>
+
+<!-- ═══════════ 总览 ═══════════ -->
+<div class="card">
+  <h2><span class="no">0</span>总览</h2>
+  <div class="flow">五个供给源发现 skill → 统一回上游 GitHub <b>shallow clone</b> 采集 → 校验 / 提取 / 去重 → 写入 <b>catalog/</b> → 每日 GitHub Action 自动跑,产出走 <b>PR 人工抽查</b></div>
+
+  <h3>四条设计原则</h3>
+  <table>
+    <tr><th style="width:180px">原则</th><th>含义</th></tr>
+    <tr><td>情报不当货</td><td>skills.sh、awesome-list 等第三方站只提供「哪里有 skill、谁被精选、装了多少次」的发现与信号,内容一律回上游 GitHub 采集,不搬运任何第三方数据库。</td></tr>
+    <tr><td>收录有门槛</td><td>GitHub 存在批量生成仓(实测单仓 26,134 个 SKILL.md)与聚合搬运仓。用「每仓折叠采样 + 合集条目」控制供给质量——与 SkillsMP(180 万条全收、噪音极大)的根本差异。</td></tr>
+    <tr><td>采集不冲下游</td><td>审计 / 评测 / 人工复核结果在同 id 更新时全部保留;内容未变时连文件都不重写(幂等,git diff 无噪音)。</td></tr>
+    <tr><td>归属还原</td><td>同内容多处出现时 canonical 按「已有条目 &gt; 官方源 &gt; stars 最高」裁决,搬运仓标 <code>duplicate_of</code> 指回原作者。竞品均为先到先得或不去重,此为差异化点。</td></tr>
+  </table>
+
+  <h3>代码模块</h3>
+  <div class="tbox"><table>
+    <tr><th>文件</th><th>职责</th></tr>
+    <tr><td><code>jobs/ingest.ts</code></td><td>主入口:调度各源 → 去重 → 写 catalog</td></tr>
+    <tr><td><code>sources/official.ts</code></td><td>单仓采集核心 <code>discoverFromRepo()</code>,所有源复用</td></tr>
+    <tr><td><code>sources/github-search.ts</code></td><td>GitHub 全域源(搜索 + 每仓折叠采样 + 合集条目)</td></tr>
+    <tr><td><code>sources/hub-signals.ts</code></td><td>awesome-list 精选信号源</td></tr>
+    <tr><td><code>sources/skills-sh.ts</code></td><td>skills.sh 安装量榜源(API / SSR 双通道)</td></tr>
+    <tr><td><code>git.ts</code> / <code>frontmatter.ts</code> / <code>license.ts</code> / <code>hash.ts</code></td><td>clone 与文件树 / frontmatter 校验 / licence 分流 / content_hash 与脚本清点</td></tr>
+    <tr><td><code>../schemas/</code></td><td>SkillReport / CollectionReport 类型 + JSON Schema(单一来源)</td></tr>
+  </table></div>
+</div>
+
+<!-- ═══════════ ① 供给源 ═══════════ -->
+<div class="card">
+  <h2><span class="no">①</span>供给源(五框全通)</h2>
+  <p>按信噪比排序接入,全部汇入同一条采集管线。架构图中「awesome 精选仓」与「第三方 Hub 情报」在实现里合并为 hub-signals 一条线(精选清单既是内容线索也是信号)。</p>
+
+  <h3>1. 官方精选仓 <span class="pill ok">默认必跑</span></h3>
+  <p><code>sources.yaml</code> 白名单(当前 <code>anthropics/skills</code>、<code>vercel-labs/agent-skills</code>),量小质高、licence 清晰,是 catalog 的信任底座。owner 进入「官方源」名单,去重裁决中优先级最高。扩源加 yaml 条目即可,无需改代码。<code>--source &lt;repo&gt;</code> 可只跑单仓。</p>
+
+  <h3>2. GitHub 全域 <span class="pill ok">--github-search N(默认 100)</span></h3>
+  <p>GitHub Search API 按 <code>topic:claude-skills</code>(<code>GH_SEARCH_QUERY</code> 可覆盖)搜仓库,stars 降序取头部,跳过 fork / archived,逐仓 clone。每条注入 <code>stars_github</code>。</p>
+  <div class="callout"><b>防灌注 · 每仓折叠采样:</b>单仓 SKILL.md 数超过 <code>MAX_PER_REPO</code>(默认 50)判定为批量源,只采样收录 N 条。采样优先级:frontmatter 合规 &gt; 有 description &gt; 原目录顺序(稳定排序,重跑一致)。被采样条目标 <code>bulk_source: true</code>;所有条目记 <code>repo_skill_count</code> 供排序降权——2.6 万个 skill 分摊同一份 stars,单条含金量远低于单 skill 仓。</div>
+  <p><b>合集条目:</b>被折叠仓库额外产出一条 CollectionReport 写入 <code>catalog/collections/&lt;owner&gt;/&lt;repo&gt;.json</code>(总数 / 采样数 / stars / 上游 URL),前端可渲染「该仓含 N 个 skill → 去上游」合集卡片。参考 buildwithclaude 的 <code>isMarketplace()</code> 折叠,但保留 skill 粒度采样。</p>
+  <p><b>限制:</b>search 上限 1000 条;需 <code>api.github.com</code> 可达 + <code>GITHUB_TOKEN</code>。topic 召回有限,后续可加 Code Search(<code>filename:SKILL.md</code>)扩召回。</p>
+
+  <h3>3. awesome 精选信号 <span class="pill ok">--hub-signals N(默认 300)</span></h3>
+  <p>拉取社区精选清单 README(默认 <code>VoltAgent/awesome-agent-skills</code>,<code>HUB_LISTS</code> 可扩),解析条目与分类标题,按上游仓分组回 GitHub 采集。注入 <code>curated_by</code>(被哪些清单收录 + 分类)与 <code>meta.category</code>(补上采集拿不到的分类)。每仓上限 <code>MAX_PER_REPO</code>;带 subpath 的条目只收对应目录。awesome-list 是 MIT 公开 markdown,本就以被引用为目的;「被精选」比纯流行度更契合质量定位。</p>
+
+  <h3>4. skills.sh 安装量榜 <span class="pill ok">--skills-sh N(默认 200)</span></h3>
+  <p>解析首页服务端渲染榜单(robots.txt 明确 <code>Allow: /</code>,仅 <code>/api/</code> 禁抓),从链接 <code>/&lt;owner&gt;/&lt;repo&gt;/&lt;slug&gt;</code> 与锚文本尾部安装量(2.3M / 613.6K)还原条目,~280 条足够 top-200 信号。官方 <code>/api/v1</code> 文档声称免鉴权、实测 401 需申请 key,故不对接。</p>
+  <p>榜单条目按 slug 对上仓库内 skill 目录名或规范化 name,匹配不上静默跳过(由全域源覆盖);<code>well-known</code> 非 GitHub 源(如 open.feishu.cn)暂不支持。注入 <code>installs_skills_sh</code>——安装量 = 免费预筛。</p>
+  <div class="callout"><b>验证记录(2026-07-02):</b>top 50 → 16 仓 → 58 skill 入库,46 新增,重复 0。<b>W2 衔接:</b><code>/api/v1/skills/audit/{id}</code> 返回 Snyk / Socket / Gen Trust Hub 伙伴审计结果(status / riskLevel),可作免费外部对照信号。</div>
+
+  <h3>供给源对照</h3>
+  <div class="tbox"><table>
+    <tr><th>源</th><th>flag</th><th>发现方式</th><th>注入信号</th><th>防灌注</th></tr>
+    <tr><td>官方精选仓</td><td>(默认)</td><td>sources.yaml 白名单</td><td>—</td><td>白名单本身</td></tr>
+    <tr><td>GitHub 全域</td><td><code>--github-search</code></td><td>topic 搜索 · stars 头部</td><td>stars_github · repo_skill_count · bulk_source</td><td>每仓折叠采样 + 合集条目</td></tr>
+    <tr><td>awesome 精选</td><td><code>--hub-signals</code></td><td>清单解析回上游</td><td>curated_by · category</td><td>MAX_PER_REPO + subpath 过滤</td></tr>
+    <tr><td>skills.sh</td><td><code>--skills-sh</code></td><td>安装量榜(API / SSR)</td><td>installs_skills_sh</td><td>榜单即预筛 · isDuplicate 跳过</td></tr>
+  </table></div>
+</div>
+
+<!-- ═══════════ ② 采集管线 ═══════════ -->
+<div class="card">
+  <h2><span class="no">②</span>采集管线(七环节)</h2>
+  <p>所有源殊途同归:拿到 <code>owner/repo</code> 后进入 <code>discoverFromRepo()</code>,再由 <code>ingest.ts</code> 统一去重写入。</p>
+
+  <h3>1 · shallow clone(git.ts)</h3>
+  <p><code>git clone --depth 1</code> 到临时目录(比 REST API 无速率限制、一次拿全仓),<code>git ls-tree -r HEAD</code> 取全量 blob 清单(path + blob sha),记录 HEAD commit 与分支。结束 cleanup 删除。</p>
+
+  <h3>2 · SKILL.md 发现</h3>
+  <p>文件树按正则 <code>(^|\/)SKILL\.md$</code> 匹配,每个命中目录即一个候选(根目录也支持)。</p>
+
+  <h3>3 · frontmatter 校验(frontmatter.ts)</h3>
+  <p>agentskills.io 最小规范:frontmatter 存在、<code>name</code> 非空 ≤64 字符、<code>description</code> 非空 ≤1024 字符。写入 <code>frontmatter_valid / frontmatter_issues</code>。<b>不合规不拒收</b>(货架标记,下游处置),但折叠采样时排序靠后。</p>
+
+  <h3>4 · 元数据提取</h3>
+  <ul>
+    <li><b>licence 双轨分流</b>(license.ts):skill 目录内 LICENSE 优先,否则回落仓库根。文本朴素识别(MIT / Apache-2.0 / BSD / ISC / Unlicense / CC0);宽松 → <code>hosting: mirrored</code>(可镜像),识别不出 → <code>local-file(needs-review)</code> / <code>none(all-rights-reserved)</code> → <code>indexed</code>(仅索引跳转上游)。</li>
+    <li><b>脚本静态清点</b>(hash.ts):按扩展名(py / sh / js / ts / rb / ps1 / exe…)清点可执行文件,写入 <code>risk_factors.scripts</code> + evidence(前 20)。pre-audit 提示,非审计结论;其余四风险因子置 null 待 W2 填充。</li>
+    <li><b>token 成本</b>:SKILL.md 正文 chars/4 估算。</li>
+  </ul>
+
+  <h3>5 · 规范 ID 与 content_hash</h3>
+  <p><b>ID(三段式 v2)</b> = <code>小写owner/小写repo/normalizeName(fm.name || 目录名)</code>,与架构图 <code>owner/repo/path</code> 及 skills.sh 的 <code>{source}/{slug}</code> 对齐。<b>content_hash</b> = 目录内全部 (相对路径, git blob sha) 排序集合的 sha256——blob sha 本身内容寻址,<b>无需读文件即得稳定指纹</b>,CLI 安装时可同算法本地校验。溯源锚点:<code>upstream</code>(仓库内路径 URL)+ <code>upstream_commit</code>(HEAD),支撑每日 diff 与哈希漂移检测。</p>
+  <div class="callout"><b>✅ 已迁移(2026-07-02):</b>目录遍历统一走 <code>catalog.ts</code>;存量 73 条经 <code>migrate-id-v2.ts</code> 无损迁移(审计/复核保留);web 路由 <code>[owner]/[repo]/[name]</code> 与 CLI 同步更新。</div>
+
+  <h3>6 · 去重与归属还原(ingest.ts)</h3>
+  <p>跨运行 + 跨源,以 content_hash 为键:</p>
+  <ol>
+    <li>已有 catalog 预填哈希表,<b>已有条目优先当 canonical</b>(稳定不漂移;优先取非 duplicate 条目,避免链式指向);</li>
+    <li>新哈希组内裁决:<b>sources.yaml 官方源 owner &gt; stars 最高者</b>(官方源不注入 stars,必须显式优先,否则输给搬运它的高星聚合仓);</li>
+    <li>组内其余标 <code>duplicate_of</code>;同 id 覆盖更新不算重复;</li>
+    <li>同 id 去重:一次运行内保留第一条(源顺序:官方 → hub → 全域 → skills.sh)。</li>
+  </ol>
+
+  <h3>7 · 写入 catalog(幂等)</h3>
+  <ul>
+    <li>路径 <code>catalog/skills/&lt;owner&gt;/&lt;repo&gt;/&lt;name&gt;/skill-report.json</code>,符合 skill-report.schema.json;</li>
+    <li><b>未变跳过</b>:content_hash 与 upstream_commit 都没变 → 不重写,无噪音 diff;</li>
+    <li><b>下游成果保留</b>:同 id 更新时已有审计(status ≠ pending 或有人工 review)与 eval 原样保留,重审由 audit 哈希漂移检测触发;</li>
+    <li><b>两段式镜像</b>:默认索引层只写元数据;<code>--mirror</code>(INGEST_MIRROR=1)且 licence 为 mirrored 才拷贝完整副本到 <code>mirror/</code>(symlink 解引用落地);</li>
+    <li><b>合集条目</b>:<code>catalog/collections/…</code>,字段没变不重写;</li>
+    <li>汇总统计:新增 / 更新 / 未变跳过 / 重复 / 保留审计 / frontmatter 不合规 / 批量源合集。</li>
+  </ul>
+</div>
+
+<!-- ═══════════ 调度 ═══════════ -->
+<div class="card">
+  <h2><span class="no">③</span>调度与运行</h2>
+
+  <h3>本机</h3>
+  <pre><span class="c"># 令牌</span>
+export GITHUB_TOKEN=$(gh auth token)
+
+npm run ingest                                <span class="c"># 仅官方仓</span>
+npm run ingest -- <span class="k">--github-search</span> 100         <span class="c"># + GitHub 全域</span>
+npm run ingest -- <span class="k">--hub-signals</span> 300           <span class="c"># + awesome 精选</span>
+npm run ingest -- <span class="k">--skills-sh</span> 200             <span class="c"># + skills.sh 榜单</span>
+npm run ingest -- <span class="k">--source</span> <span class="s">anthropics/skills</span>  <span class="c"># 只跑单仓</span>
+npm run ingest -- <span class="k">--mirror</span> ...                <span class="c"># 托管层:下载镜像副本</span></pre>
+
+  <h3>GitHub Action(.github/workflows/ingest.yml)</h3>
+  <ul>
+    <li>每日 03:00 UTC cron 全源:<code>--github-search 100 --hub-signals 300 --skills-sh 200</code>,timeout 120 分钟;</li>
+    <li><code>workflow_dispatch</code> 手动触发可指定单仓;</li>
+    <li>产出不直接进主干:开 PR(分支 <code>ingest/&lt;run_id&gt;</code>),人工抽查 licence 分流、frontmatter、duplicate_of、合集条目后合并;</li>
+    <li>Secrets:<code>GITHUB_TOKEN</code>(自带)。</li>
+  </ul>
+
+  <h3>环境变量总表</h3>
+  <div class="tbox"><table>
+    <tr><th>变量</th><th>默认</th><th>作用</th></tr>
+    <tr><td><code>GITHUB_TOKEN</code></td><td>—</td><td>GitHub Search API 限流提升</td></tr>
+    <tr><td><code>GH_SEARCH_QUERY</code></td><td>topic:claude-skills</td><td>全域搜索 query</td></tr>
+    <tr><td><code>MAX_PER_REPO</code></td><td>50</td><td>每仓折叠采样上限(全域与 hub 共用)</td></tr>
+    <tr><td><code>HUB_LISTS</code></td><td>VoltAgent/awesome-agent-skills</td><td>精选清单,逗号分隔</td></tr>
+    <tr><td><code>INGEST_MIRROR</code></td><td>—</td><td>1 = 托管层,下载镜像副本</td></tr>
+  </table></div>
+</div>
+
+<!-- ═══════════ 信号 / 限制 / 对照 ═══════════ -->
+<div class="card">
+  <h2><span class="no">④</span>信号总表 · 已知限制 · 竞品对照</h2>
+
+  <h3>signals 字段 → 来源</h3>
+  <div class="tbox"><table>
+    <tr><th>字段</th><th>来源</th><th>用途</th></tr>
+    <tr><td><code>stars_github</code></td><td>github-search 注入</td><td>流行度;canonical 裁决</td></tr>
+    <tr><td><code>installs_skills_sh</code></td><td>skills.sh 榜单</td><td>真实使用量预筛</td></tr>
+    <tr><td><code>curated_by[]</code></td><td>awesome 清单</td><td>精选背书;补 category</td></tr>
+    <tr><td><code>repo_skill_count</code></td><td>采集时统计</td><td>巨仓降权</td></tr>
+    <tr><td><code>bulk_source</code></td><td>折叠采样标记</td><td>前端标签 / 排序降权</td></tr>
+    <tr><td><code>fetched_at</code></td><td>采集时间戳</td><td>新鲜度</td></tr>
+  </table></div>
+
+  <h3>已知限制与后续</h3>
+  <table>
+    <tr><th style="width:60px">优先级</th><th>事项</th></tr>
+    <tr><td><span class="pill ok">已解决</span></td><td><b>ID 撞名</b>:✅ 已迁移三段式 owner/repo/name(含存量数据、web 路由、CLI)</td></tr>
+    <tr><td><span class="pill warn">中</span></td><td><b>SSR 解析脆弱</b>:skills.sh 页面改版会报「解析到 0 条」需更新正则;API key 申请中</td></tr>
+    <tr><td><span class="pill warn">中</span></td><td><b>召回</b>:补 GitHub Code Search(filename:SKILL.md)扩召回</td></tr>
+    <tr><td><span class="pill">低</span></td><td>well-known 非 GitHub 源(open.feishu.cn 等)未支持</td></tr>
+    <tr><td><span class="pill">低</span></td><td>W2 衔接:skills.sh audit 端点作外部对照;四风险因子待 L1-L3 填充</td></tr>
+    <tr><td><span class="pill">低</span></td><td>长期:参考 skills.sh 遥测模型,有安装信号后把「被用过」纳入收录 / 排序核心</td></tr>
+  </table>
+
+  <h3>竞品机制对照(借鉴了谁)</h3>
+  <div class="tbox"><table>
+    <tr><th>机制</th><th>借鉴自</th><th>我们的改造</th></tr>
+    <tr><td>仓库折叠</td><td>buildwithclaude isMarketplace()</td><td>保留 skill 粒度采样 + 独立合集条目</td></tr>
+    <tr><td>信号驱动收录</td><td>skills.sh 遥测模型</td><td>安装量榜作预筛;长期目标</td></tr>
+    <tr><td>收录门槛</td><td>Homebrew notability(≥75★ 等)</td><td>stars 头部 + 每仓 cap,未设硬门槛</td></tr>
+    <tr><td>内容去重 + 归属还原</td><td>无人做(全行业空白)</td><td>canonical 三级裁决,差异化点</td></tr>
+  </table></div>
+</div>
+
+<footer>Skill Store · 供给与采集设计 · 2026-07-02 · 与 <code>docs/供给采集设计.md</code> 同步维护</footer>
+</div>
+</body>
+</html>

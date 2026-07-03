@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>架构文档 · 事实核对与勘误</title>
+<style>
+  :root{--bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--sub:#6e6e73;--faint:#86868b;--line:#e6e6ea;--accent:#3b6cf0;--accent-soft:#edf2fe;--ok:#2e9e5b;--ok-soft:#e7f5ec;--warn:#c77b12;--warn-soft:#fbf1e2;--bad:#d0342c;--bad-soft:#fbe9e7}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;font-size:15px}
+  .wrap{max-width:1000px;margin:0 auto;padding:38px 24px 90px}
+  header.doc{background:linear-gradient(135deg,#eef2fb,#f7f9fe);border:1px solid var(--line);border-radius:18px;padding:28px 30px;margin-bottom:22px}
+  header.doc .e{color:var(--accent);font-weight:600;font-size:13px}
+  header.doc h1{font-size:26px;margin:6px 0 8px}
+  header.doc .m{color:var(--sub);font-size:13px}
+  .tldr{margin-top:16px;background:var(--accent-soft);border:1px solid #c9d8fb;border-radius:12px;padding:15px 17px;font-size:14px}
+  .tldr b{color:var(--accent)}
+  h2{font-size:18px;margin:30px 0 6px;display:flex;align-items:center;gap:9px}
+  h2 .doc-file{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--faint);font-weight:400}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.8px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--accent-soft);color:#2b3a63;font-weight:600;font-size:11.5px}
+  td.said{color:var(--sub)}
+  td.real b{color:var(--ink)}
+  td .ev{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--faint);display:block;margin-top:3px}
+  .lv{display:inline-block;padding:1px 8px;border-radius:999px;font-size:10.5px;font-weight:700;white-space:nowrap}
+  .l-hi{background:var(--bad-soft);color:var(--bad)}
+  .l-mid{background:var(--warn-soft);color:var(--warn)}
+  .l-ok{background:var(--ok-soft);color:var(--ok)}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:#f0f0f3;border:1px solid var(--line);border-radius:4px;padding:0 5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+  ul.clean{list-style:none;padding:0;margin:8px 0}
+  ul.clean>li{padding:8px 0 8px 24px;border-bottom:1px solid var(--line);position:relative}
+  ul.clean>li:last-child{border-bottom:none}
+  ul.clean>li:before{content:"→";position:absolute;left:0;color:var(--accent);font-weight:700}
+  footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:var(--faint);font-size:12px}
+</style>
+</head>
+<body><div class="wrap">
+
+  <header class="doc">
+    <div class="e">ARCH · 事实核对</div>
+    <h1>架构文档 · 事实核对与勘误</h1>
+    <div class="m">2026-07-03 · 对比对象:docs/architecture 三份 + PRD/M0 供给&审计段 vs packages/pipeline · schemas · sources.yaml</div>
+    <div class="tldr">
+      架构文档<b>新鲜度两档</b>:<b>供给采集设计</b> 与 <b>审计流程</b>(近两天写)基本准确;<b>供给聚合架构图</b>最滞后(源顺序、topic 值、审计层数停在早期设想)。最大系统性缺口:<b>全新的「分类/标签体系」在三份架构图里几乎零覆盖</b>。下表按文档分组,<span class="lv l-hi">高</span>=会误导须改 · <span class="lv l-mid">中</span>=补充 · <span class="lv l-ok">准确</span>=无需改。
+    </div>
+  </header>
+
+  <h2>A · 供给聚合架构图 <span class="doc-file">architecture/供给聚合架构图.html · 最滞后,建议整张更新</span></h2>
+  <table>
+    <thead><tr><th style="width:14%">位置</th><th style="width:26%">文档说</th><th style="width:34%">代码实际(证据)</th><th style="width:18%">建议</th><th style="width:8%">级别</th></tr></thead>
+    <tbody>
+      <tr><td>① GitHub 全域</td><td class="said">topic 为 <code>agent-skills</code></td><td class="real"><b>默认 <code>topic:claude-skills</code></b><span class="ev">sources/github-search.ts:12</span></td><td>改图内文字</td><td><span class="lv l-hi">高</span></td></tr>
+      <tr><td>① 供给源顺序</td><td class="said">官方 → skills.sh 头部榜(实线内容源)→ 全域</td><td class="real"><b>官方 → hub(awesome)→ 全域 → skills.sh</b>;skills.sh 与 awesome 同为<b>信号源、内容回上游</b>,非独立内容轨<span class="ev">jobs/ingest.ts(源顺序注释)</span></td><td>更正顺序;skills.sh 改「信号线回上游」</td><td><span class="lv l-hi">高</span></td></tr>
+      <tr><td>② 采集层</td><td class="said">六格:API 拉取 → 校验 → 元数据 → 规范 ID → 去重 → 记 SHA</td><td class="real">缺<b>两段式</b>(默认 index-only / <code>--mirror</code> 托管)与<b>每仓折叠采样</b>(MAX_PER_REPO);「API 拉取」实为 <code>git clone --depth 1</code> + <code>ls-tree</code><span class="ev">jobs/ingest.ts · sources/github-search.ts · git.ts</span></td><td>补两节点 + 改「shallow clone」</td><td><span class="lv l-hi">高</span></td></tr>
+      <tr><td>④ 审计格</td><td class="said">单格「LLM 安全审计 + 可复现评测」</td><td class="real">实为 <b>L1 签名 → L2 五因子静态 → L3 LLM → 人工</b> 四段<span class="ev">scanners/rules.ts · jobs/audit.ts · audit-l3.ts · review.ts</span></td><td>拆四层(对齐审计流程图)</td><td><span class="lv l-hi">高</span></td></tr>
+      <tr><td>全图</td><td class="said">未画「分类/标签」</td><td class="real">采集期即 <b><code>categorize()</code></b> 打 <code>meta.category</code>+<code>tags</code>,前端有 <code>/category/[slug]</code><span class="ev">categorize.ts · jobs/ingest.ts · web/app/category/[slug]</span></td><td>补 taxonomy 环节/单出一图</td><td><span class="lv l-hi">高</span></td></tr>
+      <tr><td>④ 漏斗数字</td><td class="said">已索引 100 万 / 已认证 2 千</td><td class="real">规划量级;当前 catalog 约 <b>73 条</b>(见 STATUS)</td><td>保留,加注「规划目标,非当前存量」</td><td><span class="lv l-mid">中</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2>B · 供给采集设计 <span class="doc-file">architecture/供给采集设计.html · 较新,补 1 处</span></h2>
+  <table>
+    <thead><tr><th style="width:14%">位置</th><th style="width:26%">文档说</th><th style="width:34%">代码实际(证据)</th><th style="width:18%">建议</th><th style="width:8%">级别</th></tr></thead>
+    <tbody>
+      <tr><td>② 采集管线</td><td class="said">校验 → 提取 → 去重 → 写 catalog(未提采集期分类)</td><td class="real">写盘前多一步 <b><code>categorize()</code></b> 写 <code>category/tags</code>;含 <code>category_locked</code> 人工锁定、<code>uncategorized</code> 统计、<code>sources.yaml</code> per-source 覆盖<span class="ev">jobs/ingest.ts 归类块</span></td><td>补「7.5 采集期归类」一节</td><td><span class="lv l-mid">中</span></td></tr>
+      <tr><td>§① hub 默认清单</td><td class="said">默认 <code>VoltAgent/awesome-agent-skills</code></td><td class="real"><b>一致</b>,默认即此<span class="ev">sources/hub-signals.ts:16</span></td><td>无需改</td><td><span class="lv l-ok">准确</span></td></tr>
+      <tr><td>已知限制</td><td class="said">Code Search 扩召回列为待办</td><td class="real"><b>一致</b>,当前仅 topic 搜索,无 Code Search</td><td>无需改</td><td><span class="lv l-ok">准确</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2>C · 审计流程 <span class="doc-file">architecture/审计流程.html · 最新,基本准确</span></h2>
+  <table>
+    <thead><tr><th style="width:14%">位置</th><th style="width:26%">文档说</th><th style="width:34%">代码实际(证据)</th><th style="width:18%">建议</th><th style="width:8%">级别</th></tr></thead>
+    <tbody>
+      <tr><td>总览 + 判定伪代码</td><td class="said">L1→L2→L3→人工;含 network/env+cmd/drift 分支</td><td class="real"><b>逐条对得上</b>;scanner 版本 <code>rules-v1</code>/<code>static-v1</code> 亦一致<span class="ev">jobs/audit.ts · scanners/rules.ts</span></td><td>无需改</td><td><span class="lv l-ok">准确</span></td></tr>
+      <tr><td>L4 动态沙箱</td><td class="said">标题「三层扫描」,未把 L4 算作已实现(正确)</td><td class="real">确无 L4/沙箱;但 PRD/M0 写「四层」易生歧义</td><td>可加一句「L4=M1,当前未实现」消歧</td><td><span class="lv l-ok">准确</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2>D · PRD + M0 <span class="doc-file">planning/PRD.html · M0-详细设计.html · 供给/审计段</span></h2>
+  <table>
+    <thead><tr><th style="width:14%">位置</th><th style="width:26%">文档说</th><th style="width:34%">代码实际(证据)</th><th style="width:18%">建议</th><th style="width:8%">级别</th></tr></thead>
+    <tbody>
+      <tr><td>供给源优先级</td><td class="said">② skills.sh 头部榜(开源注册表,安装量预筛)= 主力供给</td><td class="real">skills.sh 私有 <code>/api/v1</code> 实测 <b>401 不可用</b>,已由 <b>GitHub 全域 topic 采集取代为可靠主力</b>;skills.sh 降为 SSR 榜单信号<span class="ev">github-search.ts 顶注 · skills-sh.ts 顶注 · git e2282a2</span></td><td>更正 skills.sh 角色 + 提 GitHub 全域为主采集</td><td><span class="lv l-hi">高</span></td></tr>
+      <tr><td>M0 adapter 描述</td><td class="said">skills-sh 读开源注册表 top N(500 起),按安装量降序</td><td class="real">读<b>首页 SSR HTML 榜单正则解析</b>(~280 条),默认 top <b>200</b><span class="ev">sources/skills-sh.ts fetchTop() · jobs/ingest.ts</span></td><td>改「解析 SSR 榜单」+ N→200</td><td><span class="lv l-mid">中</span></td></tr>
+      <tr><td>数据模型草案</td><td class="said">id = <code>owner/repo/path</code>;字段 <code>hosting_type</code></td><td class="real">id = <b><code>owner/repo/name</code></b>(小写);字段名是 <b><code>hosting</code></b>(枚举 mirrored/indexed);schema 已多出 <code>category</code>/<code>tags</code>/<code>category_locked</code>/<code>mirror_complete</code>/<code>curated_by</code>/<code>repo_skill_count</code>/<code>bulk_source</code><span class="ev">skill-report.schema.json</span></td><td><code>path→name</code>、<code>hosting_type→hosting</code>,补 7 个新字段</td><td><span class="lv l-hi">高</span></td></tr>
+      <tr><td>采集管线措辞</td><td class="said">「API 拉取 → Schema 校验 …」</td><td class="real"><code>git clone --depth 1</code> + <code>ls-tree</code>(无限流)<span class="ev">git.ts</span></td><td>改「shallow clone + 文件树」</td><td><span class="lv l-mid">中</span></td></tr>
+      <tr><td>分类字段</td><td class="said">数据模型单 <code>category</code> 字段,示例 <code>doc-generation</code></td><td class="real">整套 <b>taxonomy</b>:词表 <code>labels.ts</code> + 引擎 <code>categorize.ts</code> + 晋降级 <code>promote.ts</code> + 路由;示例 slug <b>已变</b>(以 labels.ts 为准)<span class="ev">schemas/src/labels.ts · pipeline/src/categorize.ts · jobs/promote.ts</span></td><td>补 taxonomy 说明并更正示例;或指向「分类与安装入口」文档</td><td><span class="lv l-hi">高</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2>建议动作(按优先级)</h2>
+  <div class="card">
+    <ul class="clean">
+      <li><b>高 · 供给聚合架构图整张更新</b>:topic 值、供给源顺序(skills.sh 改信号线)、采集层补两段式+折叠采样、审计拆四层、加分类环节。</li>
+      <li><b>高 · PRD/M0 数据模型对齐</b>:<code>path→name</code>、<code>hosting_type→hosting</code>、补 7 个 schema 新字段、taxonomy 说明、skills.sh 角色更正。</li>
+      <li><b>中 · 供给采集设计</b>:补「采集期归类」一节。</li>
+      <li><b>无需改</b>:审计流程(准确,可选加 L4=M1 注)、hub 默认清单、Code Search 待办。</li>
+    </ul>
+  </div>
+
+  <footer>架构文档 · 事实核对与勘误 · 2026-07-03 · 证据均为仓内文件(必要处带行号)· 核对方法:文档文本 vs packages/pipeline·schemas·sources.yaml + git log</footer>
+
+</div></body></html>

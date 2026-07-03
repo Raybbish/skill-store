@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>oh-my-skill — 重设计预览 v4(认证图标 + 弹窗 · 无 skill 图标)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14161d; --ink-2:#39414f; --sub:#5c6473; --faint:#9aa1af;
+  --bg:#fcfcfd; --line:#ececef; --line-2:#e0e2e8; --hair:#eeeff2;
+  --blue:#3b6cf0; --violet:#7a5af8; --green:#12905f; --amber:#b5730a; --gold:#f0a318; --danger:#d5453b;
+  --display:"Space Grotesk",sans-serif;
+  --ui:"Manrope",-apple-system,"PingFang SC",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.55}
+a{color:inherit;text-decoration:none}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1020px;margin:0 auto;padding:0 26px 100px}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:40;background:rgba(252,252,253,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--hair)}
+.nav-in{max-width:1020px;margin:0 auto;padding:16px 26px;display:flex;align-items:center;gap:26px}
+.logo{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.logo .mk{width:26px;height:26px;border-radius:50%;background:conic-gradient(from 210deg,#3b6cf0,#7a5af8,#3b6cf0);color:#fff;display:grid;place-items:center;font-size:13px}
+.logo em{font-style:normal;color:var(--blue)}
+.tabs{display:flex;gap:20px}
+.tabs a{font-size:14.5px;color:var(--sub);font-weight:600;padding-bottom:2px;border-bottom:2px solid transparent}
+.tabs a.on{color:var(--ink);border-color:var(--ink)}
+.tabs a:hover{color:var(--ink)}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:18px;color:var(--faint);font-size:13px}
+.nav-r .new{color:var(--blue);font-weight:700}
+
+/* hero */
+.hero{padding:54px 0 26px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue)}
+h1{font-family:var(--display);font-weight:700;font-size:50px;line-height:1.03;letter-spacing:-.03em;margin-top:16px}
+h1 .hl{position:relative;white-space:nowrap}
+h1 .hl:after{content:"";position:absolute;left:-2px;right:-2px;bottom:6px;height:12px;background:linear-gradient(90deg,#d9e4fe,#e7ddfd);z-index:-1;border-radius:2px}
+.lede{font-size:16.5px;color:var(--sub);margin-top:18px;max-width:44ch}
+.lede .cticon{display:inline-flex;vertical-align:-3px;margin:0 2px}
+.searchbar{margin-top:24px;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line-2);border-radius:14px;padding:13px 16px;max-width:460px;box-shadow:0 4px 16px -10px rgba(20,22,29,.2)}
+.searchbar input{border:none;outline:none;font-family:var(--ui);font-size:14.5px;flex:1;background:transparent;color:var(--ink)}
+.searchbar .go{background:var(--ink);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer}
+
+/* section head */
+.sec{margin-top:44px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:2px}
+.sec-h h2{font-family:var(--display);font-size:23px;font-weight:700;letter-spacing:-.02em}
+.sec-h .k{font-size:12.5px;color:var(--faint);font-weight:600}
+.sec-h a{margin-left:auto;font-size:13.5px;color:var(--blue);font-weight:700}
+
+/* category rail */
+.rail{display:flex;gap:22px;flex-wrap:wrap;padding:16px 0 2px;border-bottom:1px solid var(--hair)}
+.rail a{font-size:14px;color:var(--sub);font-weight:600}
+.rail a.on{color:var(--ink)}
+.rail a b{font-family:var(--mono);color:var(--faint);font-weight:500;font-size:12px;margin-left:3px}
+.rail a:hover{color:var(--blue)}
+
+/* editorial rows — no skill icon, text-forward */
+.row{display:flex;align-items:center;gap:16px;padding:18px 2px;border-top:1px solid var(--hair)}
+.row:first-child{border-top:none}
+.main{flex:1;min-width:0}
+.nm{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em;display:flex;align-items:center;gap:7px}
+.ds{font-size:13.5px;color:var(--sub);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60ch}
+.au{font-size:12px;color:var(--faint);margin-top:4px}
+.rt{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.rt .score{font-family:var(--display);font-weight:700;font-size:15px}
+.rt .score .gold{color:var(--gold)}
+.rt .dl{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+.go{color:var(--blue);font-weight:700;font-size:13.5px}
+
+/* certification icon — the only trust element on the surface */
+.cert{border:none;background:none;padding:0;margin:0;cursor:pointer;display:inline-flex;align-items:center;line-height:0;color:var(--blue)}
+.cert svg{width:17px;height:17px;display:block}
+.cert.rev{color:var(--amber)}
+.cert:hover{transform:translateY(-1px)}
+.cert:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:5px}
+
+/* charts */
+.chart .crow{display:flex;align-items:center;gap:18px;padding:15px 2px;border-top:1px solid var(--hair)}
+.chart .crow:first-child{border-top:none}
+.idx{font-family:var(--display);font-weight:700;font-size:30px;color:#e3e6ee;width:44px;text-align:center;flex-shrink:0;font-variant-numeric:tabular-nums}
+.idx.top{color:#b9c6f4}
+
+/* collection band */
+.band{margin-top:16px;background:linear-gradient(115deg,#eef2fe,#f4f0ff 60%,#fdeef4);border-radius:24px;padding:22px 24px}
+.band .bh{display:flex;align-items:center;gap:13px}
+.band .bh .bt{font-family:var(--display);font-weight:700;font-size:17px;display:flex;align-items:center;gap:7px}
+.band .bh .bt small{font-family:var(--mono);font-size:11px;color:var(--violet);background:#fff;border-radius:6px;padding:1px 7px;font-weight:600}
+.band .bh .bs{font-size:12px;color:var(--sub);margin-top:2px}
+.band .bh .allget{margin-left:auto;color:var(--violet);font-weight:700;font-size:13px}
+.subs{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:14px}
+.subs .s{background:rgba(255,255,255,.75);border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:7px}
+.subs .s .d{font-family:var(--mono);font-size:11px;color:var(--faint);font-weight:400}
+
+/* community */
+.cm .row{padding:14px 2px}
+.cm .fl{font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--sub);border:1px solid var(--line-2);border-radius:6px;padding:1px 7px;margin-right:8px}
+.cm .fl.ok{color:var(--green);border-color:#bfe3d3}
+.cm .fl.warn{color:var(--amber);border-color:#ecd8ac}
+.cm .nm{font-size:14.5px;font-weight:600;font-family:var(--ui)}
+
+footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--hair);font-size:12px;color:var(--faint);text-align:center}
+
+/* modal: certification process */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(20,22,29,.46);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;visibility:hidden;transition:opacity .18s}
+.overlay.open{opacity:1;visibility:visible}
+.modal{background:#fff;width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:24px;box-shadow:0 30px 80px -24px rgba(20,22,29,.5);transform:translateY(10px) scale(.99);transition:transform .2s}
+.overlay.open .modal{transform:none}
+.m-head{display:flex;align-items:center;gap:12px;padding:22px 24px 16px;position:sticky;top:0;background:#fff;border-bottom:1px solid var(--hair)}
+.m-badge{width:40px;height:40px;border-radius:12px;background:#eef2fe;color:var(--blue);display:grid;place-items:center}
+.m-badge svg{width:22px;height:22px}
+.m-head .mt{font-family:var(--display);font-weight:700;font-size:18px}
+.m-head .msu{font-size:12px;color:var(--faint)}
+.m-close{margin-left:auto;border:none;background:var(--bg);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:17px;color:var(--sub)}
+.m-close:hover{background:var(--line)}
+.m-body{padding:18px 24px 24px}
+.m-intro{font-size:14px;color:var(--ink-2);margin-bottom:18px}
+.steps{position:relative;margin-left:6px;padding-left:22px}
+.steps:before{content:"";position:absolute;left:5px;top:6px;bottom:16px;width:2px;background:linear-gradient(#cfe6db,#d3ddfb 70%,var(--blue))}
+.step{position:relative;padding:0 0 15px}
+.step .dot{position:absolute;left:-22px;top:1px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--green)}
+.step.end .dot{background:var(--blue);border-color:var(--blue)}
+.step .st{font-family:var(--display);font-weight:700;font-size:14px}
+.step .sd{font-size:12.5px;color:var(--sub)}
+.m-sub{font-family:var(--display);font-weight:700;font-size:14.5px;margin:8px 0 10px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:18px}
+.fact{display:flex;align-items:center;gap:9px;font-size:13px}
+.fact i{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.fact b{font-weight:600}.fact span{color:var(--faint);font-size:11.5px}
+.disc{background:#faf6ee;border:1px solid #efe3c9;border-radius:12px;padding:12px 14px;font-size:12.5px;color:#6b5115}
+.disc b{color:#5a4310}
+.m-link{display:inline-block;margin-top:16px;color:var(--blue);font-weight:700;font-size:13.5px}
+
+@media (max-width:820px){ h1{font-size:36px} .facts{grid-template-columns:1fr} }
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="shield" viewBox="0 0 16 16"><path d="M8 1.3l5.4 1.8v4.2c0 3.5-2.7 5.6-5.4 6.9-2.7-1.3-5.4-3.4-5.4-6.9V3.1z" fill="currentColor"/><path d="M5.4 8.1l1.7 1.7 3.4-3.5" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="shield-r" viewBox="0 0 16 16"><path d="M8 1.3l5.4 1.8v4.2c0 3.5-2.7 5.6-5.4 6.9-2.7-1.3-5.4-3.4-5.4-6.9V3.1z" fill="currentColor"/><path d="M8 5v3.4M8 10.4v.1" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></symbol></svg>
+
+<div class="nav"><div class="nav-in">
+  <div class="logo"><span class="mk">◆</span>oh-my<em>-skill</em></div>
+  <nav class="tabs"><a class="on">今日</a><a>浏览</a><a>榜单</a><a>社区</a></nav>
+  <div class="nav-r"><span>🔍</span><span class="new">＋ 发布</span></div>
+</div></div>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="eyebrow">Agent Skills 商店</div>
+    <h1>给你的 agent,<br>找对 <span class="hl">skill</span></h1>
+    <p class="lede">浏览、比较、一键安装。带 <span class="cticon"><button class="cert" onclick="openCert()" aria-label="认证图标"><svg><use href="#shield"/></svg></button></span> 的是已认证 skill——点开徽章就能看它是怎么审的。</p>
+    <div class="searchbar"><span>🔍</span><input placeholder="搜索 79 个 skill…"><button class="go">搜索</button></div>
+  </section>
+
+  <!-- category rail -->
+  <div class="rail">
+    <a class="on">全部 <b>79</b></a><a>文档生成 <b>12</b></a><a>数据分析 <b>9</b></a><a>开发工具 <b>18</b></a><a>安全合规 <b>6</b></a><a>媒体处理 <b>7</b></a><a>云与部署 <b>11</b></a><a>办公自动化 <b>8</b></a>
+  </div>
+
+  <!-- editor's picks -->
+  <div class="sec">
+    <div class="sec-h"><h2>编辑精选</h2><span class="k">已验证发布者</span><a>查看全部 ›</a></div>
+    <div class="list">
+
+      <div class="row">
+        <div class="main">
+          <div class="nm">skill-creator <button class="cert" onclick="openCert()" aria-label="已认证,点击查看认证流程" title="已认证 · 点击查看认证流程"><svg><use href="#shield"/></svg></button></div>
+          <div class="ds">从零创建、改进并评测你自己的 skill,内置最佳实践模板。</div>
+          <div class="au">@anthropics</div>
+        </div>
+        <div class="rt"><div class="score"><span class="gold">★</span> 4.9</div><div class="dl">⬇ 7.3K</div><span class="go">获取 ›</span></div>
+      </div>
+
+      <div class="row">
+        <div class="main">
+          <div class="nm">xlsx <button class="cert" onclick="openCert()" aria-label="已认证,点击查看认证流程" title="已认证 · 点击查看认证流程"><svg><use href="#shield"/></svg></button></div>
+          <div class="ds">脏数据进,分析级模型出:清洗管线 + 透视 + 校验公式。</div>
+          <div class="au">@anthropics</div>
+        </div>
+        <div class="rt"><div class="score"><span class="gold">★</span> 4.8</div><div class="dl">⬇ 62.5K</div><span class="go">获取 ›</span></div>
+      </div>
+
+      <div class="row">
+        <div class="main">
+          <div class="nm">deploy-to-vercel <button class="cert" onclick="openCert()" aria-label="已认证,点击查看认证流程" title="已认证 · 点击查看认证流程"><svg><use href="#shield"/></svg></button></div>
+          <div class="ds">一句话把项目部署到 Vercel,自动探测框架与构建配置。</div>
+          <div class="au">@vercel-labs</div>
+        </div>
+        <div class="rt"><div class="score"><span class="gold">★</span> 4.5</div><div class="dl">⬇ 18.9K</div><span class="go">获取 ›</span></div>
+      </div>
+
+      <div class="row">
+        <div class="main">
+          <div class="nm">openclaw-secure-linux-cloud <button class="cert rev" onclick="openCert()" aria-label="待人工复核,点击查看认证流程" title="外联待人工复核 · 点击查看认证流程"><svg><use href="#shield-r"/></svg></button></div>
+          <div class="ds">在隔离云环境里安全运行不可信 skill 与脚本。</div>
+          <div class="au">@xixu-me</div>
+        </div>
+        <div class="rt"><div class="score"><span class="gold">★</span> 4.3</div><div class="dl">⬇ 6.0K</div><span class="go">获取 ›</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- charts -->
+  <div class="sec">
+    <div class="sec-h"><h2>大家都在装</h2><span class="k">流行度 · 安装量</span></div>
+    <div class="chart">
+      <div class="crow"><div class="idx top">01</div><div class="main"><div class="nm" style="font-size:16px">xlsx <button class="cert" onclick="openCert()" aria-label="已认证" title="已认证 · 点击查看认证流程"><svg><use href="#shield"/></svg></button></div><div class="au">@anthropics</div></div><div class="rt"><div class="score"><span class="gold">★</span>4.8</div><div class="dl">⬇ 62.5K</div></div></div>
+      <div class="crow"><div class="idx top">02</div><div class="main"><div class="nm" style="font-size:16px">azure-compute <button class="cert" onclick="openCert()" aria-label="已认证" title="已认证 · 点击查看认证流程"><svg><use href="#shield"/></svg></button></div><div class="au">@microsoft</div></div><div class="rt"><div class="score"><span class="gold">★</span>4.6</div><div class="dl">⬇ 51.4K</div></div></div>
+      <div class="crow"><div class="idx top">03</div><div class="main"><div class="nm" style="font-size:16px">pdf <button class="cert" onclick="openCert()" aria-label="已认证" title="已认证 · 点击查看认证流程"><svg><use href="#shield"/></svg></button></div><div class="au">@anthropics</div></div><div class="rt"><div class="score"><span class="gold">★</span>4.9</div><div class="dl">⬇ 48.2K</div></div></div>
+      <div class="crow"><div class="idx">04</div><div class="main"><div class="nm" style="font-size:16px">deploy-to-vercel <button class="cert" onclick="openCert()" aria-label="已认证" title="已认证 · 点击查看认证流程"><svg><use href="#shield"/></svg></button></div><div class="au">@vercel-labs</div></div><div class="rt"><div class="score"><span class="gold">★</span>4.5</div><div class="dl">⬇ 18.9K</div></div></div>
+    </div>
+  </div>
+
+  <!-- collection -->
+  <div class="sec">
+    <div class="sec-h"><h2>官方合集</h2><span class="k">一行命令装齐</span></div>
+    <div class="band">
+      <div class="bh">
+        <div><div class="bt">飞书 CLI Skills <small>合集</small> <button class="cert" onclick="openCert()" aria-label="已认证" title="已认证 · 点击查看认证流程"><svg><use href="#shield"/></svg></button></div><div class="bs">@larksuite · 10 个 skill 一次装齐,统一鉴权</div></div>
+        <span class="allget">全部获取 ›</span>
+      </div>
+      <div class="subs">
+        <span class="s">lark-base <span class="d">⬇2.1K</span></span>
+        <span class="s">lark-doc <span class="d">⬇1.6K</span></span>
+        <span class="s">lark-approval <span class="d">⬇980</span></span>
+        <span class="s">lark-workflow-meeting-summary <span class="d">⬇740</span></span>
+        <span class="s" style="color:var(--violet)">+ 还有 6 个 ›</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- community -->
+  <div class="sec cm">
+    <div class="sec-h"><h2>社区</h2><span class="k">评价需已验证安装</span><a>进入社区 ›</a></div>
+    <div class="list">
+      <div class="row"><div class="main"><div class="nm"><span class="fl ok">已复现</span>第二模型交叉跑 xlsx,9.1 稳定复现</div><div class="au">anthropics/skills/xlsx · benchmark_joe · 1 天前</div></div><div class="rt"><span class="dl">💬 5</span></div></div>
+      <div class="row"><div class="main"><div class="nm"><span class="fl warn">存疑</span>复现 pptx 版式还原:我这边跑到 8.1,元数据已附</div><div class="au">anthropics/skills/pptx · repro_kate · 4 小时前</div></div><div class="rt"><span class="dl">💬 11</span></div></div>
+    </div>
+  </div>
+
+  <footer>oh-my-skill · 重设计预览 v4 · 无 skill 图标 · 认证只保留一个可点图标 · 应用 frontend-design 技能</footer>
+
+</div>
+
+<!-- ===== CERTIFICATION MODAL ===== -->
+<div class="overlay" id="certModal" onclick="if(event.target===this)closeCert()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="certTitle">
+    <div class="m-head">
+      <div class="m-badge"><svg><use href="#shield"/></svg></div>
+      <div><div class="mt" id="certTitle">这个 ✓ 意味着什么</div><div class="msu">oh-my-skill 认证流程</div></div>
+      <button class="m-close" onclick="closeCert()" aria-label="关闭">✕</button>
+    </div>
+    <div class="m-body">
+      <p class="m-intro">带认证图标的 skill,上架前都走完了下面这条<strong>可公开复核</strong>的链路。所有审计报告随 catalog 仓公开,变更走 PR、每条记录带 commit 溯源。</p>
+
+      <div class="steps">
+        <div class="step"><div class="dot"></div><div class="st">采集</div><div class="sd">从官方精选仓与头部榜单收录,记录上游 commit。</div></div>
+        <div class="step"><div class="dot"></div><div class="st">去重 · 内容哈希</div><div class="sd">content_hash 去重,并作为安装时的校验锚点。</div></div>
+        <div class="step"><div class="dot"></div><div class="st">L1 静态签名</div><div class="sd">YARA + 正则,拦已知恶意模式(密钥外传、危险命令)。</div></div>
+        <div class="step"><div class="dot"></div><div class="st">L2 脚本数据流</div><div class="sd">追踪脚本的读取→外传路径,产出风险五因子。</div></div>
+        <div class="step"><div class="dot"></div><div class="st">L3 意图审查</div><div class="sd">模型审查 SKILL.md 指令意图,抓提示注入,双模型交叉。</div></div>
+        <div class="step"><div class="dot"></div><div class="st">人工复核</div><div class="sd">含网络外联的一律进人工队列放行,不给绿灯免检。</div></div>
+        <div class="step end"><div class="dot"></div><div class="st">上架 · 可验证</div><div class="sd">货架显示状态;琥珀色图标 = 待复核,不是通过。</div></div>
+      </div>
+
+      <div class="m-sub">权限营养标签 · 五因子逐项披露</div>
+      <div class="facts">
+        <div class="fact"><i style="background:#12905f"></i><div><b>网络请求</b> <span>是否出站联网</span></div></div>
+        <div class="fact"><i style="background:#b5730a"></i><div><b>脚本执行</b> <span>附带可执行脚本</span></div></div>
+        <div class="fact"><i style="background:#3b6cf0"></i><div><b>文件读写</b> <span>访问范围</span></div></div>
+        <div class="fact"><i style="background:#12905f"></i><div><b>环境变量</b> <span>是否读取密钥</span></div></div>
+        <div class="fact"><i style="background:#12905f"></i><div><b>外部命令</b> <span>是否调子进程</span></div></div>
+      </div>
+
+      <div class="disc"><b>已扫描 ≠ 保证安全。</b>四层审计叠加仍拦不住全部隐蔽攻击——徽章是结构化披露,帮你自己判断,不是平台的安全背书。</div>
+      <a class="m-link" href="#" onclick="return false">查看该 skill 的完整审计报告 ↗</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ov = document.getElementById('certModal');
+  function openCert(){ ov.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeCert(){ ov.classList.remove('open'); document.body.style.overflow=''; }
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeCert(); });
+</script>
+</body>
+</html>

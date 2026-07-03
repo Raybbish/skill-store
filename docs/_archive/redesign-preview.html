@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>oh-my-skill — 重设计预览</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* palette — verification lab */
+  --ink:#0B1220; --ink-2:#28324a; --sub:#55627d; --faint:#8a94a8;
+  --paper:#fbfbfd; --surface:#f2f4f8; --card:#ffffff; --line:#e7e9f0; --line-2:#dde1ea;
+  --signal:#3b6cf0; --signal-press:#2a55d6; --seal:#eef3fe;
+  --verified:#12805c; --verified-soft:#e3f2ea;
+  --caution:#a5670a; --caution-soft:#f8efdb;
+  --danger:#c4322b;
+  /* type */
+  --display:"Space Grotesk",-apple-system,sans-serif;
+  --body:"IBM Plex Sans",-apple-system,"PingFang SC",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:16px; --r-sm:10px; --r-lg:22px;
+  --shadow:0 1px 2px rgba(11,18,32,.05),0 10px 30px -16px rgba(11,18,32,.18);
+  --shadow-sm:0 1px 2px rgba(11,18,32,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.6;font-size:15px}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px 90px}
+.mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+
+/* ===== nav ===== */
+.nav{position:sticky;top:0;z-index:40;background:rgba(251,251,253,.82);backdrop-filter:saturate(1.4) blur(16px);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1000px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:22px}
+.logo{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.logo .mk{width:22px;height:22px;border-radius:7px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:13px}
+.logo em{color:var(--signal);font-style:normal}
+.tabs{display:flex;gap:2px}
+.tabs a{font-size:13.5px;color:var(--sub);padding:7px 12px;border-radius:9px;font-weight:500}
+.tabs a.on,.tabs a:hover{background:var(--surface);color:var(--ink)}
+.nav-seal{margin-left:auto;display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;color:var(--sub);background:var(--card);border:1px solid var(--line);padding:5px 10px;border-radius:999px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--verified);box-shadow:0 0 0 3px var(--verified-soft)}
+
+/* ===== hero ===== */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center;padding:64px 0 40px;position:relative}
+.hero:before{content:"";position:absolute;inset:-40px -200px auto auto;width:520px;height:420px;background:radial-gradient(closest-side,rgba(59,108,240,.10),transparent 70%);z-index:-1}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);margin-bottom:18px}
+h1{font-family:var(--display);font-weight:700;font-size:46px;line-height:1.05;letter-spacing:-.025em}
+h1 .u{background:linear-gradient(transparent 62%,var(--seal) 62%);padding:0 2px}
+.lede{font-size:16.5px;color:var(--sub);margin-top:18px;max-width:30em}
+.cli{margin-top:22px;display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;background:var(--ink);color:#e8ecf6;padding:11px 15px;border-radius:12px;box-shadow:var(--shadow-sm)}
+.cli .pr{color:#6ff0b0}.cli .cp{margin-left:6px;color:#9fb0d6;border-left:1px solid #2a3550;padding-left:10px;font-size:11px}
+.tstats{display:flex;gap:26px;margin-top:26px}
+.tstats b{font-family:var(--display);font-size:24px;font-weight:600;display:block;letter-spacing:-.02em}
+.tstats span{font-size:11.5px;color:var(--faint);font-family:var(--mono);letter-spacing:.04em}
+.tstats .v{color:var(--verified)}
+
+/* ===== signature: verification receipt ===== */
+.receipt{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;position:relative}
+.receipt .top{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px dashed var(--line-2)}
+.stamp{width:44px;height:44px;border-radius:50%;background:var(--verified);color:#fff;display:grid;place-items:center;font-size:20px;box-shadow:0 0 0 4px var(--verified-soft),inset 0 0 0 2px rgba(255,255,255,.35)}
+.receipt .top .t{font-family:var(--display);font-weight:600;font-size:15px}
+.receipt .top .s{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.perf{height:12px;background:radial-gradient(circle at 6px 50%,var(--paper) 5px,transparent 5px) 0/12px 12px repeat-x;margin:0 -1px}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:9px 20px;font-family:var(--mono);font-size:12.5px}
+.rrow+.rrow{border-top:1px solid var(--surface)}
+.rrow .k{color:var(--sub)}
+.rrow .val{display:flex;align-items:center;gap:7px}
+.tick{color:var(--verified);font-weight:600}
+.na{color:var(--faint)}
+.receipt .foot{padding:12px 20px;background:var(--surface);font-family:var(--mono);font-size:11px;color:var(--sub);display:flex;justify-content:space-between}
+
+/* ===== section head ===== */
+.sec{margin-top:52px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.sec-h h2{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:-.02em}
+.sec-h .n{font-family:var(--mono);font-size:12px;color:var(--faint)}
+.sec-h a{margin-left:auto;font-size:13px;color:var(--signal);font-weight:500}
+
+/* ===== skill cards ===== */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sk{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow-sm);transition:transform .16s ease,box-shadow .16s ease}
+.sk:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.sk-top{display:flex;gap:13px;align-items:flex-start}
+.sk-ic{width:46px;height:46px;border-radius:12px;flex-shrink:0;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:19px;color:#fff;background:linear-gradient(150deg,#3b6cf0,#5a49d6)}
+.sk-ic.sec-ic{background:linear-gradient(150deg,#0e7a58,#12805c)}
+.sk-nm{font-family:var(--display);font-weight:600;font-size:15.5px;letter-spacing:-.01em;display:flex;align-items:center;gap:7px}
+.pub{font-size:12px;color:var(--sub);margin-top:1px;display:flex;align-items:center;gap:5px}
+.vchip{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;color:var(--signal);background:var(--seal);border:1px solid #d7e3fd;padding:1px 7px;border-radius:999px}
+.sk-desc{font-size:13.5px;color:var(--sub);margin:12px 0 14px;min-height:38px}
+.pfac{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.pf{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid var(--line);color:var(--sub);background:var(--paper);display:flex;gap:4px;align-items:center}
+.pf.ok{color:var(--verified);border-color:#cfe7db;background:var(--verified-soft)}
+.pf.warn{color:var(--caution);border-color:#ecd9ac;background:var(--caution-soft)}
+.astrip{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;color:var(--sub);border-top:1px dashed var(--line-2);padding-top:12px}
+.astrip .ok{color:var(--verified)}
+.astrip .sp{margin-left:auto}
+.get{font-family:var(--body);font-weight:600;font-size:13px;color:#fff;background:var(--signal);border:none;border-radius:10px;padding:7px 16px;cursor:pointer}
+.get:hover{background:var(--signal-press)}
+.get.review{background:var(--card);color:var(--caution);border:1px solid #ecd9ac}
+
+/* ===== nutrition label (signature, full) ===== */
+.split{display:grid;grid-template-columns:.9fr 1.1fr;gap:20px;align-items:start}
+.nfacts{background:var(--card);border:2px solid var(--ink);border-radius:14px;overflow:hidden}
+.nfacts .hd{background:var(--ink);color:#fff;padding:12px 16px}
+.nfacts .hd .t{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.01em}
+.nfacts .hd .s{font-family:var(--mono);font-size:10.5px;color:#9fb0d6;letter-spacing:.1em;text-transform:uppercase}
+.nf-row{padding:11px 16px;border-top:1px solid var(--surface);display:flex;justify-content:space-between;align-items:baseline;gap:14px}
+.nf-row:first-child{border-top:none}
+.nf-k{font-weight:600;font-size:13.5px}
+.nf-k em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:6px}
+.nf-v{font-family:var(--mono);font-size:12.5px;text-align:right;flex-shrink:0}
+.nf-v.ok{color:var(--verified)}.nf-v.warn{color:var(--caution)}
+.nf-ev{font-size:11.5px;color:var(--faint);margin-top:3px}
+.nfacts .bar{height:8px;background:var(--ink)}
+.note-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow-sm)}
+.note-card h3{font-family:var(--display);font-size:16px;font-weight:600;margin-bottom:8px}
+.note-card p{font-size:13.5px;color:var(--sub);margin-bottom:12px}
+.kv{font-family:var(--mono);font-size:12px;color:var(--sub);border-top:1px solid var(--surface);padding:8px 0;display:flex;justify-content:space-between}
+.disc{margin-top:14px;font-size:12px;color:var(--faint);border-left:2px solid var(--line-2);padding-left:10px}
+
+/* ===== thread + publisher ===== */
+.thread{display:flex;align-items:center;gap:13px;padding:13px 4px;border-top:1px solid var(--line)}
+.thread:first-child{border-top:none}
+.th-ic{width:34px;height:34px;border-radius:9px;flex-shrink:0;display:grid;place-items:center;font-family:var(--display);font-weight:700;color:#fff;font-size:14px;background:linear-gradient(150deg,#3b6cf0,#5a49d6)}
+.th-t{font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:7px}
+.tflag{font-family:var(--mono);font-size:10.5px;font-weight:600;border-radius:6px;padding:1px 7px;background:var(--surface);color:var(--sub)}
+.tflag.ok{background:var(--verified-soft);color:var(--verified)}
+.tflag.warn{background:var(--caution-soft);color:var(--caution)}
+.th-m{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:2px}
+.th-metric{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--sub)}
+
+footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--faint);text-align:center}
+
+@media (max-width:760px){
+  .hero,.grid,.split{grid-template-columns:1fr}
+  h1{font-size:34px}
+  .hero{padding:40px 0 28px}
+  .nav-seal{display:none}
+}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="nav"><div class="nav-in">
+  <div class="logo"><span class="mk">◆</span>oh-my<em>-skill</em></div>
+  <nav class="tabs"><a class="on">今日</a><a>浏览</a><a>榜单</a><a>社区</a></nav>
+  <div class="nav-seal"><span class="dot"></span>79 已验证 · 0 恶意</div>
+</div></div>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Agent Skills · 认证商店</div>
+      <h1>装之前,<br>先看清它<span class="u">能碰什么</span>。</h1>
+      <p class="lede">每个 skill 都过三层安全审计、权限逐项披露、评测走可复现协议。发现是红海——我们卖的是<strong>可验证的信任</strong>。</p>
+      <div class="cli"><span class="pr">$</span> npx oh-my-skill add anthropics/skills/pdf <span class="cp">复制</span></div>
+      <div class="tstats">
+        <div><b>79</b><span>已审计 skill</span></div>
+        <div><b class="v">100%</b><span>权限已标注</span></div>
+        <div><b class="v">0</b><span>确认恶意</span></div>
+      </div>
+    </div>
+
+    <!-- signature: verification receipt -->
+    <div class="receipt" role="img" aria-label="审计回执">
+      <div class="top">
+        <div class="stamp">✓</div>
+        <div><div class="t">审计回执 / AUDIT RECEIPT</div><div class="s">anthropics/skills/pdf@2.1.0</div></div>
+      </div>
+      <div class="perf"></div>
+      <div class="rrow"><span class="k">L1 静态签名</span><span class="val tick">通过 ✓</span></div>
+      <div class="rrow"><span class="k">L2 脚本数据流</span><span class="val tick">通过 ✓</span></div>
+      <div class="rrow"><span class="k">L3 意图审查</span><span class="val tick">通过 ✓</span></div>
+      <div class="rrow"><span class="k">network</span><span class="val na">none · 不联网</span></div>
+      <div class="rrow"><span class="k">content_hash</span><span class="val">sha256 3f9a…c1</span></div>
+      <div class="foot"><span>scanned 2026-07-01</span><span>可在 catalog 仓复核 ↗</span></div>
+    </div>
+  </section>
+
+  <!-- FEATURED -->
+  <section class="sec">
+    <div class="sec-h"><h2>今日精选</h2><span class="n">// 已验证发布者</span><a>查看榜单 →</a></div>
+    <div class="grid">
+
+      <div class="sk">
+        <div class="sk-top">
+          <div class="sk-ic">P</div>
+          <div style="flex:1;min-width:0">
+            <div class="sk-nm">pdf</div>
+            <div class="pub">anthropics <span class="vchip">◆ 已认证</span></div>
+          </div>
+          <button class="get">获取</button>
+        </div>
+        <div class="sk-desc">填表、合并、拆分、抽取文本与表格——PDF 全流程处理。</div>
+        <div class="pfac">
+          <span class="pf warn">📜 脚本</span><span class="pf ok">🌐 无外联</span>
+          <span class="pf">📂 仅工作目录</span><span class="pf ok">🔑 无环境变量</span><span class="pf ok">⚙️ 无外部命令</span>
+        </div>
+        <div class="astrip"><span class="ok">✓ L1·L2·L3</span><span>net:none</span><span class="sp mono">~2.9K tok · ⬇ 48.2K</span></div>
+      </div>
+
+      <div class="sk">
+        <div class="sk-top">
+          <div class="sk-ic sec-ic">O</div>
+          <div style="flex:1;min-width:0">
+            <div class="sk-nm">openclaw-secure-linux-cloud</div>
+            <div class="pub">xixu-me</div>
+          </div>
+          <button class="get review">待复核</button>
+        </div>
+        <div class="sk-desc">在隔离云环境里安全运行不可信 skill 与脚本。</div>
+        <div class="pfac">
+          <span class="pf warn">📜 脚本</span><span class="pf warn">🌐 含外联</span>
+          <span class="pf">📂 工作目录</span><span class="pf ok">🔑 无环境变量</span><span class="pf warn">⚙️ 外部命令</span>
+        </div>
+        <div class="astrip"><span style="color:var(--caution)">⚠ 外联待人工复核</span><span class="sp mono">~4.1K tok · ⬇ 6.0K</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SIGNATURE: nutrition label -->
+  <section class="sec">
+    <div class="sec-h"><h2>权限营养标签</h2><span class="n">// 结构化披露,不是背书</span></div>
+    <div class="split">
+      <div class="nfacts">
+        <div class="hd"><div class="t">权限营养标签</div><div class="s">Permission Facts · anthropics/skills/pdf</div></div>
+        <div class="bar"></div>
+        <div class="nf-row"><div><div class="nf-k">脚本执行 <em>scripts</em></div><div class="nf-ev">scripts/fill_form.py · 无网络调用</div></div><div class="nf-v warn">2 个 Python</div></div>
+        <div class="nf-row"><div><div class="nf-k">网络请求 <em>network</em></div><div class="nf-ev">静态扫描未发现出站连接</div></div><div class="nf-v ok">无</div></div>
+        <div class="nf-row"><div><div class="nf-k">文件读写 <em>filesystem</em></div><div class="nf-ev">仅当前工作目录,无家目录访问</div></div><div class="nf-v">工作目录</div></div>
+        <div class="nf-row"><div><div class="nf-k">环境变量 <em>env_access</em></div><div class="nf-ev">未读取任何环境变量或密钥</div></div><div class="nf-v ok">无</div></div>
+        <div class="nf-row"><div><div class="nf-k">外部命令 <em>external_commands</em></div><div class="nf-ev">未调用子进程 / shell</div></div><div class="nf-v ok">无</div></div>
+      </div>
+      <div class="note-card">
+        <h3>可复现评测 <span class="mono" style="font-size:12px;color:var(--faint)">开发中</span></h3>
+        <p>任务集 + 确定性校验器 + runner 开放成可复现协议。上线后货架分数带 runner / 模型元数据,可复现、可挑战——公信力来自可复现性,不是平台背书。</p>
+        <div class="kv"><span>hosting</span><span>mirrored · Apache-2.0</span></div>
+        <div class="kv"><span>upstream_commit</span><span>a1b2c3d</span></div>
+        <div class="kv"><span>token / 次加载</span><span>~2,950</span></div>
+        <div class="disc">全站只说「已扫描 / 已评测」,从不承诺「保证安全」。标签帮你自己判断,不替你担保。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY -->
+  <section class="sec">
+    <div class="sec-h"><h2>社区</h2><span class="n">// 评价需已验证安装</span><a>进入社区 →</a></div>
+    <div class="note-card" style="padding:8px 18px">
+      <div class="thread"><div class="th-ic">X</div><div style="flex:1;min-width:0"><div class="th-t"><span class="tflag ok">已复现</span>第二模型交叉跑 xlsx,分数稳定复现</div><div class="th-m">anthropics/skills/xlsx · benchmark_joe · 1 天前 · #可复现</div></div><div class="th-metric">💬 5</div></div>
+      <div class="thread"><div class="th-ic sec-ic" style="background:linear-gradient(150deg,#0e7a58,#12805c)">P</div><div style="flex:1;min-width:0"><div class="th-t"><span class="tflag warn">存疑</span>复现 pptx 版式还原:我这边跑到 8.1,元数据已附</div><div class="th-m">anthropics/skills/pptx · repro_kate · 4 小时前 · #可复现</div></div><div class="th-metric">💬 11</div></div>
+      <div class="thread"><div class="th-ic" style="background:#c9c9cf">◆</div><div style="flex:1;min-width:0"><div class="th-t"><span class="tflag">置顶</span>下架公告:第三方源 quick-mailer 含 base64 外传指令,已移除并复盘</div><div class="th-m">oh-my-skill 安全组 · 2 天前 · #安全复盘</div></div></div>
+    </div>
+  </section>
+
+  <footer>已扫描 ≠ 保证安全:标签是披露,不是背书 · 审计数据与本站同源于公开 catalog 仓 · 重设计预览(应用 frontend-design 技能)</footer>
+
+</div>
+</body>
+</html>

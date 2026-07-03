@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>审计流程 — 三层扫描 + 人工复核闭环</title>
+<style>
+  :root{
+    --bg:#f5f5f7; --card:#fff; --ink:#1d1d1f; --sub:#6e6e73; --faint:#86868b;
+    --line:#e6e6ea; --accent:#3b6cf0; --accent-soft:#edf2fe; --ok:#2e9e5b; --warn:#c77b12; --bad:#d0342c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;}
+  .wrap{max-width:880px;margin:0 auto;padding:40px 20px 64px;}
+  a{color:var(--accent);text-decoration:none;} a:hover{text-decoration:underline;}
+  .kicker{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;text-transform:uppercase;}
+  h1{font-size:28px;font-weight:800;margin:6px 0 4px;}
+  .meta{font-size:13px;color:var(--faint);margin-bottom:18px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;margin-top:22px;}
+  h2{font-size:19px;font-weight:800;margin-bottom:14px;}
+  h2 .no{color:var(--accent);margin-right:8px;}
+  h3{font-size:14.5px;font-weight:700;margin:18px 0 8px;}
+  p{font-size:14px;margin-bottom:10px;}
+  p:last-child{margin-bottom:0;}
+  ul,ol{font-size:14px;margin:0 0 10px 20px;}
+  li{margin-bottom:6px;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;}
+  th{text-align:left;color:var(--faint);font-weight:600;font-size:11.5px;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--sub);}
+  tr:last-child td{border-bottom:none;}
+  td:first-child{color:var(--ink);font-weight:600;}
+  .pill{display:inline-block;font-size:11px;border-radius:8px;padding:1px 8px;background:#f0f0f3;color:var(--sub);white-space:nowrap;}
+  .pill.ok{background:#e7f5ec;color:var(--ok);font-weight:700;}
+  .pill.warn{background:#fdf3e4;color:var(--warn);font-weight:700;}
+  .pill.bad{background:#fdeae8;color:var(--bad);font-weight:700;}
+  .callout{background:var(--accent-soft);border-radius:12px;padding:13px 16px;font-size:13.5px;margin:12px 0;}
+  .callout b{color:var(--accent);}
+  .callout.risk{background:#fdf3e4;} .callout.risk b{color:var(--warn);}
+  pre{background:#14181f;color:#d6dde6;border-radius:12px;padding:16px;font-size:12px;line-height:1.6;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;margin:10px 0;}
+  pre .c{color:#6e7a8a;} pre .k{color:#8ab4f8;} pre .s{color:#9ecb88;}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f0f0f3;border-radius:5px;padding:1px 6px;}
+  .flow{font-size:13px;background:var(--bg);border-radius:12px;padding:12px 16px;margin:10px 0;color:var(--ink);}
+  .flow b{color:var(--accent);}
+  .layer{display:inline-block;font-size:11px;font-weight:800;border-radius:7px;padding:1px 9px;margin-right:6px;color:#fff;}
+  .layer.l1{background:var(--bad);} .layer.l2{background:var(--warn);} .layer.l3{background:var(--accent);} .layer.h{background:var(--ink);}
+  footer{margin-top:30px;font-size:12px;color:var(--faint);text-align:center;}
+  @media (max-width:680px){.tbox{overflow-x:auto;}table{min-width:620px;}}
+  @media print{body{background:#fff;}.card{border:none;padding:14px 0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="kicker">Skill Store · Audit Pipeline</div>
+<h1>审计流程</h1>
+<div class="meta">三层自动扫描 + 人工复核闭环 · 以代码实际行为为准 · 2026-07-03 · <code>packages/pipeline/src/scanners/</code> · <code>jobs/</code></div>
+
+<!-- ═══════════ 总览 ═══════════ -->
+<div class="card">
+  <h2><span class="no">0</span>总览</h2>
+  <div class="flow"><span class="layer l1">L1</span>critical 签名 → <span class="layer l2">L2</span>五因子静态分析 → <span class="layer l3">L3</span>LLM 意图审查 → <span class="layer h">人工</span>复核放行 → 结论写回 <b>skill-report.json</b> → 前端渲染权限营养标签</div>
+
+  <h3>三条设计红线</h3>
+  <table>
+    <tr><th style="width:180px">原则</th><th>含义</th></tr>
+    <tr><td>只说「已扫描」</td><td>全站措辞一律「已扫描」,绝不说「保证安全」。审计是信号披露,不是背书。</td></tr>
+    <tr><td>含网络必人工</td><td>任何命中 <code>network</code> 因子的条目一律转人工放行,自动化不放行外联行为。</td></tr>
+    <tr><td>只升不降 · fail-closed</td><td>L3 只能把风险往上调、不能下调;LLM 调用失败按「有风险」处理,不静默放过。已有人工签名的条目跳过重判。</td></tr>
+  </table>
+
+  <h3>代码模块</h3>
+  <div class="tbox"><table>
+    <tr><th>文件</th><th>职责</th></tr>
+    <tr><td><code>scanners/rules.ts</code></td><td>L1/L2 规则集 v1(critical 签名 + 五因子正则),单一来源</td></tr>
+    <tr><td><code>scanners/analyze.ts</code></td><td>扫描引擎:逐文件套规则 → 填 <code>risk_factors</code> + evidence</td></tr>
+    <tr><td><code>scanners/llm.ts</code></td><td>L3 LLM 客户端(OpenAI 兼容、防注入定界符、fail-closed)</td></tr>
+    <tr><td><code>jobs/audit.ts</code></td><td>L1/L2 主入口 <code>npm run audit</code>,顺带哈希漂移检测</td></tr>
+    <tr><td><code>jobs/audit-l3.ts</code></td><td>L3 主入口 <code>npm run audit:l3</code></td></tr>
+    <tr><td><code>jobs/review.ts</code></td><td>人工复核 CLI(approve / reject 留痕签名)</td></tr>
+  </table></div>
+</div>
+
+<!-- ═══════════ L1 ═══════════ -->
+<div class="card">
+  <h2><span class="no">①</span><span class="layer l1">L1</span>critical 签名扫描</h2>
+  <p>硬红线正则,<code>scope: any</code> 全文件扫。命中<b>即判 <code>needs_review</code></b>——但不自动 <code>reject</code>,交人工定夺(避免误报直接毙掉合规 skill)。规则版本 <code>rules-v1</code>。</p>
+  <div class="tbox"><table>
+    <tr><th>规则 id</th><th>拦截目标</th></tr>
+    <tr><td><code>l1-aws-key</code></td><td>内嵌 AWS Access Key(AKIA…)</td></tr>
+    <tr><td><code>l1-gh-token</code></td><td>内嵌 GitHub token(ghp_/gho_…)</td></tr>
+    <tr><td><code>l1-private-key</code></td><td>内嵌私钥块(-----BEGIN … PRIVATE KEY-----)</td></tr>
+    <tr><td><code>l1-pipe-shell</code></td><td>远程脚本管道执行(<code>curl … | bash</code>)</td></tr>
+    <tr><td><code>l1-b64-exec</code></td><td>base64 解码后执行 / <code>eval(atob())</code>(混淆)</td></tr>
+    <tr><td><code>l1-destructive</code></td><td>破坏性删除(<code>rm -rf /</code> 或 <code>~</code>)</td></tr>
+    <tr><td><code>l1-cred-paths</code></td><td>引用凭证文件(.ssh/id_*、.aws/credentials、.netrc、.docker/config.json)</td></tr>
+  </table></div>
+</div>
+
+<!-- ═══════════ L2 ═══════════ -->
+<div class="card">
+  <h2><span class="no">②</span><span class="layer l2">L2</span>五因子静态分析</h2>
+  <p>按行为把风险归为四类因子 + 脚本清点,生成详情页那套「权限营养标签」。规则版本 <code>static-v1</code>。<code>scope</code> 控制匹配范围:<code>script</code>=脚本文件、<code>fence</code>=SKILL.md 代码块内(让 agent 执行的命令)、<code>any</code>=所有文本。</p>
+  <div class="callout"><b>刻意排除的主要误报源:</b>md 正文里的普通 http 链接是文档引用,不算 <code>network</code>。只有脚本里的真实网络调用、或 SKILL.md 指令让 agent 去拉远程 URL,才计入。</div>
+  <div class="tbox"><table>
+    <tr><th>因子</th><th>代表规则</th><th>命中示例</th></tr>
+    <tr><td>network</td><td>net-py / net-js / net-socket / <b>net-sdk</b> / <b>net-remote-inst</b> / net-cli</td><td>requests·fetch·socket;anthropic/openai SDK;指令 WebFetch 远程 URL;curl/wget/ssh</td></tr>
+    <tr><td>filesystem</td><td>fs-write-py / fs-write-js / fs-escape / fs-home</td><td>写删文件;<code>../../</code> 越权;访问 ~/.ssh、~/.aws 等家目录敏感位</td></tr>
+    <tr><td>env_access</td><td>env-py / env-js / env-sh</td><td>os.environ·process.env;引用 *_KEY / *_TOKEN / *_SECRET</td></tr>
+    <tr><td>external_commands</td><td>cmd-py / cmd-js / cmd-osa</td><td>subprocess·child_process;osascript·powershell</td></tr>
+    <tr><td>scripts</td><td>(采集期清点)</td><td>可执行文件数量 + 前 20 条 evidence,pre-audit 提示</td></tr>
+  </table></div>
+  <div class="callout risk"><b>L3 反哺的两条补丁:</b><code>net-sdk</code>——anthropic/openai 客户端的隐式网络(曾被 mcp-builder 逃过 L2);<code>net-remote-inst</code>——SKILL.md 里让 agent 拉远程 URL 并遵循的「远程指令面」(曾被 writing-guidelines 逃过)。两处均由真实 L3 跑出后回补进静态规则。</div>
+</div>
+
+<!-- ═══════════ L3 ═══════════ -->
+<div class="card">
+  <h2><span class="no">③</span><span class="layer l3">L3</span>LLM 意图审查</h2>
+  <p>静态规则看「用了什么能力」,L3 看「意图是否恶意」。OpenAI 兼容接口,env 配 <code>LLM_BASE_URL</code> / <code>LLM_API_KEY</code> / <code>LLM_MODEL</code>,<code>LLM_MOCK=1</code> 空跑测管路。四条硬约束:</p>
+  <ul>
+    <li><b>防注入定界符</b>:被审内容包在定界符内,skill 文本无法伪装成指令劫持审查器;</li>
+    <li><b>fail-closed</b>:调用失败 / 超时按「有风险」处理,绝不静默放过;</li>
+    <li><b>只升不降</b>:L3 只能把 <code>pass</code> 提到 <code>needs_review</code>,不能反向下调 L1/L2 的结论;</li>
+    <li><b>跳过人工签名</b>:已有 <code>review</code> 签名的条目不再被 L3 覆盖。</li>
+  </ul>
+  <div class="callout"><b>真实跑记录(deepseek-v4-flash · 用户本机):</b>19 条 → 14 clean / 5 升级,复核后全放行;两个真发现即上方 <code>net-sdk</code> / <code>net-remote-inst</code> 补丁来源。推荐分层:DeepSeek/Qwen 全量初筛 + 强模型复查可疑项,异构双模型交叉降低注入风险。</div>
+</div>
+
+<!-- ═══════════ 人工复核 ═══════════ -->
+<div class="card">
+  <h2><span class="no">④</span><span class="layer h">人工</span>复核放行</h2>
+  <p>所有 <code>needs_review</code> 由人工经 <code>jobs/review.ts</code> CLI 处置(<code>approve</code> / <code>reject</code>),结论带签名 note 写入 <code>security_audit.review</code> 留痕。<code>audit.ts</code> 重审时检测到 <code>prev.review</code> 即<b>保留人工结论</b>,不被自动扫描覆盖。</p>
+</div>
+
+<!-- ═══════════ 判定逻辑 ═══════════ -->
+<div class="card">
+  <h2><span class="no">⑤</span>needs_review 判定逻辑</h2>
+  <p>四个触发条件命中任一 → <code>needs_review</code>,否则 <code>pass</code>(逻辑在 <code>audit.ts</code>):</p>
+  <div class="tbox"><table>
+    <tr><th>触发</th><th>原因</th></tr>
+    <tr><td>L1 critical 命中</td><td>疑似密钥 / 危险执行 → 人工定夺(不自动 reject)</td></tr>
+    <tr><td><code>network.present</code></td><td>设计红线:含外联一律人工放行</td></tr>
+    <tr><td><code>env_access</code> + <code>external_commands</code></td><td>读凭证类环境变量 <b>且</b> 执行外部命令 → 组合风险(外泄链路)</td></tr>
+    <tr><td>content_hash 漂移</td><td>上游内容已变,采集期指纹失配 → 需重新采集重审</td></tr>
+  </table></div>
+  <pre><span class="c">// audit.ts 判定(简化)</span>
+<span class="k">if</span> (analysis.criticalHits.length) reasons.push(<span class="s">"L1 命中 critical 签名"</span>);
+<span class="k">if</span> (factors.network?.present)      reasons.push(<span class="s">"含外部网络请求(红线)"</span>);
+<span class="k">if</span> (factors.env_access?.present && factors.external_commands?.present)
+                                    reasons.push(<span class="s">"env + cmd 组合风险"</span>);
+<span class="k">if</span> (drifted)                       reasons.push(<span class="s">"content_hash 漂移"</span>);
+status = prev.review ? prev.status : reasons.length ? <span class="s">"needs_review"</span> : <span class="s">"pass"</span>;</pre>
+</div>
+
+<!-- ═══════════ 运行 ═══════════ -->
+<div class="card">
+  <h2><span class="no">⑥</span>运行与调度</h2>
+  <pre>npm run audit                 <span class="c"># L1/L2,默认只审 status=pending</span>
+npm run audit -- <span class="k">--all</span>       <span class="c"># 全量重审</span>
+npm run audit -- <span class="k">--repo</span> <span class="s">owner/repo</span>  <span class="c"># 按仓过滤</span>
+npm run audit:l3              <span class="c"># L3 意图审查(需 LLM_* env)</span>
+node .../review.ts approve|reject &lt;id&gt;  <span class="c"># 人工复核留痕</span></pre>
+  <p>CI:<code>.github/workflows/audit.yml</code>,<code>workflow_dispatch</code> 手动触发(大批量 / 沙箱限速的条目留给云端跑)。</p>
+
+  <h3>当前状态(2026-07-03)</h3>
+  <ul>
+    <li>首批 27 条:19 pass / 8 needs_review → 复核全放行,<span class="pill ok">27/27 pass</span>;</li>
+    <li>最新批次沙箱跑 28/46:25 pass + 3 needs_review(agentspace L1 critical、lark-doc 网络+漂移、lark-openapi-explorer 网络),待复核;</li>
+    <li>剩 18 条卡在沙箱代理对 microsoft/azure-skills 的 clone 限速(环境问题非代码),留 <code>audit.yml</code> dispatch 跑。</li>
+  </ul>
+</div>
+
+<footer>Skill Store · 审计流程 · 2026-07-03 · 三层扫描 + 人工复核闭环全部真实跑通</footer>
+</div>
+</body>
+</html>
