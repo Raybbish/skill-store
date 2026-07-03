@@ -1,0 +1,225 @@
+{
+  "schema_version": "1",
+  "meta": {
+    "id": "anthropics/skills/web-artifacts-builder",
+    "name": "web-artifacts-builder",
+    "description": "Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (React, Tailwind CSS, shadcn/ui). Use for complex artifacts requiring state management, routing, or shadcn/ui components - not for simple single-file HTML/JSX artifacts.",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/web-artifacts-builder",
+    "upstream_commit": "9d2f1ae187231d8199c64b5b762e1bdf2244733d",
+    "content_hash": "sha256:a511e66e559d1a3cd13d2c3f1ae18f4ad22c6620aa0d42357d877cd55b99b001",
+    "license": "Apache-2.0",
+    "hosting": "mirrored",
+    "mirror_complete": true,
+    "category": null,
+    "version": null,
+    "publisher": "anthropics",
+    "publisher_verified": false,
+    "duplicate_of": null
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "security_audit": {
+    "status": "pass",
+    "audited_at": "2026-07-02T06:34:24.736Z",
+    "scanner_versions": {
+      "l1": "rules-v1",
+      "l2": "static-v1",
+      "l3_model": "deepseek-v4-flash"
+    },
+    "risk_factors": {
+      "scripts": {
+        "present": true,
+        "detail": "2 个脚本文件"
+      },
+      "network": {
+        "present": false
+      },
+      "filesystem": {
+        "present": true,
+        "detail": "Node 文件写/删(1 处证据)"
+      },
+      "env_access": {
+        "present": false
+      },
+      "external_commands": {
+        "present": false
+      }
+    },
+    "evidence": [
+      {
+        "factor": "filesystem",
+        "file": "scripts/init-artifact.sh",
+        "line": 234,
+        "note": "fs-write-js: Node 文件写/删"
+      }
+    ],
+    "l3": {
+      "model": "deepseek-v4-flash",
+      "at": "2026-07-02T06:51:17.966Z",
+      "verdict": {
+        "intent_summary": "帮助用户创建并打包React+TypeScript前端项目为单HTML artifact，用于Claude对话中展示。",
+        "doc_code_consistent": true,
+        "hidden_instructions": false,
+        "injection_suspected": false,
+        "exfiltration_path": false,
+        "notes": []
+      }
+    }
+  },
+  "signals": {
+    "stars_github": null,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-07-02T04:31:31.221Z"
+  },
+  "token_cost": {
+    "body_tokens": 768,
+    "method": "chars/4-estimate"
+  },
+  "eval": {
+    "category": "doc-generation",
+    "runner": "mock-v1",
+    "evaluated_at": "2026-07-02T09:26:36.254Z",
+    "score": 10,
+    "lift_pp": 100,
+    "tasks": [
+      {
+        "task": "csv-to-xlsx-sum",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-xlsx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 workbook.xml 与至少一张工作表"
+            },
+            {
+              "id": "data-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留全部数据行(命中部门 3/3)"
+            },
+            {
+              "id": "sum-formula",
+              "pass": true,
+              "weight": 3,
+              "note": "合计用 SUM 公式(而非写死数字)"
+            },
+            {
+              "id": "total-correct",
+              "pass": true,
+              "weight": 1,
+              "note": "合计值 68000 正确"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-xlsx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 xlsx 解压——产物不是合法 Excel 文档"
+            }
+          ]
+        },
+        "delta": 1
+      },
+      {
+        "task": "md-to-docx-toc",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-docx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 [Content_Types].xml 与 word/document.xml"
+            },
+            {
+              "id": "heading-1",
+              "pass": true,
+              "weight": 2,
+              "note": "正文使用 Heading 1 样式"
+            },
+            {
+              "id": "heading-2",
+              "pass": true,
+              "weight": 1,
+              "note": "正文使用 Heading 2 样式"
+            },
+            {
+              "id": "has-toc",
+              "pass": true,
+              "weight": 2,
+              "note": "包含自动生成的目录字段"
+            },
+            {
+              "id": "content-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留原文关键内容(命中 4/4)"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-docx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 docx 解压——产物不是合法 Word 文档"
+            }
+          ]
+        },
+        "delta": 1
+      },
+      {
+        "task": "md-to-pptx-deck",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-pptx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 presentation.xml 与至少一张幻灯片"
+            },
+            {
+              "id": "slide-count",
+              "pass": true,
+              "weight": 3,
+              "note": "分页数量达标(4 页,期望 ≥4)"
+            },
+            {
+              "id": "title-slide",
+              "pass": true,
+              "weight": 2,
+              "note": "含标题页占位符"
+            },
+            {
+              "id": "content-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留提纲各节(命中 3/3)"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-pptx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 pptx 解压——产物不是合法 PowerPoint"
+            }
+          ]
+        },
+        "delta": 1
+      }
+    ]
+  }
+}

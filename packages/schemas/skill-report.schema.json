@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Raybbish/skill-store/packages/schemas/skill-report.schema.json",
   "title": "SkillReport",
-  "description": "Skill Store catalog entry, v1. One file per skill under catalog/skills/<owner>/<name>/skill-report.json",
+  "description": "Skill Store catalog entry, v1. One file per skill under catalog/skills/<owner>/<repo>/<name>/skill-report.json",
   "type": "object",
   "required": ["schema_version", "meta", "security_audit"],
   "properties": {
@@ -11,7 +11,7 @@
       "type": "object",
       "required": ["id", "name", "upstream", "upstream_commit", "content_hash", "license", "hosting"],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9._-]+$", "description": "规范 ID:owner/name" },
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9._-]+/[a-z0-9._-]+$", "description": "规范 ID:owner/repo/name(owner、repo 小写;消除同 owner 跨仓同名 skill 撞 id)" },
         "name": { "type": "string", "maxLength": 64 },
         "description": { "type": "string", "maxLength": 1024 },
         "upstream": { "type": "string", "description": "上游仓库内路径 URL" },
@@ -75,6 +75,8 @@
             "properties": { "list": { "type": "string" }, "category": { "type": "string" } }
           }
         },
+        "repo_skill_count": { "type": "integer", "description": "采集时上游仓库内 SKILL.md 总数(巨仓降权信号)" },
+        "bulk_source": { "type": "boolean", "description": "上游仓库 skill 数超过每仓上限(MAX_PER_REPO),本条目来自折叠采样收录" },
         "fetched_at": { "type": "string", "format": "date-time" }
       }
     },

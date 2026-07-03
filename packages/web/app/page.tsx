@@ -4,7 +4,7 @@ import { allSkills, type Skill } from "@/lib/data";
 function Row({ s }: { s: Skill }) {
   const netWarn = s.risk.network?.present === true;
   return (
-    <Link href={`/skill/${s.owner}/${s.name}/`} className="srow">
+    <Link href={`/skill/${s.owner}/${s.repo}/${s.name}/`} className="srow">
       <div className="s-icon">{s.name[0].toUpperCase()}</div>
       <div className="info">
         <div className="n">{s.id}</div>

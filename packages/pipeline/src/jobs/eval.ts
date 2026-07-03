@@ -1,18 +1,15 @@
 /**
  * eval:对指定品类下已通过审计的 skill 跑基准评测,回写 skill-report.eval。
- * 用法:npm run eval -- --category doc-generation [--id anthropics/docx] [--runner mock]
+ * 用法:npm run eval -- --category doc-generation [--id anthropics/skills/docx] [--runner mock]
  * 目前仅 mock runner;真实 runner(接 agent runtime)后续加入 runner/ 并在此注册。
  */
-import { readFile, writeFile, readdir } from "node:fs/promises";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { writeFile } from "node:fs/promises";
 import type { SkillReport } from "@skill-store/schemas";
 import { evaluateSkill } from "../eval/score.ts";
 import { mockRunner } from "../eval/runner/mock.ts";
 import type { EvalRunner } from "../eval/types.ts";
+import { loadCatalogEntries } from "../catalog.ts";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
-const CATALOG = join(ROOT, "catalog", "skills");
 const RUNNERS: Record<string, EvalRunner> = { mock: mockRunner };
 
 function arg(n: string) { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] : undefined; }
@@ -32,15 +29,7 @@ async function main() {
   const runner = RUNNERS[arg("runner") ?? "mock"];
   if (!runner) throw new Error(`未知 runner: ${arg("runner")}`);
 
-  const entries: { path: string; report: SkillReport }[] = [];
-  for (const owner of await readdir(CATALOG)) {
-    for (const name of await readdir(join(CATALOG, owner))) {
-      try {
-        const p = join(CATALOG, owner, name, "skill-report.json");
-        entries.push({ path: p, report: JSON.parse(await readFile(p, "utf8")) });
-      } catch { /* skip */ }
-    }
-  }
+  const entries = await loadCatalogEntries();
 
   const todo = entries.filter((e) =>
     (onlyId ? e.report.meta.id === onlyId : inCategory(e.report, category)) &&

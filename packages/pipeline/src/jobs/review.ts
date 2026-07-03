@@ -8,13 +8,9 @@
  *   npm run review -- --reject  <id> --by <name> --note "…"
  *   npm run review -- --approve-all --by <name> --note "…" # 批量放行(慎用)
  */
-import { readFile, writeFile, readdir } from "node:fs/promises";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { writeFile } from "node:fs/promises";
 import type { SkillReport } from "@skill-store/schemas";
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
-const CATALOG = join(ROOT, "catalog", "skills");
+import { loadCatalogEntries } from "../catalog.ts";
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
@@ -25,17 +21,7 @@ const has = (name: string) => process.argv.includes(`--${name}`);
 interface Entry { path: string; report: SkillReport; }
 
 async function loadQueue(): Promise<Entry[]> {
-  const out: Entry[] = [];
-  for (const owner of await readdir(CATALOG)) {
-    for (const name of await readdir(join(CATALOG, owner))) {
-      const p = join(CATALOG, owner, name, "skill-report.json");
-      try {
-        const report = JSON.parse(await readFile(p, "utf8")) as SkillReport;
-        if (report.security_audit.status === "needs_review") out.push({ path: p, report });
-      } catch { /* skip */ }
-    }
-  }
-  return out;
+  return (await loadCatalogEntries()).filter((e) => e.report.security_audit.status === "needs_review");
 }
 
 async function decide(e: Entry, verdict: "pass" | "rejected", by: string, note: string) {

@@ -3,18 +3,16 @@
  * 升级规则(只升不降):任何可疑 flag / 调用失败 → needs_review;pass 保持 pass 并记录 l3 结果。
  * 已 rejected 或已人工复核(有 review 签名)的条目跳过,避免覆盖人工决定。
  *
- * 用法:npm run audit:l3 [-- --limit N] [-- --id owner/name]
+ * 用法:npm run audit:l3 [-- --limit N] [-- --id owner/repo/name]
  * 环境:LLM_BASE_URL / LLM_API_KEY / LLM_MODEL,或 LLM_MOCK=1
  */
-import { readFile, writeFile, readdir } from "node:fs/promises";
-import { join, dirname, relative } from "node:path";
-import { fileURLToPath } from "node:url";
+import { readFile, writeFile } from "node:fs/promises";
+import { join, relative } from "node:path";
 import type { SkillReport } from "@skill-store/schemas";
 import { cloneShallow } from "../git.ts";
 import { l3Review, buildReviewContent } from "../scanners/llm.ts";
+import { loadCatalogEntries } from "../catalog.ts";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
-const CATALOG = join(ROOT, "catalog", "skills");
 const SCRIPT_EXT = /\.(py|sh|bash|zsh|js|mjs|cjs|ts|rb|pl|ps1)$/i;
 
 function arg(n: string) { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] : undefined; }
@@ -30,16 +28,7 @@ async function main() {
   const limit = arg("limit") ? Number(arg("limit")) : Infinity;
   const onlyId = arg("id");
 
-  const entries: Entry[] = [];
-  for (const owner of await readdir(CATALOG)) {
-    for (const name of await readdir(join(CATALOG, owner))) {
-      try {
-        const p = join(CATALOG, owner, name, "skill-report.json");
-        const report = JSON.parse(await readFile(p, "utf8"));
-        entries.push({ path: p, report });
-      } catch { /* skip */ }
-    }
-  }
+  const entries = (await loadCatalogEntries()) as Entry[];
 
   const todo = entries.filter((e) => {
     const sa = e.report.security_audit;

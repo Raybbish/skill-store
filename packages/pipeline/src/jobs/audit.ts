@@ -10,47 +10,28 @@
  *   - content_hash 漂移       → needs_review(上游已变更,需重新采集)
  *   - 其余                    → pass
  */
-import { readFile, writeFile, readdir } from "node:fs/promises";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-import type { SkillReport } from "@skill-store/schemas";
+import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { cloneShallow } from "../git.ts";
 import { contentHash } from "../hash.ts";
 import { analyzeSkillDir } from "../scanners/analyze.ts";
 import { SCANNER_VERSIONS } from "../scanners/rules.ts";
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
-const CATALOG = join(ROOT, "catalog", "skills");
-
-interface Entry { path: string; report: SkillReport; }
+import { loadCatalogEntries } from "../catalog.ts";
 
 function parseUpstream(url: string): { repoSlug: string; dir: string } | null {
   const m = url.match(/github\.com\/([^/]+\/[^/]+)\/tree\/[^/]+\/?(.*)$/);
   return m ? { repoSlug: m[1], dir: m[2] ? m[2] + "/" : "" } : null;
 }
 
-async function loadEntries(): Promise<Entry[]> {
-  const out: Entry[] = [];
-  for (const owner of await readdir(CATALOG)) {
-    for (const name of await readdir(join(CATALOG, owner))) {
-      const p = join(CATALOG, owner, name, "skill-report.json");
-      try {
-        out.push({ path: p, report: JSON.parse(await readFile(p, "utf8")) });
-      } catch { /* 忽略非条目目录 */ }
-    }
-  }
-  return out;
-}
-
 async function main() {
   const all = process.argv.includes("--all");
-  const entries = (await loadEntries()).filter(
+  const entries = (await loadCatalogEntries()).filter(
     (e) => all || e.report.security_audit.status === "pending",
   );
   console.log(`待审计条目: ${entries.length}`);
 
   // 按上游仓分组,每仓只 clone 一次
-  const byRepo = new Map<string, Entry[]>();
+  const byRepo = new Map<string, typeof entries>();
   for (const e of entries) {
     const up = parseUpstream(e.report.meta.upstream);
     if (!up) { console.warn(`  ✗ 无法解析上游: ${e.report.meta.id}`); continue; }

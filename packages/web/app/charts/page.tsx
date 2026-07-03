@@ -5,7 +5,7 @@ function List({ skills, metric }: { skills: ReturnType<typeof allSkills>; metric
   return (
     <>
       {skills.map((s, i) => (
-        <Link href={`/skill/${s.owner}/${s.name}/`} className="srow" key={s.id}>
+        <Link href={`/skill/${s.owner}/${s.repo}/${s.name}/`} className="srow" key={s.id}>
           <div style={{ width: 22, textAlign: "center", fontWeight: 700, color: "var(--faint)", flexShrink: 0 }}>{i + 1}</div>
           <div className="s-icon" style={{ width: 40, height: 40, fontSize: 17 }}>{s.name[0].toUpperCase()}</div>
           <div className="info"><div className="n" style={{ fontSize: 13.5 }}>{s.id}</div></div>

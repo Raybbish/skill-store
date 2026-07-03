@@ -54,7 +54,7 @@ export default function BrowseClient({ skills }: { skills: Skill[] }) {
 
       <div className="card" style={{ padding: "8px 14px" }}>
         {list.map((s) => (
-          <Link href={`/skill/${s.owner}/${s.name}/`} className="srow" key={s.id}>
+          <Link href={`/skill/${s.owner}/${s.repo}/${s.name}/`} className="srow" key={s.id}>
             <div className="s-icon">{s.name[0].toUpperCase()}</div>
             <div className="info">
               <div className="n">{s.id}</div>

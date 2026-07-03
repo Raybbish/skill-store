@@ -22,7 +22,7 @@ npm run ingest -- --source anthropics/skills   # 只跑一个源
 npm run ingest -- --limit 10           # 限量试跑
 ```
 
-产出在 `catalog/skills/<owner>/<name>/skill-report.json`;`mirrored` 条目附完整 `mirror/` 副本。
+产出在 `catalog/skills/<owner>/<repo>/<name>/skill-report.json`;`mirrored` 条目附完整 `mirror/` 副本。
 
 > 采集走 **git shallow clone**(无 API 限流、可完整镜像);GitHub API 仅用于 signals
 > 补充(stars 等,见 `github.ts`),在 API 可达环境(如 GitHub Actions)运行。
@@ -43,7 +43,7 @@ npm run ingest -- --limit 10           # 限量试跑
 - [x] W3b Supabase 同步:`npm run sync`(增量,游标存 sync_state;infra/schema.sql 建表;sync.yml 自动触发)
 - [x] W3c 供给扩量:GitHub 全域采集器 `npm run ingest -- --github-search 100`(按 skill topic 搜头部仓,注入 stars);skills.sh 私有 registry 备选(endpoint 待确认)
 - [x] W4 商店前端:Next.js 纯静态导出,构建时直读 catalog;`npm run web` 本地预览,`npm run web:build` 出静态站
-- [x] W5 CLI:`node packages/cli/bin/oh-my-skill.mjs add <owner/name>` — 安装前营养标签确认,逐文件复算 blob sha 校验 content_hash,篡改即拒装
+- [x] W5 CLI:`node packages/cli/bin/oh-my-skill.mjs add <owner/repo/name>` — 安装前营养标签确认,逐文件复算 blob sha 校验 content_hash,篡改即拒装
 
 ## M1 评测(进行中)
 

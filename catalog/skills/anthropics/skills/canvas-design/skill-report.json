@@ -1,0 +1,221 @@
+{
+  "schema_version": "1",
+  "meta": {
+    "id": "anthropics/skills/canvas-design",
+    "name": "canvas-design",
+    "description": "Create beautiful visual art in .png and .pdf documents using design philosophy. You should use this skill when the user asks to create a poster, piece of art, design, or other static piece. Create original visual designs, never copying existing artists' work to avoid copyright violations.",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/canvas-design",
+    "upstream_commit": "9d2f1ae187231d8199c64b5b762e1bdf2244733d",
+    "content_hash": "sha256:322a06fc3ee6e0e2178aa5b34026fb1fa5c9caf5bca6e05ad9f379d3d822c3a8",
+    "license": "Apache-2.0",
+    "hosting": "mirrored",
+    "mirror_complete": true,
+    "category": null,
+    "version": null,
+    "publisher": "anthropics",
+    "publisher_verified": false,
+    "duplicate_of": null
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "security_audit": {
+    "status": "pass",
+    "audited_at": "2026-07-02T06:34:24.736Z",
+    "scanner_versions": {
+      "l1": "rules-v1",
+      "l2": "static-v1",
+      "l3_model": "deepseek-v4-flash"
+    },
+    "risk_factors": {
+      "scripts": {
+        "present": false
+      },
+      "network": {
+        "present": false
+      },
+      "filesystem": {
+        "present": false
+      },
+      "env_access": {
+        "present": false
+      },
+      "external_commands": {
+        "present": false
+      }
+    },
+    "evidence": [],
+    "l3": {
+      "model": "deepseek-v4-flash",
+      "at": "2026-07-02T06:49:46.543Z",
+      "verdict": {
+        "intent_summary": "该skill旨在根据用户输入生成设计哲学(.md)和视觉艺术作品(.pdf/.png)，强调艺术性、工艺和参考嵌入。",
+        "doc_code_consistent": true,
+        "hidden_instructions": false,
+        "injection_suspected": false,
+        "exfiltration_path": false,
+        "notes": [
+          "skill内容仅包含文本描述，无实际执行脚本；静态扫描确认无代码、网络、文件系统、环境或命令调用。",
+          "描述中提及从./canvas-fonts目录查找字体并下载，但该目录是否存在及下载行为未实现，属于设计意图而非实际代码。",
+          "要求输出.md/.pdf/.png文件，在无代码的情况下仅靠AI模型模拟，不构成实际文件系统写入。",
+          "无隐藏指令、编码内容或提示注入迹象。"
+        ]
+      }
+    }
+  },
+  "signals": {
+    "stars_github": null,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-07-02T04:31:31.221Z"
+  },
+  "token_cost": {
+    "body_tokens": 2984,
+    "method": "chars/4-estimate"
+  },
+  "eval": {
+    "category": "doc-generation",
+    "runner": "mock-v1",
+    "evaluated_at": "2026-07-02T09:26:36.194Z",
+    "score": 10,
+    "lift_pp": 100,
+    "tasks": [
+      {
+        "task": "csv-to-xlsx-sum",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-xlsx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 workbook.xml 与至少一张工作表"
+            },
+            {
+              "id": "data-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留全部数据行(命中部门 3/3)"
+            },
+            {
+              "id": "sum-formula",
+              "pass": true,
+              "weight": 3,
+              "note": "合计用 SUM 公式(而非写死数字)"
+            },
+            {
+              "id": "total-correct",
+              "pass": true,
+              "weight": 1,
+              "note": "合计值 68000 正确"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-xlsx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 xlsx 解压——产物不是合法 Excel 文档"
+            }
+          ]
+        },
+        "delta": 1
+      },
+      {
+        "task": "md-to-docx-toc",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-docx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 [Content_Types].xml 与 word/document.xml"
+            },
+            {
+              "id": "heading-1",
+              "pass": true,
+              "weight": 2,
+              "note": "正文使用 Heading 1 样式"
+            },
+            {
+              "id": "heading-2",
+              "pass": true,
+              "weight": 1,
+              "note": "正文使用 Heading 2 样式"
+            },
+            {
+              "id": "has-toc",
+              "pass": true,
+              "weight": 2,
+              "note": "包含自动生成的目录字段"
+            },
+            {
+              "id": "content-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留原文关键内容(命中 4/4)"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-docx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 docx 解压——产物不是合法 Word 文档"
+            }
+          ]
+        },
+        "delta": 1
+      },
+      {
+        "task": "md-to-pptx-deck",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-pptx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 presentation.xml 与至少一张幻灯片"
+            },
+            {
+              "id": "slide-count",
+              "pass": true,
+              "weight": 3,
+              "note": "分页数量达标(4 页,期望 ≥4)"
+            },
+            {
+              "id": "title-slide",
+              "pass": true,
+              "weight": 2,
+              "note": "含标题页占位符"
+            },
+            {
+              "id": "content-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留提纲各节(命中 3/3)"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-pptx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 pptx 解压——产物不是合法 PowerPoint"
+            }
+          ]
+        },
+        "delta": 1
+      }
+    ]
+  }
+}

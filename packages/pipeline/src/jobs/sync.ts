@@ -51,11 +51,12 @@ async function main() {
   let paths: string[];
   if (last) {
     const out = (await exec("git", ["-C", ROOT, "diff", "--name-only", `${last}..HEAD`, "--", "catalog/skills"])).stdout;
-    paths = [...new Set(out.split("\n").filter(Boolean).map((p) => p.split("/").slice(0, 4).join("/")))]
+    // catalog/skills/<owner>/<repo>/<name> = 5 段
+    paths = [...new Set(out.split("\n").filter(Boolean).map((p) => p.split("/").slice(0, 5).join("/")))]
       .map((p) => join(ROOT, p, "skill-report.json"));
     console.log(`增量模式 ${last.slice(0, 7)}..HEAD:${paths.length} 条变更`);
   } else {
-    const out = (await exec("git", ["-C", ROOT, "ls-files", "catalog/skills/*/*/skill-report.json"])).stdout;
+    const out = (await exec("git", ["-C", ROOT, "ls-files", "catalog/skills/*/*/*/skill-report.json"])).stdout;
     paths = out.split("\n").filter(Boolean).map((p) => join(ROOT, p));
     console.log(`全量模式:${paths.length} 条`);
   }

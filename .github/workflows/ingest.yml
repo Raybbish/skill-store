@@ -17,7 +17,7 @@ concurrency:
 jobs:
   ingest:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120 # 全源采集需逐仓 shallow clone,60 分钟可能不够
     permissions:
       contents: write
       pull-requests: write
@@ -38,7 +38,8 @@ jobs:
           if [ -n "${{ inputs.source }}" ]; then
             npm run ingest -- --source "${{ inputs.source }}"
           else
-            npm run ingest
+            # 全源采集:官方仓 + GitHub 全域 topic 头部(每仓折叠采样)+ awesome 精选信号 + skills.sh 安装量榜
+            npm run ingest -- --github-search 100 --hub-signals 300 --skills-sh 200
           fi
 
       - name: Create PR with catalog changes
@@ -52,4 +53,6 @@ jobs:
             自动采集产生的 catalog 变更。合并前请抽查:
             - 新增条目的 license/hosting 分流是否正确
             - frontmatter 不合规条目
-            - duplicate_of 标记
+            - duplicate_of 标记(canonical:已有条目 > 官方源 > stars 最高)
+            - catalog/collections/ 批量源合集条目(bulk_source 折叠采样的仓库)
+            - skills.sh 榜单解析条数(页面结构变化会解析失败,见日志)

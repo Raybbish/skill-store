@@ -27,7 +27,7 @@ export interface Evidence {
 export interface SkillReport {
   schema_version: "1";
   meta: {
-    /** owner/name */
+    /** owner/repo/name(owner、repo 小写) */
     id: string;
     name: string;
     description?: string;
@@ -58,6 +58,10 @@ export interface SkillReport {
     installs_skills_sh?: number | null;
     /** 被哪些社区精选清单收录(Hub 情报:精选信号,内容仍回上游采集) */
     curated_by?: { list: string; category: string }[];
+    /** 采集时上游仓库内 SKILL.md 总数(排序降权信号:巨仓 skill 分摊到的 stars 含金量低) */
+    repo_skill_count?: number;
+    /** 上游仓库 skill 数超过每仓上限(MAX_PER_REPO),本条目来自折叠采样收录 */
+    bulk_source?: boolean;
     fetched_at: string;
   };
   token_cost: {
@@ -65,6 +69,24 @@ export interface SkillReport {
     method: string;
   };
   eval: null;
+}
+
+/**
+ * 批量源仓库的合集条目:skill 数超过每仓上限(MAX_PER_REPO)时,
+ * 除采样收录外,catalog/collections/<owner>/<repo>.json 保留一条仓库级记录指回上游。
+ * 与 collection-report.schema.json 保持一致。
+ */
+export interface CollectionReport {
+  schema_version: "1";
+  /** owner/repo(GitHub slug,owner 小写) */
+  id: string;
+  url: string;
+  /** 采集时仓库内 SKILL.md 总数 */
+  skill_count: number;
+  /** 实际采样收录进 catalog/skills 的条数 */
+  sampled_count: number;
+  stars_github?: number | null;
+  fetched_at: string;
 }
 
 /** 宽松 licence 集合:可镜像托管 */

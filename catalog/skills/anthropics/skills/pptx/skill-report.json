@@ -1,0 +1,272 @@
+{
+  "schema_version": "1",
+  "meta": {
+    "id": "anthropics/skills/pptx",
+    "name": "pptx",
+    "description": "Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions \"deck,\" \"slides,\" \"presentation,\" or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill.",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/pptx",
+    "upstream_commit": "9d2f1ae187231d8199c64b5b762e1bdf2244733d",
+    "content_hash": "sha256:ca717d4ead084b409fd0d28876b6b592aa7e4e28d1a1765d5b4f185b253f1ffd",
+    "license": "local-file(needs-review)",
+    "hosting": "indexed",
+    "category": null,
+    "version": null,
+    "publisher": "anthropics",
+    "publisher_verified": false,
+    "duplicate_of": null
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "security_audit": {
+    "status": "pass",
+    "audited_at": "2026-07-02T06:34:24.736Z",
+    "scanner_versions": {
+      "l1": "rules-v1",
+      "l2": "static-v1"
+    },
+    "risk_factors": {
+      "scripts": {
+        "present": true,
+        "detail": "16 个脚本文件"
+      },
+      "network": {
+        "present": true,
+        "detail": "原始 socket 连接(1 处证据)"
+      },
+      "filesystem": {
+        "present": true,
+        "detail": "Python 文件写/删(3 处证据)"
+      },
+      "env_access": {
+        "present": true,
+        "detail": "Python 读环境变量(1 处证据)"
+      },
+      "external_commands": {
+        "present": true,
+        "detail": "Python 执行外部命令(3 处证据)"
+      }
+    },
+    "evidence": [
+      {
+        "factor": "filesystem",
+        "file": "scripts/add_slide.py",
+        "line": 107,
+        "note": "fs-write-py: Python 文件写/删"
+      },
+      {
+        "factor": "filesystem",
+        "file": "scripts/clean.py",
+        "line": 85,
+        "note": "fs-write-py: Python 文件写/删"
+      },
+      {
+        "factor": "filesystem",
+        "file": "scripts/office/pack.py",
+        "line": 54,
+        "note": "fs-write-py: Python 文件写/删"
+      },
+      {
+        "factor": "network",
+        "file": "scripts/office/soffice.py",
+        "line": 46,
+        "note": "net-socket: 原始 socket 连接"
+      },
+      {
+        "factor": "env_access",
+        "file": "scripts/office/soffice.py",
+        "line": 25,
+        "note": "env-py: Python 读环境变量"
+      },
+      {
+        "factor": "external_commands",
+        "file": "scripts/office/soffice.py",
+        "line": 14,
+        "note": "cmd-py: Python 执行外部命令"
+      },
+      {
+        "factor": "external_commands",
+        "file": "scripts/office/validators/redlining.py",
+        "line": 138,
+        "note": "cmd-py: Python 执行外部命令"
+      },
+      {
+        "factor": "external_commands",
+        "file": "scripts/thumbnail.py",
+        "line": 161,
+        "note": "cmd-py: Python 执行外部命令"
+      },
+      {
+        "factor": "review_reason",
+        "file": "-",
+        "note": "含外部网络请求(红线:人工放行)"
+      },
+      {
+        "factor": "review_reason",
+        "file": "-",
+        "note": "env_access + external_commands 组合风险"
+      }
+    ],
+    "review": {
+      "verdict": "pass",
+      "by": "Wittgenstein",
+      "at": "2026-07-02T06:38:38.690Z",
+      "note": "同 docx:LibreOffice 本地桥 + 转换工具链,无外传路径"
+    }
+  },
+  "signals": {
+    "stars_github": null,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-07-02T04:31:31.221Z"
+  },
+  "token_cost": {
+    "body_tokens": 2282,
+    "method": "chars/4-estimate"
+  },
+  "eval": {
+    "category": "doc-generation",
+    "runner": "mock-v1",
+    "evaluated_at": "2026-07-02T09:26:36.234Z",
+    "score": 9.3,
+    "lift_pp": 93.3,
+    "tasks": [
+      {
+        "task": "csv-to-xlsx-sum",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-xlsx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 workbook.xml 与至少一张工作表"
+            },
+            {
+              "id": "data-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留全部数据行(命中部门 3/3)"
+            },
+            {
+              "id": "sum-formula",
+              "pass": true,
+              "weight": 3,
+              "note": "合计用 SUM 公式(而非写死数字)"
+            },
+            {
+              "id": "total-correct",
+              "pass": true,
+              "weight": 1,
+              "note": "合计值 68000 正确"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-xlsx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 xlsx 解压——产物不是合法 Excel 文档"
+            }
+          ]
+        },
+        "delta": 1
+      },
+      {
+        "task": "md-to-docx-toc",
+        "with_skill": {
+          "score": 0.8,
+          "checks": [
+            {
+              "id": "valid-docx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 [Content_Types].xml 与 word/document.xml"
+            },
+            {
+              "id": "heading-1",
+              "pass": true,
+              "weight": 2,
+              "note": "正文使用 Heading 1 样式"
+            },
+            {
+              "id": "heading-2",
+              "pass": true,
+              "weight": 1,
+              "note": "正文使用 Heading 2 样式"
+            },
+            {
+              "id": "has-toc",
+              "pass": false,
+              "weight": 2,
+              "note": "包含自动生成的目录字段"
+            },
+            {
+              "id": "content-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留原文关键内容(命中 4/4)"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-docx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 docx 解压——产物不是合法 Word 文档"
+            }
+          ]
+        },
+        "delta": 0.8
+      },
+      {
+        "task": "md-to-pptx-deck",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-pptx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 presentation.xml 与至少一张幻灯片"
+            },
+            {
+              "id": "slide-count",
+              "pass": true,
+              "weight": 3,
+              "note": "分页数量达标(4 页,期望 ≥4)"
+            },
+            {
+              "id": "title-slide",
+              "pass": true,
+              "weight": 2,
+              "note": "含标题页占位符"
+            },
+            {
+              "id": "content-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留提纲各节(命中 3/3)"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-pptx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 pptx 解压——产物不是合法 PowerPoint"
+            }
+          ]
+        },
+        "delta": 1
+      }
+    ]
+  }
+}

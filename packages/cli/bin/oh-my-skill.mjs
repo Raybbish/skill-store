@@ -6,8 +6,8 @@
  *   3. 校验失败 → 拒装,绝不落盘
  *
  * 用法:
- *   oh-my-skill add <owner/name> [--yes] [--to <dir>]
- *   oh-my-skill list / remove <owner/name>
+ *   oh-my-skill add <owner/repo/name> [--yes] [--to <dir>]
+ *   oh-my-skill list / remove <owner/repo/name>
  * 数据源:默认 Supabase(OMS_API/OMS_KEY 可覆盖);
  *   --from-dir <catalog路径> 用本地 catalog(开发/测试)。
  */
@@ -126,7 +126,7 @@ async function add(id) {
   }
   console.log(`  ✓ 内容哈希校验通过 ${actual.slice(0, 27)}…`);
 
-  const dest = join(detectAgentDir(), m.id.split("/")[1]);
+  const dest = join(detectAgentDir(), m.id.split("/").at(-1)); // 落盘目录名 = id 最后一段(skill 名)
   await mkdir(dirname(dest), { recursive: true });
   await cp(srcDir, dest, { recursive: true });
   await rm(work, { recursive: true, force: true });
@@ -141,13 +141,13 @@ async function list() {
 }
 
 async function remove(id) {
-  const dest = join(detectAgentDir(), id.includes("/") ? id.split("/")[1] : id);
+  const dest = join(detectAgentDir(), id.includes("/") ? id.split("/").at(-1) : id);
   if (await confirm(`删除 ${dest}?`)) { await rm(dest, { recursive: true, force: true }); console.log("✓ 已删除"); }
 }
 
 const run = { add, list, remove }[cmd];
 if (!run || (cmd !== "list" && !target)) {
-  console.log("用法: oh-my-skill add <owner/name> [--yes] [--to <dir>] [--from-dir <catalog>] | list | remove <name>");
+  console.log("用法: oh-my-skill add <owner/repo/name> [--yes] [--to <dir>] [--from-dir <catalog>] | list | remove <name>");
   process.exit(1);
 }
 run(target).catch((e) => { console.error(e.message); process.exit(1); });

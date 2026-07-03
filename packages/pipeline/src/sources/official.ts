@@ -21,6 +21,7 @@ export interface DiscoverResult {
 export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult> {
   const owner = repoSlug.split("/")[0].toLowerCase();
   const repoName = repoSlug.split("/")[1];
+  const repoSeg = repoName.toLowerCase(); // ID 第二段:仓库名(小写),消除同 owner 跨仓同名撞 id
   const clone = await cloneShallow(repoSlug);
   const now = new Date().toISOString();
 
@@ -65,7 +66,7 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
       const report: SkillReport = {
         schema_version: "1",
         meta: {
-          id: `${owner}/${name}`,
+          id: `${owner}/${repoSeg}/${name}`,
           name,
           description: typeof fm?.description === "string" ? fm.description.slice(0, 1024) : undefined,
           upstream: `https://github.com/${repoSlug}/tree/${clone.branch}/${dir.replace(/\/$/, "")}`,

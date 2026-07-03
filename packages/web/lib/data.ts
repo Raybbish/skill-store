@@ -8,7 +8,7 @@ export interface EvalData {
   tasks: { task: string; with_skill: { score: number }; without_skill: { score: number }; delta: number }[];
 }
 export interface Skill {
-  id: string; owner: string; name: string; description?: string;
+  id: string; owner: string; repo: string; name: string; description?: string;
   license: string; hosting: string; publisher: string; upstream: string;
   status: string; risk: Record<string, Factor>;
   evidence: { factor: string; file: string; line?: number | null; note?: string }[];
@@ -24,27 +24,29 @@ const CATALOG = join(process.cwd(), "../../catalog/skills");
 export function allSkills(): Skill[] {
   const out: Skill[] = [];
   for (const owner of readdirSync(CATALOG)) {
-    for (const name of readdirSync(join(CATALOG, owner))) {
-      try {
-        const r = JSON.parse(readFileSync(join(CATALOG, owner, name, "skill-report.json"), "utf8"));
-        const sa = r.security_audit;
-        out.push({
-          id: r.meta.id, owner, name: r.meta.name, description: r.meta.description,
-          license: r.meta.license, hosting: r.meta.hosting, publisher: r.meta.publisher,
-          upstream: r.meta.upstream, status: sa.status, risk: sa.risk_factors ?? {},
-          evidence: sa.evidence ?? [], review: sa.review, l3: sa.l3,
-          tokens: r.token_cost?.body_tokens ?? 0, stars: r.signals?.stars_github,
-          curatedBy: r.signals?.curated_by ?? [],
-          eval: r.eval ?? null,
-        });
-      } catch { /* skip */ }
+    for (const repo of readdirSync(join(CATALOG, owner))) {
+      for (const name of readdirSync(join(CATALOG, owner, repo))) {
+        try {
+          const r = JSON.parse(readFileSync(join(CATALOG, owner, repo, name, "skill-report.json"), "utf8"));
+          const sa = r.security_audit;
+          out.push({
+            id: r.meta.id, owner, repo, name: r.meta.name, description: r.meta.description,
+            license: r.meta.license, hosting: r.meta.hosting, publisher: r.meta.publisher,
+            upstream: r.meta.upstream, status: sa.status, risk: sa.risk_factors ?? {},
+            evidence: sa.evidence ?? [], review: sa.review, l3: sa.l3,
+            tokens: r.token_cost?.body_tokens ?? 0, stars: r.signals?.stars_github,
+            curatedBy: r.signals?.curated_by ?? [],
+            eval: r.eval ?? null,
+          });
+        } catch { /* skip */ }
+      }
     }
   }
   return out.sort((a, b) => a.id.localeCompare(b.id));
 }
 
-export function getSkill(owner: string, name: string): Skill | undefined {
-  return allSkills().find((s) => s.owner === owner && s.name === name);
+export function getSkill(owner: string, repo: string, name: string): Skill | undefined {
+  return allSkills().find((s) => s.owner === owner && s.repo === repo && s.name === name);
 }
 
 /** 同品类已评测的 skill,按评测分降序(横评用) */

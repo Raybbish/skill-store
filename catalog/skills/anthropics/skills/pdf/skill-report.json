@@ -1,0 +1,246 @@
+{
+  "schema_version": "1",
+  "meta": {
+    "id": "anthropics/skills/pdf",
+    "name": "pdf",
+    "description": "Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables from PDFs, combining or merging multiple PDFs into one, splitting PDFs apart, rotating pages, adding watermarks, creating new PDFs, filling PDF forms, encrypting/decrypting PDFs, extracting images, and OCR on scanned PDFs to make them searchable. If the user mentions a .pdf file or asks to produce one, use this skill.",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/pdf",
+    "upstream_commit": "9d2f1ae187231d8199c64b5b762e1bdf2244733d",
+    "content_hash": "sha256:ded12aee3fc92a8a0e60412b2f170e3b286fec8a0fabd9e897e253b97d607c06",
+    "license": "local-file(needs-review)",
+    "hosting": "indexed",
+    "category": null,
+    "version": null,
+    "publisher": "anthropics",
+    "publisher_verified": false,
+    "duplicate_of": null
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "security_audit": {
+    "status": "pass",
+    "audited_at": "2026-07-02T06:34:24.736Z",
+    "scanner_versions": {
+      "l1": "rules-v1",
+      "l2": "static-v1",
+      "l3_model": "deepseek-v4-flash"
+    },
+    "risk_factors": {
+      "scripts": {
+        "present": true,
+        "detail": "8 个脚本文件"
+      },
+      "network": {
+        "present": false
+      },
+      "filesystem": {
+        "present": true,
+        "detail": "Python 文件写/删(4 处证据)"
+      },
+      "env_access": {
+        "present": false
+      },
+      "external_commands": {
+        "present": false
+      }
+    },
+    "evidence": [
+      {
+        "factor": "filesystem",
+        "file": "scripts/extract_form_field_info.py",
+        "line": 113,
+        "note": "fs-write-py: Python 文件写/删"
+      },
+      {
+        "factor": "filesystem",
+        "file": "scripts/extract_form_structure.py",
+        "line": 102,
+        "note": "fs-write-py: Python 文件写/删"
+      },
+      {
+        "factor": "filesystem",
+        "file": "scripts/fill_fillable_fields.py",
+        "line": 51,
+        "note": "fs-write-py: Python 文件写/删"
+      },
+      {
+        "factor": "filesystem",
+        "file": "scripts/fill_pdf_form_with_annotations.py",
+        "line": 92,
+        "note": "fs-write-py: Python 文件写/删"
+      }
+    ],
+    "l3": {
+      "model": "deepseek-v4-flash",
+      "at": "2026-07-02T06:50:43.077Z",
+      "verdict": {
+        "intent_summary": "提供PDF文件的处理能力，包括读取、提取、合并、拆分、创建、填写表单、OCR等操作",
+        "doc_code_consistent": true,
+        "hidden_instructions": false,
+        "injection_suspected": false,
+        "exfiltration_path": false,
+        "notes": [
+          "文档中提及的加密/解密功能在脚本中无独立实现，但SDK.md中提供了代码示例",
+          "文档引用的REFERENCE.md和FORMS.md未包含在本技能包中，可能不完整",
+          "fill_fillable_fields.py中存在对pypdf库的monkeypatch，属于技术性修复，无恶意"
+        ]
+      }
+    }
+  },
+  "signals": {
+    "stars_github": null,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-07-02T04:31:31.221Z"
+  },
+  "token_cost": {
+    "body_tokens": 2009,
+    "method": "chars/4-estimate"
+  },
+  "eval": {
+    "category": "doc-generation",
+    "runner": "mock-v1",
+    "evaluated_at": "2026-07-02T09:26:36.224Z",
+    "score": 10,
+    "lift_pp": 100,
+    "tasks": [
+      {
+        "task": "csv-to-xlsx-sum",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-xlsx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 workbook.xml 与至少一张工作表"
+            },
+            {
+              "id": "data-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留全部数据行(命中部门 3/3)"
+            },
+            {
+              "id": "sum-formula",
+              "pass": true,
+              "weight": 3,
+              "note": "合计用 SUM 公式(而非写死数字)"
+            },
+            {
+              "id": "total-correct",
+              "pass": true,
+              "weight": 1,
+              "note": "合计值 68000 正确"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-xlsx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 xlsx 解压——产物不是合法 Excel 文档"
+            }
+          ]
+        },
+        "delta": 1
+      },
+      {
+        "task": "md-to-docx-toc",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-docx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 [Content_Types].xml 与 word/document.xml"
+            },
+            {
+              "id": "heading-1",
+              "pass": true,
+              "weight": 2,
+              "note": "正文使用 Heading 1 样式"
+            },
+            {
+              "id": "heading-2",
+              "pass": true,
+              "weight": 1,
+              "note": "正文使用 Heading 2 样式"
+            },
+            {
+              "id": "has-toc",
+              "pass": true,
+              "weight": 2,
+              "note": "包含自动生成的目录字段"
+            },
+            {
+              "id": "content-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留原文关键内容(命中 4/4)"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-docx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 docx 解压——产物不是合法 Word 文档"
+            }
+          ]
+        },
+        "delta": 1
+      },
+      {
+        "task": "md-to-pptx-deck",
+        "with_skill": {
+          "score": 1,
+          "checks": [
+            {
+              "id": "valid-pptx",
+              "pass": true,
+              "weight": 3,
+              "note": "含 presentation.xml 与至少一张幻灯片"
+            },
+            {
+              "id": "slide-count",
+              "pass": true,
+              "weight": 3,
+              "note": "分页数量达标(4 页,期望 ≥4)"
+            },
+            {
+              "id": "title-slide",
+              "pass": true,
+              "weight": 2,
+              "note": "含标题页占位符"
+            },
+            {
+              "id": "content-preserved",
+              "pass": true,
+              "weight": 2,
+              "note": "保留提纲各节(命中 3/3)"
+            }
+          ]
+        },
+        "without_skill": {
+          "score": 0,
+          "checks": [
+            {
+              "id": "valid-pptx",
+              "pass": false,
+              "weight": 3,
+              "note": "无法作为 pptx 解压——产物不是合法 PowerPoint"
+            }
+          ]
+        },
+        "delta": 1
+      }
+    ]
+  }
+}
