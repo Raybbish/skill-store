@@ -2,89 +2,88 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { Skill } from "@/lib/data";
+import SkillRow from "@/components/SkillRow";
 
-function fmtInstalls(n: number): string {
-  if (n >= 1e6) return `${Math.round(n / 1e5) / 10}M`;
-  if (n >= 1e3) return `${Math.round(n / 100) / 10}K`;
-  return String(n);
-}
+type Chip = { slug: string; label: string; n: number };
+const cn = { color: "var(--faint)", marginLeft: 4, fontWeight: 600 } as const;
 
-export default function BrowseClient({ skills }: { skills: Skill[] }) {
+export default function BrowseClient({ skills, cats, tags }: { skills: Skill[]; cats: Chip[]; tags: Chip[] }) {
   const [q, setQ] = useState("");
-  const [pub, setPub] = useState<string | null>(null);
+  const [cat, setCat] = useState<string | null>(null); // 第一步:主分类(每个 skill 归一个)
+  const [tag, setTag] = useState<string | null>(null); // 第二步:分类内细分标签(横切,选填)
   const [safeOnly, setSafeOnly] = useState(false);
-  const [evalOnly, setEvalOnly] = useState(false);
-  const [sort, setSort] = useState<"eval" | "installs" | "stars" | "tokens">("eval");
+  const [sort, setSort] = useState<"installs" | "stars">("installs");
 
-  const publishers = useMemo(() => [...new Set(skills.map((s) => s.publisher))], [skills]);
+  // 细分标签只在选了分类后出现,且只列在该分类内确有成员的标签(计数=分类内数量)
+  const subTags = useMemo<Chip[]>(() => {
+    if (!cat) return [];
+    return tags
+      .map((t) => ({ slug: t.slug, label: t.label, n: skills.filter((s) => s.category === cat && (s.tags ?? []).includes(t.slug)).length }))
+      .filter((t) => t.n > 0);
+  }, [cat, tags, skills]);
+
+  const pickCat = (slug: string | null) => { setCat(slug); setTag(null); };
 
   const list = useMemo(() => {
     let l = skills.slice();
-    if (pub) l = l.filter((s) => s.publisher === pub);
+    if (cat) l = l.filter((s) => s.category === cat);
+    if (tag) l = l.filter((s) => (s.tags ?? []).includes(tag));
     if (safeOnly) l = l.filter((s) => s.risk.network?.present !== true);
-    if (evalOnly) l = l.filter((s) => s.eval);
     if (q) {
       const t = q.toLowerCase();
       l = l.filter((s) => (s.id + (s.description ?? "")).toLowerCase().includes(t));
     }
-    // bulk_source 降权:批量仓采样条目恒排在非批量条目之后(仓库级 stars 灌到上千个
-    // skill 上,单条含金量低;安装量是 skill 级真实信号,不降权)
-    const bulkRank = (s: Skill) => (sort !== "installs" && s.bulkSource ? 1 : 0);
-    l.sort((a, b) => {
-      const br = bulkRank(a) - bulkRank(b);
-      if (br) return br;
-      if (sort === "eval") return (b.eval?.score ?? -1) - (a.eval?.score ?? -1);
-      if (sort === "installs") return (b.installs ?? -1) - (a.installs ?? -1);
-      if (sort === "stars") return (b.stars ?? 0) - (a.stars ?? 0);
-      return a.tokens - b.tokens;
-    });
+    l.sort((a, b) => (sort === "installs" ? (b.installs ?? -1) - (a.installs ?? -1) : (b.stars ?? 0) - (a.stars ?? 0)));
     return l;
-  }, [skills, q, pub, safeOnly, evalOnly, sort]);
+  }, [skills, q, cat, tag, safeOnly, sort]);
+
+  const selectedCat = cats.find((c) => c.slug === cat);
 
   return (
     <>
-      <div className="h2">浏览</div>
-      <div className="h2-sub">{list.length} / {skills.length} 个 skill</div>
+      <section className="hero"><div className="eyebrow">浏览</div><h1 className="small">全部 skill</h1></section>
 
-      <input className="search-input" placeholder="搜索 skill…" value={q} onChange={(e) => setQ(e.target.value)} />
+      <div className="searchbar" style={{ marginTop: 4 }}>
+        <span>🔍</span>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜索 skill…" />
+      </div>
 
+      {/* 第一步:选分类(主轴) */}
       <div className="filters">
-        <button className={`chip ${!pub ? "on" : ""}`} onClick={() => setPub(null)}>全部发布者</button>
-        {publishers.map((p) => (
-          <button key={p} className={`chip ${pub === p ? "on" : ""}`} onClick={() => setPub(p)}>{p}</button>
+        <button className={`chip ${!cat ? "on" : ""}`} onClick={() => pickCat(null)}>全部</button>
+        {cats.map((c) => (
+          <button key={c.slug} className={`chip ${cat === c.slug ? "on" : ""}`} onClick={() => pickCat(cat === c.slug ? null : c.slug)}>
+            {c.label}<span style={cn}>{c.n}</span>
+          </button>
         ))}
       </div>
+
+      {/* 第二步:选中分类后才出现「桶内细分」(次轴) */}
+      {selectedCat && subTags.length > 0 && (
+        <div className="filters" style={{ marginTop: 8 }}>
+          <span style={{ fontSize: 12, color: "var(--faint)", fontWeight: 700, alignSelf: "center" }}>在「{selectedCat.label}」内细分</span>
+          <button className={`chip ${!tag ? "on" : ""}`} onClick={() => setTag(null)}>不限</button>
+          {subTags.map((t) => (
+            <button key={t.slug} className={`chip ${tag === t.slug ? "on" : ""}`} onClick={() => setTag(tag === t.slug ? null : t.slug)}>
+              #{t.label}<span style={cn}>{t.n}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="filters">
-        <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}>
-          <option value="eval">按评测分</option>
+        <select value={sort} onChange={(e) => setSort(e.target.value as "installs" | "stars")}>
           <option value="installs">按安装量</option>
           <option value="stars">按 stars</option>
-          <option value="tokens">按 token 成本(低→高)</option>
         </select>
-        <button className={`chip ${evalOnly ? "on" : ""}`} onClick={() => setEvalOnly(!evalOnly)}>仅已评测</button>
         <button className={`chip ${safeOnly ? "on" : ""}`} onClick={() => setSafeOnly(!safeOnly)}>🛡️ 仅无网络请求</button>
+        {selectedCat && <Link href={`/category/${selectedCat.slug}/`} className="chip">看「{selectedCat.label}」分类页 ↗</Link>}
+        <span className="fcount">{list.length} / {skills.length}</span>
       </div>
 
-      <div className="card" style={{ padding: "8px 14px" }}>
-        {list.map((s) => (
-          <Link href={`/skill/${s.owner}/${s.repo}/${s.name}/`} className="srow" key={s.id}>
-            <div className="s-icon">{s.name[0].toUpperCase()}</div>
-            <div className="info">
-              <div className="n">{s.id}</div>
-              <div className="tg">{s.description ?? "(无描述)"}</div>
-              <div className="badges">
-                {s.eval && <span className="mini acc">评测 {s.eval.score}/10</span>}
-                <span className={`mini ${s.status === "pass" ? "ok" : "warn"}`}>{s.status === "pass" ? "✓ 已审计" : "⚠ " + s.status}</span>
-                {s.installs != null && <span className="mini acc">⬇ {fmtInstalls(s.installs)} 安装</span>}
-                {s.risk.network?.present === true && <span className="mini warn">🌐 网络</span>}
-                {s.bulkSource && <span className="mini" title={`上游仓含 ${s.repoSkillCount} 个 skill,折叠采样收录`}>📦 批量仓采样</span>}
-                <span className="mini">{s.hosting === "mirrored" ? "镜像" : "索引"}</span>
-                <span className="mini">~{Math.round(s.tokens / 100) / 10}K tok</span>
-              </div>
-            </div>
-          </Link>
-        ))}
-        {!list.length && <div style={{ padding: "30px 0", textAlign: "center", color: "var(--faint)" }}>无匹配结果</div>}
+      <div className="list">
+        {list.map((s) => <SkillRow key={s.id} skill={s} />)}
+        {!list.length && <div className="empty">无匹配结果</div>}
       </div>
     </>
   );

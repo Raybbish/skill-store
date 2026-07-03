@@ -1,33 +1,36 @@
 import { allSkills, allCollections } from "@/lib/data";
+import { featuredLabels, tagLabels } from "@skill-store/schemas";
 import BrowseClient from "./BrowseClient";
 
 export default function Browse() {
+  const skills = allSkills();
   const collections = allCollections();
+  // 分类 / 标签的货架数量(分类=主分类命中;标签=tags 命中)
+  const count = (slug: string) => skills.filter((s) => s.category === slug || (s.tags ?? []).includes(slug)).length;
+  const cats = featuredLabels().map((l) => ({ slug: l.slug, label: l.label_zh, n: count(l.slug) }));
+  const tags = tagLabels().map((l) => ({ slug: l.slug, label: l.label_zh, n: count(l.slug) })).filter((t) => t.n > 0);
+
   return (
     <>
-      <BrowseClient skills={allSkills()} />
+      <BrowseClient skills={skills} cats={cats} tags={tags} />
       {collections.length > 0 && (
-        <>
-          <div className="h2" style={{ marginTop: 28 }}>批量源合集</div>
-          <div className="h2-sub">
-            这些仓库包含大量 SKILL.md(生成器产出或聚合搬运),本店只折叠采样收录少量条目;全量请移步上游仓库
-          </div>
-          <div className="card" style={{ padding: "8px 14px" }}>
+        <div className="sec">
+          <div className="sec-h"><h2>批量源合集</h2><span className="k">折叠采样 · 全量见上游</span></div>
+          <div className="list">
             {collections.map((c) => (
-              <a href={c.url} key={c.id} className="srow" target="_blank" rel="noopener noreferrer">
-                <div className="s-icon">📦</div>
-                <div className="info">
-                  <div className="n">{c.id}</div>
-                  <div className="tg">共 {c.skillCount.toLocaleString()} 个 skill · 已采样收录 {c.sampledCount} 条</div>
-                  <div className="badges">
-                    {c.stars != null && <span className="mini">★ {c.stars.toLocaleString()}</span>}
-                    <span className="mini">上游仓库 ↗</span>
-                  </div>
+              <a href={c.url} key={c.id} className="row" target="_blank" rel="noopener noreferrer">
+                <div className="main">
+                  <div className="nm">{c.id}</div>
+                  <div className="ds">共 {c.skillCount.toLocaleString()} 个 skill · 已采样收录 {c.sampledCount} 条</div>
+                </div>
+                <div className="rt">
+                  {c.stars != null && <div className="score"><span className="gold">★</span> {c.stars.toLocaleString()}</div>}
+                  <span className="go">上游 ↗</span>
                 </div>
               </a>
             ))}
           </div>
-        </>
+        </div>
       )}
     </>
   );

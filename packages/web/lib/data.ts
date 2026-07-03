@@ -10,6 +10,10 @@ export interface EvalData {
 export interface Skill {
   id: string; owner: string; repo: string; name: string; description?: string;
   license: string; hosting: string; publisher: string; upstream: string;
+  /** 主分类 slug(featured 标签);未归类为 "uncategorized"/undefined */
+  category?: string;
+  /** 标签 slug 列表(featured:false 标签) */
+  tags?: string[];
   status: string; risk: Record<string, Factor>;
   evidence: { factor: string; file: string; line?: number | null; note?: string }[];
   review?: { verdict: string; by: string; at: string; note: string };
@@ -42,7 +46,8 @@ export function allSkills(): Skill[] {
           out.push({
             id: r.meta.id, owner, repo, name: r.meta.name, description: r.meta.description,
             license: r.meta.license, hosting: r.meta.hosting, publisher: r.meta.publisher,
-            upstream: r.meta.upstream, status: sa.status, risk: sa.risk_factors ?? {},
+            upstream: r.meta.upstream, category: r.meta.category ?? undefined, tags: r.meta.tags ?? [],
+            status: sa.status, risk: sa.risk_factors ?? {},
             evidence: sa.evidence ?? [], review: sa.review, l3: sa.l3,
             tokens: r.token_cost?.body_tokens ?? 0, stars: r.signals?.stars_github,
             installs: r.signals?.installs_skills_sh ?? null,
@@ -60,6 +65,11 @@ export function allSkills(): Skill[] {
 
 export function getSkill(owner: string, repo: string, name: string): Skill | undefined {
   return allSkills().find((s) => s.owner === owner && s.repo === repo && s.name === name);
+}
+
+/** 按标签 slug 取 skill:主分类命中或标签命中(分类页与标签页共用同一取数) */
+export function skillsByLabel(slug: string): Skill[] {
+  return allSkills().filter((s) => s.category === slug || (s.tags ?? []).includes(slug));
 }
 
 const COLLECTIONS = join(process.cwd(), "../../catalog/collections");

@@ -1,0 +1,13 @@
+import { allThreadVMs, listPublishers, getPublisherView, threadVMsForSkill } from "./lib/community";
+import { allSkills } from "./lib/data";
+const vms = allThreadVMs();
+const unresolved = vms.filter(v=>!v.skill && v.board!=="announce").map(v=>v.title);
+console.log("skills:", allSkills().length, "threadVMs:", vms.length, "resolved:", vms.filter(v=>v.skill).length, "announce:", vms.filter(v=>v.board==="announce").length);
+console.log("unresolved non-announce:", unresolved.length ? unresolved : "none");
+const pubs = listPublishers();
+let bad=0; for(const p of pubs) if(!getPublisherView(p)) bad++;
+const a = getPublisherView("anthropics");
+console.log("publishers:", pubs.length, "allViewsBuild:", bad===0?"OK":("FAIL "+bad));
+console.log("anthropics works:", a?.works.length, "verified:", a?.verified, "challenge:", a?.challenge.length, "installs:", a?.totalInstalls);
+console.log("pptx threads:", threadVMsForSkill("anthropics/skills/pptx").map(v=>v.board+"/"+(v.flag?v.flag.text:"-")).join(", "));
+console.log("DONE");

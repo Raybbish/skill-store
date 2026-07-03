@@ -1,51 +1,36 @@
 import Link from "next/link";
-import { allSkills, fmtInstalls, type Skill } from "@/lib/data";
+import { allSkills } from "@/lib/data";
+import SkillRow from "@/components/SkillRow";
 
-function Row({ s }: { s: Skill }) {
-  const netWarn = s.risk.network?.present === true;
-  return (
-    <Link href={`/skill/${s.owner}/${s.repo}/${s.name}/`} className="srow">
-      <div className="s-icon">{s.name[0].toUpperCase()}</div>
-      <div className="info">
-        <div className="n">{s.id}</div>
-        <div className="tg">{s.description ?? "(无描述)"}</div>
-        <div className="badges">
-          {s.eval && <span className="mini acc">评测 {s.eval.score}/10</span>}
-          <span className={`mini ${s.status === "pass" ? "ok" : "warn"}`}>
-            {s.status === "pass" ? "✓ 已审计" : s.status === "needs_review" ? "⚠ 待复核" : s.status}
-          </span>
-          {s.installs != null && <span className="mini acc">⬇ {fmtInstalls(s.installs)} 安装</span>}
-          {netWarn && <span className="mini warn">🌐 含网络请求</span>}
-          {s.risk.scripts?.present === true && <span className="mini">📜 含脚本</span>}
-          {s.bulkSource && <span className="mini">📦 批量仓采样</span>}
-          <span className="mini">{s.hosting === "mirrored" ? "镜像托管" : "索引"}</span>
-          <span className="mini">~{Math.round(s.tokens / 100) / 10}K tok</span>
-          {s.review && <span className="mini acc">已人工复核</span>}
-        </div>
-      </div>
-    </Link>
-  );
-}
+const OFFICIAL = new Set(["anthropics", "vercel-labs", "microsoft", "supabase", "larksuite", "remotion-dev"]);
 
 export default function Home() {
   const skills = allSkills();
-  const byPublisher = new Map<string, Skill[]>();
-  for (const s of skills) (byPublisher.get(s.publisher) ?? byPublisher.set(s.publisher, []).get(s.publisher)!).push(s);
+  const official = skills.filter((s) => OFFICIAL.has(s.publisher) && s.status === "pass").sort((a, b) => (b.installs ?? 0) - (a.installs ?? 0)).slice(0, 6);
+  const featured = official.length ? official : skills.slice(0, 6);
+  const trending = [...skills].sort((a, b) => (b.installs ?? 0) - (a.installs ?? 0)).slice(0, 6);
 
   return (
     <>
-      <div className="h2">可信目录</div>
-      <div className="h2-sub">
-        {skills.length} 个 skill · 全部经过 L1 签名 / L2 五因子 / L3 意图三层审计,人工复核签名留痕
+      <section className="hero">
+        <div className="eyebrow">Agent Skills 商店</div>
+        <h1>给你的 agent,<br />找对 <span className="hl">skill</span></h1>
+        <Link href="/browse/" className="searchbar">
+          <span>🔍</span>
+          <span style={{ color: "var(--faint)", flex: 1 }}>搜索 {skills.length} 个 skill…</span>
+          <span className="go">浏览</span>
+        </Link>
+      </section>
+
+      <div className="sec">
+        <div className="sec-h"><h2>编辑精选</h2><span className="k">已验证发布者</span><Link href="/browse/">查看全部 ›</Link></div>
+        <div className="list">{featured.map((s) => <SkillRow key={s.id} skill={s} />)}</div>
       </div>
-      {[...byPublisher].map(([pub, list]) => (
-        <div className="card" key={pub}>
-          <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 6 }}>
-            {pub} <small style={{ color: "var(--faint)", fontWeight: 400 }}>{list.length} 个</small>
-          </div>
-          {list.map((s) => <Row s={s} key={s.id} />)}
-        </div>
-      ))}
+
+      <div className="sec">
+        <div className="sec-h"><h2>大家都在装</h2><span className="k">流行度 · 安装量</span></div>
+        <div className="list">{trending.map((s, i) => <SkillRow key={s.id} skill={s} rank={i + 1} />)}</div>
+      </div>
     </>
   );
 }
