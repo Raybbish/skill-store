@@ -19,36 +19,68 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "security_audit": {
-    "status": "pending",
-    "audited_at": null,
+    "status": "needs_review",
+    "audited_at": "2026-07-03T03:50:36.706Z",
+    "scanner_versions": {
+      "l1": "rules-v1",
+      "l2": "static-v1"
+    },
     "risk_factors": {
       "scripts": {
         "present": true,
-        "detail": "2 个脚本文件(采集期静态清点)"
+        "detail": "2 个脚本文件"
       },
       "network": {
-        "present": null
+        "present": true,
+        "detail": "JS 网络调用(2 处证据)"
       },
       "filesystem": {
-        "present": null
+        "present": true,
+        "detail": "Python 文件写/删(1 处证据)"
       },
       "env_access": {
-        "present": null
+        "present": true,
+        "detail": "Node 读环境变量(2 处证据)"
       },
       "external_commands": {
-        "present": null
+        "present": false
       }
     },
     "evidence": [
       {
-        "factor": "scripts",
+        "factor": "network",
         "file": "scripts/download.mjs",
-        "note": "inventory"
+        "line": 50,
+        "note": "net-js: JS 网络调用"
       },
       {
-        "factor": "scripts",
+        "factor": "filesystem",
+        "file": "scripts/download.mjs",
+        "line": 199,
+        "note": "fs-write-py: Python 文件写/删"
+      },
+      {
+        "factor": "env_access",
+        "file": "scripts/download.mjs",
+        "line": 102,
+        "note": "env-js: Node 读环境变量"
+      },
+      {
+        "factor": "network",
         "file": "scripts/upload.mjs",
-        "note": "inventory"
+        "line": 425,
+        "note": "net-js: JS 网络调用"
+      },
+      {
+        "factor": "env_access",
+        "file": "scripts/upload.mjs",
+        "line": 191,
+        "note": "env-js: Node 读环境变量"
+      },
+      {
+        "factor": "review_reason",
+        "file": "-",
+        "note": "含外部网络请求(红线:人工放行)"
       }
     ]
   },
