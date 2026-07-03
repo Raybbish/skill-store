@@ -1,6 +1,6 @@
 # oh-my-skill
 
-以**标准化评测、安全透明、效果可见**为核心的 Agent Skills 商店。发现是红海,我们卖信任。
+以**安全透明、可复现评测、效果可见**为核心的 Agent Skills 商店。发现是红海,我们卖信任。
 
 当前阶段:**M0 可信目录**(详见 `M0 详细设计`)。
 
@@ -45,13 +45,14 @@ npm run ingest -- --limit 10           # 限量试跑
 - [x] W4 商店前端:Next.js 纯静态导出,构建时直读 catalog;`npm run web` 本地预览,`npm run web:build` 出静态站
 - [x] W5 CLI:`node packages/cli/bin/oh-my-skill.mjs add <owner/repo/name>` — 安装前营养标签确认,逐文件复算 blob sha 校验 content_hash,篡改即拒装
 
-## M1 评测(进行中)
+## M1 评测(进行中 · 可复现协议,平台做赛道不做裁判)
 
-- [x] 评测框架:任务集(`task.yaml`+`prompt.md`+`inputs/`+`verify.ts`)、确定性校验器、装/不装双跑打分、`skill-report.eval` 回写
+- [x] 评测框架:任务集(`task.yaml`+`prompt.md`+`inputs/`+`verify.ts`)、确定性校验器、装/不装双跑;产物缺失/环境不匹配记 **N/A(不计 0 分)**并排除出统计(非"评到 0 分")
+- [x] 写入闸:只有带 runner+模型元数据、且无 N/A 任务的真实结果才回写 `skill-report.eval`;mock、全/部分 N/A 一律拒绝(防假分污染货架)
 - [x] 文档生成品类:md→带TOC的docx、csv→带SUM公式的xlsx(零依赖 OOXML 解析校验)
-- [x] `npm run eval -- --category doc-generation`(mock runner 跑通,横评有梯度 6.8–10)
-- [ ] 真实 agent runner(接 agent runtime 执行任务,替换 `eval/runner/mock.ts`)
-- [ ] 扩展到 20 个标准任务 / 覆盖更多品类
+- [x] 真实 runner:`npm run eval -- --category doc-generation --runner openai`(OpenAI 兼容端点;`mock` 仅跑通管线、不落库)
+- [ ] 货架分数展示:分数带元数据(runner/模型)、可复现可挑战;协议成熟前前端为「可复现评测·开发中」路线图态
+- [ ] 扩展任务集 / 覆盖更多品类;跨模型交叉验证防过拟合
 
 ## Hub 精选信号线(架构图落地)
 
