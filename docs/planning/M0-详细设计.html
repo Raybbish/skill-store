@@ -108,13 +108,13 @@ skillstore-catalog/        <span class="c"># 独立数据仓(公开,事实源)</
     <pre>{
   <span class="k">"schema_version"</span>: <span class="s">"1"</span>,
   <span class="k">"meta"</span>: {
-    <span class="k">"id"</span>: <span class="s">"aideas-labs/slide-craft"</span>,          <span class="c">// 规范 ID:owner/name</span>
+    <span class="k">"id"</span>: <span class="s">"aideas-labs/skills/slide-craft"</span>, <span class="c">// 规范 ID:owner/repo/name(三段式)</span>
     <span class="k">"upstream"</span>: <span class="s">"github.com/aideas-labs/skills/tree/main/slide-craft"</span>,
     <span class="k">"upstream_commit"</span>: <span class="s">"a1b2c3d"</span>,               <span class="c">// 同步锚点,每日 diff</span>
     <span class="k">"content_hash"</span>: <span class="s">"sha256:…"</span>,                 <span class="c">// 去重 + CLI 安装校验</span>
     <span class="k">"license"</span>: <span class="s">"MIT"</span>,
     <span class="k">"hosting"</span>: <span class="s">"mirrored"</span>,                      <span class="c">// mirrored | indexed</span>
-    <span class="k">"category"</span>: <span class="s">"doc-generation"</span>,
+    <span class="k">"category"</span>: <span class="s">"docs"</span>, <span class="k">"tags"</span>: [], <span class="k">"category_locked"</span>: false,  <span class="c">// 词表见 schemas/src/labels.ts</span>
     <span class="k">"version"</span>: <span class="s">"2.3.1"</span>, <span class="k">"publisher_verified"</span>: false
   },
   <span class="k">"security_audit"</span>: {
@@ -141,7 +141,7 @@ skillstore-catalog/        <span class="c"># 独立数据仓(公开,事实源)</
     <h2><span class="no">4</span>采集与审计管线</h2>
     <h3>4.1 ingest(每日 cron)</h3>
     <div class="flow">source adapter 拉清单 → agentskills.io Schema 校验 → licence 探测 → 规范 ID + content_hash → <b>去重合并</b>(同 hash 并条目、聚合信号)→ 双轨分流(mirrored/indexed)→ 写 catalog 仓分支 → PR「ingest: N skills」</div>
-    <p>M0 两个 adapter:<code>official.ts</code> 读一份手维护的 <code>sources.yaml</code>(anthropics/skills、vercel-labs/agent-skills、合作伙伴仓清单);<code>skills-sh.ts</code> 读其开源注册表取 top N(N=500 起步),按安装量降序。每个 adapter 实现统一接口 <code>discover() → SkillCandidate[]</code>,后续加 GitHub 全域只是新增一个文件。</p>
+    <p>(<span class="pill ok">2026-07-03 校正</span>)起步 adapter:<code>official.ts</code> 读手维护的 <code>sources.yaml</code>(anthropics/skills、vercel-labs/agent-skills 等);<code>skills-sh.ts</code> <b>解析首页 SSR 榜单</b>(私有 <code>/api/v1</code> 实测 401,故走 HTML 榜单)取 top N(默认 <b>200</b>),按安装量降序。<b>现已扩到 GitHub 全域 <code>topic:claude-skills</code> 采集(<code>github-search.ts</code>)+ awesome 精选信号(<code>hub-signals.ts</code>)。</b>每个 adapter 实现统一接口 <code>discover() → SkillCandidate[]</code>。</p>
     <h3>4.2 audit(ingest PR 合并后触发 + 每日对过期报告重审)</h3>
     <div class="tbox"><table>
       <tr><th>层</th><th>M0 实现</th><th>产出</th></tr>

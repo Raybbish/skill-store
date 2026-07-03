@@ -133,8 +133,8 @@
   <div class="card">
     <h2><span class="no">6</span>供给管线</h2>
     <p>详见架构图(<code>供给聚合架构图.html</code>)。要点:</p>
-    <p><b>供给源与优先级</b>:① 官方精选仓(anthropics/skills、vercel-labs、合作伙伴仓,licence 清晰,第一批搬)→ ② skills.sh 头部榜单(注册表开源,安装量=免费预筛)→ ③ awesome 精选仓(按需)→ ④ GitHub 全域(Code Search <code>filename:SKILL.md</code> + topic,最后接入)。第三方 Hub(ClawHub/SkillsMP/SkillHub)<b>只取榜单热度信号、不搬内容</b>,回上游仓库采集;ClawHub 来源一律全量过审,无免检通道。</p>
-    <p><b>采集管线</b>(定时 GitHub Action):API 拉取 → agentskills.io JSON Schema 校验 → 元数据提取(licence/scripts)→ 规范 ID(owner/repo/path)→ 内容哈希去重(fork/复制合并溯源)→ 记录上游 commit SHA;每日 diff 上游,变更即重审。</p>
+    <p><b>供给源与优先级</b>(<span class="pill ok">2026-07-03 校正</span>):① 官方精选仓(anthropics/skills、vercel-labs、合作伙伴仓,licence 清晰,第一批搬)→ ② awesome 精选仓(hub-signals:取「被收录+归类」信号,内容回上游)→ ③ <b>GitHub 全域</b>(<code>topic:claude-skills</code> 搜索,公开稳定 API,<b>已作为可靠主采集通道</b>)→ ④ skills.sh(私有 <code>/api/v1</code> 实测 401 不可用,当前仅解析首页 SSR 榜单取热度信号)。第三方 Hub / 榜单<b>只取热度/精选信号、不搬内容</b>,一律回上游仓库采集;高危来源全量过审,无免检通道。</p>
+    <p><b>采集管线</b>(定时 GitHub Action):<code>git clone --depth 1</code> + 文件树(<code>ls-tree</code>,无 REST 限流)→ frontmatter 校验 → 元数据提取(licence/scripts)→ <b>采集期归类</b>(打 category/tags)→ 规范 ID(<code>owner/repo/name</code> 三段式)→ 内容哈希去重(fork/复制合并溯源)→ 记录上游 commit SHA;每日 diff 上游,变更即重审。</p>
     <p><b>许可证分流</b>(数据模型第一天就要区分):<span class="pill ok">托管型</span> MIT/Apache 等宽松 licence → 镜像副本、可打包分发;<span class="pill">索引型</span> 无 licence/专有 → 只存元数据 + 跳转上游,配 DMCA 下架流程。</p>
     <p><b>质量漏斗</b>:全量索引(~100 万,只存元数据,近零成本)→ 头部候选(~5 千,按安装量/星标/活跃度)→ 审计+评测 → 认证货架(~2 千)。「已索引 100 万 / 已认证 2 千」的稀缺性本身即品牌叙事。</p>
   </div>
@@ -207,7 +207,7 @@
     <h2><span class="no">14</span>附录</h2>
     <p><b>关联文档</b>:竞品调研报告(<code>Skill Store 竞品调研报告.html</code>)、交互原型(<code>skill-store-prototype.html</code>)、供给聚合架构图(<code>供给聚合架构图.html</code>)。</p>
     <h3>skill 条目数据模型草案</h3>
-    <p><code>id</code>(owner/repo/path)· <code>content_hash</code> · <code>upstream_commit</code> · <code>license</code> · <code>hosting_type</code>(托管/索引)· <code>eval</code>{runner,model,score(可空),lift_pp,evaluable_tasks,tasks}(未评测/全 N/A 为 null) · <code>risk_factors{scripts,network,filesystem,env_access,external_commands}</code> + <code>evidence[]</code> · <code>audit_status</code>(通过/待复核/拒绝)+ <code>audited_at</code> · <code>token_cost_estimate</code> · <code>compatible_agents[]</code> · <code>installs_by_platform{}</code> · <code>category</code> · <code>version</code> · <code>publisher</code> + <code>verified</code></p>
+    <p>(<span class="pill ok">2026-07-03 校正:对齐 skill-report.schema.json</span>)<code>id</code>(<b>owner/repo/name</b> 三段式)· <code>content_hash</code> · <code>upstream_commit</code> · <code>license</code> · <code>hosting</code>(<b>mirrored/indexed</b>)+ <code>mirror_complete</code> · <code>eval</code>{runner,model,score(可空),lift_pp,evaluable_tasks,tasks}(未评测/全 N/A 为 null) · <code>risk_factors{scripts,network,filesystem,env_access,external_commands}</code> + <code>evidence[]</code> · <code>audit_status</code>(通过/待复核/拒绝)+ <code>audited_at</code> · <code>token_cost_estimate</code> · <code>compatible_agents[]</code> · <code>installs_by_platform{}</code> · <b><code>category</code> + <code>tags[]</code> + <code>category_locked</code></b> · <code>curated_by[]</code> · <code>repo_skill_count</code> · <code>bulk_source</code> · <code>version</code> · <code>publisher</code> + <code>verified</code></p>
     <h3>主要来源</h3>
     <ol class="src">
       <li><a href="https://arxiv.org/abs/2602.12670">SkillsBench (arXiv 2602.12670)</a></li>
