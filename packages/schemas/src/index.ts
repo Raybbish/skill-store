@@ -68,7 +68,25 @@ export interface SkillReport {
     body_tokens: number;
     method: string;
   };
-  eval: null;
+  /** M1 基准评测结果;未评测为 null(与 pipeline eval/types.ts 的 EvalResult 对应) */
+  eval: SkillEval | null;
+}
+
+/** M1 评测结果(装/不装双跑,确定性校验器打分) */
+export interface SkillEval {
+  category: string;
+  runner: string;
+  evaluated_at: string;
+  /** 0-10 */
+  score: number;
+  /** 相对不装的净增益(百分点) */
+  lift_pp: number;
+  tasks: {
+    task: string;
+    with_skill: { score: number; checks: unknown[] };
+    without_skill: { score: number; checks: unknown[] };
+    delta: number;
+  }[];
 }
 
 /**

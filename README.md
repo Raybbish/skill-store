@@ -41,7 +41,7 @@ npm run ingest -- --limit 10           # 限量试跑
 - [x] W3a 审计 L3(LLM 意图审查):`npm run audit:l3`,OpenAI 兼容任意供应商
       (`LLM_BASE_URL`/`LLM_API_KEY`/`LLM_MODEL`;`LLM_MOCK=1` 测管路;fail-closed,只升不降,不覆盖人工签名)
 - [x] W3b Supabase 同步:`npm run sync`(增量,游标存 sync_state;infra/schema.sql 建表;sync.yml 自动触发)
-- [x] W3c 供给扩量:GitHub 全域采集器 `npm run ingest -- --github-search 100`(按 skill topic 搜头部仓,注入 stars);skills.sh 私有 registry 备选(endpoint 待确认)
+- [x] W3c 供给扩量:GitHub 全域采集器 `npm run ingest -- --github-search 100`(topic 搜头部仓,注入 stars,每仓折叠采样 MAX_PER_REPO + catalog/collections 合集条目);skills.sh 榜单 `--skills-sh 200`(解析 SSR 榜单注入安装量);三段式 ID owner/repo/name;详见 docs/供给采集设计.md
 - [x] W4 商店前端:Next.js 纯静态导出,构建时直读 catalog;`npm run web` 本地预览,`npm run web:build` 出静态站
 - [x] W5 CLI:`node packages/cli/bin/oh-my-skill.mjs add <owner/repo/name>` — 安装前营养标签确认,逐文件复算 blob sha 校验 content_hash,篡改即拒装
 

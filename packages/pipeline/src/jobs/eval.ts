@@ -7,10 +7,11 @@ import { writeFile } from "node:fs/promises";
 import type { SkillReport } from "@skill-store/schemas";
 import { evaluateSkill } from "../eval/score.ts";
 import { mockRunner } from "../eval/runner/mock.ts";
+import { openaiRunner } from "../eval/runner/openai.ts";
 import type { EvalRunner } from "../eval/types.ts";
 import { loadCatalogEntries } from "../catalog.ts";
 
-const RUNNERS: Record<string, EvalRunner> = { mock: mockRunner };
+const RUNNERS: Record<string, EvalRunner> = { mock: mockRunner, openai: openaiRunner };
 
 function arg(n: string) { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] : undefined; }
 
@@ -39,7 +40,7 @@ async function main() {
 
   for (const e of todo) {
     const result = await evaluateSkill(e.report.meta.id, category, runner);
-    (e.report as SkillReport & { eval: unknown }).eval = result;
+    e.report.eval = result;
     await writeFile(e.path, JSON.stringify(e.report, null, 2) + "\n");
     const bars = result.tasks.map((t) => `${t.task} ${(t.with_skill.score * 100) | 0}%`).join(" · ");
     console.log(`  ${e.report.meta.id}  →  ${result.score}/10  (净增益 +${result.lift_pp}pp)`);

@@ -25,10 +25,13 @@ function parseUpstream(url: string): { repoSlug: string; dir: string } | null {
 
 async function main() {
   const all = process.argv.includes("--all");
+  const ri = process.argv.indexOf("--repo");
+  const onlyRepo = ri >= 0 ? process.argv[ri + 1] : undefined; // 只审某个上游仓(如 microsoft/azure-skills)
   const entries = (await loadCatalogEntries()).filter(
-    (e) => all || e.report.security_audit.status === "pending",
+    (e) => (all || e.report.security_audit.status === "pending") &&
+      (!onlyRepo || parseUpstream(e.report.meta.upstream)?.repoSlug === onlyRepo),
   );
-  console.log(`待审计条目: ${entries.length}`);
+  console.log(`待审计条目: ${entries.length}${onlyRepo ? `(仅 ${onlyRepo})` : ""}`);
 
   // 按上游仓分组,每仓只 clone 一次
   const byRepo = new Map<string, typeof entries>();

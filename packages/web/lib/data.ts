@@ -15,8 +15,18 @@ export interface Skill {
   review?: { verdict: string; by: string; at: string; note: string };
   l3?: { model: string; verdict?: { intent_summary: string } };
   tokens: number; stars?: number | null;
+  installs?: number | null;
+  /** 上游仓库 SKILL.md 总数(巨仓降权信号) */
+  repoSkillCount?: number;
+  /** 来自批量源仓库的折叠采样条目 */
+  bulkSource?: boolean;
   curatedBy?: { list: string; category: string }[];
   eval?: EvalData | null;
+}
+
+/** 批量源仓库合集条目(catalog/collections) */
+export interface Collection {
+  id: string; url: string; skillCount: number; sampledCount: number; stars?: number | null;
 }
 
 const CATALOG = join(process.cwd(), "../../catalog/skills");
@@ -35,6 +45,9 @@ export function allSkills(): Skill[] {
             upstream: r.meta.upstream, status: sa.status, risk: sa.risk_factors ?? {},
             evidence: sa.evidence ?? [], review: sa.review, l3: sa.l3,
             tokens: r.token_cost?.body_tokens ?? 0, stars: r.signals?.stars_github,
+            installs: r.signals?.installs_skills_sh ?? null,
+            repoSkillCount: r.signals?.repo_skill_count,
+            bulkSource: r.signals?.bulk_source === true,
             curatedBy: r.signals?.curated_by ?? [],
             eval: r.eval ?? null,
           });
@@ -47,6 +60,34 @@ export function allSkills(): Skill[] {
 
 export function getSkill(owner: string, repo: string, name: string): Skill | undefined {
   return allSkills().find((s) => s.owner === owner && s.repo === repo && s.name === name);
+}
+
+const COLLECTIONS = join(process.cwd(), "../../catalog/collections");
+
+/** 批量源合集条目,按 skill 总数降序;目录不存在返回空 */
+export function allCollections(): Collection[] {
+  const out: Collection[] = [];
+  let owners: string[] = [];
+  try { owners = readdirSync(COLLECTIONS); } catch { return out; }
+  for (const owner of owners) {
+    try {
+      for (const f of readdirSync(join(COLLECTIONS, owner))) {
+        if (!f.endsWith(".json")) continue;
+        try {
+          const c = JSON.parse(readFileSync(join(COLLECTIONS, owner, f), "utf8"));
+          out.push({ id: c.id, url: c.url, skillCount: c.skill_count, sampledCount: c.sampled_count, stars: c.stars_github });
+        } catch { /* skip */ }
+      }
+    } catch { /* skip */ }
+  }
+  return out.sort((a, b) => b.skillCount - a.skillCount);
+}
+
+/** 安装量友好格式:1234567 → 1.2M */
+export function fmtInstalls(n: number): string {
+  if (n >= 1e6) return `${Math.round(n / 1e5) / 10}M`;
+  if (n >= 1e3) return `${Math.round(n / 100) / 10}K`;
+  return String(n);
 }
 
 /** 同品类已评测的 skill,按评测分降序(横评用) */

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { allSkills, type Skill } from "@/lib/data";
+import { allSkills, fmtInstalls, type Skill } from "@/lib/data";
 
 function Row({ s }: { s: Skill }) {
   const netWarn = s.risk.network?.present === true;
@@ -14,8 +14,10 @@ function Row({ s }: { s: Skill }) {
           <span className={`mini ${s.status === "pass" ? "ok" : "warn"}`}>
             {s.status === "pass" ? "✓ 已审计" : s.status === "needs_review" ? "⚠ 待复核" : s.status}
           </span>
+          {s.installs != null && <span className="mini acc">⬇ {fmtInstalls(s.installs)} 安装</span>}
           {netWarn && <span className="mini warn">🌐 含网络请求</span>}
           {s.risk.scripts?.present === true && <span className="mini">📜 含脚本</span>}
+          {s.bulkSource && <span className="mini">📦 批量仓采样</span>}
           <span className="mini">{s.hosting === "mirrored" ? "镜像托管" : "索引"}</span>
           <span className="mini">~{Math.round(s.tokens / 100) / 10}K tok</span>
           {s.review && <span className="mini acc">已人工复核</span>}

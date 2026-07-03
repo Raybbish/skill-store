@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { allSkills, getSkill, peersByEval, FACTOR_LABELS } from "@/lib/data";
+import { allSkills, getSkill, peersByEval, fmtInstalls, FACTOR_LABELS } from "@/lib/data";
 
 export function generateStaticParams() {
   return allSkills().map((s) => ({ owner: s.owner, repo: s.repo, name: s.name }));
@@ -46,8 +46,14 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
           </div>
           <div className="stat"><b>{s.hosting === "mirrored" ? "镜像" : "索引"}</b><span>托管方式</span></div>
           <div className="stat"><b>~{Math.round(s.tokens / 100) / 10}K</b><span>token / 次加载</span></div>
+          <div className="stat"><b>{s.installs != null ? fmtInstalls(s.installs) : "–"}</b><span>安装量(skills.sh)</span></div>
           <div className="stat"><b>{s.stars ?? "–"}</b><span>GitHub stars</span></div>
         </div>
+        {s.bulkSource && (
+          <div style={{ marginTop: 10, fontSize: 12.5, color: "var(--faint)" }}>
+            📦 来自批量源仓库(上游共 {s.repoSkillCount?.toLocaleString()} 个 skill,本店折叠采样收录)——仓库级 stars 参考价值有限
+          </div>
+        )}
       </div>
 
       {s.eval && (() => {

@@ -147,7 +147,7 @@ async function main() {
         c.report.security_audit = prev.security_audit;
         stats.preserved++;
       }
-      if (prev.eval) (c.report as SkillReport & { eval: unknown }).eval = prev.eval;
+      if (prev.eval) c.report.eval = prev.eval;
     }
 
     const dir = entryDir(c.report.meta.id); // catalog/skills/<owner>/<repo>/<name>
