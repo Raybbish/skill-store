@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { allCollections } from "@/lib/data";
 import { readIdxMeta, readIdxPage } from "@/lib/store-server";
 import { featuredLabels, tagLabels } from "@skill-store/schemas";
@@ -26,23 +25,8 @@ export default function Browse() {
         cats={cats}
         tags={tags}
         catTag={meta.catTag}
+        upstream={collections.length > 0 ? { collections: collections.length, total: upstreamTotal } : null}
       />
-      {collections.length > 0 && (
-        <div className="sec">
-          <div className="sec-h">
-            <h2>收录口径</h2>
-            <span className="k">上游很大,审过才上架</span>
-            <Link href="/collections/">收录方法论 ›</Link>
-          </div>
-          <Link href="/collections/" className="row" style={{ textDecoration: "none" }}>
-            <div className="main">
-              <div className="nm">上游 {upstreamTotal.toLocaleString()} 条 · 货架 {meta.total.toLocaleString()} 条,每条都过了三层审计</div>
-              <div className="ds">{collections.length} 个批量源仓按「每仓采样 50 条」折叠收录 —— 为什么折叠、采了哪些、其余在哪,一页讲清楚</div>
-            </div>
-            <div className="rt"><span className="go">看合集 ›</span></div>
-          </Link>
-        </div>
-      )}
     </>
   );
 }
