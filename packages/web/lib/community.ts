@@ -1,6 +1,7 @@
 /** 社区 / 发布者数据层(M1 预演)。demo 数据为演示用;真实实现将来自 DB(threads/comments 关联 skill_id+version+verified_install)。
  *  引用真实 catalog 中的 skill,发布者从 allSkills() 派生。仅服务端使用(依赖 data.ts 的 fs 读取)。*/
-import { allSkills, getSkill, type Skill } from "./data";
+import { allSkills, getSkill } from "./data";
+import { toCard, type SkillCard } from "./store";
 
 export type BoardId = "help" | "show" | "challenge" | "announce";
 export interface Board { id: BoardId; n: string; em: string; d: string }
@@ -84,7 +85,8 @@ const PUB_META: Record<string, Meta> = {
 
 export interface PublisherView {
   pub: string; verified: boolean; bio: string; joined: string; respHrs: number | null; chalWins: number;
-  works: Skill[]; totalInstalls: number; challenge: ThreadVM[];
+  /** 作品集只带瘦卡 —— 列表行所需字段面,别把全量 Skill 序列化给客户端组件(ADR 0007) */
+  works: SkillCard[]; totalInstalls: number; challenge: ThreadVM[];
 }
 
 export function listPublishers(): string[] {
@@ -92,7 +94,7 @@ export function listPublishers(): string[] {
 }
 
 export function getPublisherView(pub: string): PublisherView | null {
-  const works = allSkills().filter((s) => s.publisher === pub).sort((a, b) => (b.installs ?? 0) - (a.installs ?? 0));
+  const works = allSkills().filter((s) => s.publisher === pub).sort((a, b) => (b.installs ?? 0) - (a.installs ?? 0)).map(toCard);
   if (!works.length) return null;
   const meta = PUB_META[pub] ?? { bio: "该发布者尚未完善主页信息。", joined: "—", respHrs: null, chalWins: 0 };
   const totalInstalls = works.reduce((a, s) => a + (s.installs ?? 0), 0);

@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
-import type { Skill } from "@/lib/skill-types";
+import type { SkillCard } from "@/lib/store";
 import CertBadge from "./CertBadge";
 
 const fmt = (n: number) => (n >= 1e6 ? `${Math.round(n / 1e5) / 10}M` : n >= 1e3 ? `${Math.round(n / 100) / 10}K` : String(n));
 
-export default function SkillRow({ skill, rank }: { skill: Skill; rank?: number }) {
+/** 列表行只吃瘦卡(SkillCard);全量 Skill 结构上兼容,详情页直接传也行(ADR 0007) */
+export default function SkillRow({ skill, rank }: { skill: SkillCard; rank?: number }) {
   const s = skill;
   const href = `/skill/${s.owner}/${s.repo}/${s.name}/`;
   return (

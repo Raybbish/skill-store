@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { skillsByLabel } from "@/lib/data";
+import { applyRepoCap, byPopularity } from "@/lib/skill-utils";
+import { toCard } from "@/lib/store";
 import { labelBySlug, allSlugs, featuredLabels } from "@skill-store/schemas";
 import SkillRow from "@/components/SkillRow";
+
+/** 静态分类页只渲染前 CAP 条(热门序);全量浏览走 /browse/ 深链分页(ADR 0007) */
+const CAP = 150;
 
 /**
  * 分类页 = 标签页,共用同一模板。featured 标签渲染成「分类」,featured:false 渲染成「标签」,
@@ -33,6 +38,9 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   const featured = def?.featured ?? false;
   const kind = isUncat ? "待归类" : featured ? "分类" : "标签";
   const name = def?.label_zh ?? (isUncat ? "未分类" : slug);
+  // 热门序 + 每仓上限;客户端组件只喂瘦卡,页面体积与分类大小脱钩
+  const shown = applyRepoCap([...skills].sort(byPopularity)).slice(0, CAP).map(toCard);
+  const truncated = skills.length > shown.length;
 
   return (
     <>
@@ -63,9 +71,17 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       </div>
 
       <div className="list" style={{ marginTop: 10 }}>
-        {skills.map((s) => <SkillRow key={s.id} skill={s} />)}
-        {!skills.length && <div className="empty">该{kind}下暂无 skill</div>}
+        {shown.map((s) => <SkillRow key={s.id} skill={s} />)}
+        {!shown.length && <div className="empty">该{kind}下暂无 skill</div>}
       </div>
+
+      {truncated && (
+        <div className="filters" style={{ marginTop: 16, justifyContent: "center" }}>
+          <Link href={`/browse/?${featured ? "cat" : "tag"}=${slug}`} className="chip">
+            在浏览页看全部 {skills.length.toLocaleString()} 条(分页)›
+          </Link>
+        </div>
+      )}
     </>
   );
 }

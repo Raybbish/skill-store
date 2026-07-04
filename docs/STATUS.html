@@ -36,23 +36,23 @@ footer{margin-top:22px;color:var(--faint);font-size:12px;text-align:center;font-
 <header>
   <div class="e">OH-MY-SKILL · 项目状态面板</div>
   <h1>我们在哪</h1>
-  <div class="m">生成于 2026-07-04 07:39 UTC · 分支 main · 未提交 493 处</div>
+  <div class="m">生成于 2026-07-04 08:10 UTC · 分支 main · 未提交 19 处</div>
 </header>
 <div class="grid"><div class="card"><b class="">6177</b><span>skill 总数</span></div><div class="card"><b class="ok">52<i>/1%</i></b><span>审计通过</span></div><div class="card"><b class="">mirrored 4941 <i>·</i> indexed 1236</b><span>托管</span></div><div class="card"><b class="warn">3</b><span>待复核</span></div><div class="card"><b class="">0</b><span>已评测</span></div><div class="card"><b class="">414</b><span>发布者</span></div></div>
 <div class="doc">
   <h2>最近提交</h2>
-  <pre>ced5f94 docs: 校正 PRD/M0/采集设计 事实(三段式id/hosting/taxonomy/skills.sh)+ 勘误标注
-13aa9ad chore: 刷新状态快照
-ac33714 docs: README 更新
-4cc4b66 chore(catalog): 刷新 L1/L2 审计结果与信号
-7f982dd feat(web): v4 认证图标重设计 + 分类导航 + /category 落地页
-385e68c feat: 分类/标签体系 + eval openai runner
-b9083d1 chore(docs): 活文档系统 + 文档收编 docs/ + 架构勘误 + 忽略 .next
-a6b358e feat: L1/L2 审计 28 条 + openai 真实 runner + 前端新信号展示 + audit --repo</pre>
+  <pre>9615e011 chore(web): 落地上次会话遗留(指标口径 UI 收尾 + skill-types/utils 拆分 + ADR 0006 一键认领设计)
+1d7fef8d feat(catalog): LLM 语义分类 + 16 分类体系(含 security),展示层过滤重复/不合规
+ced5f94f docs: 校正 PRD/M0/采集设计 事实(三段式id/hosting/taxonomy/skills.sh)+ 勘误标注
+13aa9adf chore: 刷新状态快照
+ac337147 docs: README 更新
+4cc4b667 chore(catalog): 刷新 L1/L2 审计结果与信号
+7f982dd6 feat(web): v4 认证图标重设计 + 分类导航 + /category 落地页
+385e68c2 feat: 分类/标签体系 + eval openai runner</pre>
   <h1>STATUS — 我们在哪</h1>
 <blockquote>手写现状。可派生的数字(catalog / 审计 / 提交)见 <a href="./STATUS.generated.md"><code>STATUS.generated.md</code></a>,由 <code>npm run status</code> 自动生成——别在这里手抄数字。</blockquote>
 <blockquote></blockquote>
-<blockquote>_上次人工更新:2026-07-04(货架指标口径统一 + 百万级架构方向)_</blockquote>
+<blockquote>_上次人工更新:2026-07-04(P0 落地:SkillStore 缝 + 构建期静态索引 + browse 分页)_</blockquote>
 <h2>里程碑:M0 · 可信目录(进行中)</h2>
 <p>目标:500+ 已审计 skill、权限标签全覆盖、可浏览 / 可搜 / 可一键装、审计报告公开可验证。</p>
 <h3>已完成</h3>
@@ -61,6 +61,7 @@ a6b358e feat: L1/L2 审计 28 条 + openai 真实 runner + 前端新信号展示
 <li><strong>审计</strong>:L1 静态签名 + L2 脚本数据流已跑;风险五因子 + 三段式 ID(<code>owner/repo/name</code>)入 schema。</li>
 <li><strong>前端(<code>packages/web</code>)</strong>:v4「认证图标 + 去盒子编辑向」已落地——<code>CertBadge</code> 弹窗、<code>SkillRow</code>、home / browse / charts / detail(精简)/ community / publisher;<code>tsc --noEmit</code> 通过。</li>
 <li><strong>货架指标口径</strong>(ADR 0005):stars 与 installs 实测零重叠(98.8% / 0.8%),故头条统一 stars、缺失回落 installs→「新」;排序 <code>byPopularity</code> = 归一 stars(<code>stars/√repo_skill_count</code> 抑制巨仓)+ installs 次键;去 browse 双轴、首页「大家都在装」改「热门」。<code>tsc</code> 通过。</li>
+<li><strong>P0 规模化止血 + 取数缝</strong>(ADR 0007,2026-07-04):<code>lib/store.ts</code> 定 <code>SkillStore</code> 接口(search/getSkill,签名冻结)+ <code>SkillCard</code> 瘦卡;<code>build-index.ts</code> 构建期产 <code>public/idx/</code>(30 条/片 ×194 + docs.json + meta.json,热门序含 per-repo cap=3,收掉同仓聚顶);browse 改服务端首屏 30 条 + 分片翻页 + 懒加载本地搜索(深链 <code>?cat=&amp;tag=&amp;q=</code>);<code>data.ts</code> 单扫缓存 + <code>getSkill</code> O(1);全站客户端组件只喂瘦卡。<strong>基线:browse 首屏 6.0MB→25KB;build-index 3.4s@5,816 条;docs.json 4.9MB(P1 门控:&gt;1.5万条 或 &gt;8MB 或搜索 p95&gt;200ms → Typesense)</strong>。两侧 <code>tsc</code> 全绿;待本机 <code>npm run web</code> 浏览器回归。</li>
 </ul>
 <h3>进行中</h3>
 <ul>
@@ -72,8 +73,9 @@ a6b358e feat: L1/L2 审计 28 条 + openai 真实 runner + 前端新信号展示
 <ul>
 <li>提交当前 web 重设计 + 审计结果(先把未提交的落地)。</li>
 <li>扩 catalog 到 500+(接更多源)。</li>
-<li><strong>M1</strong>:可复现评测协议上线 + 信任原生社区最小切片 + 账号层(见 <a href="decisions/0001-trust-native-community.md">ADR 0001</a>)。</li>
-<li><strong>规模化架构</strong>(ADR 0004):目录奔百万的源/服务解耦方向已定——近期先做 P0「埋缝」(<code>search()/getSkill()</code> 接口 + 分页取代整表渲染 + 修 <code>data.ts</code> O(n²));详见<a href="architecture/走向百万级-架构与迁移计划.html">架构与迁移计划</a>。</li>
+<li><strong>M1</strong>:可复现评测协议上线 + 信任原生社区最小切片 + 账号层 + 原作者一键认领入口(见 <a href="decisions/0001-trust-native-community.md">ADR 0001</a> · <a href="decisions/0006-one-click-claim.md">ADR 0006</a>)。</li>
+<li><strong>规模化架构</strong>(ADR 0004 → 0007):P0「埋缝」已完成;P1 触发条件命中(目录 &gt;1.5万 / docs.json &gt;8MB / 搜索 p95 &gt;200ms)再上自托管 Typesense —— 实现新 adapter 即可,接口不动。详见<a href="architecture/走向百万级-架构与迁移计划.html">架构与迁移计划</a>。</li>
+<li>本机回归 P0:<code>npm run web</code> 手测 browse 搜索/分类/细分/翻页 + 分类页「看全部」深链 + 详情页;<code>npm run web:build</code> 记录构建耗时。</li>
 </ul>
 <h2>决策记录(ADR)</h2>
 <ul>
@@ -82,6 +84,8 @@ a6b358e feat: L1/L2 审计 28 条 + openai 真实 runner + 前端新信号展示
 <li><a href="decisions/0003-v4-design-system.md">0003 · v4 认证图标设计系统</a></li>
 <li><a href="decisions/0004-scale-to-millions.md">0004 · 走向百万级:源/服务解耦 + 分页 + 托管搜索</a></li>
 <li><a href="decisions/0005-shelf-metric-stars.md">0005 · 货架指标口径:stars 统一头条 + 归一排序</a></li>
+<li><a href="decisions/0006-one-click-claim.md">0006 · 原作者一键认领(发布者认领入口)</a></li>
+<li><a href="decisions/0007-skillstore-seam-static-index.md">0007 · SkillStore 取数缝 + 构建期静态索引(P0 止血)</a></li>
 </ul>
 <h2>文档地图(唯一入口)</h2>
 <p>所有规划 / 架构 / 设计文档已收进 <code>docs/</code>,点开即看。</p>
@@ -96,6 +100,7 @@ a6b358e feat: L1/L2 审计 28 条 + openai 真实 runner + 前端新信号展示
 <p><strong>架构与实现</strong>(架构图直接画在 HTML 里)</p>
 <ul>
 <li><a href="architecture/走向百万级-架构与迁移计划.html">⭐ 走向百万级 · 架构与迁移计划</a> — 源/服务解耦 + 分页 + 托管搜索(ADR 0004)</li>
+<li><a href="architecture/一键认领-发布者认领设计.html">原作者一键认领 · 发布者认领设计</a> — GitHub 控制权自证 + 验证阶梯(ADR 0006)</li>
 <li><a href="architecture/供给聚合架构图.html">供给聚合架构图</a></li>
 <li><a href="architecture/供给采集设计.html">供给采集设计</a></li>
 <li><a href="architecture/审计流程.html">审计流程</a></li>

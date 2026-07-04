@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { allSkills, byPopularity } from "@/lib/data";
+import { toCard } from "@/lib/store";
 import SkillRow from "@/components/SkillRow";
 
 const OFFICIAL = new Set(["anthropics", "vercel-labs", "microsoft", "supabase", "larksuite", "remotion-dev"]);
 
 export default function Home() {
   const skills = allSkills();
+  // 客户端组件只喂瘦卡(toCard),别把全量 Skill(evidence 等)序列化进页面(ADR 0007)
   const official = skills.filter((s) => OFFICIAL.has(s.publisher) && s.status === "pass").sort(byPopularity).slice(0, 6);
-  const featured = official.length ? official : skills.slice(0, 6);
-  const trending = [...skills].sort(byPopularity).slice(0, 6);
+  const featured = (official.length ? official : skills.slice(0, 6)).map(toCard);
+  const trending = [...skills].sort(byPopularity).slice(0, 6).map(toCard);
 
   return (
     <>

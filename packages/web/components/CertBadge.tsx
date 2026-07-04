@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, type MouseEvent } from "react";
-import type { Skill } from "@/lib/skill-types";
+import type { SkillCard } from "@/lib/store";
 
 const FACTORS: [string, string, string][] = [
   ["network", "🌐", "网络请求"],
@@ -29,7 +29,8 @@ function Shield({ rev, size }: { rev: boolean; size: number }) {
   );
 }
 
-export default function CertBadge({ skill, size = 17 }: { skill: Skill; size?: number }) {
+/** 徽章 + 认证弹窗只需要瘦卡字段(status/risk/l3/review/upstream);全量 Skill 结构兼容 */
+export default function CertBadge({ skill, size = 17 }: { skill: SkillCard; size?: number }) {
   const [open, setOpen] = useState(false);
   const rev = skill.status !== "pass";
 

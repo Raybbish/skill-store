@@ -1,8 +1,9 @@
 import { allSkills } from "@/lib/data";
+import { toCard } from "@/lib/store";
 import SkillRow from "@/components/SkillRow";
 
 export default function Charts() {
-  const byInstall = [...allSkills()].filter((s) => s.installs != null).sort((a, b) => (b.installs ?? 0) - (a.installs ?? 0)).slice(0, 10);
+  const byInstall = [...allSkills()].filter((s) => s.installs != null).sort((a, b) => (b.installs ?? 0) - (a.installs ?? 0)).slice(0, 10).map(toCard);
   return (
     <>
       <section className="hero">

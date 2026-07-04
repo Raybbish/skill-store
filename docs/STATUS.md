@@ -2,7 +2,7 @@
 
 > 手写现状。可派生的数字(catalog / 审计 / 提交)见 [`STATUS.generated.md`](./STATUS.generated.md),由 `npm run status` 自动生成——别在这里手抄数字。
 >
-> _上次人工更新:2026-07-04(货架指标口径统一 + 百万级架构方向)_
+> _上次人工更新:2026-07-04(P0 落地:SkillStore 缝 + 构建期静态索引 + browse 分页)_
 
 ## 里程碑:M0 · 可信目录(进行中)
 目标:500+ 已审计 skill、权限标签全覆盖、可浏览 / 可搜 / 可一键装、审计报告公开可验证。
@@ -12,6 +12,7 @@
 - **审计**:L1 静态签名 + L2 脚本数据流已跑;风险五因子 + 三段式 ID(`owner/repo/name`)入 schema。
 - **前端(`packages/web`)**:v4「认证图标 + 去盒子编辑向」已落地——`CertBadge` 弹窗、`SkillRow`、home / browse / charts / detail(精简)/ community / publisher;`tsc --noEmit` 通过。
 - **货架指标口径**(ADR 0005):stars 与 installs 实测零重叠(98.8% / 0.8%),故头条统一 stars、缺失回落 installs→「新」;排序 `byPopularity` = 归一 stars(`stars/√repo_skill_count` 抑制巨仓)+ installs 次键;去 browse 双轴、首页「大家都在装」改「热门」。`tsc` 通过。
+- **P0 规模化止血 + 取数缝**(ADR 0007,2026-07-04):`lib/store.ts` 定 `SkillStore` 接口(search/getSkill,签名冻结)+ `SkillCard` 瘦卡;`build-index.ts` 构建期产 `public/idx/`(30 条/片 ×194 + docs.json + meta.json,热门序含 per-repo cap=3,收掉同仓聚顶);browse 改服务端首屏 30 条 + 分片翻页 + 懒加载本地搜索(深链 `?cat=&tag=&q=`);`data.ts` 单扫缓存 + `getSkill` O(1);全站客户端组件只喂瘦卡。**基线:browse 首屏 6.0MB→25KB;build-index 3.4s@5,816 条;docs.json 4.9MB(P1 门控:>1.5万条 或 >8MB 或搜索 p95>200ms → Typesense)**。两侧 `tsc` 全绿;待本机 `npm run web` 浏览器回归。
 
 ### 进行中
 - **分类 / 标签体系**:`packages/schemas` 词表(`featuredLabels` / `tagLabels`)+ `skill.category/tags` + browse/home 分类导航 + `/category/[slug]` 分类页——开发中,未提交。
@@ -22,7 +23,8 @@
 - 提交当前 web 重设计 + 审计结果(先把未提交的落地)。
 - 扩 catalog 到 500+(接更多源)。
 - **M1**:可复现评测协议上线 + 信任原生社区最小切片 + 账号层 + 原作者一键认领入口(见 [ADR 0001](decisions/0001-trust-native-community.md) · [ADR 0006](decisions/0006-one-click-claim.md))。
-- **规模化架构**(ADR 0004):目录奔百万的源/服务解耦方向已定——近期先做 P0「埋缝」(`search()/getSkill()` 接口 + 分页取代整表渲染 + 修 `data.ts` O(n²));详见[架构与迁移计划](architecture/走向百万级-架构与迁移计划.html)。
+- **规模化架构**(ADR 0004 → 0007):P0「埋缝」已完成;P1 触发条件命中(目录 >1.5万 / docs.json >8MB / 搜索 p95 >200ms)再上自托管 Typesense —— 实现新 adapter 即可,接口不动。详见[架构与迁移计划](architecture/走向百万级-架构与迁移计划.html)。
+- 本机回归 P0:`npm run web` 手测 browse 搜索/分类/细分/翻页 + 分类页「看全部」深链 + 详情页;`npm run web:build` 记录构建耗时。
 
 ## 决策记录(ADR)
 - [0001 · 信任原生社区](decisions/0001-trust-native-community.md)
@@ -31,6 +33,7 @@
 - [0004 · 走向百万级:源/服务解耦 + 分页 + 托管搜索](decisions/0004-scale-to-millions.md)
 - [0005 · 货架指标口径:stars 统一头条 + 归一排序](decisions/0005-shelf-metric-stars.md)
 - [0006 · 原作者一键认领(发布者认领入口)](decisions/0006-one-click-claim.md)
+- [0007 · SkillStore 取数缝 + 构建期静态索引(P0 止血)](decisions/0007-skillstore-seam-static-index.md)
 
 ## 文档地图(唯一入口)
 所有规划 / 架构 / 设计文档已收进 `docs/`,点开即看。
