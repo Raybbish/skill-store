@@ -21,7 +21,7 @@
 ### 下一步
 - 提交当前 web 重设计 + 审计结果(先把未提交的落地)。
 - 扩 catalog 到 500+(接更多源)。
-- **M1**:可复现评测协议上线 + 信任原生社区最小切片 + 账号层(见 [ADR 0001](decisions/0001-trust-native-community.md))。
+- **M1**:可复现评测协议上线 + 信任原生社区最小切片 + 账号层 + 原作者一键认领入口(见 [ADR 0001](decisions/0001-trust-native-community.md) · [ADR 0006](decisions/0006-one-click-claim.md))。
 - **规模化架构**(ADR 0004):目录奔百万的源/服务解耦方向已定——近期先做 P0「埋缝」(`search()/getSkill()` 接口 + 分页取代整表渲染 + 修 `data.ts` O(n²));详见[架构与迁移计划](architecture/走向百万级-架构与迁移计划.html)。
 
 ## 决策记录(ADR)
@@ -30,6 +30,7 @@
 - [0003 · v4 认证图标设计系统](decisions/0003-v4-design-system.md)
 - [0004 · 走向百万级:源/服务解耦 + 分页 + 托管搜索](decisions/0004-scale-to-millions.md)
 - [0005 · 货架指标口径:stars 统一头条 + 归一排序](decisions/0005-shelf-metric-stars.md)
+- [0006 · 原作者一键认领(发布者认领入口)](decisions/0006-one-click-claim.md)
 
 ## 文档地图(唯一入口)
 所有规划 / 架构 / 设计文档已收进 `docs/`,点开即看。
@@ -43,6 +44,7 @@
 
 **架构与实现**(架构图直接画在 HTML 里)
 - [⭐ 走向百万级 · 架构与迁移计划](architecture/走向百万级-架构与迁移计划.html) — 源/服务解耦 + 分页 + 托管搜索(ADR 0004)
+- [原作者一键认领 · 发布者认领设计](architecture/一键认领-发布者认领设计.html) — GitHub 控制权自证 + 验证阶梯(ADR 0006)
 - [供给聚合架构图](architecture/供给聚合架构图.html)
 - [供给采集设计](architecture/供给采集设计.html)
 - [审计流程](architecture/审计流程.html)

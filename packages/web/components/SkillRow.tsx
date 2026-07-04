@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import type { Skill } from "@/lib/data";
+import type { Skill } from "@/lib/skill-types";
 import CertBadge from "./CertBadge";
 
 const fmt = (n: number) => (n >= 1e6 ? `${Math.round(n / 1e5) / 10}M` : n >= 1e3 ? `${Math.round(n / 100) / 10}K` : String(n));

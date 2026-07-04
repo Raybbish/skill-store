@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, type MouseEvent } from "react";
-import type { Skill } from "@/lib/data";
+import type { Skill } from "@/lib/skill-types";
 
 const FACTORS: [string, string, string][] = [
   ["network", "🌐", "网络请求"],

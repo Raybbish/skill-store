@@ -1,7 +1,8 @@
 "use client";
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { byPopularity, type Skill } from "@/lib/data";
+import type { Skill } from "@/lib/skill-types";
+import { byPopularity } from "@/lib/skill-utils";
 import SkillRow from "@/components/SkillRow";
 
 type Chip = { slug: string; label: string; n: number };

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import type { Skill } from "@/lib/data";
+import type { Skill } from "@/lib/skill-types";
 
 // CLI / 下载 / 安装脚本的 base 域名 —— 正式域名替换处
 const HOST = "https://oh-my-skill.dev";

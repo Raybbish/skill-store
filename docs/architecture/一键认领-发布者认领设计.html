@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Store · ADR 0006 · 原作者一键认领设计</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14161d;--ink-2:#39414f;--sub:#5c6473;--faint:#9aa1af;
+  --bg:#fcfcfd;--card:#fff;--line:#ececef;--line-2:#e0e2e8;--hair:#eef0f3;
+  --blue:#3b6cf0;--blue-press:#2a53d4;--violet:#7a5af8;--green:#12905f;--amber:#b5730a;--gold:#f0a318;--danger:#d5453b;
+  --seal:#eef2fe;--green-soft:#e4f4ec;--amber-soft:#f8efdb;--danger-soft:#fbecea;--violet-soft:#f1edfe;
+  --display:"Space Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
+  --ui:"Manrope",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.62}
+.wrap{max-width:940px;margin:0 auto;padding:60px 30px 120px}
+a{color:var(--blue);text-decoration:none}
+code,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* header */
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);font-weight:500}
+h1.title{font-family:var(--display);font-weight:700;font-size:42px;line-height:1.06;letter-spacing:-.03em;margin:16px 0 14px}
+h1.title .hl{position:relative;white-space:nowrap}
+h1.title .hl:after{content:"";position:absolute;left:-2px;right:-2px;bottom:5px;height:12px;background:linear-gradient(90deg,#d9e4fe,#e7ddfd);z-index:-1;border-radius:2px}
+.lede{font-size:17px;color:var(--sub);max-width:66ch;line-height:1.6}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px 22px;font-family:var(--mono);font-size:12px;color:var(--faint);padding-bottom:26px;border-bottom:1px solid var(--line)}
+.meta b{color:var(--ink-2);font-weight:600}
+
+/* tldr callout */
+.tldr{margin:30px 0 8px;background:linear-gradient(120deg,#eef2fe,#f4f0ff 62%,#fdeef4);border-radius:20px;padding:24px 26px}
+.tldr .k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--violet);font-weight:600}
+.tldr p{font-size:16px;color:var(--ink-2);margin-top:9px;line-height:1.58}
+.tldr b{color:var(--ink);font-weight:700}
+
+/* section */
+section{margin-top:52px}
+.sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;padding-top:6px}
+.sh .n{font-family:var(--mono);font-size:13px;color:var(--blue);font-weight:600}
+h2{font-family:var(--display);font-size:25px;font-weight:700;letter-spacing:-.02em}
+.sub{font-size:14px;color:var(--faint);margin-bottom:18px}
+p.body{margin:12px 0;color:var(--ink-2)}
+p.body b{color:var(--ink)}
+
+/* principle list */
+.princ{list-style:none;counter-reset:p;display:grid;gap:12px;margin-top:6px}
+.princ li{position:relative;padding:16px 18px 16px 54px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.princ li:before{counter-increment:p;content:counter(p);position:absolute;left:16px;top:15px;width:26px;height:26px;border-radius:8px;background:var(--seal);color:var(--blue);font-family:var(--display);font-weight:700;font-size:14px;display:grid;place-items:center}
+.princ b{font-weight:700}
+.princ .why{color:var(--sub);font-size:13.5px}
+
+/* verification ladder */
+.ladder{display:grid;gap:10px;margin:18px 0 8px}
+.rung{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:15px;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--card)}
+.rung .rn{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:16px}
+.rung .rc{font-size:14.5px;color:var(--ink-2);line-height:1.5}
+.rung .rc b{color:var(--ink);font-weight:700}
+.rung .rc .note{display:inline-block;font-size:11.5px;color:var(--faint);font-family:var(--mono);margin-left:6px}
+.rung .rt{font-family:var(--mono);font-size:11px;font-weight:600;border-radius:999px;padding:6px 12px;white-space:nowrap}
+.rung.auto{border-left:3px solid var(--blue)}.rung.auto .rn{background:var(--seal);color:var(--blue)}.rung.auto .rt{background:var(--seal);color:var(--blue)}
+.rung.semi{border-left:3px solid var(--amber)}.rung.semi .rn{background:var(--amber-soft);color:var(--amber)}.rung.semi .rt{background:var(--amber-soft);color:var(--amber)}
+.rung.man{border-left:3px solid var(--faint)}.rung.man .rn{background:#f0f1f5;color:var(--sub)}.rung.man .rt{background:#f0f1f5;color:var(--sub)}
+.legend{font-size:12.5px;color:var(--sub);font-family:var(--mono);margin-top:6px;display:flex;flex-wrap:wrap;gap:6px 16px}
+.legend .d{display:inline-flex;align-items:center;gap:6px}
+.legend .sw{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+/* two-column boxes */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+.box{border:1px solid var(--line);border-radius:16px;padding:18px 20px;background:var(--card)}
+.box.a{border-top:3px solid var(--blue)}
+.box.b{border-top:3px solid var(--amber)}
+.box.no{border-top:3px solid var(--danger)}
+.box.go{border-top:3px solid var(--green)}
+.box h3{font-family:var(--display);font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.box .kv{font-family:var(--mono);font-size:11px;color:var(--faint);margin:6px 0 10px}
+.box ul{list-style:none;margin-top:11px;display:grid;gap:8px}
+.box li{font-size:13.5px;color:var(--ink-2);padding-left:20px;position:relative}
+.box.a li:before{content:"→";position:absolute;left:0;color:var(--blue);font-weight:700}
+.box.b li:before{content:"→";position:absolute;left:0;color:var(--amber);font-weight:700}
+.box.no li:before{content:"✕";position:absolute;left:0;color:var(--danger);font-size:11px;top:3px;font-weight:700}
+.box.go li:before{content:"→";position:absolute;left:0;color:var(--green);font-weight:700}
+.box li b{color:var(--ink);font-weight:700}
+.box code{font-size:11.5px;background:#f0f1f5;border-radius:5px;padding:1px 6px}
+
+/* grant list */
+.grants{list-style:none;display:grid;gap:9px;margin-top:6px}
+.grants li{position:relative;padding:13px 16px 13px 44px;background:var(--card);border:1px solid var(--line);border-radius:12px;font-size:14px;color:var(--ink-2)}
+.grants li:before{content:"✓";position:absolute;left:15px;top:13px;width:20px;height:20px;border-radius:6px;background:var(--green-soft);color:var(--green);font-size:12px;font-weight:700;display:grid;place-items:center}
+.grants li b{color:var(--ink);font-weight:700}
+
+/* redline callout */
+.redline{margin-top:16px;border:1px solid var(--danger-soft);border-left:3px solid var(--danger);background:var(--danger-soft);border-radius:12px;padding:15px 18px}
+.redline .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--danger);font-weight:600;display:block;margin-bottom:6px}
+.redline p{font-size:13.5px;color:var(--ink-2);line-height:1.6}
+.redline b{color:var(--ink);font-weight:700}
+
+/* growth callout */
+.grow{margin-top:8px;border:1px solid var(--seal);border-left:3px solid var(--blue);background:linear-gradient(120deg,#f3f6ff,#faf9ff);border-radius:14px;padding:18px 20px}
+.grow .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:600;display:block;margin-bottom:7px}
+.grow p{font-size:14.5px;color:var(--ink-2);line-height:1.58}
+.grow b{color:var(--ink);font-weight:700}
+
+/* tables */
+.tbl{width:100%;border-collapse:collapse;margin:14px 0 4px;font-size:13.5px}
+.tbl th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;padding:0 14px 9px;border-bottom:1px solid var(--line-2)}
+.tbl td{padding:12px 14px;border-bottom:1px solid var(--hair);color:var(--ink-2);vertical-align:top}
+.tbl td b{color:var(--ink);font-weight:700}
+.tbl tr:last-child td{border-bottom:none}
+
+/* code */
+pre{background:#12141b;color:#dfe4ee;border-radius:14px;padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.62;margin:14px 0}
+pre .c{color:#7f8ba3}pre .k{color:#8fb4ff}pre .s{color:#a7e3c0}pre .p{color:#f0c987}
+
+/* hard problems */
+.hp{display:grid;gap:12px;margin-top:6px}
+.hp .item{border:1px solid var(--line);border-left:3px solid var(--danger);border-radius:12px;padding:15px 18px;background:var(--card)}
+.hp .item h4{font-family:var(--display);font-size:15.5px;font-weight:700}
+.hp .item p{font-size:13.5px;color:var(--sub);margin-top:5px}
+.hp .item b{color:var(--ink-2)}
+
+footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint);line-height:1.7}
+footer b{color:var(--sub)}
+footer a{font-family:var(--mono)}
+
+@media (max-width:720px){
+  .wrap{padding:40px 20px 90px}
+  h1.title{font-size:32px}
+  .two{grid-template-columns:1fr}
+  .rung{grid-template-columns:32px 1fr;gap:12px}
+  .rung .rt{grid-column:2;justify-self:start;margin-top:2px}
+}
+@media print{body{background:#fff}.box,.rung,.hp .item,.grants li{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Skill Store · 架构决策 · ADR 0006</div>
+  <h1 class="title">原作者<span class="hl">一键认领</span></h1>
+  <p class="lede">让 skill 的原作者把冷启动时归属为空的 listing 收归己有——改图标、答复社区、拿采用数据。身份无法凭空自证,但既然内容源都在 GitHub,「对源仓库的控制权」可自证,这就是认领的支点。本文给出核心口径、验证阶梯、第一方/聚合源分叉、数据模型与 MVP 边界。</p>
+  <div class="meta">
+    <span>日期 · <b>2026-07-04</b></span>
+    <span>落位 · <b>M1 账号层</b></span>
+    <span>状态 · <b>建议</b></span>
+    <span>认证栈 · <b>Supabase Auth · GitHub OAuth</b></span>
+    <span>关联 · <b>ADR 0001 · 0002</b></span>
+  </div>
+</header>
+
+<div class="tldr">
+  <div class="k">一句话</div>
+  <p><b>身份证明 = 对 skill 源 GitHub 仓库的控制权。</b>认领 = 用 M1 已定的 Supabase GitHub OAuth 登录,拿 <code>login / orgs / repo 权限</code> 自动比对源归属,命中即当场绑定 listing——这才是真正的「一键」。<b>MVP 只焊第一方仓的前两档,直接坐在既有 OAuth 上,零新基建;</b>聚合源与挑战验证随后补,人工永久兜底。</p>
+</div>
+
+<!-- 1 · 核心口径 -->
+<section>
+  <div class="sh"><span class="n">01</span><h2>核心口径</h2></div>
+  <div class="sub">三条前提,决定后面每一步。</div>
+  <ol class="princ">
+    <li><b>控制权即证明。</b> <span class="why">authorship 不可自证;但内容源都在 GitHub,<b>能证明你控制源仓库,就等于证明你是作者</b>。整套设计围绕这一条展开——不去核对「你是不是本人」,只核对「你能不能动这个仓」。</span></li>
+    <li><b>复用已定的 Auth,不造新轮子。</b> <span class="why">M1 账号层已定 <b>Supabase Auth(GitHub + 邮箱,ADR 0001)</b>。认领直接坐在它的 GitHub OAuth 上:一次登录即拿到 <code>login</code>、<code>orgs</code>、对源仓的 <code>repo 权限</code>,足够判定归属,<b>零新增身份基建</b>。</span></li>
+    <li><b>命中即停,越靠前越「一键」。</b> <span class="why">五档验证按可信度从高到低排,任一命中即绑定、不再往下走。前三档全自动(真·一键),后两档兜底。绝大多数第一方作者在第 1 档就完成。</span></li>
+  </ol>
+</section>
+
+<!-- 2 · 验证阶梯 -->
+<section>
+  <div class="sh"><span class="n">02</span><h2>验证阶梯</h2></div>
+  <div class="sub">OAuth 登录后按序自动比对,命中即停。前 3 档零人工 = 一键完成。</div>
+  <div class="ladder">
+    <div class="rung auto">
+      <div class="rn">1</div>
+      <div class="rc"><b>源仓 <code>admin / push</code> 权限匹配</b><span class="note">GitHub API 查登录者对源仓的写权限</span><br>覆盖第一方仓——绝大多数场景在这里就结束。</div>
+      <div class="rt">✓ 一键</div>
+    </div>
+    <div class="rung auto">
+      <div class="rn">2</div>
+      <div class="rc"><b>所属 org 的 owner / 成员</b><span class="note">源仓归某 org,登录者是其成员</span><br>组织维护的 skill 由组织成员认领。</div>
+      <div class="rt">✓ 一键</div>
+    </div>
+    <div class="rung auto">
+      <div class="rn">3</div>
+      <div class="rc"><b>frontmatter <code>author</code> / 声明源匹配</b><span class="note">聚合源专用</span><br><code>SKILL.md</code> 声明的作者或源链接 == 登录身份。</div>
+      <div class="rt">✓ 一键</div>
+    </div>
+    <div class="rung semi">
+      <div class="rn">4</div>
+      <div class="rc"><b>挑战验证</b><span class="note">需一次手动操作</span><br>往源仓 / Gist 塞一次性 token,轮询 GitHub API 确认控制权。</div>
+      <div class="rt">⏳ 半自动</div>
+    </div>
+    <div class="rung man">
+      <div class="rn">5</div>
+      <div class="rc"><b>冲突 / 存疑 → 人工审核</b><span class="note">永久兜底</span><br>多方争夺、fork 冒领、证据不足 → 人工裁决。</div>
+      <div class="rt">人工</div>
+    </div>
+  </div>
+  <div class="legend">
+    <span class="d"><span class="sw" style="background:var(--blue)"></span>蓝 = 全自动(一键)</span>
+    <span class="d"><span class="sw" style="background:var(--amber)"></span>橙 = 半自动(一次操作)</span>
+    <span class="d"><span class="sw" style="background:var(--faint)"></span>灰 = 人工兜底</span>
+    <span>｜ 命中即停,不再往下走</span>
+  </div>
+</section>
+
+<!-- 3 · 第一方 vs 聚合源 -->
+<section>
+  <div class="sh"><span class="n">03</span><h2>关键分叉:第一方 vs 聚合源</h2></div>
+  <div class="sub">这是和你采集架构强相关的坑——比对逻辑必须按来源分流,否则会把 listing 误绑到搬运工。</div>
+  <p class="body">三段式 ID <code>owner/repo/name</code> 里的 <b>owner</b>,在第一方仓 = 作者;在聚合 / 精选仓(<code>curated_by</code> 标记、<code>MAX_PER_REPO</code> 折叠来的)= <b>搬运工</b>。对聚合源套「repo 权限」比对,会把认领权错发给收录它的人。所以先看 <code>source_type</code>,再决定走哪档。</p>
+  <div class="two">
+    <div class="box a">
+      <h3>first_party</h3>
+      <div class="kv">owner == 作者</div>
+      <ul>
+        <li>走第 <b>1–2 档</b>(repo 权限 / org 成员)即可判定</li>
+        <li>OAuth 拿到 <code>admin/push</code> → 当场自动绑定</li>
+        <li>覆盖绝大多数条目,MVP 只做这一支</li>
+      </ul>
+    </div>
+    <div class="box b">
+      <h3>aggregator</h3>
+      <div class="kv">owner == 搬运工</div>
+      <ul>
+        <li><b>跳过</b>第 1–2 档(会误绑搬运工)</li>
+        <li>只认第 <b>3 档</b>:frontmatter <code>author</code> / 声明源</li>
+        <li>缺声明 → 落第 4–5 档(挑战 / 人工)</li>
+      </ul>
+    </div>
+  </div>
+  <p class="body"><code>source_type</code> 无需新采集,<b>直接派生自你现有的 <code>curated_by</code> / 折叠信号</b>。</p>
+</section>
+
+<!-- 4 · 认领后授予 -->
+<section>
+  <div class="sh"><span class="n">04</span><h2>认领后授予什么</h2></div>
+  <div class="sub">渐进开放。这些能力是作者愿意来认领的理由,也是它接住 ADR 0002 图标策略的地方。</div>
+  <ul class="grants">
+    <li><b>编辑 listing</b> — 图标(落地 <a href="#ref">ADR 0002</a> 第 3 档「认领 / 上传覆盖」)、描述覆盖、链接、标签建议。</li>
+    <li><b>「作者已验证」身份徽章</b> — 证实这条 listing 的归属。</li>
+    <li><b>答复社区</b> — ADR 0001 的求助 / 评价互动。</li>
+    <li><b>发布者页归属</b> — <code>packages/web</code> 已有 publisher 页,认领后归属其名下。</li>
+    <li><b>后续:采用 / 流量数据</b> — 认领打通后再开。</li>
+  </ul>
+  <div class="redline">
+    <span class="lbl">红线:身份 ≠ 背书</span>
+    <p>「作者已验证」只表明<b>归属被证实</b>,不隐含平台对其安全性的担保。徽章须与平台「已扫描 / 已评测」认证<b>视觉与文案分离</b>(沿用 ADR 0002),全站不说「保证安全」。<b>Apache-2.0 §6 不授商标</b>——认领给的是 listing 控制权,不是使用其 logo 的权利;移除请求并入 DMCA / 商标流程。</p>
+  </div>
+</section>
+
+<!-- 5 · 数据模型 -->
+<section>
+  <div class="sh"><span class="n">05</span><h2>数据模型</h2></div>
+  <div class="sub">挂在 M1 账号层(Supabase Postgres,与 Auth 同库)。<code>claims</code> 表是撤销与仲裁的证据链,必留。</div>
+  <table class="tbl">
+    <thead><tr><th style="width:30%">对象 / 字段</th><th style="width:26%">取值</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><b>accounts</b></td><td>id · github_user_id · github_login · avatar · email</td><td>OAuth 落地的账号主体</td></tr>
+      <tr><td>skills.<b>owner_account_id</b></td><td>fk · nullable</td><td><code>null</code> = 未认领(聚合态)</td></tr>
+      <tr><td>skills.<b>claim_state</b></td><td>enum</td><td><code>unclaimed → pending → claimed → verified</code></td></tr>
+      <tr><td>skills.<b>source_type</b></td><td>enum</td><td><code>first_party | aggregator</code>,派生自 <code>curated_by</code> / 折叠</td></tr>
+      <tr><td><b>claims</b></td><td>id · skill_id · account_id · method · evidence · status · ts</td><td>认领审计流:谁、用哪档、凭什么、结果——争议与撤销的唯一依据</td></tr>
+    </tbody>
+  </table>
+  <pre><span class="c">// 认领判定(命中即返回,前 3 档零人工)</span>
+<span class="k">async function</span> resolveClaim(skill, ghUser) {
+  <span class="k">if</span> (skill.source_type === <span class="s">"first_party"</span>) {
+    <span class="k">if</span> (<span class="k">await</span> hasRepoWrite(ghUser, skill.owner, skill.repo)) <span class="k">return</span> <span class="s">"auto:repo"</span>;   <span class="c">// 档 1</span>
+    <span class="k">if</span> (<span class="k">await</span> inOrg(ghUser, skill.owner)) <span class="k">return</span> <span class="s">"auto:org"</span>;                    <span class="c">// 档 2</span>
+  } <span class="k">else</span> { <span class="c">// aggregator:跳过 repo 权限,认声明源</span>
+    <span class="k">if</span> (declaredAuthor(skill) === ghUser.login) <span class="k">return</span> <span class="s">"auto:frontmatter"</span>;      <span class="c">// 档 3</span>
+  }
+  <span class="k">return</span> needsChallengeOrReview(skill, ghUser);                                     <span class="c">// 档 4 / 5</span>
+}</pre>
+</section>
+
+<!-- 6 · 静默预填 -->
+<section>
+  <div class="sh"><span class="n">06</span><h2>增长:静默预填</h2></div>
+  <div class="sub">别让作者去大海里找自己那条 —— 把认领从「主动找上门」变「登录即顺手确认」。</div>
+  <div class="grow">
+    <span class="lbl">一键全认领</span>
+    <p>首次 OAuth 后,顺手扫登录者的 <b>repos + orgs</b>,把 catalog 中 <code>owner ∈ {login, orgs}</code> 的 skill 一次性列出:<b>「发现 N 条疑似你的,一键全认领」</b>。这正是 npm / PyPI 登录后自动列出你名下包的套路,认领率会比「一条条搜索认领」高一个量级。</p>
+  </div>
+</section>
+
+<!-- 7 · 防滥用与争议 -->
+<section>
+  <div class="sh"><span class="n">07</span><h2>防滥用与争议</h2></div>
+  <div class="sub">强路径本身要真控制 GitHub 源,冒领成本已经很高;再补四点堵边角。</div>
+  <div class="hp">
+    <div class="item"><h4>① fork 冒领</h4><p>有人 fork 一份仓就来认领。<b>排除 <code>fork:true</code> 仓作为规范源</b>,只认原始仓;fork 想认领落人工档。</p></div>
+    <div class="item"><h4>② 权限变更</h4><p>GitHub 侧 owner / 权限变动(转让、离职)后旧绑定应失效。<b>权限变更触发重验</b>,认领非永久免检。</p></div>
+    <div class="item"><h4>③ 争议 / 撤销</h4><p><code>claims</code> 全程留痕,<b>admin 可撤销 / 仲裁</b>;多方争夺同一条直接进人工档,凭证据链裁决。</p></div>
+    <div class="item"><h4>④ 刷量</h4><p><b>认领限流</b>;因为自动档都要求对源仓的真实控制权,批量冒领无法绕过 GitHub 权限本身。</p></div>
+  </div>
+</section>
+
+<!-- 8 · MVP 边界 -->
+<section>
+  <div class="sh"><span class="n">08</span><h2>边界:MVP 只做什么</h2></div>
+  <div class="sub">「一键」= 把第一方仓那两档焊对,坐在既有 OAuth 上;不是一次把五档全建齐。</div>
+  <div class="two">
+    <div class="box no">
+      <h3>现在别做</h3>
+      <ul>
+        <li>挑战验证(档 4)—— 聚合认领有<b>真实需求</b>再补</li>
+        <li>聚合源 frontmatter 档 —— 同上,依赖 <code>author</code> 字段普及</li>
+        <li>复杂争议工作流 —— 先 admin 手动兜底</li>
+        <li>采用数据看板 —— 认领打通后再说</li>
+        <li>独立认领后台 —— 复用现有 publisher 页</li>
+      </ul>
+    </div>
+    <div class="box go">
+      <h3>现在就做(M1)</h3>
+      <ul>
+        <li><b>Supabase GitHub OAuth 登录</b> + <code>accounts</code> 表</li>
+        <li><b>第 1–2 档自动比对</b>(第一方仓)—— 零新基建</li>
+        <li><code>owner_account_id</code> + <code>claim_state</code> + <code>claims</code> 三件套</li>
+        <li><b>静默预填「一键全认领」</b></li>
+        <li>「作者已验证」徽章(与认证徽章分离)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer id="ref">
+  <b>Skill Store · ADR 0006 · 原作者一键认领</b><br>
+  核心:身份靠 GitHub 控制权自证;认领 = Supabase GitHub OAuth 后自动比对 <code>login/orgs/repo 权限</code>,命中即绑;第一方仓走 repo 权限,聚合源走声明源;MVP 只焊前两档、零新基建。<br>
+  关联决策:<a href="../decisions/0001-trust-native-community.md">ADR 0001 · 信任原生社区(M1 账号层)</a> · <a href="../decisions/0002-icon-logo-ip-deferred.md">ADR 0002 · 图标 IP 策略(认领入口)</a><br>
+  canonical:<a href="../decisions/0006-one-click-claim.md">docs/decisions/0006-one-click-claim.md</a>
+</footer>
+
+</div>
+</body>
+</html>
