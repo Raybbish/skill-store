@@ -311,13 +311,9 @@ export const LABELS: LabelDef[] = [
     definition: '在系统/版本/平台之间搬迁:代码迁移、升级、数据迁移、legacy 现代化',
     rules: [r('migrat', 1), r('upgrad', 1), r('\\blegacy\\b', 1), r('moderniz', 1), r('port(ing)? (from|to)', 2)],
   },
-  {
-    slug: 'scaffolding', label_zh: '脚手架', label_en: 'Scaffolding', featured: false, order: 27, promote: DEFAULT_PROMOTE,
-    facet: 'activity', appliesTo: TECH_CLUSTER,
-    definition: '从零生成项目/模块骨架:脚手架、boilerplate、starter、项目模板',
-    negativeExamples: ['生成 skill 本身的模板工具(→ meta: skill-tooling)'],
-    rules: [r('scaffold', 2), r('boilerplate', 2), r('\\bstarter\\b', 1), r('project template', 2), r('generate (a )?(new )?(project|app)', 2)],
-  },
+  // scaffolding 已退役(2026-07-04):金标 3 轮 57→62→61%,错例每轮洗牌——
+  // 「生成骨架 vs 实现功能」的边界在一行描述里不可分辨,裁判判不稳的筛选维度不该存在。
+  // 供给由 testing/automation/meta 面吸收;详见候补名单。
 
   // ---------- A′ · 动作 Activity(通用层:所有分类可叠加) ----------
   {
@@ -525,6 +521,7 @@ export const LABELS: LabelDef[] = [
   // 候补名单(watchlist)—— 不占筛选位,过线由季度复核自动放行。
   // 准入线 = 全语料 1%(2026-07 约 58 条);连续两季 <0.7% 的在表标签退回这里。
   //   browser-ext / desktop     (形态面候补,2026-07 供给不足)
+  //   scaffolding               (2026-07-04 退役:LLM 判不稳,金标 3 轮 57-62%;重启需先解决判据可分辨性)
   //   postgres 24 / vue 7 / svelte 4 / supabase 4(技术栈长尾,由搜索 + SEO tag 页兜,ADR 0009)
   //   域面候选(§05 的 marketing 渠道/漏斗、science 学科/方法、writing 类型、product 阶段、
   //   data-ai/security/cloud 方向面)——设计已备,但**未做语料供给测量**,按门槛原则先不入表,

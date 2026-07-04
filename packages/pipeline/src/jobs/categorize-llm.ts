@@ -215,11 +215,16 @@ interface CanaryFile {
   pairs: Record<string, { gate: number; items: CanaryItem[] }>;
 }
 
-/** 该易混对下,从预测 tags 提取「对上的判定」 */
+/**
+ * 该易混对下,从预测 tags 提取「对上的判定」。
+ * 对名即约定:「a-vs-b」= 检查 a、b 两个标签(sanitize 保证互斥);单名 = 检查该标签有无。
+ * 加新对只改 fixture,不用动这里。
+ */
 function predictedForPair(pair: string, tags: string[]): string {
-  if (pair === "mcp-vs-mcp-server") return tags.includes("mcp-server") ? "mcp-server" : tags.includes("mcp") ? "mcp" : "none";
-  if (pair === "skill-tooling") return tags.includes("skill-tooling") ? "skill-tooling" : "none";
-  throw new Error(`未知易混对: ${pair}`);
+  const parts = pair.split("-vs-");
+  // 更长的 slug 先查(「mcp-vs-mcp-server」里 mcp-server 比 mcp 具体)
+  for (const p of [...parts].sort((a, b) => b.length - a.length)) if (tags.includes(p)) return p;
+  return "none";
 }
 
 async function runCanary(catList: string, tagSection: string): Promise<never> {
@@ -280,6 +285,7 @@ async function main() {
   const dry = hasFlag("dry");
   const verbose = hasFlag("verbose");
   const only = argVal("only"); // 只重判当前已是该分类的条目(如 --only dev 给 dev 桶去膨胀)
+  const onlyTag = argVal("only-tag"); // 只重判当前带某标签的条目(如 --only-tag scaffolding 给误打标签定向去水)
 
   const cats = featuredLabels();
   const catSlugs = new Set(cats.map((c) => c.slug));
@@ -294,6 +300,7 @@ async function main() {
     if (m.duplicate_of || e.report.frontmatter_valid === false) return false;
     if (scope === "uncategorized" && m.category && m.category !== "uncategorized") return false;
     if (only && m.category !== only) return false;
+    if (onlyTag && !(m.tags ?? []).includes(onlyTag)) return false;
     return true;
   });
   // --shuffle:随机取样(否则 --limit 只取字母序头部,偏向靠前的大仓,样本不具代表性)
