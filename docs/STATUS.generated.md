@@ -1,7 +1,7 @@
 <!-- 自动生成,勿手改。运行: npm run status -->
 # 项目状态(自动快照)
 
-_生成于 2026-07-04 16:12 UTC · 分支 `main` · 未提交改动 6193 处_
+_生成于 2026-07-04 16:23 UTC · 分支 `main` · 未提交改动 14 处_
 
 ## Catalog
 - **skill 总数:6177**
@@ -11,6 +11,7 @@ _生成于 2026-07-04 16:12 UTC · 分支 `main` · 未提交改动 6193 处_
 
 ## 最近提交
 ```
+f0629425 feat(verdicts)!: S0-③ skill-report schema v2——security_audit 拆出至 catalog/verdicts 账本(ADR 0012)
 135465ba feat(verdicts): S0-② 建 @skill-store/verdicts——契约+五接口+编排器+插件(ADR 0012)
 5bce4a7d fix(web): 去噪——nav 右侧🔍/＋发布移除,「热门排序」缄默
 e9972d6c fix(web): 删「看分类页/精选」chip——IA 合并后是条只失能力的跳转
@@ -18,5 +19,4 @@ e9972d6c fix(web): 删「看分类页/精选」chip——IA 合并后是条只�
 8f044308 feat(web): 首页分面交叉筛——标签方案第 3 步收官
 0db70ab1 feat(taxonomy): scaffolding 退役——LLM 判不稳的筛选维度不该存在
 769fd534 feat!: 安全扫描整套下架(ADR 0011)——前端摘除+管线停用,待重新研究设计后再上架
-60da897e feat(web+cli): 新 IA——浏览并入首页 + 场景包 8 套 + 榜单新上架/热门双 tab
 ```

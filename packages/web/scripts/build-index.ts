@@ -13,7 +13,8 @@ import { execSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { allSkills } from "../lib/data";
-import { PAGE_SIZE, toCard, type IdxMeta, type Pack, type SkillCard } from "../lib/store";
+import { PAGE_SIZE, toCard, type CardVerdict, type IdxMeta, type Pack, type SkillCard } from "../lib/store";
+import { batchGetVerdicts, displayReady } from "@skill-store/verdicts";
 import { applyRepoCap, byPopularity } from "../lib/skill-utils";
 import { featuredLabels, tagLabels } from "@skill-store/schemas";
 
@@ -52,6 +53,22 @@ const docs = [...skills].sort(byPopularity).map((s) => {
   const t = addedAt.get(c.id);
   return t ? { ...c, addedAt: t } : c;
 });
+
+// 插拔点②(ADR 0012 步骤④):TRUST_DISPLAY=1 且 policy 定稿时才 join verdict 到瘦卡;
+// 默认 off——瘦卡零新增字节,TrustBadge 恒 null,货架与今天完全一致。
+if (displayReady()) {
+  const byHash = new Map(skills.map((s) => [s.id, s.contentHash ?? ""]));
+  const vmap = await batchGetVerdicts(skills.map((s) => ({ skill_id: s.id, content_hash: s.contentHash ?? "" })));
+  let joined = 0;
+  for (const c of docs) {
+    const v = vmap.get(c.id);
+    if (!v || v.subject.content_hash !== byHash.get(c.id)) continue; // 判定锚内容,hash 不符不展示
+    c.verdict = { status: v.status, policy: v.scanner.policy, factors: v.factors as CardVerdict["factors"] };
+    joined++;
+  }
+  console.log(`[build-index] TRUST_DISPLAY=on · verdict join: ${joined}/${docs.length}`);
+}
+
 const shelf = applyRepoCap(docs);
 
 // 计数(与 matchFilters/货架口径一致:分类=主分类命中;标签=tags 命中)

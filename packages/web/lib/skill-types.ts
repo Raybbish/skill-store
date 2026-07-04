@@ -16,6 +16,8 @@ export interface Skill {
   duplicateOf?: string | null;
   /** SKILL.md frontmatter 是否合规;false(不合规)默认列表隐藏 */
   frontmatterValid?: boolean;
+  /** 内容哈希(verdict 锚点;build-index 查账本用,不进瘦卡) */
+  contentHash?: string;
   tokens: number; stars?: number | null;
   installs?: number | null;
   /** 上游仓库 SKILL.md 总数(巨仓降权信号) */

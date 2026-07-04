@@ -138,6 +138,7 @@ async function main() {
 
   let written = 0;
   const stats = { added: 0, updated: 0, unchanged: 0, dup: 0, preserved: 0, fmInvalid: 0, uncategorized: 0 };
+  const touched: { skill_id: string; content_hash: string }[] = [];
   for (const c of byId.values()) {
     const prev = existing.get(c.report.meta.id);
 
@@ -186,6 +187,19 @@ async function main() {
     else if (prev) stats.updated++;
     else stats.added++;
     if (!c.report.frontmatter_valid) stats.fmInvalid++;
+    touched.push({ skill_id: c.report.meta.id, content_hash: c.report.meta.content_hash });
+  }
+
+  // 插拔点①(ADR 0012 步骤④):收录完成后异步提交判定。默认 off——
+  // TRUST_SUBMIT=1 时才 submit(幂等,同 hash 同 policy 不产生新条目);
+  // 服务缺席/关闭时采集完整可用,收录永不等扫描。
+  if (process.env.TRUST_SUBMIT === "1" && touched.length) {
+    const { submit } = await import("@skill-store/verdicts");
+    let submitted = 0;
+    for (const t of touched) {
+      try { await submit(t); submitted++; } catch { /* 服务故障不影响采集 */ }
+    }
+    console.log(`verdict 提交(TRUST_SUBMIT=1): ${submitted}/${touched.length}`);
   }
 
   // 批量源合集条目:catalog/collections/<owner>/<repo>.json;字段没变就不重写(幂等)

@@ -10,6 +10,7 @@
 > ⛔ **安全扫描已整套下架**(2026-07-04,[ADR 0011](decisions/0011-unlist-security-scan.md)):前端认证徽章/权限披露/审计文案全部摘除,`audit`/`review`/`audit:l3` scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。
 
 ### 已完成
+- **verdict 服务 S0 ④**(2026-07-05,ADR 0012):商店三插拔点接线完成,全部默认 off——ingest `TRUST_SUBMIT=1` 才提交判定;build-index `TRUST_DISPLAY=1` **且 policy 定稿**才 join verdict 到瘦卡(hash 不符不展示);`TrustBadge` 开关组件(verdict 缺省恒 null);CLI `TRUST_DISPLAY=1` 且 verdict 命中 hash 才披露。已验证:flag 开但 policy=draft 时 displayReady 仍 false。**S0 工程面收官,重新上架 = policy v1 定稿 + 开 flag。**(⚠ 本机需 `npm install` 链接新 workspace 包)
 - **verdict 服务 S0 ②③**(2026-07-05,ADR 0012):`packages/verdicts` 落地——scan-verdict@v1 契约 + 五接口 + 编排器 + 插件(scanners 三件套 git mv 入 engines/,旧 audit/review jobs 删除);**skill-report schema v2**:security_audit 拆出,55 条真实判定迁入 `catalog/verdicts/` 账本(engine=legacy),6,122 条 pending 占位丢弃;ingest/sync/eval/status.mjs 配套改造(Supabase 需执行 `infra/migrations/2026-07-05-verdict-service.sql`)。TRUST_DISPLAY / TRUST_GATE 均 off,货架外观不变。
 - **安全扫描下架**(2026-07-04,ADR 0011):CertBadge 删除、`SkillCard`/`Skill` 剥离 status/risk/l3/review、「仅无网络请求」筛选移除、CLI 装前披露移除(哈希校验保留);判定数据现已迁入 verdict 账本(见上)。
 - **供给**:两段式采集(`index-only` 默认 / `--mirror` 托管双轨)、GitHub 全域 topic 采集、每仓折叠采样(`MAX_PER_REPO`)、内容哈希幂等去重、skills.sh 榜单 + awesome-list 精选/分类信号(`curated_by`)。
@@ -25,7 +26,7 @@
 - 前端 v4 重设计 + 审计结果 + 本 docs 整理**待 git 提交留痕**(当前工作区未提交约 200 处)。
 
 ### 下一步
-- **verdict 服务 S0 步骤④**([ADR 0012](decisions/0012-verdict-service.md)):商店三处 optional 接线(ingest submit / build-index join + TrustBadge / CLI 披露),flag 默认 off;之后研究议题(裁决口径/误报率/复核吞吐)在 policy 草稿里迭代,policy v1 定稿 + 全量重扫 = 开 flag 重新上架(步骤⑤⑥)。
+- **verdict 服务步骤⑤⑥**([ADR 0012](decisions/0012-verdict-service.md)):研究议题(裁决口径/误报率基线/复核吞吐/徽章语义)在 `packages/verdicts/policies/` 草稿里迭代;policy v1 定稿 + 全量重扫 + 开 TRUST_DISPLAY = 重新上架(验收:diff 只有 flag)。
 - Supabase:下次 sync 前执行 `infra/migrations/2026-07-05-verdict-service.sql`(放开 audit_status 非空)。
 - 扩 catalog 到 500+(接更多源)。
 - **M1**:可复现评测协议上线 + 信任原生社区最小切片 + 账号层 + 原作者一键认领入口(见 [ADR 0001](decisions/0001-trust-native-community.md) · [ADR 0006](decisions/0006-one-click-claim.md))。

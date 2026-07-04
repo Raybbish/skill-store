@@ -75,6 +75,23 @@ async function fetchReport(id) {
   };
 }
 
+/**
+ * 插拔点③(ADR 0012 步骤④):装前信任披露,verdict 有则显示、没有就跳过。
+ * TRUST_DISPLAY=1 才读;S0 只支持 --from-dir(账本在 catalog/verdicts);S1 起 API 行携带 verdict。
+ * content_hash 完整性校验与本函数无关,永远在。
+ */
+async function loadVerdict(id, contentHash) {
+  if (process.env.TRUST_DISPLAY !== "1") return null;
+  const local = opt("from-dir");
+  if (!local) return null;
+  try {
+    const ledger = JSON.parse(await readFile(join(local, "..", "verdicts", ...id.split("/")) + ".json", "utf8"));
+    const v = ledger.verdicts?.[0];
+    // 判定锚内容:hash 不符不展示(内容已变,旧判定不作数)
+    return v && v.subject?.content_hash === contentHash ? v : null;
+  } catch { return null; }
+}
+
 function detectAgentDir() {
   const to = opt("to");
   if (to) return to;
@@ -96,6 +113,13 @@ async function add(id) {
   const report = await fetchReport(id);
   const m = report.meta;
   console.log(`\n■ ${m.id}  (${m.license} / ${m.hosting})`);
+  const v = await loadVerdict(id, m.content_hash);
+  if (v) {
+    console.log(`  判定: ${v.status}(policy ${v.scanner?.policy})—— 披露非背书`);
+    for (const [k, f] of Object.entries(v.factors ?? {})) {
+      console.log(`    ${k}: ${f.present === true ? "含" : f.present === false ? "无" : "未判定"}${f.detail ? ` — ${f.detail}` : ""}`);
+    }
+  }
   if (!(await confirm("确认安装?"))) return console.log("已取消");
 
   // 获取文件:本地 catalog 的 mirror/,或 clone 上游

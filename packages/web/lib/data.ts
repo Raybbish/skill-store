@@ -31,6 +31,7 @@ function scan(): Cache {
             hasMirror: existsSync(join(CATALOG, owner, repo, name, "mirror")),
             duplicateOf: r.meta.duplicate_of ?? null,
             frontmatterValid: r.frontmatter_valid !== false,
+            contentHash: r.meta.content_hash,
             tokens: r.token_cost?.body_tokens ?? 0, stars: r.signals?.stars_github,
             installs: r.signals?.installs_skills_sh ?? null,
             repoSkillCount: r.signals?.repo_skill_count,

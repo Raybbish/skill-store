@@ -13,6 +13,14 @@ import { applyRepoCap } from "./skill-utils";
 /** 每页条数:DOM 恒 ≤ ~30 行,免虚拟化 */
 export const PAGE_SIZE = 30;
 
+/** 信任披露字段(ADR 0012 步骤④):TRUST_DISPLAY=1 且 policy 定稿时由 build-index 注入;
+ *  缺省 = 不展示(TrustBadge 恒 null)。商店只透传不解释——门禁谓词在 @skill-store/verdicts。 */
+export interface CardVerdict {
+  status: string;
+  policy: string;
+  factors?: Record<string, { present: boolean | null; detail?: string }>;
+}
+
 /** 列表行所需的最小字段面(瘦卡片)。
  *  刻意不含 eval.tasks / license 等重字段——那些只在详情页(全量 Skill)出现。
  *  字段与 Skill 同名同型,因此全量 Skill 结构上就是一张合法的 SkillCard,组件两边通吃。 */
@@ -23,6 +31,8 @@ export interface SkillCard {
   upstream: string;
   stars?: number | null; installs?: number | null; repoSkillCount?: number;
   bulkSource?: boolean;
+  /** 信任披露(见 CardVerdict;S0 恒缺省) */
+  verdict?: CardVerdict;
   /** 评测总分(未评测为 null/缺省);全量 Skill 上对应 eval.score */
   ev?: number | null;
   /** 收录时间(Unix 秒,来自 catalog git 首次提交;build-index 注入,Skill 上没有) */
