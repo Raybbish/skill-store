@@ -28,8 +28,19 @@ export default function Browse() {
         catTag={meta.catTag}
       />
       {collections.length > 0 && (
-        <div style={{ textAlign: "center", marginTop: 28, fontSize: 13, color: "var(--faint)" }}>
-          货架上的每一条都过了审计。另有 <Link href="/collections/" style={{ color: "var(--sub)", fontWeight: 600 }}>{collections.length} 个批量源合集</Link>(覆盖上游 {upstreamTotal.toLocaleString()} 条,折叠采样收录)›
+        <div className="sec">
+          <div className="sec-h">
+            <h2>收录口径</h2>
+            <span className="k">上游很大,审过才上架</span>
+            <Link href="/collections/">收录方法论 ›</Link>
+          </div>
+          <Link href="/collections/" className="row" style={{ textDecoration: "none" }}>
+            <div className="main">
+              <div className="nm">上游 {upstreamTotal.toLocaleString()} 条 · 货架 {meta.total.toLocaleString()} 条,每条都过了三层审计</div>
+              <div className="ds">{collections.length} 个批量源仓按「每仓采样 50 条」折叠收录 —— 为什么折叠、采了哪些、其余在哪,一页讲清楚</div>
+            </div>
+            <div className="rt"><span className="go">看合集 ›</span></div>
+          </Link>
         </div>
       )}
     </>

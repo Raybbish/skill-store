@@ -28,6 +28,8 @@ export default function BrowseClient({ first, meta, cats, tags, catTag }: {
   const [cat, setCat] = useState<string | null>(null); // 第一步:主分类(每个 skill 归一个)
   const [tag, setTag] = useState<string | null>(null); // 第二步:分类内细分标签(横切,选填)
   const [safeOnly, setSafeOnly] = useState(false);
+  const [repo, setRepo] = useState<string | null>(null); // 深链:精确到仓(合集页「已收录 ›」)
+  const [pub, setPub] = useState<string | null>(null);   // 深链:发布者
   const [page, setPage] = useState(1);
   const [res, setRes] = useState<SearchResult>({ items: first, total: meta.total, page: 1, pages: meta.pages });
   const [busy, setBusy] = useState(false);
@@ -41,12 +43,14 @@ export default function BrowseClient({ first, meta, cats, tags, catTag }: {
     if (c && cats.some((x) => x.slug === c)) setCat(c);
     if (t) setTag(t);
     if (qq) setQ(qq);
+    if (sp.get("repo")) setRepo(sp.get("repo"));
+    else if (sp.get("pub")) setPub(sp.get("pub"));
   }, [cats]);
 
   // 取数:防抖 + 防竞态,全部走 store.search 一条缝
   useEffect(() => {
     const my = ++seq.current;
-    const plain = !q.trim() && !cat && !tag && !safeOnly;
+    const plain = !q.trim() && !cat && !tag && !safeOnly && !repo && !pub;
     if (plain && page === 1) {
       setRes({ items: first, total: meta.total, page: 1, pages: meta.pages });
       setBusy(false); setErr(false);
@@ -54,13 +58,13 @@ export default function BrowseClient({ first, meta, cats, tags, catTag }: {
     }
     setBusy(true);
     const run = () =>
-      store.search(q, { cat, tag, safeOnly }, page)
+      store.search(q, { cat, tag, safeOnly, repo, publisher: pub }, page)
         .then((r) => { if (seq.current === my) { setRes(r); setErr(false); } })
         .catch(() => { if (seq.current === my) setErr(true); })
         .finally(() => { if (seq.current === my) setBusy(false); });
     const timer = setTimeout(run, q ? 160 : 0);
     return () => clearTimeout(timer);
-  }, [q, cat, tag, safeOnly, page, first, meta]);
+  }, [q, cat, tag, safeOnly, repo, pub, page, first, meta]);
 
   const goto = (p: number) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const resetPage = () => setPage(1);
@@ -84,6 +88,16 @@ export default function BrowseClient({ first, meta, cats, tags, catTag }: {
         <span>🔍</span>
         <input value={q} onChange={(e) => { setQ(e.target.value); resetPage(); }} placeholder={`搜索 ${meta.total.toLocaleString()} 个 skill…`} />
       </div>
+
+      {/* 深链来源筛选(合集页「已收录 ›」/ 发布者):显式展示,可一键清除 */}
+      {(repo || pub) && (
+        <div className="filters">
+          <span style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600, alignSelf: "center" }}>只看{repo ? "仓库" : "发布者"}</span>
+          <button className="chip on" onClick={() => { setRepo(null); setPub(null); resetPage(); }}>
+            {repo ?? `@${pub}`} ✕
+          </button>
+        </div>
+      )}
 
       {/* 第一步:选分类(主轴) */}
       <div className="filters">

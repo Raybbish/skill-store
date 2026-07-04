@@ -38,6 +38,8 @@ export interface SearchFilters {
   /** 仅已评测(ev != null) */
   evaledOnly?: boolean;
   publisher?: string | null;
+  /** 精确到仓:"owner/repo"(合集页「已收录 ›」深链用) */
+  repo?: string | null;
 }
 
 export interface SearchResult {
@@ -93,6 +95,7 @@ export function matchFilters(c: SkillCard, f: SearchFilters): boolean {
   if (f.safeOnly && c.risk.network?.present === true) return false;
   if (f.evaledOnly && c.ev == null) return false;
   if (f.publisher && c.publisher !== f.publisher) return false;
+  if (f.repo && `${c.owner}/${c.repo}` !== f.repo) return false;
   return true;
 }
 
@@ -122,7 +125,7 @@ export function queryTerms(q: string): string[] {
 }
 
 const hasFilters = (f: SearchFilters) =>
-  Boolean(f.cat || f.tag || f.safeOnly || f.evaledOnly || f.publisher);
+  Boolean(f.cat || f.tag || f.safeOnly || f.evaledOnly || f.publisher || f.repo);
 
 /**
  * P0 实现:静态分片 + 客户端过滤。
