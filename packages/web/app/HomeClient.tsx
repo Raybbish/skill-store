@@ -5,6 +5,8 @@ import { StaticStore, type Pack, type SearchResult, type SkillCard } from "@/lib
 import SkillRow from "@/components/SkillRow";
 
 type Chip = { slug: string; label: string; n: number };
+type TagChip = Chip & { facet: string };
+type FacetDef = { id: string; zh: string };
 const cn = { color: "var(--faint)", marginLeft: 4, fontWeight: 600 } as const;
 /** 防御式数字格式化:热更新/产物错配等异常下也绝不因 undefined 崩渲染 */
 const nf = (x: number | null | undefined) => (typeof x === "number" && !Number.isNaN(x) ? x.toLocaleString() : "–");
@@ -45,17 +47,18 @@ function PackMarquee({ packs }: { packs: Pack[] }) {
  * - 默认视图走构建期分片(首屏 30 条服务端直出);筛选/搜索懒加载 docs 本地过滤;
  * - 深链 /?cat=&tag=&q=&repo=&pub= 全部支持(原 /browse 深链由薄壳跳转保活)。
  */
-export default function HomeClient({ first, meta, cats, tags, catTag, packs }: {
+export default function HomeClient({ first, meta, cats, tags, facets, catTag, packs }: {
   first: SkillCard[];
   meta: { total: number; pages: number; size: number };
   cats: Chip[];
-  tags: Chip[];
+  tags: TagChip[];
+  facets: FacetDef[];
   catTag: Record<string, Record<string, number>>;
   packs: Pack[];
 }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string | null>(null); // 第一步:主分类(每个 skill 归一个)
-  const [tag, setTag] = useState<string | null>(null); // 第二步:分类内细分标签(横切,选填)
+  const [sel, setSel] = useState<Record<string, string | null>>({}); // 第二步:分面交叉筛(每面至多一个,AND)
   const [repo, setRepo] = useState<string | null>(null); // 深链:精确到仓(收录页「已收录 ›」)
   const [pub, setPub] = useState<string | null>(null);   // 深链:发布者
   const [page, setPage] = useState(1);
@@ -64,21 +67,31 @@ export default function HomeClient({ first, meta, cats, tags, catTag, packs }: {
   const [err, setErr] = useState(false);
   const seq = useRef(0);
 
-  // 深链初始化(静态导出下 searchParams 只能客户端读)
+  // 深链初始化(静态导出下 searchParams 只能客户端读);?tag= 支持逗号分隔多标签,各归各面
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
     const c = sp.get("cat"), t = sp.get("tag"), qq = sp.get("q");
     if (c && cats.some((x) => x.slug === c)) setCat(c);
-    if (t) setTag(t);
+    if (t) {
+      const facetOf = new Map(tags.map((x) => [x.slug, x.facet]));
+      const next: Record<string, string | null> = {};
+      for (const s of t.split(",")) {
+        const f = facetOf.get(s);
+        if (f && !next[f]) next[f] = s;
+      }
+      if (Object.keys(next).length) setSel(next);
+    }
     if (qq) setQ(qq);
     if (sp.get("repo")) setRepo(sp.get("repo"));
     else if (sp.get("pub")) setPub(sp.get("pub"));
-  }, [cats]);
+  }, [cats, tags]);
+
+  const selTags = useMemo(() => Object.values(sel).filter((x): x is string => Boolean(x)), [sel]);
 
   // 取数:防抖 + 防竞态,全部走 store.search 一条缝
   useEffect(() => {
     const my = ++seq.current;
-    const plain = !q.trim() && !cat && !tag && !repo && !pub;
+    const plain = !q.trim() && !cat && !selTags.length && !repo && !pub;
     if (plain && page === 1) {
       setRes({ items: first, total: meta.total, page: 1, pages: meta.pages });
       setBusy(false); setErr(false);
@@ -86,25 +99,30 @@ export default function HomeClient({ first, meta, cats, tags, catTag, packs }: {
     }
     setBusy(true);
     const run = () =>
-      store.search(q, { cat, tag, repo, publisher: pub }, page)
+      store.search(q, { cat, tags: selTags, repo, publisher: pub }, page)
         .then((r) => { if (seq.current === my) { setRes(r); setErr(false); } })
         .catch(() => { if (seq.current === my) setErr(true); })
         .finally(() => { if (seq.current === my) setBusy(false); });
     const timer = setTimeout(run, q ? 160 : 0);
     return () => clearTimeout(timer);
-  }, [q, cat, tag, repo, pub, page, first, meta]);
+  }, [q, cat, selTags, repo, pub, page, first, meta]);
 
   const goto = (p: number) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const resetPage = () => setPage(1);
-  const pickCat = (slug: string | null) => { setCat(slug); setTag(null); resetPage(); };
-  const pickTag = (slug: string | null) => { setTag(slug); resetPage(); };
+  const pickCat = (slug: string | null) => { setCat(slug); setSel({}); resetPage(); };
+  const pickTag = (facetId: string, slug: string | null) => { setSel((s) => ({ ...s, [facetId]: slug })); resetPage(); };
 
-  // 桶内细分:计数来自构建期 meta(不再全量扫描)
-  const subTags = useMemo<Chip[]>(() => {
+  // 分面筛选组:每面一行,只显示桶内有货的标签(计数来自构建期 meta,不再全量扫描)
+  const facetRows = useMemo(() => {
     if (!cat) return [];
     const inner = catTag[cat] ?? {};
-    return tags.filter((t) => inner[t.slug] > 0).map((t) => ({ ...t, n: inner[t.slug] }));
-  }, [cat, tags, catTag]);
+    return facets
+      .map((f) => ({
+        f,
+        items: tags.filter((t) => t.facet === f.id && inner[t.slug] > 0).map((t) => ({ ...t, n: inner[t.slug] })),
+      }))
+      .filter((r) => r.items.length > 0);
+  }, [cat, tags, catTag, facets]);
 
   const selectedCat = cats.find((c) => c.slug === cat);
 
@@ -144,21 +162,21 @@ export default function HomeClient({ first, meta, cats, tags, catTag, packs }: {
         ))}
       </div>
 
-      {/* 第二步:选中分类后才出现「桶内细分」(次轴) */}
-      {selectedCat && subTags.length > 0 && (
-        <div className="filters" style={{ marginTop: 8 }}>
-          <span style={{ fontSize: 12, color: "var(--faint)", fontWeight: 700, alignSelf: "center" }}>在「{selectedCat.label}」内细分</span>
-          <button className={`chip ${!tag ? "on" : ""}`} onClick={() => pickTag(null)}>不限</button>
-          {subTags.map((t) => (
-            <button key={t.slug} className={`chip ${tag === t.slug ? "on" : ""}`} onClick={() => pickTag(tag === t.slug ? null : t.slug)}>
+      {/* 第二步:选中分类后展开「分面交叉筛」——每面一行、每面至多选一个,面间 AND(像电商的品牌/尺寸/颜色) */}
+      {selectedCat && facetRows.map(({ f, items }, i) => (
+        <div className="filters" style={{ marginTop: i === 0 ? 8 : 4 }} key={f.id}>
+          <span style={{ fontSize: 12, color: "var(--faint)", fontWeight: 700, alignSelf: "center", minWidth: 44 }}>{f.zh}</span>
+          <button className={`chip ${!sel[f.id] ? "on" : ""}`} onClick={() => pickTag(f.id, null)}>不限</button>
+          {items.map((t) => (
+            <button key={t.slug} className={`chip ${sel[f.id] === t.slug ? "on" : ""}`} onClick={() => pickTag(f.id, sel[f.id] === t.slug ? null : t.slug)}>
               #{t.label}<span style={cn}>{t.n}</span>
             </button>
           ))}
         </div>
-      )}
+      ))}
 
       <div className="filters">
-        {selectedCat && <Link href={`/category/${selectedCat.slug}/`} className="chip">看「{selectedCat.label}」分类页 ↗</Link>}
+        {selectedCat && <Link href={`/category/${selectedCat.slug}/`} className="chip">看「{selectedCat.label}」精选 ↗</Link>}
         <span className="fcount">{nf(res.total)} / {nf(meta.total)}</span>
       </div>
 

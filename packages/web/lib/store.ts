@@ -43,6 +43,8 @@ export interface Pack {
 export interface SearchFilters {
   cat?: string | null;
   tag?: string | null;
+  /** 分面交叉筛:全部命中才通过(AND);与 tag 并存,tag 保留给旧深链/分类页 */
+  tags?: string[] | null;
   /** 仅已评测(ev != null) */
   evaledOnly?: boolean;
   publisher?: string | null;
@@ -97,6 +99,7 @@ export function toCard(s: Skill): SkillCard {
 export function matchFilters(c: SkillCard, f: SearchFilters): boolean {
   if (f.cat && c.category !== f.cat) return false;
   if (f.tag && !(c.tags ?? []).includes(f.tag)) return false;
+  if (f.tags?.length && !f.tags.every((t) => (c.tags ?? []).includes(t))) return false;
   if (f.evaledOnly && c.ev == null) return false;
   if (f.publisher && c.publisher !== f.publisher) return false;
   if (f.repo && `${c.owner}/${c.repo}` !== f.repo) return false;
@@ -129,7 +132,7 @@ export function queryTerms(q: string): string[] {
 }
 
 const hasFilters = (f: SearchFilters) =>
-  Boolean(f.cat || f.tag || f.evaledOnly || f.publisher || f.repo);
+  Boolean(f.cat || f.tag || f.tags?.length || f.evaledOnly || f.publisher || f.repo);
 
 /**
  * P0 实现:静态分片 + 客户端过滤。
