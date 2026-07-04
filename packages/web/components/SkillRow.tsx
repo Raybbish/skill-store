@@ -17,8 +17,11 @@ export default function SkillRow({ skill, rank }: { skill: Skill; rank?: number 
         <div className="au">@{s.publisher}</div>
       </div>
       <div className="rt">
-        {s.stars != null && <div className="score"><span className="gold">★</span> {s.stars}</div>}
-        {s.installs != null && <div className="dl">⬇ {fmt(s.installs)}</div>}
+        {s.stars != null
+          ? <div className="score"><span className="gold">★</span> {fmt(s.stars)}</div>
+          : s.installs != null
+            ? <div className="score">⬇ {fmt(s.installs)}</div>
+            : <div className="dl">新</div>}
         <Link href={href} className="go">获取 ›</Link>
       </div>
     </div>

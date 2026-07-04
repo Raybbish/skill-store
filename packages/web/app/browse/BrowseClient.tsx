@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import type { Skill } from "@/lib/data";
+import { byPopularity, type Skill } from "@/lib/data";
 import SkillRow from "@/components/SkillRow";
 
 type Chip = { slug: string; label: string; n: number };
@@ -12,7 +12,6 @@ export default function BrowseClient({ skills, cats, tags }: { skills: Skill[]; 
   const [cat, setCat] = useState<string | null>(null); // 第一步:主分类(每个 skill 归一个)
   const [tag, setTag] = useState<string | null>(null); // 第二步:分类内细分标签(横切,选填)
   const [safeOnly, setSafeOnly] = useState(false);
-  const [sort, setSort] = useState<"installs" | "stars">("installs");
 
   // 细分标签只在选了分类后出现,且只列在该分类内确有成员的标签(计数=分类内数量)
   const subTags = useMemo<Chip[]>(() => {
@@ -33,9 +32,9 @@ export default function BrowseClient({ skills, cats, tags }: { skills: Skill[]; 
       const t = q.toLowerCase();
       l = l.filter((s) => (s.id + (s.description ?? "")).toLowerCase().includes(t));
     }
-    l.sort((a, b) => (sort === "installs" ? (b.installs ?? -1) - (a.installs ?? -1) : (b.stars ?? 0) - (a.stars ?? 0)));
+    l.sort(byPopularity);
     return l;
-  }, [skills, q, cat, tag, safeOnly, sort]);
+  }, [skills, q, cat, tag, safeOnly]);
 
   const selectedCat = cats.find((c) => c.slug === cat);
 
@@ -72,10 +71,7 @@ export default function BrowseClient({ skills, cats, tags }: { skills: Skill[]; 
       )}
 
       <div className="filters">
-        <select value={sort} onChange={(e) => setSort(e.target.value as "installs" | "stars")}>
-          <option value="installs">按安装量</option>
-          <option value="stars">按 stars</option>
-        </select>
+        <span style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600 }}>热门排序</span>
         <button className={`chip ${safeOnly ? "on" : ""}`} onClick={() => setSafeOnly(!safeOnly)}>🛡️ 仅无网络请求</button>
         {selectedCat && <Link href={`/category/${selectedCat.slug}/`} className="chip">看「{selectedCat.label}」分类页 ↗</Link>}
         <span className="fcount">{list.length} / {skills.length}</span>

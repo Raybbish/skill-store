@@ -81,6 +81,15 @@ export function categorize(input: CategorizeInput, override?: string): Categoriz
   }
   const [top, second] = cands;
   if (second && second.score === top.score) {
+    // 平票裁决:通用基座类(dev/utility)让位给更具体的垂直类。
+    // 若并列最高分里恰好只剩一个非基座类 → 判它(如 dev=finance → finance);
+    // 否则(垂直 vs 垂直,真歧义,如 marketing=science)仍交人工。
+    const GENERIC = new Set(['dev', 'utility']);
+    const topTied = cands.filter((s) => s.score === top.score);
+    const specifics = topTied.filter((s) => !GENERIC.has(s.def.slug));
+    if (specifics.length === 1) {
+      return { category: specifics[0].def.slug, tags, score: top.score, ambiguous: false, scores: debug };
+    }
     return { category: 'uncategorized', tags, score: top.score, ambiguous: true, scores: debug };
   }
   return { category: top.def.slug, tags, score: top.score, ambiguous: false, scores: debug };

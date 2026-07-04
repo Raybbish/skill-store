@@ -1,0 +1,50 @@
+name: Taxonomy Promote
+
+# 定时重算标签覆盖并出晋级/降级提案。只出提案、不自动翻 featured——
+# 分类变更走 labels.ts 的 PR(人工确认),与「catalog 变更走 PR」一致。
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # 每周一 06:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: promote
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: 重算 label 覆盖 + 晋级/降级提案
+        run: npm run promote
+
+      # label-stats.json 有变化就开 PR;proposal 字段里若有 promote/demote,
+      # 由人工在 packages/schemas/src/labels.ts 翻 featured 后合入。
+      - name: 有变化则开 PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: taxonomy/label-stats
+          commit-message: "chore(taxonomy): 刷新 label-stats 与晋级提案"
+          title: "chore(taxonomy): label 统计与晋级/降级提案"
+          body: |
+            自动刷新 `catalog/_meta/label-stats.json`(每标签:覆盖量 / 占比 / 已收纳比例 / 连续达标周期 / 提案)。
+
+            **本 job 不自动改分类。** 若出现 `proposal: promote`(标签够格升顶级)或 `proposal: demote`
+            (顶级分类长期失守),请在 `packages/schemas/src/labels.ts` 翻对应 `featured` 后合入本 PR——
+            分类变更留痕、可回滚,URL 不变(分类页与标签页共用模板)。
+          labels: taxonomy

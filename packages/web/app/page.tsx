@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { allSkills } from "@/lib/data";
+import { allSkills, byPopularity } from "@/lib/data";
 import SkillRow from "@/components/SkillRow";
 
 const OFFICIAL = new Set(["anthropics", "vercel-labs", "microsoft", "supabase", "larksuite", "remotion-dev"]);
 
 export default function Home() {
   const skills = allSkills();
-  const official = skills.filter((s) => OFFICIAL.has(s.publisher) && s.status === "pass").sort((a, b) => (b.installs ?? 0) - (a.installs ?? 0)).slice(0, 6);
+  const official = skills.filter((s) => OFFICIAL.has(s.publisher) && s.status === "pass").sort(byPopularity).slice(0, 6);
   const featured = official.length ? official : skills.slice(0, 6);
-  const trending = [...skills].sort((a, b) => (b.installs ?? 0) - (a.installs ?? 0)).slice(0, 6);
+  const trending = [...skills].sort(byPopularity).slice(0, 6);
 
   return (
     <>
@@ -28,7 +28,7 @@ export default function Home() {
       </div>
 
       <div className="sec">
-        <div className="sec-h"><h2>大家都在装</h2><span className="k">流行度 · 安装量</span></div>
+        <div className="sec-h"><h2>热门</h2><span className="k">GitHub 人气 · 按仓库归一</span></div>
         <div className="list">{trending.map((s, i) => <SkillRow key={s.id} skill={s} rank={i + 1} />)}</div>
       </div>
     </>

@@ -66,7 +66,7 @@ export const LABELS: LabelDef[] = [
       r('\\bapi\\b', 3), r('\\bsdk\\b', 3), r('\\bmcp\\b', 3), r('\\btdd\\b', 3), r('\\btest(ing)?\\b', 3),
       r('deploy', 3), r('github action', 3), r('\\breact\\b', 3), r('next\\.?js', 3), r('codebase', 3),
       r('refactor', 3), r('postgres', 3), r('\\bsql\\b', 3), r('webapp', 3), r('prototyp', 3),
-      r('architecture', 3), r('browser automation', 3), r('skill.?creator', 3),
+      r('software architecture', 3), r('system design', 3), r('architecture', 2), r('browser automation', 3), r('skill.?creator', 3),
       r('\\bcli\\b', 2), r('\\bgit\\b', 2), r('framework', 2), r('\\bcode\\b', 2), r('coding', 2),
       r('\\brepo\\b', 2), r('\\bissue', 2), r('\\bprd\\b', 2), r('backend', 2), r('template', 2),
       r('composition', 2), r('optimiz', 2), r('best practice', 2), r('engineering', 2), r('pull request', 2),
@@ -75,7 +75,8 @@ export const LABELS: LabelDef[] = [
   {
     slug: 'media', label_zh: '媒体生成', label_en: 'Media', featured: true, order: 2, promote: DEFAULT_PROMOTE,
     rules: [
-      r('\\bvideo', 3), r('\\bmusic', 3), r('\\baudio', 3), r('\\bimage', 3), r('\\bgif\\b', 3),
+      r('\\bvideo', 3), r('\\bmusic', 3), r('\\baudio', 3), r('\\bgif\\b', 3),
+      r('text.?to.?image', 3), r('image (generat|editing|edit|upscal)', 3), r('\\bimage', 2),
       r('animation', 3), r('\\brender', 3), r('remotion', 3), r('kling', 3), r('comfy', 3),
       r('inpaint', 3), r('outpaint', 3),
     ],
@@ -101,7 +102,7 @@ export const LABELS: LabelDef[] = [
     rules: [
       r('\\blark', 3), r('feishu', 3), r('飞书', 3), r('approval', 3), r('calendar', 3),
       r('meeting', 3), r('standup', 3), r('agenda', 3), r('notion', 3),
-      r('\\bcontact', 2), r('workflow', 2), r('\\btask', 2), r('monitor', 2),
+      r('\\bcontact', 2), r('workflow', 2), r('\\btask', 1), r('monitor', 1),
     ],
   },
   {
@@ -110,6 +111,70 @@ export const LABELS: LabelDef[] = [
       r('\\bazure', 3), r('\\baws\\b', 3), r('\\bgcp\\b', 3), r('\\bcloud', 3), r('infrastructure', 3),
       r('\\bvm\\b', 3), r('vmss', 3), r('\\bcompute\\b', 3), r('quota', 3), r('foundry', 3),
       r('self-?host', 3), r('harden', 3), r('devops', 3), r('provision', 2), r('\\bserver', 2), r('migrat', 2),
+    ],
+  },
+  {
+    slug: 'data-ai', label_zh: '数据与 AI', label_en: 'Data & AI', featured: true, order: 7, promote: DEFAULT_PROMOTE,
+    rules: [
+      r('machine learning', 3), r('data science', 3), r('\\bdataset', 3), r('\\banalytics\\b', 3), r('\\betl\\b', 3),
+      r('\\bllm\\b', 3), r('\\brag\\b', 3), r('embedding', 3), r('fine.?tun', 3), r('\\bneural', 3),
+      r('data pipeline', 3), r('data engineer', 3), r('\\bpandas\\b', 3), r('jupyter', 3), r('data analysis', 3),
+      r('classifier', 3), r('feature engineering', 3), r('vector (db|database|store|search)', 3), r('model training', 3),
+      r('\\bdata\\b', 1), r('\\bml\\b', 2), r('statistic', 2), r('forecast', 2), r('prediction', 2), r('\\bai\\b', 1),
+    ],
+  },
+  {
+    slug: 'writing', label_zh: '写作内容', label_en: 'Writing', featured: true, order: 8, promote: DEFAULT_PROMOTE,
+    rules: [
+      r('\\bblog', 3), r('copywrit', 3), r('storytell', 3), r('\\bnovel\\b', 3), r('screenplay', 3),
+      r('ghostwrit', 3), r('proofread', 3), r('content writing', 3), r('\\barticle', 3), r('\\bessay', 3), r('\\bnarrat', 3),
+      r('\\bwriting\\b', 2), r('\\bwriter\\b', 2), r('\\bcontent\\b', 2), r('\\bedit(ing|or)\\b', 2),
+      r('\\bprose\\b', 2), r('\\bstory\\b', 2), r('\\bdraft', 2),
+    ],
+  },
+  {
+    slug: 'marketing', label_zh: '市场营销', label_en: 'Marketing', featured: true, order: 9, promote: DEFAULT_PROMOTE,
+    rules: [
+      r('\\bmarketing\\b', 3), r('\\bseo\\b', 3), r('advertis', 3), r('\\bcampaign', 3), r('social media', 3),
+      r('\\bnewsletter', 3), r('email marketing', 3), r('content marketing', 3), r('go-?to-?market', 3),
+      r('\\bgtm\\b', 3), r('growth hack', 3), r('brand strateg', 3), r('brand voice', 3),
+      r('\\bads?\\b', 2), r('\\baudience', 2), r('\\bengagement', 2), r('conversion', 2), r('\\bfunnel', 2), r('\\bpromot', 2),
+    ],
+  },
+  {
+    slug: 'science', label_zh: '科研学术', label_en: 'Science', featured: true, order: 10, promote: DEFAULT_PROMOTE,
+    rules: [
+      r('\\bresearch\\b', 1), r('academic', 3), r('scientific', 3), r('\\bbiolog', 3), r('chemistry', 3),
+      r('\\bphysics\\b', 3), r('\\bgenom', 3), r('\\bprotein\\b', 3), r('clinical', 3), r('laborator', 3),
+      r('\\bexperiment', 3), r('hypothesis', 3), r('\\bthesis\\b', 3), r('literature review', 3), r('\\bcitation', 3),
+      r('peer.?review', 3),
+      r('\\bstud(y|ies)\\b', 2), r('\\bscholar', 2), r('\\bjournal\\b', 2), r('\\blab\\b', 2), r('\\bpaper\\b', 2),
+    ],
+  },
+  {
+    slug: 'product', label_zh: '产品管理', label_en: 'Product', featured: true, order: 11, promote: DEFAULT_PROMOTE,
+    rules: [
+      r('product manager', 3), r('product management', 3), r('\\bprd\\b', 3), r('roadmap', 3), r('user stor', 3),
+      r('product spec', 3), r('product requirement', 3), r('\\bbacklog', 3), r('product discovery', 3), r('feature prioriti', 3),
+      r('\\bpm\\b', 2), r('\\bsprint', 2), r('\\bstakeholder', 2), r('\\bmvp\\b', 2), r('\\bpersona', 2), r('\\bepic\\b', 2),
+    ],
+  },
+  {
+    slug: 'legal', label_zh: '法律合规', label_en: 'Legal', featured: true, order: 12, promote: DEFAULT_PROMOTE,
+    rules: [
+      r('\\blegal\\b', 3), r('\\blaw\\b', 3), r('\\blawyer', 3), r('\\bcontract', 3), r('compliance', 3),
+      r('\\bgdpr\\b', 3), r('regulat', 3), r('\\battorney', 3), r('litigation', 3), r('\\bpatent', 3),
+      r('\\brecht\\b', 3), r('terms of service', 3), r('privacy polic', 3), r('\\bnda\\b', 3),
+      r('\\bpolicy\\b', 2), r('\\bclause', 2), r('jurisdiction', 2), r('\\bstatut', 2),
+    ],
+  },
+  {
+    slug: 'finance', label_zh: '金融财务', label_en: 'Finance', featured: true, order: 13, promote: DEFAULT_PROMOTE,
+    rules: [
+      r('\\bfinanc', 3), r('\\btrading\\b', 3), r('\\binvest(ing|ment|or|ors)?\\b', 3), r('stock market', 3), r('\\bequit(y|ies)\\b', 3),
+      r('portfolio', 3), r('\\bhedge', 3), r('\\bcrypto', 3), r('\\bdefi\\b', 3), r('accounting', 3),
+      r('bookkeep', 3), r('\\btax\\b', 3), r('\\bvaluation\\b', 3), r('fintech', 3), r('\\bbanking\\b', 3), r('\\bledger', 3),
+      r('\\brevenue', 2), r('\\bpricing', 2), r('\\bpayment', 2), r('\\bfund(ing|s)?\\b', 2),
     ],
   },
   {
@@ -150,6 +215,64 @@ export const LABELS: LabelDef[] = [
   {
     slug: 'mobile', label_zh: '移动开发', label_en: 'Mobile', featured: false, order: 23, promote: DEFAULT_PROMOTE,
     rules: [r('react native', 1), r('\\bexpo\\b', 1), r('\\bmobile\\b', 1), r('\\bios\\b', 1), r('android', 1)],
+  },
+  {
+    slug: 'devops', label_zh: '运维部署', label_en: 'DevOps', featured: false, order: 24, promote: DEFAULT_PROMOTE,
+    rules: [r('devops', 1), r('kubernetes', 1), r('\\bk8s\\b', 1), r('\\bdocker', 1), r('terraform', 1), r('ci/?cd', 1), r('ansible', 1), r('\\bhelm\\b', 1), r('observability', 1), r('\\bsre\\b', 1)],
+  },
+  {
+    slug: 'database', label_zh: '数据库', label_en: 'Database', featured: false, order: 25, promote: DEFAULT_PROMOTE,
+    rules: [r('database', 1), r('\\bsql\\b', 1), r('postgres', 1), r('mysql', 1), r('mongo', 1), r('\\bredis\\b', 1), r('supabase', 1), r('prisma', 1), r('\\bschema\\b', 1)],
+  },
+  {
+    slug: 'security', label_zh: '安全', label_en: 'Security', featured: true, order: 16, promote: DEFAULT_PROMOTE,
+    rules: [
+      r('pentest', 3), r('penetration test', 3), r('\\bexploit', 3), r('\\bmalware', 3), r('\\bforensic', 3),
+      r('owasp', 3), r('\\bcve\\b', 3), r('infosec', 3), r('shellcode', 3), r('dcsync', 3), r('\\bransomware', 3),
+      r('red.?team', 3), r('threat (detection|model|hunt|intel)', 3), r('\\bfuzz(ing|er)?\\b', 3), r('\\bmalicious', 3),
+      r('vulnerab', 3), r('\\bcyber', 3), r('reverse engineer', 3),
+      r('\\bsecurity\\b', 2), r('encryption', 2), r('\\bhardening', 2),
+    ],
+  },
+  {
+    slug: 'sales', label_zh: '销售', label_en: 'Sales', featured: false, order: 27, promote: DEFAULT_PROMOTE,
+    rules: [r('\\bsales\\b', 1), r('\\bcrm\\b', 1), r('salesforce', 1), r('hubspot', 1), r('lead gen', 1), r('outreach', 1), r('prospect', 1)],
+  },
+  {
+    slug: 'ecommerce', label_zh: '电商', label_en: 'E-commerce', featured: true, order: 14, promote: DEFAULT_PROMOTE,
+    rules: [
+      r('e-?commerce', 3), r('shopify', 3), r('\\bcheckout', 3), r('\\bmerchant', 3), r('\\bfba\\b', 3),
+      r('product listing', 3), r('storefront', 3), r('woocommerce', 3), r('magento', 3), r('dropship', 3),
+      r('\\binventory', 2), r('\\bretail', 2), r('\\bshop\\b', 2), r('\\bamazon\\b', 1),
+    ],
+  },
+  {
+    slug: 'hr', label_zh: '人力资源', label_en: 'HR', featured: false, order: 29, promote: DEFAULT_PROMOTE,
+    rules: [r('recruit', 1), r('hiring', 1), r('\\bhr\\b', 1), r('\\bresume\\b', 1), r('\\bcv\\b', 1), r('interview', 1), r('onboarding', 1), r('payroll', 1), r('\\btalent', 1)],
+  },
+  {
+    slug: 'i18n', label_zh: '本地化', label_en: 'i18n', featured: false, order: 30, promote: DEFAULT_PROMOTE,
+    rules: [r('translat', 1), r('localiz', 1), r('localis', 1), r('i18n', 1), r('multilingual', 1), r('\\bthai\\b', 1), r('japanese', 1), r('chinese', 1), r('korean', 1), r('spanish', 1)],
+  },
+  {
+    slug: 'healthcare', label_zh: '医疗健康', label_en: 'Healthcare', featured: true, order: 15, promote: DEFAULT_PROMOTE,
+    rules: [
+      r('healthcare', 3), r('\\bpatient', 3), r('diagnos', 3), r('\\btherap(y|ist|eutic)', 3), r('\\bwellness', 3),
+      r('\\bnutrition', 3), r('mental health', 3), r('medication', 3),
+      r('\\bclinic', 2), r('\\bmedical\\b', 2), r('\\bhealth\\b', 2), r('fitness', 2),
+    ],
+  },
+  {
+    slug: 'education', label_zh: '教育', label_en: 'Education', featured: false, order: 32, promote: DEFAULT_PROMOTE,
+    rules: [r('\\blearn', 1), r('\\bteach', 1), r('\\btutor', 1), r('education', 1), r('\\bcourse', 1), r('\\bstudent', 1), r('\\bexam\\b', 1), r('\\bquiz\\b', 1), r('curriculum', 1), r('k12', 1)],
+  },
+  {
+    slug: 'web3', label_zh: 'Web3', label_en: 'Web3', featured: false, order: 33, promote: DEFAULT_PROMOTE,
+    rules: [r('blockchain', 1), r('web3', 1), r('solidity', 1), r('smart contract', 1), r('ethereum', 1), r('\\bnft\\b', 1), r('\\bwallet\\b', 1)],
+  },
+  {
+    slug: 'agent-ops', label_zh: '智能体编排', label_en: 'Agent Ops', featured: false, order: 34, promote: DEFAULT_PROMOTE,
+    rules: [r('orchestrat', 1), r('multi-?agent', 1), r('\\bmemory\\b', 1), r('subagent', 1), r('agent framework', 1), r('\\bhandoff', 1), r('context management', 1)],
   },
 ];
 

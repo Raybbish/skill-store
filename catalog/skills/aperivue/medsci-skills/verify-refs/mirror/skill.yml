@@ -1,0 +1,47 @@
+schema_version: 2
+name: verify-refs
+layer: A
+owner_domain: reference_integrity
+maturity: official
+when_to_use:
+  - Audit-only verification of manuscript references against PubMed and CrossRef
+  - Pre-submission citation hallucination check (PostToolUse hook trigger on circulation/submission docx)
+  - Detecting author hallucination (DOI real but a cited author name wrong at any position — full-author cross-check against PubMed efetch, v1.3.0)
+  - LLM-assisted drafting gate — `--strict` mode required when AI generated or rewrote citations
+when_NOT_to_use:
+  - Adding new references (use /search-lit + /lit-sync)
+  - Rendering references list (use /manage-refs render_pandoc.sh)
+  - Modifying refs.bib or library.bib (audit-only — never writes back)
+inputs:
+  - manuscript.md
+  - manuscript.docx
+  - references.bib
+outputs:
+  - qc/reference_audit.json
+deterministic_scripts:
+  - scripts/verify_refs.py
+  - scripts/verify_cli.sh
+side_effects:
+  - writes_project_artifacts
+downstream_consumers:
+  - write-paper
+  - sync-submission
+  - orchestrate
+forbidden_actions:
+  - generate_references_from_memory
+  - silently_include_unverified_references
+
+# v2.1 quality card
+purpose: "Audit-only verification of manuscript references against PubMed and CrossRef (full-author cross-check); writes qc/reference_audit.json. Does not modify references."
+safety_boundaries:
+  - "Audit-only: never edits references/ or refs.bib; never generates references from memory."
+  - "Unverified references are flagged, not silently included."
+known_limitations:
+  - "Confirms DOI/PMID and author identity, not topical appropriateness of the citation."
+  - "CrossRef given-name errors are possible; PubMed efetch is treated as authoritative."
+  - "OpenAlex (tertiary index for conference proceedings / non-DOI works) gives an existence check plus a tolerant first-author membership check only; its display names carry no structured family field, so it never drives the strict positional or author-count cross-check. Use --no-openalex to restrict to PubMed + CrossRef."
+validation_commands:
+  - "bash scripts/verify_cli.sh <refs.bib>"
+  - "confirm qc/reference_audit.json submission_safe: true"
+  - "bash tests/test_openalex_tier.sh"
+evidence_surface: bundled_script

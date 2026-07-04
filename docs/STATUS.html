@@ -36,23 +36,23 @@ footer{margin-top:22px;color:var(--faint);font-size:12px;text-align:center;font-
 <header>
   <div class="e">OH-MY-SKILL · 项目状态面板</div>
   <h1>我们在哪</h1>
-  <div class="m">生成于 2026-07-03 11:18 UTC · 分支 main · 未提交 1 处</div>
+  <div class="m">生成于 2026-07-04 07:39 UTC · 分支 main · 未提交 493 处</div>
 </header>
-<div class="grid"><div class="card"><b class="">73</b><span>skill 总数</span></div><div class="card"><b class="ok">52<i>/71%</i></b><span>审计通过</span></div><div class="card"><b class="">mirrored 55 <i>·</i> indexed 18</b><span>托管</span></div><div class="card"><b class="warn">3</b><span>待复核</span></div><div class="card"><b class="">0</b><span>已评测</span></div><div class="card"><b class="">13</b><span>发布者</span></div></div>
+<div class="grid"><div class="card"><b class="">6177</b><span>skill 总数</span></div><div class="card"><b class="ok">52<i>/1%</i></b><span>审计通过</span></div><div class="card"><b class="">mirrored 4941 <i>·</i> indexed 1236</b><span>托管</span></div><div class="card"><b class="warn">3</b><span>待复核</span></div><div class="card"><b class="">0</b><span>已评测</span></div><div class="card"><b class="">414</b><span>发布者</span></div></div>
 <div class="doc">
   <h2>最近提交</h2>
-  <pre>ac33714 docs: README 更新
+  <pre>ced5f94 docs: 校正 PRD/M0/采集设计 事实(三段式id/hosting/taxonomy/skills.sh)+ 勘误标注
+13aa9ad chore: 刷新状态快照
+ac33714 docs: README 更新
 4cc4b66 chore(catalog): 刷新 L1/L2 审计结果与信号
 7f982dd feat(web): v4 认证图标重设计 + 分类导航 + /category 落地页
 385e68c feat: 分类/标签体系 + eval openai runner
 b9083d1 chore(docs): 活文档系统 + 文档收编 docs/ + 架构勘误 + 忽略 .next
-a6b358e feat: L1/L2 审计 28 条 + openai 真实 runner + 前端新信号展示 + audit --repo
-4bb9dd1 chore: 同步 package-lock.json(补 cli workspace)
-6945f0c feat: 三段式 ID(owner/repo/name)+ 每仓折叠采样 + skills.sh 榜单采集</pre>
+a6b358e feat: L1/L2 审计 28 条 + openai 真实 runner + 前端新信号展示 + audit --repo</pre>
   <h1>STATUS — 我们在哪</h1>
 <blockquote>手写现状。可派生的数字(catalog / 审计 / 提交)见 <a href="./STATUS.generated.md"><code>STATUS.generated.md</code></a>,由 <code>npm run status</code> 自动生成——别在这里手抄数字。</blockquote>
 <blockquote></blockquote>
-<blockquote>_上次人工更新:2026-07-03(已核对在建的分类/标签体系)_</blockquote>
+<blockquote>_上次人工更新:2026-07-04(货架指标口径统一 + 百万级架构方向)_</blockquote>
 <h2>里程碑:M0 · 可信目录(进行中)</h2>
 <p>目标:500+ 已审计 skill、权限标签全覆盖、可浏览 / 可搜 / 可一键装、审计报告公开可验证。</p>
 <h3>已完成</h3>
@@ -60,6 +60,7 @@ a6b358e feat: L1/L2 审计 28 条 + openai 真实 runner + 前端新信号展示
 <li><strong>供给</strong>:两段式采集(<code>index-only</code> 默认 / <code>--mirror</code> 托管双轨)、GitHub 全域 topic 采集、每仓折叠采样(<code>MAX_PER_REPO</code>)、内容哈希幂等去重、skills.sh 榜单 + awesome-list 精选/分类信号(<code>curated_by</code>)。</li>
 <li><strong>审计</strong>:L1 静态签名 + L2 脚本数据流已跑;风险五因子 + 三段式 ID(<code>owner/repo/name</code>)入 schema。</li>
 <li><strong>前端(<code>packages/web</code>)</strong>:v4「认证图标 + 去盒子编辑向」已落地——<code>CertBadge</code> 弹窗、<code>SkillRow</code>、home / browse / charts / detail(精简)/ community / publisher;<code>tsc --noEmit</code> 通过。</li>
+<li><strong>货架指标口径</strong>(ADR 0005):stars 与 installs 实测零重叠(98.8% / 0.8%),故头条统一 stars、缺失回落 installs→「新」;排序 <code>byPopularity</code> = 归一 stars(<code>stars/√repo_skill_count</code> 抑制巨仓)+ installs 次键;去 browse 双轴、首页「大家都在装」改「热门」。<code>tsc</code> 通过。</li>
 </ul>
 <h3>进行中</h3>
 <ul>
@@ -72,12 +73,15 @@ a6b358e feat: L1/L2 审计 28 条 + openai 真实 runner + 前端新信号展示
 <li>提交当前 web 重设计 + 审计结果(先把未提交的落地)。</li>
 <li>扩 catalog 到 500+(接更多源)。</li>
 <li><strong>M1</strong>:可复现评测协议上线 + 信任原生社区最小切片 + 账号层(见 <a href="decisions/0001-trust-native-community.md">ADR 0001</a>)。</li>
+<li><strong>规模化架构</strong>(ADR 0004):目录奔百万的源/服务解耦方向已定——近期先做 P0「埋缝」(<code>search()/getSkill()</code> 接口 + 分页取代整表渲染 + 修 <code>data.ts</code> O(n²));详见<a href="architecture/走向百万级-架构与迁移计划.html">架构与迁移计划</a>。</li>
 </ul>
 <h2>决策记录(ADR)</h2>
 <ul>
 <li><a href="decisions/0001-trust-native-community.md">0001 · 信任原生社区</a></li>
 <li><a href="decisions/0002-icon-logo-ip-deferred.md">0002 · 图标/logo IP 策略(推迟)</a></li>
 <li><a href="decisions/0003-v4-design-system.md">0003 · v4 认证图标设计系统</a></li>
+<li><a href="decisions/0004-scale-to-millions.md">0004 · 走向百万级:源/服务解耦 + 分页 + 托管搜索</a></li>
+<li><a href="decisions/0005-shelf-metric-stars.md">0005 · 货架指标口径:stars 统一头条 + 归一排序</a></li>
 </ul>
 <h2>文档地图(唯一入口)</h2>
 <p>所有规划 / 架构 / 设计文档已收进 <code>docs/</code>,点开即看。</p>
@@ -91,6 +95,7 @@ a6b358e feat: L1/L2 审计 28 条 + openai 真实 runner + 前端新信号展示
 </ul>
 <p><strong>架构与实现</strong>(架构图直接画在 HTML 里)</p>
 <ul>
+<li><a href="architecture/走向百万级-架构与迁移计划.html">⭐ 走向百万级 · 架构与迁移计划</a> — 源/服务解耦 + 分页 + 托管搜索(ADR 0004)</li>
 <li><a href="architecture/供给聚合架构图.html">供给聚合架构图</a></li>
 <li><a href="architecture/供给采集设计.html">供给采集设计</a></li>
 <li><a href="architecture/审计流程.html">审计流程</a></li>

@@ -1,10 +1,13 @@
 /**
- * audit-l3:对已过 L1/L2 的条目跑 LLM 意图审查。
- * 升级规则(只升不降):任何可疑 flag / 调用失败 → needs_review;pass 保持 pass 并记录 l3 结果。
- * 已 rejected 或已人工复核(有 review 签名)的条目跳过,避免覆盖人工决定。
+ * audit-l3:对已过 L1/L2 的条目跑 LLM(默认 DeepSeek)意图审查,并由它做最终裁决。
+ * 裁决口径:仅「重大风险」转人工——外传路径 / 提示注入 / 模型自评 severity=major / L1 恶意签名命中;
+ *   其余(含仅有网络、文档与代码不符等软性问题)由 DeepSeek 自动放行为 pass,
+ *   可下调 L1/L2 因网络等 hold 住的 needs_review(不再「只升不降」)。
+ * fail-closed:LLM 调用 / 解析失败 → needs_review,绝不默认放行。
+ * 已 rejected 或已人工复核(有 review 签名)的条目跳过,人工决定优先于机器。
  *
  * 用法:npm run audit:l3 [-- --limit N] [-- --id owner/repo/name]
- * 环境:LLM_BASE_URL / LLM_API_KEY / LLM_MODEL,或 LLM_MOCK=1
+ * 环境:LLM_BASE_URL(默认 DeepSeek)/ LLM_API_KEY / LLM_MODEL,或 LLM_MOCK=1
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
@@ -69,35 +72,52 @@ async function main() {
         const at = new Date().toISOString();
         if (!result.ok) {
           sa.status = "needs_review";
-          sa.l3 = { model: result.model, at, error: result.error };
+          sa.l3 = { model: result.model, at, decision: "failed", error: result.error };
           sa.evidence.push({ factor: "review_reason", file: "-", note: `L3 调用失败(fail-closed): ${result.error}` });
           stats.failed++;
           console.log(`  ⚠ l3_failed → needs_review  ${e.report.meta.id} — ${result.error}`);
         } else {
           const v = result.verdict!;
-          const flags = [
-            !v.doc_code_consistent && "文档与代码不一致",
-            v.hidden_instructions && "疑似隐藏指令",
-            v.injection_suspected && "疑似提示注入",
-            v.exfiltration_path && "疑似外传路径",
-          ].filter(Boolean) as string[];
-          sa.l3 = { model: result.model, at, verdict: v };
           sa.scanner_versions = { ...sa.scanner_versions, l3_model: result.model };
-          if (flags.length) {
+
+          // 重大风险判定(调这一处即改变「什么算重大风险 → 转人工」的口径):
+          //   外传路径 / 提示注入 / 模型自评 major / L1 恶意签名命中(malware,机器不得放行)。
+          const l1Critical = sa.evidence.some(
+            (ev) => ev.factor === "review_reason" && /critical|恶意签名/i.test(ev.note ?? ""),
+          );
+          const major = v.exfiltration_path || v.injection_suspected || v.severity === "major" || l1Critical;
+
+          if (major) {
+            const reasons = [
+              v.exfiltration_path && "疑似外传路径",
+              v.injection_suspected && "疑似提示注入",
+              v.severity === "major" && "模型判定重大风险",
+              l1Critical && "L1 恶意签名命中",
+            ].filter(Boolean) as string[];
             sa.status = "needs_review";
-            for (const f of flags) sa.evidence.push({ factor: "review_reason", file: "-", note: `L3: ${f}` });
+            sa.l3 = { model: result.model, at, decision: "escalated", verdict: v };
+            for (const r of reasons) sa.evidence.push({ factor: "review_reason", file: "-", note: `L3: ${r}` });
             stats.escalated++;
-            console.log(`  ⚠ escalated  ${e.report.meta.id} — ${flags.join(";")}`);
+            console.log(`  ⚠ 转人工(重大风险)  ${e.report.meta.id} — ${reasons.join(";")}`);
           } else {
+            // DeepSeek 自动放行:非重大风险(含仅网络、文档/代码不符等)判为 pass,
+            // 可下调 L1/L2 因网络等 hold 住的 needs_review。软性发现只记录、不拦截。
+            const soft = [
+              !v.doc_code_consistent && "文档与代码不一致",
+              v.hidden_instructions && "疑似隐藏指令",
+            ].filter(Boolean) as string[];
+            sa.status = "pass";
+            sa.l3 = { model: result.model, at, decision: "auto_pass", auto_approved: true, verdict: v };
+            for (const s of soft) sa.evidence.push({ factor: "l3_note", file: "-", note: `L3(不拦截): ${s}` });
             stats.pass++;
-            console.log(`  ✓ l3 clean  ${e.report.meta.id} — ${v.intent_summary}`);
+            console.log(`  ✓ 自动放行  ${e.report.meta.id}${soft.length ? " — 记录:" + soft.join(";") : ""} · ${v.intent_summary}`);
           }
         }
         await writeFile(e.path, JSON.stringify(e.report, null, 2) + "\n");
       }
     } finally { await clone.cleanup(); }
   }
-  console.log(`\n=== L3 完成 === clean: ${stats.pass} · 升级: ${stats.escalated} · 失败(fail-closed): ${stats.failed}`);
+  console.log(`\n=== L3 完成 === 自动放行: ${stats.pass} · 转人工(重大风险): ${stats.escalated} · 失败(fail-closed): ${stats.failed}`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

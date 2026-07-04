@@ -1,0 +1,117 @@
+# auto-test-skill 配置文件
+#
+# 注意：
+# - `scripts/create_test_session.py` 仅解析 `directories.*` 与 `templates.*`（并做路径安全校验：拒绝 symlink、拒绝解析后越界）。
+# - 其余字段用于 A/B 轮规划口径（供 AI/人类参考），避免把“确定性行为”写进 SKILL.md。
+
+# ============================================================================
+# Skill 信息（建议作为版本号等信息的主要来源）
+# ============================================================================
+
+skill_info:
+  name: "auto-test-skill"
+  version: "2.3.1"
+  description: "批判性思维驱动的测试优化技能 - 支持多轮 A 轮独立评估与 B 轮质量原则检查（以 b_round_check.dimensions 为准），强制每轮提出 10-20 个高质量建议（P0+P1 占比≥60%，系统性问题≥3个）"
+  author: "Bensz Conan"
+  category: "normal"
+
+# ============================================================================
+# 目录与命名规范（脚本会读取）
+# ============================================================================
+
+directories:
+  # 规划文档目录（相对于 skill 根目录）
+  plans: ".bensz-api/skills/auto-test-skill/output/plans"
+  # 测试目录（相对于 skill 根目录）
+  tests: ".bensz-api/skills/auto-test-skill/output/tests"
+
+# ============================================================================
+# 文档模板配置（脚本会读取）
+# ============================================================================
+
+templates:
+  bug_report: "templates/BUG_REPORT_TEMPLATE.md"
+  optimization_plan: "templates/OPTIMIZATION_PLAN_TEMPLATE.md"
+  test_plan: "templates/TEST_PLAN_TEMPLATE.md"
+  test_report: "templates/TEST_REPORT_TEMPLATE.md"
+  final_summary: "templates/FINAL_SUMMARY_TEMPLATE.md"
+  b_round_check: "templates/B_ROUND_CHECK_TEMPLATE.md"
+
+# ============================================================================
+# 轮次控制（规划口径）
+# ============================================================================
+
+test_rounds:
+  # A轮测试默认轮次
+  default_a_rounds: 1
+  # 最大A轮测试轮次（防止无限循环）
+  max_a_rounds: 10
+  # A轮每轮必须提出的最小建议数量（P0 + P1 + P2 总和）
+  min_suggestions_per_round: 10
+  # A轮建议数量目标范围
+  target_suggestions_range: [15, 20]
+  # A轮 P0+P1 最小占比（百分比）- 确保问题有价值
+  min_p0_p1_ratio: 60
+  # A轮系统性问题最小数量（架构/过度设计/一致/安全）
+  min_systemic_issues: 3
+
+# ============================================================================
+# A轮审查范围（独立评估；规划口径）
+# ============================================================================
+
+a_round_check:
+  independent_review:
+    enabled: true  # 是否启用独立评估模式（A轮不看 plans/ 与 tests/）
+    exclude_patterns:
+      - "tests/**"
+      - "plans/**"
+      - ".bensz-api/skills/auto-test-skill/**"
+      # 兼容旧写法（更浅层，但保留避免历史文档/工具误解）
+      - "tests/*"
+      - "plans/*"
+      - "*.bak"
+    required_files:  # 必须审查的核心工作文件
+      - "SKILL.md"
+      - "config.yaml"
+    required_dirs:  # 必须审查的目录（不存在可在计划中说明）
+      - "scripts/"
+      - "references/"
+      - "templates/"
+      - "assets/"
+
+# ============================================================================
+# B轮质量检查（质量原则检查；规划口径；维度以 b_round_check.dimensions 为准）
+# ============================================================================
+
+b_round_check:
+  mandatory: true
+  min_suggestions: 10
+  target_suggestions_range: [15, 20]
+  constructive_suggestion_required: true
+  p0_fix_rate_required: 100
+  p1_fix_rate_required: 100
+  dimensions:
+    - name: "hardcoded_ai_plan"
+      label: "硬编码/AI功能规划"
+      description: "检查确定性操作是否应硬编码，启发式判断是否由AI处理"
+    - name: "redundancy_check"
+      label: "冗余残留错误检查"
+      description: "检查是否存在重复逻辑、残留引用、僵尸文件"
+    - name: "security_check"
+      label: "安全性检查"
+      description: "检查输入验证、路径处理、敏感信息、权限控制"
+    - name: "overdesign_check"
+      label: "过度设计检查"
+      description: "检查是否存在YAGNI违反、不必要的抽象、配置臃肿"
+    - name: "generality_check"
+      label: "通用性检查"
+      description: "检查是否包含不必要的年份/场景限制/平台依赖等"
+    - name: "consistency_check"
+      label: "一致性检查"
+      description: "检查 YAML frontmatter、SKILL.md、config.yaml 与示例的一致性"
+    - name: "config_centralization_check"
+      label: "配置集中化检查"
+      description: "检查精确端（config.yaml）与模糊端（工作文档）是否完全分离，确保所有可配置参数集中在 config.yaml 作为单一真相来源"
+    - name: "skill_md_weight_check"
+      label: "SKILL.md瘦身检查"
+      description: "检查 SKILL.md 是否过于冗长，应将详细内容模块化到 references/"

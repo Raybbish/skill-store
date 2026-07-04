@@ -32,17 +32,17 @@ function CopyBtn({ text }: { text: string }) {
  *   - 不做 ModelScope 的「SDK 安装」:本店 agent / 模型中立,无自家 SDK,照搬会错位
  */
 export default function InstallBox({ skill }: { skill: Skill }) {
-  const { id, hosting, license, upstream } = skill;
+  const { id, upstream, hasMirror } = skill;
   const leaf = id.split("/").pop() ?? id;
-  const mirrored = hosting === "mirrored";
   const npx = `npx oh-my-skill add ${id}`;
-  const curl = `curl -fsSL ${HOST}/install/${id} | sh`;
+  // 静态站:install.sh 是单个静态脚本,id 走参数(不能用动态路由)
+  const curl = `curl -fsSL ${HOST}/install.sh | bash -s -- ${id}`;
 
   return (
     <div className="inst">
       <div className="inst-m">
         <div className="inst-h"><span>/</span> 下载</div>
-        {mirrored ? (
+        {hasMirror ? (
           <div className="inst-cmd">
             <code className="inst-file">{leaf}.zip</code>
             <span className="inst-note">含 skill-report.json + content_hash,可离线手动校验</span>
@@ -50,8 +50,7 @@ export default function InstallBox({ skill }: { skill: Skill }) {
           </div>
         ) : (
           <div className="inst-cmd">
-            <span className="inst-note">「索引」条目(licence: {license})——不镜像托管,回上游获取</span>
-            <a className="cp" href={upstream} target="_blank" rel="noopener noreferrer">上游 ↗</a>
+            <a className="inst-url" href={upstream} target="_blank" rel="noopener noreferrer">{upstream}<span style={{ whiteSpace: "nowrap" }}> ↗</span></a>
           </div>
         )}
       </div>

@@ -1,0 +1,54 @@
+schema_version: 2
+name: self-review
+layer: D
+owner_domain: own_manuscript_critique
+maturity: official
+when_to_use:
+  - Pre-submission self-criticism on the user's own manuscript across 10 review categories
+  - Generating Anticipated Major / Minor Comments before sending to senior co-authors
+  - Phase 2.5a numerical source-fidelity audit (CSV ↔ analysis ↔ manuscript ↔ primary paper)
+  - Producing R0-numbered comments that flow into /revise for the response document
+  - Multi-agent panel review (--panel) — parallel domain-expert reviewers + editor synthesis for a high-stakes pre-submission final pass
+when_NOT_to_use:
+  - Reviewing external (assigned) manuscripts (use /peer-review)
+  - Drafting the user's manuscript (use /write-paper)
+  - Generating reviewer-response prose (use /revise)
+  - Silently fixing non-AI-fixable issues without surfacing them to the user (forbidden)
+inputs:
+  - manuscript/manuscript.md
+outputs:
+  - qc/self_review.md
+  - qc/self_review.json
+  - qc/reference_adequacy.json
+deterministic_scripts:
+  - scripts/check_reference_adequacy.py
+  - scripts/check_editorial_impression.py
+side_effects:
+  - may_edit_manuscript_when_fix_flag_set
+downstream_consumers:
+  - revise
+  - sync-submission
+forbidden_actions:
+  - review_external_manuscripts_as_peer_reviewer
+  - silently_fix_non_ai_fixable_issues
+
+# v2.1 quality card
+purpose: "Pre-submission self-review of the user's own manuscript from a reviewer's perspective across 10 categories, with severity-framed anticipated comments."
+safety_boundaries:
+  - "Reviews the user's own manuscript only; not for reviewing external (journal-assigned) manuscripts."
+  - "Does not silently fix non-AI-fixable issues; it flags them for the author."
+known_limitations:
+  - "Anticipates likely reviewer comments; cannot predict a specific reviewer's focus."
+  - "Advisory; produces recommendations, not manuscript edits."
+validation_commands:
+  - "python3 scripts/check_reviewer_team_consistency.py"
+  - "python3 scripts/check_domain_probe_sync.py --strict"
+  - "bash tests/test_panel_mode.sh"
+  - "bash tests/test_reference_adequacy.sh"
+  - "bash tests/test_editorial_impression.sh"
+  - "bash tests/test_rounded_delta.sh"
+  - "bash tests/test_figure_citation.sh"
+  - "bash tests/test_emphasis_density.sh"
+  - "bash tests/test_cv_leakage.sh"
+  - "feed R0-numbered output into /revise"
+evidence_surface: demo

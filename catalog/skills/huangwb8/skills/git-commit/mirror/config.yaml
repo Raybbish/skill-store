@@ -1,0 +1,86 @@
+# Git Commit Skill 配置
+#
+# 版本号遵循语义化版本规范：主版本号.次版本号.修订号
+# - 不兼容的 API 修改 → 主版本号+1
+# - 向下兼容的新功能 → 次版本号+1
+# - 问题修正 → 修订号+1
+
+skill_info:
+  name: git-commit              # 技能名称（与目录名一致）
+  version: 2.2.0                # 当前版本（动态语言检测）
+  description: "仅用 Git 分析改动并生成 conventional commit 信息（可选 emoji），默认自动 push"  # 技能描述（最大 1024 字符）
+  author: "Bensz Conan"
+  category: "git"               # 技能分类（normal/git/data-analysis/devops 等）
+
+# 工作模式配置
+modes:
+  # 默认模式（auto/review）
+  default: "auto"               # auto: AI 自主决策；review: 关键步骤需用户确认
+  # 自动模式行为
+  auto:
+    auto_stage: true            # 暂存区为空时自动 git add -A
+    auto_stage_untracked: true  # 暂存区非空但存在未跟踪文件时，自动补齐未跟踪文件到暂存区
+    auto_split: true            # 达到阈值时自动拆分提交
+    auto_commit: true           # 直接提交，不询问确认
+    auto_push: true             # 提交成功后自动 push
+  # 审核模式行为（当传入 --review 参数时）
+  review:
+    prompt_stage: true          # 暂存区为空时提示用户选择
+    prompt_untracked: true      # 存在未跟踪文件时提示是否补齐（可选仅暂存未跟踪文件）
+    prompt_split: true          # 给出拆分建议，询问是否接受
+    prompt_commit: true         # 显示 commit message，询问是否确认
+    prompt_push: true           # 提交成功后询问是否推送
+
+# 提交类型定义
+commit_types:
+  feat: "新增功能"
+  fix: "缺陷修复"
+  docs: "文档与注释"
+  style: "风格/格式（不改语义）"
+  refactor: "重构（不新增功能、不修缺陷）"
+  perf: "性能优化"
+  test: "新增/修复测试"
+  chore: "构建/工具/杂务"
+  ci: "CI/CD 配置与脚本"
+  revert: "回滚提交"
+
+# Emoji 映射
+emoji_map:
+  feat: "✨"
+  fix: "🐛"
+  docs: "📝"
+  style: "🎨"
+  refactor: "♻️"
+  perf: "⚡️"
+  test: "✅"
+  chore: "🔧"
+  ci: "👷"
+  revert: "⏪️"
+
+# 拆分提交的阈值
+split_thresholds:
+  max_lines: 300  # 单次提交最大改动行数
+  max_dirs: 5     # 跨越的顶级目录数
+  max_files: 20   # 单次提交最大文件数
+
+# 提交信息约束
+message_constraints:
+  max_subject_length: 72    # 主题行最大长度
+  max_body_lines: 10        # 正文最大行数
+  max_body_items: 3         # 正文列表项数量
+
+# 提交信息语言检测策略
+#
+# 语言选择优先级（从高到低）：
+# 1. 用户明确指定：通过 --lang zh 或 --lang en 参数
+# 2. 最近 5 次 commit 的主体语言：统计最近 5 次提交信息的语言，以多数为准
+#    - 例如：3 次简体中文 + 2 次英文 → 使用简体中文
+#    - 例如：2 次中文 + 3 次英文 → 使用英文
+#    - 平局时优先使用用户设备默认语言
+# 3. 用户设备默认语言：检测操作系统的 locale 设置
+#    - macOS/Linux: $LANG 环境变量
+#    - Windows: 系统语言设置
+#    - 如检测到 zh_CN、zh_TW 等中文 locale → 使用简体中文
+#    - 其他情况 → 使用英文
+#
+# 注意：此配置项仅作文档说明，实际语言由 AI 在运行时动态检测

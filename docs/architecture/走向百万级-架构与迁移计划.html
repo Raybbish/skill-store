@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Store · 走向百万级 · 完整架构与迁移计划</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14161d;--ink-2:#39414f;--sub:#5c6473;--faint:#9aa1af;
+  --bg:#fcfcfd;--card:#fff;--line:#ececef;--line-2:#e0e2e8;--hair:#eef0f3;
+  --blue:#3b6cf0;--blue-press:#2a53d4;--violet:#7a5af8;--green:#12905f;--amber:#b5730a;--gold:#f0a318;--danger:#d5453b;
+  --seal:#eef2fe;--green-soft:#e4f4ec;--amber-soft:#f8efdb;--danger-soft:#fbecea;--violet-soft:#f1edfe;
+  --display:"Space Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
+  --ui:"Manrope",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.62}
+.wrap{max-width:940px;margin:0 auto;padding:60px 30px 120px}
+a{color:var(--blue);text-decoration:none}
+code,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* header */
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);font-weight:500}
+h1.title{font-family:var(--display);font-weight:700;font-size:42px;line-height:1.06;letter-spacing:-.03em;margin:16px 0 14px}
+h1.title .hl{position:relative;white-space:nowrap}
+h1.title .hl:after{content:"";position:absolute;left:-2px;right:-2px;bottom:5px;height:12px;background:linear-gradient(90deg,#d9e4fe,#e7ddfd);z-index:-1;border-radius:2px}
+.lede{font-size:17px;color:var(--sub);max-width:64ch;line-height:1.6}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px 22px;font-family:var(--mono);font-size:12px;color:var(--faint);padding-bottom:26px;border-bottom:1px solid var(--line)}
+.meta b{color:var(--ink-2);font-weight:600}
+
+/* tldr callout */
+.tldr{margin:30px 0 8px;background:linear-gradient(120deg,#eef2fe,#f4f0ff 62%,#fdeef4);border-radius:20px;padding:24px 26px}
+.tldr .k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--violet);font-weight:600}
+.tldr p{font-size:16px;color:var(--ink-2);margin-top:9px;line-height:1.58}
+.tldr b{color:var(--ink);font-weight:700}
+
+/* section */
+section{margin-top:52px}
+.sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;padding-top:6px}
+.sh .n{font-family:var(--mono);font-size:13px;color:var(--blue);font-weight:600}
+h2{font-family:var(--display);font-size:25px;font-weight:700;letter-spacing:-.02em}
+.sub{font-size:14px;color:var(--faint);margin-bottom:18px}
+p.body{margin:12px 0;color:var(--ink-2)}
+p.body b{color:var(--ink)}
+
+/* principle list */
+.princ{list-style:none;counter-reset:p;display:grid;gap:12px;margin-top:6px}
+.princ li{position:relative;padding:16px 18px 16px 54px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.princ li:before{counter-increment:p;content:counter(p);position:absolute;left:16px;top:15px;width:26px;height:26px;border-radius:8px;background:var(--seal);color:var(--blue);font-family:var(--display);font-weight:700;font-size:14px;display:grid;place-items:center}
+.princ b{font-weight:700}
+.princ .why{color:var(--sub);font-size:13.5px}
+
+/* architecture diagram */
+.diagram{margin:18px 0 6px;border:1px solid var(--line);border-radius:20px;padding:22px;background:var(--card)}
+.layer{border-radius:14px;padding:13px 16px;margin:9px 0;position:relative}
+.layer .lb{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;opacity:.85;margin-bottom:8px}
+.nodes{display:flex;flex-wrap:wrap;gap:8px}
+.node{background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;gap:7px}
+.node .t{font-family:var(--mono);font-size:10px;color:var(--faint);font-weight:500}
+.l-src{background:#f6f7fa;border:1px solid var(--hair)}
+.l-pipe{background:var(--seal)}.l-pipe .lb{color:var(--blue)}
+.l-truth{background:var(--green-soft)}.l-truth .lb{color:var(--green)}
+.l-serve{background:var(--violet-soft)}.l-serve .lb{color:var(--violet)}
+.l-api{background:#fff5e6}.l-api .lb{color:var(--amber)}
+.l-fe{background:#eaf0ff}.l-fe .lb{color:var(--blue-press)}
+.arrow{text-align:center;color:var(--faint);font-size:15px;line-height:.7;margin:2px 0}
+.seam{border:1.5px dashed var(--amber);border-radius:10px}
+.dgloss{font-size:12.5px;color:var(--sub);margin-top:14px;line-height:1.6}
+.dgloss b{color:var(--amber);font-weight:700}
+
+/* phases */
+.phase{border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-top:16px;background:var(--card)}
+.phase-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pbadge{font-family:var(--display);font-weight:700;font-size:13px;color:#fff;background:var(--ink);border-radius:8px;padding:4px 11px}
+.phase.now .pbadge{background:var(--blue)}
+.phase-h .pt{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.01em}
+.trig{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--sub);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.trig b{color:var(--danger);font-weight:600}
+.phase .goal{font-size:14px;color:var(--sub);margin:10px 0 14px;padding-bottom:12px;border-bottom:1px solid var(--hair)}
+.wk{list-style:none;display:grid;gap:9px}
+.wk li{position:relative;padding-left:24px;font-size:14px;color:var(--ink-2)}
+.wk li:before{content:"";position:absolute;left:2px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--blue);opacity:.55}
+.wk li b{color:var(--ink);font-weight:700}
+.wk code{font-size:12px;background:#f0f1f5;border-radius:5px;padding:1px 6px}
+.exit{margin-top:14px;font-size:13px;color:var(--green);background:var(--green-soft);border-radius:11px;padding:10px 14px}
+.exit b{font-weight:700}
+.exit .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:3px;opacity:.85}
+
+/* tables */
+.tbl{width:100%;border-collapse:collapse;margin:14px 0 4px;font-size:13.5px}
+.tbl th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;padding:0 14px 9px;border-bottom:1px solid var(--line-2)}
+.tbl td{padding:12px 14px;border-bottom:1px solid var(--hair);color:var(--ink-2);vertical-align:top}
+.tbl td b{color:var(--ink);font-weight:700}
+.tbl td .pick{font-family:var(--display);font-weight:700;color:var(--blue)}
+.tbl tr:last-child td{border-bottom:none}
+.tag{font-family:var(--mono);font-size:10.5px;font-weight:600;border-radius:6px;padding:2px 7px;white-space:nowrap}
+.tag.keep{background:var(--green-soft);color:var(--green)}
+.tag.new{background:var(--seal);color:var(--blue)}
+.tag.drop{background:var(--danger-soft);color:var(--danger)}
+
+/* code */
+pre{background:#12141b;color:#dfe4ee;border-radius:14px;padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.62;margin:14px 0}
+pre .c{color:#7f8ba3}pre .k{color:#8fb4ff}pre .s{color:#a7e3c0}pre .p{color:#f0c987}
+
+/* hard problems */
+.hp{display:grid;gap:12px;margin-top:6px}
+.hp .item{border:1px solid var(--line);border-left:3px solid var(--danger);border-radius:12px;padding:15px 18px;background:var(--card)}
+.hp .item h4{font-family:var(--display);font-size:16px;font-weight:700}
+.hp .item p{font-size:13.5px;color:var(--sub);margin-top:5px}
+.hp .item b{color:var(--ink-2)}
+
+/* not-yet + actions */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+.box{border:1px solid var(--line);border-radius:16px;padding:18px 20px;background:var(--card)}
+.box.no{border-top:3px solid var(--danger)}
+.box.go{border-top:3px solid var(--green)}
+.box h3{font-family:var(--display);font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.box ul{list-style:none;margin-top:11px;display:grid;gap:8px}
+.box li{font-size:13.5px;color:var(--ink-2);padding-left:20px;position:relative}
+.box.no li:before{content:"✕";position:absolute;left:0;color:var(--danger);font-size:11px;top:3px;font-weight:700}
+.box.go li:before{content:"→";position:absolute;left:0;color:var(--green);font-weight:700}
+.box li b{color:var(--ink);font-weight:700}
+
+/* risk */
+.risk td .sev{font-family:var(--mono);font-size:10px;font-weight:600;border-radius:5px;padding:2px 7px}
+.sev.hi{background:var(--danger-soft);color:var(--danger)}
+.sev.md{background:var(--amber-soft);color:var(--amber)}
+
+footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint);line-height:1.7}
+footer b{color:var(--sub)}
+
+@media (max-width:720px){
+  .wrap{padding:40px 20px 90px}
+  h1.title{font-size:32px}
+  .two{grid-template-columns:1fr}
+  .trig{margin-left:0;width:100%}
+  .nodes{gap:6px}
+}
+@media print{body{background:#fff}.phase,.box,.diagram,.hp .item{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Skill Store · 架构决策</div>
+  <h1 class="title">走向百万级的<br><span class="hl">完整架构与迁移计划</span></h1>
+  <p class="lede">从今天的 6k 条静态站,到目录承载几十万乃至上百万 skill。核心不是"把列表渲染快",而是换一套随规模扩展、且不丢掉"可公开审计"信任故事的服务架构。本计划给出不变量、终局架构、四阶段迁移(带触发阈值)与立即行动。</p>
+  <div class="meta">
+    <span>日期 · <b>2026-07-04</b></span>
+    <span>当前规模 · <b>5,811 可见 / 6,171 条</b></span>
+    <span>目标规模 · <b>10⁵–10⁶</b></span>
+    <span>栈 · <b>Next.js 15 · React 19</b></span>
+    <span>状态 · <b>提案,待落 ADR</b></span>
+  </div>
+</header>
+
+<div class="tldr">
+  <div class="k">一句话</div>
+  <p><b>catalog(Git)是唯一事实源与公开审计账本;搜索/浏览是"查询一份派生索引",不是"下载整个目录"。</b>前端只通过 <code>search()</code> 与 <code>getSkill()</code> 两个入口取数,背后从静态 JSON → 托管搜索引擎 → 数据库逐阶段替换,每次都是局部替换而非重写。<b>现在就埋这条缝、直接上搜索引擎当索引;别在 6k 条时建百万基建,但也别再往"把全量塞进浏览器"的死路上走。</b></p>
+</div>
+
+<!-- ===================== 1 · 不变量 ===================== -->
+<section id="principles">
+  <div class="sh"><span class="n">01</span><h2>五条不变量</h2></div>
+  <div class="sub">任何阶段、任何实现都不违反。它们是让"从一万到一百万只换实现、不换架构"成立的前提。</div>
+  <ol class="princ">
+    <li><b>源与服务分离。</b> <span class="why">Git catalog 是可 diff、可 PR、可公开复核的<b>记录账本</b>,不是请求路径。用户看到的一切都从<b>派生的、可随时重建的</b>索引/DB 来,索引是 catalog 的纯函数。</span></li>
+    <li><b>前端只认两个入口。</b> <span class="why"><code>search(query, filters, page)</code> 与 <code>getSkill(id)</code> 是唯一数据契约。背后是文件、搜索引擎还是数据库,前端一律不知情。这条缝是所有迁移的支点。</span></li>
+    <li><b>永不把目录下发给客户端,永不全量预渲染。</b> <span class="why">百万文档的索引几百 MB、百万个 HTML 页 99% 没人看。浏览走搜索 API,详情页按需渲染 + CDN 缓存。</span></li>
+    <li><b>采集幂等、增量,按 <code>content_hash</code> 去重并缓存审计。</b> <span class="why">加一条 skill 是 O(1) 增量,不是全量重跑。L3(LLM)只在内容变更时触发,否则百万 × 模型调用成本失控。</span></li>
+    <li><b>信任靠自动化扩展,人工只碰长尾。</b> <span class="why">L1/L2/L3 自动审计必须扛住主量,人工每天只看少量重大风险。fail-closed 保留,含可撤销(revocation)。</span></li>
+  </ol>
+</section>
+
+<!-- ===================== 2 · 终局架构 ===================== -->
+<section id="target">
+  <div class="sh"><span class="n">02</span><h2>终局架构</h2></div>
+  <div class="sub">百万级稳态下各层的职责。数据自上而下流动;前端只触到最底下那条 API 缝。</div>
+
+  <div class="diagram">
+    <div class="layer l-src">
+      <div class="lb">① 采集源 · sources.yaml</div>
+      <div class="nodes">
+        <span class="node">官方精选仓</span>
+        <span class="node">头部榜单 <span class="t">stars</span></span>
+        <span class="node">skills.sh <span class="t">installs</span></span>
+        <span class="node">聚合器 / 批量源 <span class="t">折叠采样</span></span>
+      </div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="layer l-pipe">
+      <div class="lb">② 采集 + 审计管线 · packages/pipeline(队列驱动 · 增量 · 幂等)</div>
+      <div class="nodes">
+        <span class="node">抓取 + content_hash 去重</span>
+        <span class="node">L1 静态签名 <span class="t">YARA/正则</span></span>
+        <span class="node">L2 脚本数据流 <span class="t">5 风险因子</span></span>
+        <span class="node">L3 意图审查 <span class="t">双模型 · 缓存</span></span>
+        <span class="node">人工长尾复核</span>
+      </div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="layer l-truth">
+      <div class="lb">③ 事实源 / 账本(可公开审计)</div>
+      <div class="nodes">
+        <span class="node">Git catalog <span class="t">紧凑记录 · PR 溯源</span></span>
+        <span class="node">对象存储 R2/S3 <span class="t">mirror zip · 完整审计报告 · 大 evidence</span></span>
+      </div>
+    </div>
+    <div class="arrow">▼ <span style="font-family:var(--mono);font-size:10px;color:var(--faint)">Loader · 派生步骤(纯函数,可重建)</span></div>
+    <div class="layer l-serve">
+      <div class="lb">④ 服务层(派生 · 可重建)</div>
+      <div class="nodes">
+        <span class="node">Postgres <span class="t">元数据 · 信号 · 审计摘要 · facets</span></span>
+        <span class="node">搜索引擎 <span class="t">关键词 + 分面 + 排序</span></span>
+        <span class="node">向量索引 <span class="t">语义召回</span></span>
+      </div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="layer l-api seam">
+      <div class="lb">⑤ 数据契约 · 唯一缝 🔶</div>
+      <div class="nodes">
+        <span class="node">search(query, filters, page)</span>
+        <span class="node">getSkill(id)</span>
+        <span class="node">autocomplete · facets</span>
+      </div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="layer l-fe">
+      <div class="lb">⑥ 前端 · Next.js(设计系统不变)</div>
+      <div class="nodes">
+        <span class="node">浏览/搜索 <span class="t">查 API · 分页 · 分面</span></span>
+        <span class="node">详情页 <span class="t">按需渲染 ISR · CDN 缓存</span></span>
+        <span class="node">分类页 <span class="t">/category/[slug]</span></span>
+      </div>
+    </div>
+    <div class="dgloss"><b>🔶 缝 = 第 ⑤ 层。</b>它今天可以直接坐在一份构建期 JSON 上,明天坐在搜索引擎上,后天坐在 Postgres 上——前端第 ⑥ 层永远不动。这就是"一步到位"的真正含义:先把缝焊死,后面每一步都便宜。</div>
+  </div>
+</section>
+
+<!-- ===================== 3 · 分阶段迁移 ===================== -->
+<section id="phases">
+  <div class="sh"><span class="n">03</span><h2>四阶段迁移</h2></div>
+  <div class="sub">每阶段独立可上线,由<b>真实阈值</b>触发进入下一阶,不提前跨。当前该做的是 Phase 0 与 Phase 1。</div>
+
+  <!-- Phase 0 -->
+  <div class="phase now">
+    <div class="phase-h">
+      <span class="pbadge">Phase 0</span>
+      <span class="pt">止血 + 埋缝</span>
+      <span class="trig">现在 · <b>~6k</b> · 保持静态导出</span>
+    </div>
+    <div class="goal">目标:交互立刻不卡 + 焊死数据契约缝。这是唯一"以后都不会浪费"的阶段,越早越好。</div>
+    <ul class="wk">
+      <li><b>分页取代整表渲染</b>:列表按页取 ~30 条,<code>?page=</code> 进 URL。P0 仍静态,先在加载好的瘦索引上客户端切片;<code>search()</code> 按 <code>page/size</code> 返回,Phase 1 换 Typesense 后<b>自动变服务端分页、前端不改</b>。DOM 只挂当前页 → 免虚拟化。</li>
+      <li><b>瘦 payload</b>:<code>browse/page.tsx</code> 只把列表所需字段传给客户端,<code>evidence/l3/review/eval</code> 不下发(6MB→3.3MB),详情页按需取。</li>
+      <li><b>搜索解耦</b>:<code>useDeferredValue</code> + debounce 把输入与重渲染分开。</li>
+      <li><b>焊缝</b>:定义 <code>SkillStore</code> 接口(<code>search()/getSkill()</code>),当前实现坐在<b>构建期派生的 index.json</b> + 索引库(Orama/MiniSearch)上。前端从此只认接口。</li>
+      <li><b>修构建期 O(n²)</b>:<code>lib/data.ts</code> 的 <code>getSkill/skillsByLabel</code> 每次 <code>allSkills()</code> 重扫 6k 文件 → 改为只加载一次建内存索引 / 构建期落一个派生文件。</li>
+    </ul>
+    <div class="exit"><span class="lbl">退出标准</span><b>6k 条浏览/搜索顺滑;前端只调 <code>search()/getSkill()</code>;构建不再随条数平方增长。</b></div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="phase">
+    <div class="phase-h">
+      <span class="pbadge">Phase 1</span>
+      <span class="pt">抽出搜索服务</span>
+      <span class="trig">触发 · <b>~1–2 万</b> 或需要分面/纠错/相关性</span>
+    </div>
+    <div class="goal">目标:搜索从"浏览器里扫数组"变成"查一个真正的搜索引擎"。前端仍是静态壳。</div>
+    <ul class="wk">
+      <li><b>自托管搜索引擎上线</b>:Typesense(或 Meilisearch),单节点即可。管线在每次部署/提交时把文档灌进索引。</li>
+      <li><b>切 <code>search()</code> 实现</b>:客户端 JSON → 搜索引擎 API。浏览获得真·分面(<code>category/tags/风险因子/publisher/license/hosting</code>)+ 打字纠错 + 排序(installs/stars/新鲜度/质量分)。</li>
+      <li><b>facets 复用你现有 taxonomy</b>:chips → 真 facets;不再前端 <code>filter()</code> 统计。</li>
+      <li>详情页此阶段仍可 SSG(&lt;~5 万可行),但开始<b>度量构建时长</b>,设阈值告警。</li>
+    </ul>
+    <div class="exit"><span class="lbl">退出标准</span><b>搜索由服务端支撑;catalog 不再整包下发到客户端;facets 与排序真实可用。</b></div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase">
+    <div class="phase-h">
+      <span class="pbadge">Phase 2</span>
+      <span class="pt">解耦服务层</span>
+      <span class="trig">触发 · <b>~5–10 万</b> 或 SSG 构建超时 / Git 文件数吃力</span>
+    </div>
+    <div class="goal">目标:让"加一条 skill"是 O(1) 增量;告别全量预渲染与静态导出。</div>
+    <ul class="wk">
+      <li><b>引入 Postgres 服务库 + 对象存储</b>:Loader 从 catalog 派生 DB;大 blob(mirror zip、完整审计报告)入 R2/S3。<code>getSkill()</code> 读 DB,不再读文件系统。</li>
+      <li><b>详情页转按需渲染</b>:ISR/SSR + CDN 缓存,永不全量预渲染。此处<b>有意识地退役 <code>output:"export"</code></b>——"纯静态随处部署"这个值到百万留不住,Git 仅保留为公开账本。</li>
+      <li><b>管线转增量</b>:队列驱动,只有 <code>content_hash</code> 变化的 skill 才重审、重索引;审计结果按 hash 缓存。</li>
+      <li><b>批量源折叠</b>继续作为规模阀门(你已有 collections 采样折叠的直觉,正确)。</li>
+    </ul>
+    <div class="exit"><span class="lbl">退出标准</span><b>无任何请求期或构建期全量扫描;新增/更新 skill 走增量;详情页缓存命中稳定。</b></div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase">
+    <div class="phase-h">
+      <span class="pbadge">Phase 3</span>
+      <span class="pt">百万级:发现 · 信任 · 成本</span>
+      <span class="trig">触发 · <b>10⁵ → 10⁶</b> · 并行工作流,非严格串行</span>
+    </div>
+    <div class="goal">目标:百万量级下"找得到、信得过、养得起"。这三件比渲染更决定平台成败。</div>
+    <ul class="wk">
+      <li><b>搜索扩展</b>:Typesense 分片/副本;若相关性或向量需求重,评估 OpenSearch/Vespa。上<b>语义/向量搜索</b>——"帮我找能做 X 的 skill",纯关键词不够。</li>
+      <li><b>发现与排序</b>:质量分(信号 + 审计 + 热度 + 新鲜度)、<code>duplicate_of</code> 规范化去重、低质/垃圾降权、trending。</li>
+      <li><b>规模化信任</b>:全自动审计门,人工仅长尾重大风险;可撤销 + 变更重审 + 投毒/滥用防护 + 溯源 UX。</li>
+      <li><b>成本与运维</b>:分级 LLM 审计(便宜模型初筛 → L3 仅在歧义/变更时);按 hash 缓存;索引自动扩缩;SLO/可观测性。</li>
+    </ul>
+    <div class="exit"><span class="lbl">退出标准</span><b>百万条下亚百毫秒搜索、增量采集、自动化信任、成本有界。</b></div>
+  </div>
+</section>
+
+<!-- ===================== 4 · 数据契约 ===================== -->
+<section id="contract">
+  <div class="sh"><span class="n">04</span><h2>数据契约(那条缝)</h2></div>
+  <div class="sub">Phase 0 就把它焊死。前端与数据层之间永远只有这一层薄接口。</div>
+  <pre><span class="c">// packages/web/lib/store.ts —— 唯一数据入口,背后实现随阶段替换</span>
+<span class="k">export interface</span> SkillStore {
+  search(q: <span class="k">string</span>, opts: {
+    filters?: { category?: <span class="k">string</span>; tags?: <span class="k">string</span>[]; net?: <span class="k">boolean</span>; status?: <span class="k">string</span> };
+    sort?: <span class="s">"installs"</span> | <span class="s">"stars"</span> | <span class="s">"relevance"</span> | <span class="s">"fresh"</span>;
+    page?: <span class="k">number</span>; size?: <span class="k">number</span>;      <span class="c">// 数字分页(浅页 · 可深链 · CDN 缓存)</span>
+    cursor?: <span class="k">string</span>;                    <span class="c">// 深翻兜底:search_after,免深 offset</span>
+  }): <span class="k">Promise</span>&lt;{
+    hits: SkillCard[]; total: <span class="k">number</span>; facets: FacetCounts;
+    page: <span class="k">number</span>; pages: <span class="k">number</span>; nextCursor?: <span class="k">string</span>;  <span class="c">// 喂页码器</span>
+  }&gt;;
+
+  getSkill(id: <span class="k">string</span>): <span class="k">Promise</span>&lt;SkillDetail | <span class="k">null</span>&gt;;
+}
+
+<span class="c">// Phase 0 实现:坐在构建期 index.json + Orama 上(静态,零服务)</span>
+<span class="c">// Phase 1 实现:坐在 Typesense 上   —— 只换这个文件,前端不动</span>
+<span class="c">// Phase 2 实现:search→Typesense, getSkill→Postgres</span>
+
+<span class="c">// 列表卡片只带展示所需字段(≈ 600B/条),审计详情不进列表</span>
+<span class="k">interface</span> SkillCard {
+  id; name; description; publisher; category; tags;
+  stars; installs; status; net: <span class="k">boolean</span>;   <span class="c">// net = 是否含网络外联</span>
+}</pre>
+  <p class="body">关键点:<b>列表文档</b>只带 <code>SkillCard</code> 这些字段;<code>evidence / l3 / review / eval</code> 这类审计重负荷只在 <code>getSkill()</code> 的详情里出现。这一条同时解决了 Phase 0 的 payload 问题和百万级的索引体积问题——索引里每条 skill 只有几百字节。</p>
+  <p class="body"><b>分页也走这条缝。</b><code>search()</code> 已带 <code>page/size</code>,返回带 <code>total/pages</code> 喂数字页码器(你截图那种),顺序深翻用 <code>nextCursor</code>(<code>search_after</code>)避开深 offset。P0 仍静态时先在加载好的瘦索引上客户端切片,接口形状不变——Phase 1 换 Typesense 后<b>自动变服务端分页,前端零改动</b>。每页只取 ~30 条,DOM 天然只有 30 行,因此<b>不必再叠虚拟化</b>。</p>
+</section>
+
+<!-- ===================== 5 · serving 数据模型 ===================== -->
+<section id="model">
+  <div class="sh"><span class="n">05</span><h2>Serving 数据模型</h2></div>
+  <div class="sub">Phase 2 引入。派生自 catalog,可整库重建。搜索文档是它的投影。</div>
+  <table class="tbl">
+    <thead><tr><th style="width:26%">字段</th><th style="width:20%">类型 / 来源</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><b>id</b> <span class="mono" style="font-size:11px;color:var(--faint)">PK</span></td><td>text · meta.id</td><td>三段式 <code>owner/repo/name</code>,内容寻址锚点</td></tr>
+      <tr><td>owner / repo / name</td><td>text · meta</td><td>拆列,便于按发布者/仓聚合</td></tr>
+      <tr><td>description</td><td>text · frontmatter</td><td>列表 + 全文检索</td></tr>
+      <tr><td>publisher / license / hosting</td><td>text · meta</td><td>facet 维度</td></tr>
+      <tr><td>category / tags[]</td><td>text / text[] · taxonomy</td><td>主分面 + 细分面</td></tr>
+      <tr><td>status</td><td>enum · security_audit</td><td><code>pass</code> / <code>review</code>,徽章与过滤</td></tr>
+      <tr><td>risk_flags</td><td>jsonb · 5 因子</td><td>scripts/network/filesystem/env/exec 布尔,<code>net</code> 独立成列做 facet</td></tr>
+      <tr><td>audit_summary_ref</td><td>text · R2 key</td><td>完整审计报告(L3 verdict、evidence)指向对象存储,不进行内联</td></tr>
+      <tr><td>stars / installs / repo_skill_count</td><td>int · signals</td><td>排序 + 巨仓降权</td></tr>
+      <tr><td>quality_score</td><td>float · 派生</td><td>信号 + 审计 + 新鲜度合成,主排序键</td></tr>
+      <tr><td>duplicate_of</td><td>text · nullable</td><td>规范化去重;非空默认不进主索引</td></tr>
+      <tr><td>content_hash</td><td>text · unique</td><td>去重 + 审计缓存键 + 变更检测</td></tr>
+      <tr><td>updated_at</td><td>timestamp</td><td>新鲜度排序 + 增量触发</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================== 6 · 技术选型 ===================== -->
+<section id="stack">
+  <div class="sh"><span class="n">06</span><h2>技术选型</h2></div>
+  <div class="sub">决定性选择 + 逃生口。<span class="tag keep">留</span> 现有资产续用 · <span class="tag new">新</span> 新增 · <span class="tag drop">退</span> 到某阶段退役。</div>
+  <table class="tbl">
+    <thead><tr><th style="width:20%">角色</th><th style="width:22%">选择</th><th>理由</th><th style="width:22%">逃生口</th></tr></thead>
+    <tbody>
+      <tr><td><b>搜索</b> <span class="tag new">新</span></td><td><span class="pick">Typesense</span>(自托管)</td><td>撑到千万级、运维简单、开源不锁定、分面/纠错/向量齐全,合你"可自控"调性。现在就当索引用。</td><td>相关性/十亿级 → OpenSearch/Vespa;零运维 → Algolia(用钱换)</td></tr>
+      <tr><td><b>列表搜索(P0)</b> <span class="tag new">新</span></td><td><span class="pick">Orama</span> / MiniSearch</td><td>构建期建索引,静态零服务,过渡用。</td><td>Phase 1 直接被 Typesense 取代</td></tr>
+      <tr><td><b>服务库</b> <span class="tag new">新</span></td><td><span class="pick">Postgres</span></td><td>元数据/信号/facet 的服务真相;派生自 catalog,可重建。</td><td>—</td></tr>
+      <tr><td><b>向量</b> <span class="tag new">新</span></td><td><span class="pick">pgvector</span> → 专用</td><td>早期搭 Postgres 够用,语义召回起步。</td><td>规模上来 → Typesense 向量 / Qdrant</td></tr>
+      <tr><td><b>对象存储</b> <span class="tag new">新</span></td><td><span class="pick">Cloudflare R2</span> / S3</td><td>mirror zip、完整审计报告、大 evidence;出网免费(R2)。</td><td>互换</td></tr>
+      <tr><td><b>渲染/托管</b> <span class="tag drop">退静态</span></td><td><span class="pick">Next.js 服务端</span> + CDN</td><td>详情页 ISR 按需 + 缓存;Phase 2 退 <code>output:"export"</code>。</td><td>Vercel 托管 or 自托管 Node</td></tr>
+      <tr><td><b>事实源/账本</b> <span class="tag keep">留</span></td><td><span class="pick">Git catalog</span></td><td>公开、可 diff、PR 溯源——你信任故事里 Git 不可替代的用途。仅作账本,不作服务路径。</td><td>—</td></tr>
+      <tr><td><b>去重/信任</b> <span class="tag keep">留</span></td><td><span class="pick">content_hash · L1/L2/L3</span></td><td>已建资产,正是规模化信任的地基,继续演进。</td><td>—</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================== 7 · 硬问题 ===================== -->
+<section id="hard">
+  <div class="sh"><span class="n">07</span><h2>百万级的真正硬问题</h2></div>
+  <div class="sub">不是渲染。这四个决定平台成不成——放进 Phase 3,但架构要为它们预留位置。</div>
+  <div class="hp">
+    <div class="item"><h4>① 发现与排序</h4><p>npm 的教训:几百万包里绝大多数是噪声,<b>找得到才是产品</b>。质量信号、热度、新鲜度、规范化去重、语义召回排第一。搜索不是功能,是核心卖点。<br><b>过渡口径(自家遥测/评分未就位):</b>货架头条统一 <code>stars</code>(缺失回落 <code>installs</code>→「新」),排序按<b>归一 stars = stars/√repo_skill_count</b> 抑制巨仓,<code>installs</code> 收进详情页;成熟后并入 <code>quality_score</code>。实测覆盖:stars 98.8% · installs 0.8% · 两者<b>零重叠</b>——故不可混排。</p></div>
+    <div class="item"><h4>② 规模化信任</h4><p>百万条没法人工审。你的 <b>L1/L2/L3 必须扛住主量</b>,人工只碰长尾重大风险(你 memory 里的裁决口径方向对)。加可撤销、变更重审、投毒/滥用防护。</p></div>
+    <div class="item"><h4>③ 采集成本与新鲜度</h4><p>百万 × LLM 审计会烧钱。<b>只在 <code>content_hash</code> 变更时重审</b>,分级模型初筛,结果按 hash 缓存。新鲜度靠增量,不靠全量重跑。</p></div>
+    <div class="item"><h4>④ Git 的文件天花板</h4><p>36k 文件 / 682MB 已不轻;百万条是几十 GB、上百万小文件,<code>clone/status/checkout</code> 全爬。<b>远在百万前就得把服务层挪去 DB/对象存储</b>,Git 只留账本与紧凑记录。</p></div>
+  </div>
+</section>
+
+<!-- ===================== 8 · 现在别建 / 现在就做 ===================== -->
+<section id="scope">
+  <div class="sh"><span class="n">08</span><h2>边界:别建 vs 就做</h2></div>
+  <div class="sub">"一步到位"= 把缝一次焊对,不是把百万基建一次建齐。避免过度工程。</div>
+  <div class="two">
+    <div class="box no">
+      <h3>现在别建(6k 条)</h3>
+      <ul>
+        <li>Postgres / 队列 / 向量库——<b>Phase 2+ 再上</b></li>
+        <li>k8s / 多节点搜索集群 / 自动扩缩</li>
+        <li>个性化推荐、排序模型训练</li>
+        <li>把详情页提前改 SSR(SSG 现在够)</li>
+        <li>客户端全量索引(Orama 也只作 P0 过渡,别恋战)</li>
+        <li>虚拟化(有了分页,每页 30 行用不上)</li>
+      </ul>
+    </div>
+    <div class="box go">
+      <h3>现在就做(不会浪费)</h3>
+      <ul>
+        <li><b>焊 <code>search()/getSkill()</code> 缝</b>——一切迁移的支点</li>
+        <li><b>服务端分页 + 瘦 payload</b>——每页 ~30 条,DOM 天然小,省掉虚拟化</li>
+        <li><b>修 <code>data.ts</code> 的 O(n²) 重扫</b>——构建期炸弹</li>
+        <li><b>直接上自托管 Typesense 当索引</b>——从 1 万到 100 万唯一不换的那块</li>
+        <li>列表文档瘦身到 <code>SkillCard</code>,审计入对象存储引用</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 9 · 立即行动 ===================== -->
+<section id="actions">
+  <div class="sh"><span class="n">09</span><h2>立即行动(下一步 1–2 周)</h2></div>
+  <div class="sub">按序,每条独立可提交。做完 Phase 0 就已经不卡,且缝已就位。</div>
+  <ul class="wk" style="gap:11px">
+    <li><b>1 · 落 ADR</b>:把本计划写成 <code>docs/decisions/</code> 一条(《走向百万级:源/服务解耦 + 托管搜索》),记不变量与触发阈值。</li>
+    <li><b>2 · 焊缝</b>:新建 <code>lib/store.ts</code> 定义 <code>SkillStore</code>;把 <code>page.tsx</code>/<code>BrowseClient</code> 改为只经它取数。</li>
+    <li><b>3 · 分页 + 瘦 payload</b>:列表只传 <code>SkillCard</code>;按页取 ~30 条(<code>?page=</code> 进 URL,接口按 <code>page/size</code> 返回);搜索 <code>useDeferredValue</code> + debounce。</li>
+    <li><b>4 · 修 <code>data.ts</code></b>:<code>allSkills()</code> 单次加载建内存索引;构建期落 <code>index.json</code> 派生产物。</li>
+    <li><b>5 · 起 Typesense spike</b>:本地单节点,把 6k 灌进去,<code>search()</code> 换实现验证分面/纠错——为 Phase 1 打样、顺带压测。</li>
+  </ul>
+</section>
+
+<!-- ===================== 10 · 风险 ===================== -->
+<section id="risks">
+  <div class="sh"><span class="n">10</span><h2>风险与对策</h2></div>
+  <table class="tbl risk">
+    <thead><tr><th style="width:26%">风险</th><th style="width:12%">级别</th><th>对策</th></tr></thead>
+    <tbody>
+      <tr><td>SSG 构建随条数爆炸</td><td><span class="sev hi">高</span></td><td>Phase 1 起度量构建时长设阈值;Phase 2 转 ISR 按需渲染,不预渲染全量</td></tr>
+      <tr><td>Git 文件数/体积到顶</td><td><span class="sev hi">高</span></td><td>大 blob 尽早入对象存储;catalog 只留紧凑记录;超阈值考虑分仓/CAS</td></tr>
+      <tr><td>百万级 LLM 审计成本</td><td><span class="sev hi">高</span></td><td>content_hash 缓存 + 分级模型初筛,L3 仅歧义/变更时触发</td></tr>
+      <tr><td>退静态 = 丢"随处部署"</td><td><span class="sev md">中</span></td><td>有意识取舍:Git 保留为公开审计账本,服务层换 DB;信任故事不依赖静态托管</td></tr>
+      <tr><td>搜索相关性/垃圾涌入</td><td><span class="sev md">中</span></td><td>质量分排序 + 规范化去重 + 低质降权 + 批量源折叠(已有直觉)</td></tr>
+      <tr><td>深翻分页(深 offset 慢)</td><td><span class="sev md">中</span></td><td>页码器只做浅页;顺序/深翻用 cursor·search_after(引擎原生)或限制可寻址深度;重心压搜索 + facets,别引导用户翻到第 400 页</td></tr>
+      <tr><td>过度工程,提前建百万基建</td><td><span class="sev md">中</span></td><td>阈值门控;Phase 0/1 只碰缝与搜索,DB/队列/向量押后</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <b>Skill Store · 走向百万级 · 完整架构与迁移计划</b><br>
+  北极星:catalog 是账本,服务是派生索引,前端只认一条缝。先焊缝、上搜索引擎,按阈值逐阶迁移,别提前建、别再往浏览器塞全量。<br>
+  下一步建议:把本文落成 <code>docs/decisions/</code> 一条 ADR,并从 Phase 0 第 2 步(焊缝)开工。
+</footer>
+
+</div>
+</body>
+</html>
