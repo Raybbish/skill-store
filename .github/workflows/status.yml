@@ -1,8 +1,12 @@
 # 自动刷新 docs/STATUS.generated.md(可选;不想要就删掉本文件)
+# push 只校验不提交(避免「push → 机器人抢先一笔 → 下次 push 被拒」的乒乓);
+# 快照的自动提交只在每日定时 / 手动触发时做。
 name: status
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "20 1 * * *"
   workflow_dispatch:
 jobs:
   refresh:
@@ -15,7 +19,8 @@ jobs:
         with:
           node-version: 20
       - run: node scripts/status.mjs
-      - name: commit if changed
+      - name: commit if changed(仅定时/手动;push 只校验)
+        if: github.event_name != 'push'
         run: |
           if ! git diff --quiet -- docs/STATUS.generated.md docs/STATUS.html; then
             git config user.name "status-bot"
