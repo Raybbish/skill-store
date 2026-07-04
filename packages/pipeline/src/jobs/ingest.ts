@@ -150,15 +150,12 @@ async function main() {
       continue;
     }
 
-    // 同 id 更新:保留已有的审计/评测/人工复核结果(采集只负责元数据,不冲掉下游成果)
-    if (prev) {
-      const psa = prev.security_audit as SkillReport["security_audit"] & { review?: unknown; l3?: unknown };
-      if (psa.review || psa.status !== "pending") {
-        // 上游内容变了才需重审;这里保留旧审计,由 audit 的哈希漂移检测触发重审
-        c.report.security_audit = prev.security_audit;
-        stats.preserved++;
-      }
-      if (prev.eval) c.report.eval = prev.eval;
+    // 同 id 更新:保留已有的评测结果(采集只负责元数据,不冲掉下游成果)。
+    // v2(ADR 0012):判定在 catalog/verdicts 账本,锚定 content_hash,采集天然不会冲掉;
+    // 内容变化的重新判定由服务侧 submit(幂等)触发,不在采集职责内。
+    if (prev?.eval) {
+      c.report.eval = prev.eval;
+      stats.preserved++;
     }
 
     // 归类:采集期打 meta.category + meta.tags(启发式引擎;sources.yaml 可 per-source 覆盖)。

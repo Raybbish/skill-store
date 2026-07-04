@@ -4,7 +4,6 @@
 export * from "./labels";
 
 export type Hosting = "mirrored" | "indexed";
-export type AuditStatus = "pending" | "pass" | "needs_review" | "rejected";
 
 export interface RiskFactor {
   /** null = 尚未审计,无法判断 */
@@ -28,7 +27,8 @@ export interface Evidence {
 }
 
 export interface SkillReport {
-  schema_version: "1";
+  /** v2(2026-07-05,ADR 0012):security_audit 拆出至 catalog/verdicts 账本(@skill-store/verdicts) */
+  schema_version: "1" | "2";
   meta: {
     /** owner/repo/name(owner、repo 小写) */
     id: string;
@@ -54,13 +54,6 @@ export interface SkillReport {
   };
   frontmatter_valid: boolean;
   frontmatter_issues: string[];
-  security_audit: {
-    status: AuditStatus;
-    audited_at: string | null;
-    scanner_versions?: Record<string, string>;
-    risk_factors: RiskFactors;
-    evidence: Evidence[];
-  };
   signals: {
     stars_github?: number | null;
     installs_skills_sh?: number | null;

@@ -1,0 +1,123 @@
+{
+  "schema": "scan-verdict-ledger@v1",
+  "skill_id": "anthropics/skills/pptx",
+  "verdicts": [
+    {
+      "schema": "scan-verdict@v1",
+      "subject": {
+        "skill_id": "anthropics/skills/pptx",
+        "content_hash": "sha256:ca717d4ead084b409fd0d28876b6b592aa7e4e28d1a1765d5b4f185b253f1ffd"
+      },
+      "scanner": {
+        "engine": "legacy",
+        "policy": "pre-adr-0011"
+      },
+      "status": "pass",
+      "factors": {
+        "scripts": {
+          "present": true,
+          "detail": "16 个脚本文件"
+        },
+        "network": {
+          "present": true,
+          "detail": "原始 socket 连接(1 处证据)"
+        },
+        "filesystem": {
+          "present": true,
+          "detail": "Python 文件写/删(3 处证据)"
+        },
+        "env_access": {
+          "present": true,
+          "detail": "Python 读环境变量(1 处证据)"
+        },
+        "external_commands": {
+          "present": true,
+          "detail": "Python 执行外部命令(3 处证据)"
+        }
+      },
+      "evidence": [
+        {
+          "factor": "filesystem",
+          "file": "scripts/add_slide.py",
+          "line": 107,
+          "note": "fs-write-py: Python 文件写/删"
+        },
+        {
+          "factor": "filesystem",
+          "file": "scripts/clean.py",
+          "line": 85,
+          "note": "fs-write-py: Python 文件写/删"
+        },
+        {
+          "factor": "filesystem",
+          "file": "scripts/office/pack.py",
+          "line": 54,
+          "note": "fs-write-py: Python 文件写/删"
+        },
+        {
+          "factor": "network",
+          "file": "scripts/office/soffice.py",
+          "line": 46,
+          "note": "net-socket: 原始 socket 连接"
+        },
+        {
+          "factor": "env_access",
+          "file": "scripts/office/soffice.py",
+          "line": 25,
+          "note": "env-py: Python 读环境变量"
+        },
+        {
+          "factor": "external_commands",
+          "file": "scripts/office/soffice.py",
+          "line": 14,
+          "note": "cmd-py: Python 执行外部命令"
+        },
+        {
+          "factor": "external_commands",
+          "file": "scripts/office/validators/redlining.py",
+          "line": 138,
+          "note": "cmd-py: Python 执行外部命令"
+        },
+        {
+          "factor": "external_commands",
+          "file": "scripts/thumbnail.py",
+          "line": 161,
+          "note": "cmd-py: Python 执行外部命令"
+        },
+        {
+          "factor": "review_reason",
+          "file": "-",
+          "note": "含外部网络请求(红线:人工放行)"
+        },
+        {
+          "factor": "review_reason",
+          "file": "-",
+          "note": "env_access + external_commands 组合风险"
+        }
+      ],
+      "decisions": [
+        {
+          "layer": "L2",
+          "verdict": "scanned",
+          "at": "2026-07-02T06:34:24.736Z",
+          "note": "L1 签名 + L2 五因子(legacy audit)"
+        },
+        {
+          "layer": "human",
+          "verdict": "pass",
+          "at": "2026-07-02T06:38:38.690Z",
+          "by": "Wittgenstein",
+          "note": "同 docx:LibreOffice 本地桥 + 转换工具链,无外传路径",
+          "signature": "Wittgenstein@2026-07-02T06:38:38.690Z"
+        },
+        {
+          "layer": "system",
+          "verdict": "migrated",
+          "at": "2026-07-04T16:09:40.373Z",
+          "note": "ADR 0012 步骤③:security_audit → legacy verdict"
+        }
+      ],
+      "issued_at": "2026-07-02T06:34:24.736Z"
+    }
+  ]
+}

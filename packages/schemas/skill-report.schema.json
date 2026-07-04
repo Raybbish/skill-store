@@ -2,11 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Raybbish/skill-store/packages/schemas/skill-report.schema.json",
   "title": "SkillReport",
-  "description": "Skill Store catalog entry, v1. One file per skill under catalog/skills/<owner>/<repo>/<name>/skill-report.json",
+  "description": "Skill Store catalog entry. v2(ADR 0012):security_audit 拆出至 catalog/verdicts 账本(scan-verdict@v1,见 packages/verdicts)。One file per skill under catalog/skills/<owner>/<repo>/<name>/skill-report.json",
   "type": "object",
-  "required": ["schema_version", "meta", "security_audit"],
+  "required": ["schema_version", "meta"],
   "properties": {
-    "schema_version": { "const": "1" },
+    "schema_version": { "enum": ["1", "2"] },
     "meta": {
       "type": "object",
       "required": ["id", "name", "upstream", "upstream_commit", "content_hash", "license", "hosting"],
@@ -31,39 +31,6 @@
     },
     "frontmatter_valid": { "type": "boolean", "description": "是否通过 agentskills.io 最小规范校验(name+description)" },
     "frontmatter_issues": { "type": "array", "items": { "type": "string" } },
-    "security_audit": {
-      "type": "object",
-      "required": ["status"],
-      "properties": {
-        "status": { "enum": ["pending", "pass", "needs_review", "rejected"] },
-        "audited_at": { "type": ["string", "null"], "format": "date-time" },
-        "scanner_versions": { "type": "object", "additionalProperties": { "type": "string" } },
-        "risk_factors": {
-          "type": "object",
-          "description": "五风险因子。status=pending 时为采集期静态清点(仅 scripts 可判),审计后由 L1-L3 填充",
-          "properties": {
-            "scripts": { "$ref": "#/$defs/factor" },
-            "network": { "$ref": "#/$defs/factor" },
-            "filesystem": { "$ref": "#/$defs/factor" },
-            "env_access": { "$ref": "#/$defs/factor" },
-            "external_commands": { "$ref": "#/$defs/factor" }
-          }
-        },
-        "evidence": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["factor", "file"],
-            "properties": {
-              "factor": { "type": "string" },
-              "file": { "type": "string" },
-              "line": { "type": ["integer", "null"] },
-              "note": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
     "signals": {
       "type": "object",
       "properties": {
@@ -90,15 +57,5 @@
       }
     },
     "eval": { "type": ["object", "null"], "description": "M1 基准评测结果(category/runner/model/score/lift_pp/evaluable_tasks/total_tasks/tasks);未评测为 null。产物缺失记 N/A(不计 0 分);仅带模型元数据且无 N/A 任务的真实结果才回写(见 pipeline jobs/eval.ts 写入闸)" }
-  },
-  "$defs": {
-    "factor": {
-      "type": "object",
-      "required": ["present"],
-      "properties": {
-        "present": { "type": ["boolean", "null"], "description": "null = 尚未审计,无法判断" },
-        "detail": { "type": "string" }
-      }
-    }
   }
 }

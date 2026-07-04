@@ -1,0 +1,87 @@
+{
+  "schema": "scan-verdict-ledger@v1",
+  "skill_id": "anthropics/skills/webapp-testing",
+  "verdicts": [
+    {
+      "schema": "scan-verdict@v1",
+      "subject": {
+        "skill_id": "anthropics/skills/webapp-testing",
+        "content_hash": "sha256:c3974688442633f3c559874e4f872e495097249f022fd0285cc18bde7b0f182e"
+      },
+      "scanner": {
+        "engine": "legacy",
+        "policy": "pre-adr-0011"
+      },
+      "status": "pass",
+      "factors": {
+        "scripts": {
+          "present": true,
+          "detail": "4 个脚本文件"
+        },
+        "network": {
+          "present": true,
+          "detail": "原始 socket 连接(1 处证据)"
+        },
+        "filesystem": {
+          "present": true,
+          "detail": "Python 文件写/删(1 处证据)"
+        },
+        "env_access": {
+          "present": false
+        },
+        "external_commands": {
+          "present": true,
+          "detail": "Python 执行外部命令(1 处证据)"
+        }
+      },
+      "evidence": [
+        {
+          "factor": "filesystem",
+          "file": "examples/console_logging.py",
+          "line": 31,
+          "note": "fs-write-py: Python 文件写/删"
+        },
+        {
+          "factor": "network",
+          "file": "scripts/with_server.py",
+          "line": 28,
+          "note": "net-socket: 原始 socket 连接"
+        },
+        {
+          "factor": "external_commands",
+          "file": "scripts/with_server.py",
+          "line": 69,
+          "note": "cmd-py: Python 执行外部命令"
+        },
+        {
+          "factor": "review_reason",
+          "file": "-",
+          "note": "含外部网络请求(红线:人工放行)"
+        }
+      ],
+      "decisions": [
+        {
+          "layer": "L2",
+          "verdict": "scanned",
+          "at": "2026-07-02T06:34:24.736Z",
+          "note": "L1 签名 + L2 五因子(legacy audit)"
+        },
+        {
+          "layer": "human",
+          "verdict": "pass",
+          "at": "2026-07-02T06:38:38.840Z",
+          "by": "Wittgenstein",
+          "note": "network 为浏览器自动化测试本地服务,功能本身",
+          "signature": "Wittgenstein@2026-07-02T06:38:38.840Z"
+        },
+        {
+          "layer": "system",
+          "verdict": "migrated",
+          "at": "2026-07-04T16:09:40.386Z",
+          "note": "ADR 0012 步骤③:security_audit → legacy verdict"
+        }
+      ],
+      "issued_at": "2026-07-02T06:34:24.736Z"
+    }
+  ]
+}

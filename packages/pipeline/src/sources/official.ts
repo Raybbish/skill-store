@@ -4,7 +4,7 @@ import type { SkillReport } from "@skill-store/schemas";
 import { cloneShallow } from "../git.ts";
 import { parseFrontmatter, normalizeName } from "../frontmatter.ts";
 import { classifyLicense } from "../license.ts";
-import { contentHash, inventoryScripts } from "../hash.ts";
+import { contentHash } from "../hash.ts";
 
 export interface SkillCandidate {
   report: SkillReport;
@@ -61,10 +61,8 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
         : repoLicenseText;
       const { license, hosting } = classifyLicense(null, licenseText);
 
-      const scripts = inventoryScripts(dir, clone.entries);
-
       const report: SkillReport = {
-        schema_version: "1",
+        schema_version: "2",
         meta: {
           id: `${owner}/${repoSeg}/${name}`,
           name,
@@ -84,20 +82,7 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
         },
         frontmatter_valid: issues.length === 0,
         frontmatter_issues: issues,
-        security_audit: {
-          status: "pending",
-          audited_at: null,
-          risk_factors: {
-            scripts: scripts.length
-              ? { present: true, detail: `${scripts.length} 个脚本文件(采集期静态清点)` }
-              : { present: false },
-            network: { present: null },
-            filesystem: { present: null },
-            env_access: { present: null },
-            external_commands: { present: null },
-          },
-          evidence: scripts.slice(0, 20).map((f) => ({ factor: "scripts", file: f, note: "inventory" })),
-        },
+        // v2(ADR 0012):判定拆出至 catalog/verdicts 账本;采集不再写 security_audit
         signals: { stars_github: null, installs_skills_sh: null, fetched_at: now },
         token_cost: { body_tokens: Math.round(md.length / 4), method: "chars/4-estimate" },
         eval: null,

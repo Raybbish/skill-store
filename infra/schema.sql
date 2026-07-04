@@ -10,11 +10,11 @@ create table if not exists public.skills (
   category text,
   publisher text,
   publisher_verified boolean default false,
-  audit_status text not null,             -- pass / needs_review / rejected / pending
+  audit_status text,                      -- ⛔ 已下架(ADR 0012):判定迁至 catalog/verdicts 账本,此列及下四列停写(留空)
   risk_factors jsonb,
   evidence jsonb,
-  review jsonb,                           -- 人工复核签名
-  l3 jsonb,                               -- LLM 审查结果
+  review jsonb,
+  l3 jsonb,
   token_cost int,
   stars_github int,
   installs_skills_sh int,

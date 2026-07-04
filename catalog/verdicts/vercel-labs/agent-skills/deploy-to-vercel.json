@@ -1,0 +1,79 @@
+{
+  "schema": "scan-verdict-ledger@v1",
+  "skill_id": "vercel-labs/agent-skills/deploy-to-vercel",
+  "verdicts": [
+    {
+      "schema": "scan-verdict@v1",
+      "subject": {
+        "skill_id": "vercel-labs/agent-skills/deploy-to-vercel",
+        "content_hash": "sha256:a79eb548b5dd8733110bc0818a1fbe68637e251e6f77af1c985788369dc56358"
+      },
+      "scanner": {
+        "engine": "legacy",
+        "policy": "pre-adr-0011"
+      },
+      "status": "pass",
+      "factors": {
+        "scripts": {
+          "present": true,
+          "detail": "2 个脚本文件"
+        },
+        "network": {
+          "present": true,
+          "detail": "脚本调用网络命令(2 处证据)"
+        },
+        "filesystem": {
+          "present": false
+        },
+        "env_access": {
+          "present": false
+        },
+        "external_commands": {
+          "present": false
+        }
+      },
+      "evidence": [
+        {
+          "factor": "network",
+          "file": "resources/deploy-codex.sh",
+          "line": 239,
+          "note": "net-cli-script: 脚本调用网络命令"
+        },
+        {
+          "factor": "network",
+          "file": "resources/deploy.sh",
+          "line": 239,
+          "note": "net-cli-script: 脚本调用网络命令"
+        },
+        {
+          "factor": "review_reason",
+          "file": "-",
+          "note": "含外部网络请求(红线:人工放行)"
+        }
+      ],
+      "decisions": [
+        {
+          "layer": "L2",
+          "verdict": "scanned",
+          "at": "2026-07-02T06:34:24.736Z",
+          "note": "L1 签名 + L2 五因子(legacy audit)"
+        },
+        {
+          "layer": "human",
+          "verdict": "pass",
+          "at": "2026-07-02T06:38:38.886Z",
+          "by": "Wittgenstein",
+          "note": "联网部署是该 skill 的功能本身;官方仓",
+          "signature": "Wittgenstein@2026-07-02T06:38:38.886Z"
+        },
+        {
+          "layer": "system",
+          "verdict": "migrated",
+          "at": "2026-07-04T16:09:45.957Z",
+          "note": "ADR 0012 步骤③:security_audit → legacy verdict"
+        }
+      ],
+      "issued_at": "2026-07-02T06:34:24.736Z"
+    }
+  ]
+}

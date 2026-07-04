@@ -1,0 +1,116 @@
+{
+  "schema": "scan-verdict-ledger@v1",
+  "skill_id": "anthropics/skills/claude-api",
+  "verdicts": [
+    {
+      "schema": "scan-verdict@v1",
+      "subject": {
+        "skill_id": "anthropics/skills/claude-api",
+        "content_hash": "sha256:d87d8c70fab52c2a693e5710c8a182542ccd5c1251625cae352c5fa5582e1013"
+      },
+      "scanner": {
+        "engine": "legacy",
+        "policy": "pre-adr-0011"
+      },
+      "status": "pass",
+      "factors": {
+        "scripts": {
+          "present": false
+        },
+        "network": {
+          "present": true,
+          "detail": "指令要求执行网络命令(5 处证据)"
+        },
+        "filesystem": {
+          "present": true,
+          "detail": "访问家目录敏感位置(2 处证据)"
+        },
+        "env_access": {
+          "present": false
+        },
+        "external_commands": {
+          "present": true,
+          "detail": "系统自动化命令(1 处证据)"
+        }
+      },
+      "evidence": [
+        {
+          "factor": "filesystem",
+          "file": "SKILL.md",
+          "line": 228,
+          "note": "fs-home: 访问家目录敏感位置"
+        },
+        {
+          "factor": "network",
+          "file": "curl/examples.md",
+          "line": 16,
+          "note": "net-cli: 指令要求执行网络命令"
+        },
+        {
+          "factor": "network",
+          "file": "curl/managed-agents.md",
+          "line": 24,
+          "note": "net-cli: 指令要求执行网络命令"
+        },
+        {
+          "factor": "network",
+          "file": "shared/anthropic-cli.md",
+          "line": 24,
+          "note": "net-cli: 指令要求执行网络命令"
+        },
+        {
+          "factor": "filesystem",
+          "file": "shared/anthropic-cli.md",
+          "line": 34,
+          "note": "fs-home: 访问家目录敏感位置"
+        },
+        {
+          "factor": "external_commands",
+          "file": "shared/anthropic-cli.md",
+          "line": 244,
+          "note": "cmd-osa: 系统自动化命令"
+        },
+        {
+          "factor": "network",
+          "file": "shared/managed-agents-scheduled-deployments.md",
+          "line": 16,
+          "note": "net-cli: 指令要求执行网络命令"
+        },
+        {
+          "factor": "network",
+          "file": "shared/models.md",
+          "line": 35,
+          "note": "net-cli: 指令要求执行网络命令"
+        },
+        {
+          "factor": "review_reason",
+          "file": "-",
+          "note": "含外部网络请求(红线:人工放行)"
+        }
+      ],
+      "decisions": [
+        {
+          "layer": "L2",
+          "verdict": "scanned",
+          "at": "2026-07-02T06:34:24.736Z",
+          "note": "L1 签名 + L2 五因子(legacy audit)"
+        },
+        {
+          "layer": "human",
+          "verdict": "pass",
+          "at": "2026-07-02T06:38:38.582Z",
+          "by": "Wittgenstein",
+          "note": "network 为调用 Anthropic API 示例,功能本身;官方仓",
+          "signature": "Wittgenstein@2026-07-02T06:38:38.582Z"
+        },
+        {
+          "layer": "system",
+          "verdict": "migrated",
+          "at": "2026-07-04T16:09:40.355Z",
+          "note": "ADR 0012 步骤③:security_audit → legacy verdict"
+        }
+      ],
+      "issued_at": "2026-07-02T06:34:24.736Z"
+    }
+  ]
+}

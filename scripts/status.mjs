@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CATALOG = join(root, "catalog", "skills");
+const VERDICTS = join(root, "catalog", "verdicts");
 
 function walk(dir) {
   const out = [];
@@ -23,20 +24,37 @@ function walk(dir) {
 }
 
 const reports = walk(CATALOG);
-const status = {}, hosting = {};
+const hosting = {};
 let evaluated = 0;
 const publishers = new Set();
 for (const f of reports) {
   try {
     const r = JSON.parse(readFileSync(f, "utf8"));
-    const st = r.security_audit?.status ?? "pending";
-    status[st] = (status[st] ?? 0) + 1;
     const h = r.meta?.hosting ?? "unknown";
     hosting[h] = (hosting[h] ?? 0) + 1;
     if (r.eval) evaluated++;
     if (r.meta?.publisher) publishers.add(r.meta.publisher);
   } catch { /* skip malformed */ }
 }
+
+// verdict 账本(catalog/verdicts,ADR 0012):当前判定 = 每份账本 verdicts[0]
+const status = {};
+function walkLedgers(dir) {
+  let entries = [];
+  try { entries = readdirSync(dir, { withFileTypes: true }); } catch { return; }
+  for (const e of entries) {
+    const p = join(dir, e.name);
+    if (e.isDirectory()) walkLedgers(p);
+    else if (e.name.endsWith(".json")) {
+      try {
+        const st = JSON.parse(readFileSync(p, "utf8")).verdicts?.[0]?.status ?? "unknown";
+        status[st] = (status[st] ?? 0) + 1;
+      } catch { /* skip */ }
+    }
+  }
+}
+walkLedgers(VERDICTS);
+const judged = Object.values(status).reduce((a, b) => a + b, 0);
 
 // --no-optional-locks:只读查询绝不写 .git/index(避免在只读/受限文件系统里留下 index.lock)
 const git = (cmd, fb = "") => { try { return execSync(`git --no-optional-locks ${cmd}`, { cwd: root, encoding: "utf8" }).trim(); } catch { return fb; } };
@@ -46,7 +64,6 @@ const dirty = git("status --short").split("\n").filter(Boolean).length;
 
 const total = reports.length;
 const passed = status.pass ?? 0;
-const pct = total ? Math.round((passed * 100) / total) : 0;
 const now = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
 const kv = (o) => Object.entries(o).map(([k, v]) => `${k} ${v}`).join(" · ") || "—";
 
@@ -58,7 +75,7 @@ _生成于 ${now} · 分支 \`${branch}\`${dirty ? ` · 未提交改动 ${dirty}
 
 ## Catalog
 - **skill 总数:${total}**
-- 审计状态(⛔ 扫描已下架,ADR 0011;此为历史数据):${kv(status)}  →  通过 **${passed} / ${pct}%**
+- verdict 账本(catalog/verdicts,ADR 0012;扫描停摆中,现存均为 legacy 历史判定):有判定 **${judged}** —— ${kv(status)}
 - 托管:${kv(hosting)}
 - 已评测:**${evaluated}** · 发布者:**${publishers.size}**
 
@@ -106,9 +123,9 @@ const statusBody = existsSync(statusMdPath) ? mdToHtml(readFileSync(statusMdPath
 const card = (big, label, tone = "") => `<div class="card"><b class="${tone}">${big}</b><span>${label}</span></div>`;
 const cards = [
   card(total, "skill 总数"),
-  card(`${passed}<i>/${pct}%</i>`, "审计通过(已下架·历史)", "ok"),
+  card(`${passed}<i>/${judged}</i>`, "verdict pass(legacy·历史)", "ok"),
   card(kv(hosting).replace(/·/g, "<i>·</i>"), "托管"),
-  card(status.needs_review ?? 0, "待复核", (status.needs_review ?? 0) ? "warn" : ""),
+  card(status.flagged ?? 0, "flagged 待裁决", (status.flagged ?? 0) ? "warn" : ""),
   card(evaluated, "已评测"),
   card(publishers.size, "发布者"),
 ].join("");
@@ -167,4 +184,4 @@ const outDir = join(root, "docs");
 if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, "STATUS.generated.md"), md);
 writeFileSync(join(outDir, "STATUS.html"), html);
-process.stdout.write(`skill ${total} · 通过 ${passed}/${pct}% · 待复核 ${status.needs_review ?? 0} · 未提交 ${dirty}\n→ docs/STATUS.generated.md + docs/STATUS.html\n`);
+process.stdout.write(`skill ${total} · verdict ${judged}(pass ${passed} / flagged ${status.flagged ?? 0}) · 未提交 ${dirty}\n→ docs/STATUS.generated.md + docs/STATUS.html\n`);

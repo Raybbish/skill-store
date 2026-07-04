@@ -45,9 +45,9 @@ async function main() {
 
   const entries = await loadCatalogEntries();
 
+  // v2(ADR 0012):评测不再以审计状态为前置——扫描已拆为独立 verdict 服务,评测是正交的质量线
   const todo = entries.filter((e) =>
-    (onlyId ? e.report.meta.id === onlyId : inCategory(e.report, category)) &&
-    e.report.security_audit.status === "pass",
+    onlyId ? e.report.meta.id === onlyId : inCategory(e.report, category),
   );
   console.log(`评测品类 ${category} · runner ${runner.name} · ${todo.length} 个 skill\n`);
 

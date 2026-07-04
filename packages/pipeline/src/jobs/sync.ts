@@ -28,14 +28,16 @@ async function rest(path: string, init: RequestInit = {}): Promise<Response> {
   return res;
 }
 
-function flatten(r: SkillReport & { security_audit: SkillReport["security_audit"] & { review?: unknown; l3?: unknown } }, commit: string) {
-  const m = r.meta, sa = r.security_audit;
+// v2(ADR 0012):审计字段拆出至 catalog/verdicts 账本,不再随 catalog 同步;
+// audit_status 等列写 null(需先在 Supabase 执行 infra/migrations/2026-07-05-verdict-service.sql 放开非空约束)。
+function flatten(r: SkillReport, commit: string) {
+  const m = r.meta;
   return {
     id: m.id, name: m.name, description: m.description ?? null, license: m.license,
     hosting: m.hosting, category: m.category, publisher: m.publisher,
-    publisher_verified: m.publisher_verified, audit_status: sa.status,
-    risk_factors: sa.risk_factors, evidence: sa.evidence, review: sa.review ?? null,
-    l3: sa.l3 ?? null, token_cost: r.token_cost.body_tokens,
+    publisher_verified: m.publisher_verified, audit_status: null,
+    risk_factors: null, evidence: null, review: null,
+    l3: null, token_cost: r.token_cost.body_tokens,
     stars_github: r.signals.stars_github, installs_skills_sh: r.signals.installs_skills_sh,
     upstream: m.upstream, upstream_commit: m.upstream_commit, content_hash: m.content_hash,
     marketplace_commit: commit, updated_at: new Date().toISOString(),
