@@ -24,7 +24,7 @@
 - 前端 v4 重设计 + 审计结果 + 本 docs 整理**待 git 提交留痕**(当前工作区未提交约 200 处)。
 
 ### 下一步
-- **安全扫描重新研究与设计**(重新上架前置清单见 [ADR 0011](decisions/0011-unlist-security-scan.md))。
+- **verdict 服务 S0 落地**(架构已定稿,[ADR 0012](decisions/0012-verdict-service.md)):建 `packages/verdicts`(契约五接口 + 编排器 + scanners 搬入为插件)→ 历史 security_audit 迁移 → 商店三处 optional 接线(flag 默认 off)。研究议题(裁决口径/误报率/复核吞吐)在 policy 草稿里迭代。
 - 扩 catalog 到 500+(接更多源)。
 - **M1**:可复现评测协议上线 + 信任原生社区最小切片 + 账号层 + 原作者一键认领入口(见 [ADR 0001](decisions/0001-trust-native-community.md) · [ADR 0006](decisions/0006-one-click-claim.md))。
 - **规模化架构**(ADR 0004 → 0007):P0「埋缝」已完成;P1 触发条件命中(目录 >1.5万 / docs.json >8MB / 搜索 p95 >200ms)再上自托管 Typesense —— 实现新 adapter 即可,接口不动。详见[架构与迁移计划](architecture/走向百万级-架构与迁移计划.html)。
@@ -42,6 +42,7 @@
 - [0009 · SEO 双轨:筛选词表 ≠ SEO tag 页](decisions/0009-seo-dual-track.md)
 - [0010 · facet 字段名冻结](decisions/0010-facet-schema-freeze.md)
 - [0011 · 安全扫描整套下架(待重新设计)](decisions/0011-unlist-security-scan.md)
+- [0012 · 扫描重生为可插拔 verdict 判定服务](decisions/0012-verdict-service.md)
 
 ## 文档地图(唯一入口)
 所有规划 / 架构 / 设计文档已收进 `docs/`,点开即看。
@@ -58,7 +59,8 @@
 - [原作者一键认领 · 发布者认领设计](architecture/一键认领-发布者认领设计.html) — GitHub 控制权自证 + 验证阶梯(ADR 0006)
 - [供给聚合架构图](architecture/供给聚合架构图.html)
 - [供给采集设计](architecture/供给采集设计.html)
-- [审计流程](architecture/审计流程.html)
+- [审计流程](architecture/审计流程.html) — ⛔ 历史(ADR 0011 下架;重生方向见下)
+- [⭐ 安全扫描服务 · 可插拔架构与迁移](architecture/安全扫描服务-可插拔架构与迁移.html) — verdict 契约 + 三插拔点 + S0-S3(ADR 0012)
 - [⚠ 架构事实核对与勘误](architecture/架构事实核对.html) — 文档 vs 代码差异,建议按此更新
 - [分类与安装入口 · 实施拆解](planning/分类与安装入口-实施拆解.html)
 - [M0 详细设计](planning/M0-详细设计.html)

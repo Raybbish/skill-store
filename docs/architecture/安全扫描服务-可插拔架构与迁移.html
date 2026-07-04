@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Store · 安全扫描 → 可插拔信任服务 · 长远架构设计</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14161d;--ink-2:#39414f;--sub:#5c6473;--faint:#9aa1af;
+  --bg:#fcfcfd;--card:#fff;--line:#ececef;--line-2:#e0e2e8;--hair:#eef0f3;
+  --blue:#3b6cf0;--blue-press:#2a53d4;--violet:#7a5af8;--green:#12905f;--amber:#b5730a;--gold:#f0a318;--danger:#d5453b;
+  --seal:#eef2fe;--green-soft:#e4f4ec;--amber-soft:#f8efdb;--danger-soft:#fbecea;--violet-soft:#f1edfe;
+  --display:"Space Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
+  --ui:"Manrope",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.62}
+.wrap{max-width:940px;margin:0 auto;padding:60px 30px 120px}
+a{color:var(--blue);text-decoration:none}
+code,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+code{background:var(--hair);border-radius:6px;padding:1px 6px;font-size:.92em}
+
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);font-weight:500}
+h1.title{font-family:var(--display);font-weight:700;font-size:42px;line-height:1.06;letter-spacing:-.03em;margin:16px 0 14px}
+h1.title .hl{position:relative;white-space:nowrap}
+h1.title .hl:after{content:"";position:absolute;left:-2px;right:-2px;bottom:5px;height:12px;background:linear-gradient(90deg,#d9e4fe,#e7ddfd);z-index:-1;border-radius:2px}
+.lede{font-size:17px;color:var(--sub);max-width:64ch;line-height:1.6}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px 22px;font-family:var(--mono);font-size:12px;color:var(--faint);padding-bottom:26px;border-bottom:1px solid var(--line)}
+.meta b{color:var(--ink-2);font-weight:600}
+
+.tldr{margin:30px 0 8px;background:linear-gradient(120deg,#eef2fe,#f4f0ff 62%,#fdeef4);border-radius:20px;padding:24px 26px}
+.tldr .k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--violet);font-weight:600}
+.tldr p{font-size:16px;color:var(--ink-2);margin-top:9px;line-height:1.58}
+.tldr b{color:var(--ink);font-weight:700}
+
+section{margin-top:52px}
+.sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;padding-top:6px}
+.sh .n{font-family:var(--mono);font-size:13px;color:var(--blue);font-weight:600}
+h2{font-family:var(--display);font-size:25px;font-weight:700;letter-spacing:-.02em}
+h3{font-family:var(--display);font-size:17px;font-weight:700;margin:22px 0 8px}
+.sub{font-size:14px;color:var(--faint);margin-bottom:18px}
+p.body{margin:12px 0;color:var(--ink-2)}
+p.body b{color:var(--ink)}
+
+.princ{list-style:none;counter-reset:p;display:grid;gap:12px;margin-top:6px}
+.princ li{position:relative;padding:16px 18px 16px 54px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.princ li:before{counter-increment:p;content:counter(p);position:absolute;left:16px;top:15px;width:26px;height:26px;border-radius:8px;background:var(--seal);color:var(--blue);font-family:var(--display);font-weight:700;font-size:14px;display:grid;place-items:center}
+.princ b{font-weight:700}
+.princ .why{color:var(--sub);font-size:13.5px}
+
+.diagram{margin:18px 0 6px;border:1px solid var(--line);border-radius:20px;padding:22px;background:var(--card)}
+.layer{border-radius:14px;padding:13px 16px;margin:9px 0;position:relative}
+.layer .t{font-family:var(--display);font-weight:700;font-size:14.5px}
+.layer .d{font-size:12.5px;color:var(--sub);margin-top:2px}
+.layer.store{background:var(--seal)}
+.layer.seam{background:linear-gradient(90deg,#f1edfe,#fdeef4);border:1.5px dashed var(--violet)}
+.layer.svc{background:var(--green-soft)}
+.layer.data{background:var(--amber-soft)}
+.arrow{text-align:center;color:var(--faint);font-size:15px;line-height:1;margin:2px 0}
+
+pre.code{background:#14161d;color:#e8eaf0;border-radius:16px;padding:20px 22px;font-family:var(--mono);font-size:12.8px;line-height:1.7;overflow-x:auto;margin:14px 0}
+pre.code .c{color:#8b93a5}
+pre.code .k{color:#8ab4ff}
+pre.code .s{color:#a9d99a}
+
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-align:left;padding:8px 12px;border-bottom:1.5px solid var(--line-2)}
+td{padding:10px 12px;border-bottom:1px solid var(--hair);color:var(--ink-2);vertical-align:top}
+td b{color:var(--ink)}
+td:first-child{white-space:nowrap;font-weight:700;color:var(--ink)}
+
+.note{background:var(--amber-soft);border:1px solid #efe3c9;border-radius:14px;padding:14px 18px;font-size:13.5px;color:#6b5115;margin:16px 0}
+.note b{color:#5a4310}
+.good{background:var(--green-soft);border:1px solid #cfe6db;border-radius:14px;padding:14px 18px;font-size:13.5px;color:#155c40;margin:16px 0}
+.good b{color:#0e4630}
+
+.phases{display:grid;gap:12px;margin-top:10px}
+.phase{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:var(--card);display:grid;grid-template-columns:64px 1fr;gap:14px}
+.phase .tag{font-family:var(--display);font-weight:700;color:var(--blue);font-size:19px}
+.phase .tag small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--faint);font-weight:500;letter-spacing:.08em;margin-top:3px}
+.phase .t{font-weight:800;font-size:14.5px}
+.phase .d{font-size:13.5px;color:var(--sub);margin-top:4px;line-height:1.6}
+.phase .gate{margin-top:8px;font-family:var(--mono);font-size:11.5px;color:var(--violet);background:var(--violet-soft);display:inline-block;padding:3px 10px;border-radius:20px}
+
+.steps{counter-reset:s;list-style:none;display:grid;gap:10px;margin-top:8px}
+.steps li{position:relative;padding:13px 16px 13px 50px;background:var(--card);border:1px solid var(--line);border-radius:13px;font-size:14px;color:var(--ink-2)}
+.steps li:before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-family:var(--display);font-weight:700;font-size:12.5px;display:grid;place-items:center}
+.steps b{color:var(--ink)}
+
+footer{margin-top:70px;padding-top:24px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+@media (max-width:640px){h1.title{font-size:32px}.phase{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">OH-MY-SKILL · ARCHITECTURE · 2026-07-04</div>
+<h1 class="title">安全扫描 → <span class="hl">可插拔信任服务</span></h1>
+<p class="lede">把「扫描」从商店的内嵌步骤,变成一个以 content_hash 为锚、以 verdict 为产出的独立判定服务。商店是它的第一个消费方,不是宿主。</p>
+<div class="meta">
+  <span>状态 <b>设计稿 · 待定稿为 ADR 0012</b></span>
+  <span>前置 <b>ADR 0011(扫描已整套下架)</b></span>
+  <span>手法对齐 <b>ADR 0007 埋缝不搬家</b></span>
+</div>
+
+<div class="tldr">
+  <div class="k">TL;DR</div>
+  <p>核心一刀:<b>判定(verdict)从 skill-report.json 里拆出去,锚定 content_hash,自带版本</b>。服务对外只暴露五个接口 + 一个事件;商店在管线、前端、CLI 三处各留一个 optional 插拔点,verdict 缺席时商店完整可用。<b>重新上架 = 打开一个 flag</b>——这就是「可插拔」的验收标准。部署形态分四阶段演进(同仓 package → 独立进程 → 多租户服务 → 生态),契约从第一天冻结。</p>
+</div>
+
+<!-- ========== 0 ========== -->
+<section>
+  <div class="sh"><span class="n">§0</span><h2>为什么要拆:这次下架的验尸报告</h2></div>
+  <p class="body">2026-07-04 下架安全扫描,动了 <b>29 个文件</b>:前端组件、两处页面嵌入、类型定义三层(<code>Skill</code> / <code>SkillCard</code> / idx)、筛选器、CLI 披露、六处文案、构建脚本的 pass 门禁。一个「功能」渗进了每一层,说明它从来不是模块,是弥散状态。</p>
+  <p class="body">反例就在同一个仓里:取数走 <code>search()/getSkill()</code> 一条缝(ADR 0007),换实现零改动。信任层缺的正是同一条缝。<b>这份设计的目标:下一次上架/下架/换引擎,商店侧改动 ≤ 1 个 flag。</b></p>
+</section>
+
+<!-- ========== 1 ========== -->
+<section>
+  <div class="sh"><span class="n">§1</span><h2>设计原则</h2></div>
+  <ol class="princ">
+    <li><b>判定是内容的纯函数。</b><div class="why">verdict = scan(content_hash, policy_version)。同输入必同输出 → 天然幂等、可缓存、可复算、可增量重扫。判定对象是内容,不是 skill 名字。</div></li>
+    <li><b>商店零依赖。</b><div class="why">verdict 是 optional 装饰:服务不在,货架、搜索、安装、评测全部照常。展示 fail-open,门禁 fail-closed。</div></li>
+    <li><b>契约先行,实现可换。</b><div class="why">冻结 verdict schema 与五个接口;L1/L2/L3/人工是服务内部细节,外部只见状态机。裁决口径是版本化配置,不是散在代码里的 if。</div></li>
+    <li><b>判定可审计。</b><div class="why">每条 verdict 带证据链、决策链(谁判的:规则/模型/人)、版本号;append-only,公开可验证——和 catalog「事实源走 git 账本」同一哲学。</div></li>
+    <li><b>先埋缝,后搬家。</b><div class="why">S0 就是同仓一个 package + 独立数据目录,不建新服务不加运维。部署形态跟着规模走,契约不动(P0 手法复用)。</div></li>
+  </ol>
+</section>
+
+<!-- ========== 2 ========== -->
+<section>
+  <div class="sh"><span class="n">§2</span><h2>总体架构</h2></div>
+  <p class="sub">上下分离:商店(消费方)── 缝(契约)── 判定服务(生产方)── 数据账本</p>
+  <div class="diagram">
+    <div class="layer store"><div class="t">商店(消费方)</div><div class="d">build-index 构建期 join(optional 字段)· TrustBadge 前端开关组件 · CLI 装前披露(optional)—— 三个插拔点,flag 统一控制</div></div>
+    <div class="arrow">▲ 只读 verdict ▲</div>
+    <div class="layer seam"><div class="t">缝:verdict 契约(冻结)</div><div class="d">scan-verdict@v1 schema + submit / getVerdict / batchGet / listQueue / decide + 事件 verdict.updated —— transport 无关:S0 函数调用,S1 起 HTTP</div></div>
+    <div class="arrow">▲ 生产 verdict ▲</div>
+    <div class="layer svc"><div class="t">判定服务(编排器 + scanner 插件)</div><div class="d">L1 静态签名 · L2 数据流五因子 · L3 LLM 意图 · 人工复核队列 —— 层即插件,可增删换序;裁决策略 = 版本化 policy 文件</div></div>
+    <div class="arrow">▲ 读写 ▲</div>
+    <div class="layer data"><div class="t">verdict 账本(append-only)</div><div class="d">S0:catalog/verdicts/ git 目录(公开可验证)→ S1+:Postgres 主存 + git 导出审计副本 → S3:透明度日志(merkle)</div></div>
+  </div>
+  <p class="body">与现有管线的关系:<code>ingest</code> 完成收录后向服务 <code>submit()</code>(异步,不阻塞上架);内容哈希漂移时重新 submit。<b>收录与判定彻底解耦</b>——skill-report.json 里不再有 <code>security_audit</code>,只留 content_hash 锚点。</p>
+</section>
+
+<!-- ========== 3 ========== -->
+<section>
+  <div class="sh"><span class="n">§3</span><h2>核心契约</h2></div>
+
+  <h3>3.1 scan-verdict@v1</h3>
+<pre class="code">{
+  <span class="k">"schema"</span>: <span class="s">"scan-verdict@v1"</span>,
+  <span class="k">"subject"</span>: { <span class="k">"skill_id"</span>: <span class="s">"owner/repo/name"</span>, <span class="k">"content_hash"</span>: <span class="s">"sha256:…"</span> },  <span class="c">// 锚定内容,不是名字</span>
+  <span class="k">"scanner"</span>: { <span class="k">"engine"</span>: <span class="s">"1.4.0"</span>, <span class="k">"policy"</span>: <span class="s">"2026.07"</span>, <span class="k">"models"</span>: [<span class="s">"deepseek-v4"</span>, <span class="s">"qwen-max"</span>] },
+  <span class="k">"status"</span>: <span class="s">"pass | flagged | rejected | pending | error"</span>,
+  <span class="k">"factors"</span>: { <span class="k">"network"</span>: {…}, <span class="k">"scripts"</span>: {…}, <span class="k">"filesystem"</span>: {…}, <span class="k">"env_access"</span>: {…}, <span class="k">"external_commands"</span>: {…} },
+  <span class="k">"evidence"</span>: [ { <span class="k">"factor"</span>, <span class="k">"file"</span>, <span class="k">"line"</span>, <span class="k">"note"</span> } ],
+  <span class="k">"decisions"</span>: [                                          <span class="c">// 决策链,append-only</span>
+    { <span class="k">"layer"</span>: <span class="s">"L1"</span>,    <span class="k">"verdict"</span>: <span class="s">"clean"</span>,   <span class="k">"at"</span>: … },
+    { <span class="k">"layer"</span>: <span class="s">"L3"</span>,    <span class="k">"verdict"</span>: <span class="s">"flagged"</span>, <span class="k">"by"</span>: <span class="s">"deepseek-v4"</span>, <span class="k">"note"</span>: … },
+    { <span class="k">"layer"</span>: <span class="s">"human"</span>, <span class="k">"verdict"</span>: <span class="s">"pass"</span>,    <span class="k">"by"</span>: <span class="s">"Raybbish"</span>, <span class="k">"signature"</span>: …, <span class="k">"note"</span>: … }
+  ],
+  <span class="k">"issued_at"</span>: …, <span class="k">"supersedes"</span>: <span class="s">"sha256:…@2026.05"</span>       <span class="c">// 旧版本判定的指针</span>
+}</pre>
+
+  <h3>3.2 状态机</h3>
+  <table>
+    <tr><th>迁移</th><th>触发</th><th>说明</th></tr>
+    <tr><td>pending → pass / flagged</td><td>自动层(L1→L2→L3)</td><td>编排器按 policy 合成;任一层 error 则 fail-closed 停在 pending</td></tr>
+    <tr><td>flagged → pass / rejected</td><td>人工 decide(带签名)</td><td>唯一的人工通道;签名留痕进 decisions[]</td></tr>
+    <tr><td>任意 → pending(新 verdict)</td><td>content_hash 变化</td><td>新内容=新 subject;旧 verdict 保留为历史,不覆写</td></tr>
+    <tr><td>pass → 增量重扫</td><td>policy_version 升级</td><td>只重跑受影响因子;旧 verdict 标 superseded</td></tr>
+  </table>
+
+  <h3>3.3 接口(五个 + 一个事件)</h3>
+  <table>
+    <tr><th>接口</th><th>语义</th></tr>
+    <tr><td>submit(subject)</td><td>幂等入队;同 hash 同 policy 直接返回既有 verdict</td></tr>
+    <tr><td>getVerdict(hash) / batchGet([...])</td><td>商店唯一的读入口;构建期批量 join 用 batchGet</td></tr>
+    <tr><td>listQueue(filter)</td><td>人工复核队列,按风险分排序,容量可配(~5 条/日)</td></tr>
+    <tr><td>decide(hash, verdict, sig)</td><td>人工裁决;必须带签名与 note</td></tr>
+    <tr><td>事件 verdict.updated</td><td>S0 = 回调/轮询;S1+ = webhook。商店据此触发 re-index</td></tr>
+  </table>
+  <div class="note"><b>Transport 无关是刻意的:</b>S0 阶段这五个接口就是 <code>packages/verdicts</code> 导出的五个函数;S1 起原样映射成 HTTP。签名不变,消费方代码不改。</div>
+</section>
+
+<!-- ========== 4 ========== -->
+<section>
+  <div class="sh"><span class="n">§4</span><h2>商店侧:三个插拔点</h2></div>
+  <table>
+    <tr><th>位置</th><th>接法</th><th>服务缺席时</th></tr>
+    <tr><td>管线 ingest</td><td>收录完成后异步 submit();哈希漂移重新 submit</td><td>跳过,收录照常</td></tr>
+    <tr><td>前端 build-index</td><td>batchGet 后 join 到瘦卡的 optional <code>verdict</code> 字段;TrustBadge 组件仅在字段存在时渲染</td><td>字段缺省,UI 无痕</td></tr>
+    <tr><td>CLI add</td><td>装前披露读 verdict(optional);<b>content_hash 完整性校验与本服务无关,永远在</b></td><td>只走确认 + 哈希校验</td></tr>
+  </table>
+  <p class="body">三处由同一个开关 <code>TRUST_DISPLAY</code> 控制。<b>门禁是另一个开关</b> <code>TRUST_GATE</code>(rejected 不上架 / 场景包要求 pass),且门禁判断放服务侧提供的谓词里,商店只问「能不能上」,不自己解释 verdict——避免这次 build-index 里 <code>status !== "pass"</code> 这种口径泄漏。</p>
+  <div class="good"><b>失败模式:</b>展示 fail-open(服务挂 → 没徽章,商店照常);门禁 fail-closed(gate 开着而服务不可用 → 暂停新条目 promotion,存量不动);LLM 失败 → verdict 停 pending,绝不默认放行(沿用旧红线)。</div>
+</section>
+
+<!-- ========== 5 ========== -->
+<section>
+  <div class="sh"><span class="n">§5</span><h2>服务内部:层即插件,口径即配置</h2></div>
+  <p class="body">编排器持有一个 scanner 插件数组,每个插件实现 <code>scan(content) → PartialVerdict</code>(因子 + 证据 + 置信度)。现有三件套原样搬入:<code>rules.ts</code>(L1)、<code>analyze.ts</code>(L2)、<code>llm.ts</code>(L3);「人工」也是一个插件,只是它的 scan 是把条目放进队列等 decide。</p>
+  <p class="body"><b>裁决策略拆成版本化 policy 文件</b>(什么算重大风险、哪些因子触发 flagged、L3 能否下调 L2、复核容量)——ADR 0011 要研究的正是这份配置的内容,研究迭代发生在 policy 版本号里,不再牵动任何代码。旧口径(L3 最终裁决、仅重大风险转人工、network 非硬红线、fail-closed)作为 policy 草稿 v0 的输入。</p>
+  <p class="body">这也是 S3 生态的伏笔:第三方 scanner(社区规则包、别家引擎)实现同一插件接口即可接入,decisions[] 里如实记录判定来源。</p>
+</section>
+
+<!-- ========== 6 ========== -->
+<section>
+  <div class="sh"><span class="n">§6</span><h2>数据账本演进</h2></div>
+  <table>
+    <tr><th>阶段</th><th>主存</th><th>公开可验证</th></tr>
+    <tr><td>S0</td><td><code>catalog/verdicts/&lt;owner&gt;/&lt;repo&gt;/&lt;name&gt;.json</code>(git)</td><td>天然:PR 溯源 + commit 历史,与 catalog 哲学一致</td></tr>
+    <tr><td>S1–S2</td><td>Postgres(verdicts / decisions / queue 三表,content_hash 主键)</td><td>定期导出 git 审计副本</td></tr>
+    <tr><td>S3</td><td>同上</td><td>透明度日志:verdict 进 merkle log(CT 式),第三方可证明「判定未被篡改、未被静默撤回」</td></tr>
+  </table>
+  <p class="body">现存 5,800+ 份 <code>security_audit</code> 历史数据一次性迁成 verdict 格式,<code>scanner.engine = "legacy"</code>,只作历史参考,不参与展示与门禁。</p>
+</section>
+
+<!-- ========== 7 ========== -->
+<section>
+  <div class="sh"><span class="n">§7</span><h2>部署形态:四阶段(对齐百万级 P0–P3)</h2></div>
+  <div class="phases">
+    <div class="phase"><div class="tag">S0<small>埋缝</small></div><div><div class="t">同仓 package,函数调用</div><div class="d"><code>packages/verdicts</code>:schema + 五接口 + 编排器 + 三件套搬入;verdict 拆出 skill-report;商店三处 optional 接线,flag off。<b>零新运维。</b></div><div class="gate">gate:ADR 0011 研究完成、policy v1 定稿 → 开 TRUST_DISPLAY = 重新上架</div></div></div>
+    <div class="phase"><div class="tag">S1<small>独立进程</small></div><div><div class="t">队列 + worker + HTTP</div><div class="d">扫描耗时(clone + LLM)开始拖累管线时拆出:轻量队列,worker 横向扩;五接口上 HTTP,商店构建期 batchGet。</div><div class="gate">gate:目录 &gt;1.5万 或单轮全量扫 &gt;1h 或 LLM 并发需独立限流</div></div></div>
+    <div class="phase"><div class="tag">S2<small>服务化</small></div><div><div class="t">独立部署 + 多租户</div><div class="d">auth / quota / 计费;oh-my-skill 降级为普通租户;别家目录、企业内部 skill 仓接入——「信任即服务」产品线在这里立项,不在这之前。</div><div class="gate">gate:出现第二个真实消费方</div></div></div>
+    <div class="phase"><div class="tag">S3<small>生态</small></div><div><div class="t">插件规范 + 透明度日志</div><div class="d">第三方 scanner 插件规范开放;社区规则包;merkle 透明度日志;跨模型交叉判定市场。</div><div class="gate">gate:S2 稳定运行 + 有第三方引擎接入意愿</div></div></div>
+  </div>
+</section>
+
+<!-- ========== 8 ========== -->
+<section>
+  <div class="sh"><span class="n">§8</span><h2>从今天的下架状态到 S0:迁移六步</h2></div>
+  <ol class="steps">
+    <li><b>ADR 0012 定契约</b>:scan-verdict@v1 schema、五接口签名、状态机、两个 flag 语义——本文定稿即 ADR。</li>
+    <li><b>建 <code>packages/verdicts</code></b>:schema/types + git 账本读写 + 编排器骨架;<code>scanners/</code> 三件套 + <code>review</code> 队列原样搬入为插件(它们已带 ⛔ 头注,搬家时摘掉)。</li>
+    <li><b>历史数据迁移</b>:security_audit → verdict(legacy 标记);skill-report.json 删 security_audit 字段(schema v2)。</li>
+    <li><b>商店侧接线</b>:build-index optional join + TrustBadge 新组件(读 verdict)+ CLI optional 披露;<b>TRUST_DISPLAY / TRUST_GATE 默认 off</b>——货架外观与今天完全一致。</li>
+    <li><b>研究在服务内迭代</b>:ADR 0011 前置清单(裁决口径、误报率、复核吞吐、徽章语义)全部落在 policy 草稿与插件调参里,商店零改动。</li>
+    <li><b>重新上架</b> = policy v1 定稿 + 全量重扫 + 打开 TRUST_DISPLAY。验收:这一步的 diff 只有 flag。</li>
+  </ol>
+</section>
+
+<!-- ========== 9 ========== -->
+<section>
+  <div class="sh"><span class="n">§9</span><h2>红线与开放问题</h2></div>
+  <p class="body"><b>红线(继承不变):</b>全站不说「保证安全」;徽章语义是「已扫描@版本」的结构化披露,不是背书;人工裁决必须签名留痕;LLM 判定 fail-closed。</p>
+  <p class="body"><b>留给研究(policy v1 之前必须回答):</b>误报率基线怎么测(需要标注集);L3 最终裁决 vs 只升不降的口径选择;复核吞吐 ~5/日 撑到多大目录规模;徽章视觉上「认证 vs 披露」怎么不误导;多租户后 policy 是否允许租户定制(定制即口径分裂,慎)。</p>
+</section>
+
+<footer>oh-my-skill · 安全扫描服务长远架构设计 · 2026-07-04 · 前置 ADR 0011 · 待定稿为 ADR 0012 · 手法对齐 ADR 0007</footer>
+</div>
+</body>
+</html>
