@@ -17,14 +17,12 @@ const store = new StaticStore();
  *   P1 换 Typesense 时只换 store 实现。
  * 支持深链:/browse/?cat=…&tag=…&q=…(分类页「看全部」跳转用)。
  */
-export default function BrowseClient({ first, meta, cats, tags, catTag, upstream }: {
+export default function BrowseClient({ first, meta, cats, tags, catTag }: {
   first: SkillCard[];
   meta: { total: number; pages: number; size: number };
   cats: Chip[];
   tags: Chip[];
   catTag: Record<string, Record<string, number>>;
-  /** 收录口径入口:批量源合集数与上游总量(挂在 hero,不塞页尾) */
-  upstream?: { collections: number; total: number } | null;
 }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string | null>(null); // 第一步:主分类(每个 skill 归一个)
@@ -84,16 +82,8 @@ export default function BrowseClient({ first, meta, cats, tags, catTag, upstream
 
   return (
     <>
-      <section className="hero">
-        <div className="eyebrow">浏览</div>
-        <h1 className="small">全部 skill</h1>
-        {upstream && (
-          <p style={{ marginTop: 10, fontSize: 13.5, color: "var(--sub)" }}>
-            货架 {meta.total.toLocaleString()} 条,条条过三层审计 · 上游另有 {upstream.total.toLocaleString()} 条按仓折叠采样
-            <Link href="/collections/" style={{ color: "var(--blue)", fontWeight: 700, marginLeft: 8 }}>收录方法论 ›</Link>
-          </p>
-        )}
-      </section>
+      {/* 用户导向:货架零口径说明 —— 收录方法论收进 CertBadge 弹窗与页脚(好奇发生的地方) */}
+      <section className="hero"><div className="eyebrow">浏览</div><h1 className="small">全部 skill</h1></section>
 
       <div className="searchbar" style={{ marginTop: 4 }}>
         <span>🔍</span>

@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="nav-r"><Link href="/browse/">🔍</Link><Link href="/community/" className="new">＋ 发布</Link></div>
         </div></div>
         <div className="wrap">{children}</div>
-        <footer>oh-my-skill · 审计报告随公开 catalog 仓可验证 · Agent Skills 认证商店</footer>
+        <footer>oh-my-skill · 审计报告随公开 catalog 仓可验证 · <Link href="/collections/">收录口径</Link> · Agent Skills 认证商店</footer>
       </body>
     </html>
   );
