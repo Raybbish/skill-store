@@ -31,8 +31,15 @@ import {
   tagsForCategory,
   tagLabels,
   FACETS,
+  lintCopy,
+  BANNED_WORDS,
+  SCENE_TAG_MIN_COUNT,
+  SCENE_TAG_MAX_COUNT,
+  SCENE_TAG_MAX_LEN,
+  SCENE_VISIBLE_MIN,
   type Facet,
   type LabelDef,
+  type SkillCopy,
 } from "@skill-store/schemas";
 import { loadCatalogEntries, ROOT, type CatalogEntry } from "../catalog.ts";
 
@@ -43,6 +50,7 @@ const argVal = (name: string): string | undefined => {
 const hasFlag = (name: string): boolean => process.argv.includes(`--${name}`);
 
 const CONCURRENCY = Number(process.env.LLM_CONCURRENCY) || 6;
+const MODEL = process.env.LLM_MODEL ?? "deepseek-chat";
 const TECH_CLUSTER = new Set(["dev", "data-ai", "security", "cloud"]);
 
 /** 分类定义(喂给模型的口径,避免它也照词面猜)。key 必须是 labels.ts 里的 featured slug。 */
@@ -133,6 +141,10 @@ interface LlmVerdict {
   category: string;
   tags: string[];
   confidence: number;
+  // 微文案(与分类同一次调用输出;边际成本只有输出 token)
+  tagline?: unknown;
+  scene_tags?: unknown;
+  fit_line?: unknown;
 }
 
 async function classify(prompt: string): Promise<LlmVerdict> {
@@ -179,6 +191,16 @@ async function classify(prompt: string): Promise<LlmVerdict> {
 
 // ---------- prompt 主体 ----------
 
+/** 微文案规则段(与 DEFS、fmtTag 同级维护在代码里,不散落)。禁用词表由 schemas 单一来源注入,避免漂移。 */
+const MICROCOPY_RULES =
+  `另输出三个微文案字段(写给完全不懂技术的人,用户视角):\n` +
+  `- tagline:一句话说清「装了它,用户能把什么事变成什么样」。动词开头,8~40 字。` +
+  `禁止出现:skill 名字本身、以「一个/这是/该/本」开头、以及这些水词——${BANNED_WORDS.join("、")}。\n` +
+  `- scene_tags:${SCENE_TAG_MIN_COUNT}~${SCENE_TAG_MAX_COUNT} 个短词(每个 ≤${SCENE_TAG_MAX_LEN} 字),回答「用户在什么时候会需要它」——` +
+  `写**场景**(如"周报"、"合同审阅"、"上线前检查"),不写技术形态(react/pdf/mcp 这类已有标签体系管,写了会被丢弃)。\n` +
+  `- fit_line:以「适合你,如果」开头的一句话,≤50 字,描述最典型那类用户的处境。\n` +
+  `信息不足时宁可保守:tagline 只转述 README 里确凿的能力,不脑补效果。\n\n`;
+
 function buildPrompt(catList: string, tagSection: string, name: string, description: string): string {
   return (
     `可选主分类(只能选一个;都不贴切就选 "uncategorized"):\n${catList}\n\n` +
@@ -199,8 +221,46 @@ function buildPrompt(catList: string, tagSection: string, name: string, descript
     `- 找供应商/外包/销售线索 → 无贴切分类就给 uncategorized\n` +
     `- 只有真正写代码/框架/测试/SDK/CLI/重构才归 dev;**例外**:造/管/找 skill、command、agent、MCP server 的元工具本身也归 dev\n` +
     `- 元能力(meta)判据只看**工作对象**:对象是 skill/command/agent/MCP 系统本身(创建、导入、打包、审计、发布、发现它们)→ **必须**打对应 meta 标签;对象是业务任务 → 不打,即便它自己是个 skill\n\n` +
+    MICROCOPY_RULES +
     `<SKILL>\nname: ${name}\ndescription: ${description}\n</SKILL>\n\n` +
-    `只输出 JSON:{"category":"<slug 或 uncategorized>","tags":["..."],"confidence":0-1}`
+    `只输出 JSON:{"category":"<slug 或 uncategorized>","tags":["..."],"confidence":0-1,` +
+    `"tagline":"...","scene_tags":["...","..."],"fit_line":"适合你,如果..."}`
+  );
+}
+
+// ---------- 微文案:lint 后组装 copy 块 ----------
+
+/**
+ * 由 LLM 判定 + skill 元数据组装 copy 块。
+ * - MOCK 或模型没给 tagline → 返回 null(管路可测,不写空壳);
+ * - lint 不过也照存(lint_pass=false,便于排查),前端据此回退。
+ * - content_hash 锚 meta.content_hash:不一致=过期,下次重算。
+ */
+function buildCopy(v: LlmVerdict, name: string, contentHash: string, model: string): SkillCopy | null {
+  if (typeof v.tagline !== "string" || !v.tagline.trim()) return null;
+  const r = lintCopy({ tagline: v.tagline, scene_tags: v.scene_tags, fit_line: v.fit_line }, name);
+  return {
+    tagline: r.cleaned.tagline,
+    scene_tags: r.cleaned.scene_tags,
+    ...(r.cleaned.fit_line ? { fit_line: r.cleaned.fit_line } : {}),
+    source: "llm",
+    content_hash: contentHash,
+    model,
+    generated_at: new Date().toISOString(),
+    lint_pass: r.pass,
+  };
+}
+
+/** 微文案实质字段比较(忽略 generated_at/model,避免每跑一次都因时间戳 churn 全量重写) */
+function copyMateriallyEqual(a: SkillCopy | null | undefined, b: SkillCopy | null): boolean {
+  if (!a || !b) return a == null && b == null;
+  return (
+    a.tagline === b.tagline &&
+    a.fit_line === b.fit_line &&
+    a.lint_pass === b.lint_pass &&
+    a.source === b.source &&
+    a.content_hash === b.content_hash &&
+    JSON.stringify(a.scene_tags) === JSON.stringify(b.scene_tags)
   );
 }
 
@@ -273,8 +333,78 @@ async function runCanary(catList: string, tagSection: string): Promise<never> {
     for (const line of misses) console.log(line);
   }
 
-  console.log(allPass ? "\n=== 金标通过,可以全量重打 ===" : "\n=== 金标未过,禁止全量重打:先修 prompt/词表判据再来 ===");
-  process.exit(allPass ? 0 : 1);
+  const tagPass = allPass;
+  console.log(`\n分类/标签金标:${tagPass ? "✓ 通过" : "✗ 未过"}`);
+
+  // 微文案金标(§04):同一 --canary 命令顺带跑,退出码合并
+  const copyPass = await runCopyCanary(catList, tagSection, byId);
+
+  const both = tagPass && copyPass;
+  console.log(both ? "\n=== 金标全通过,可以全量重打 ===" : "\n=== 金标未过,禁止全量重打:先修 prompt/词表判据再来 ===");
+  process.exit(both ? 0 : 1);
+}
+
+interface CopyCanaryFile {
+  gate: number;
+  buckets: Record<string, string[]>;
+}
+
+/**
+ * 微文案金标:对代表性硬样本跑真实 LLM + copyLint,聚合通过率须 ≥ gate。
+ * 同时打印每条的 tagline/场景词/fit,供人工抽读把关(「满意 ≥22/25」不可自动化,靠肉眼)。
+ * MOCK 下模型不产 tagline → 全部落 null,会判未过并提示——金标必须用真 key 跑。
+ */
+async function runCopyCanary(
+  catList: string,
+  tagSection: string,
+  byId: Map<string, CatalogEntry>,
+): Promise<boolean> {
+  const file = JSON.parse(
+    await readFile(join(ROOT, "packages/pipeline/fixtures/canary-copy.json"), "utf8"),
+  ) as CopyCanaryFile;
+  const flat = Object.entries(file.buckets).flatMap(([b, ids]) => ids.map((id) => ({ bucket: b, id })));
+
+  console.log(`\n———— 微文案金标(${flat.length} 条,门 ${(file.gate * 100).toFixed(0)}%)————`);
+  let ok = 0, gen = 0, nullc = 0;
+  const lines: string[] = [];
+  let idx = 0;
+  const results = new Array<string>(flat.length);
+  await Promise.all(
+    Array.from({ length: Math.min(CONCURRENCY, flat.length) }, async () => {
+      while (idx < flat.length) {
+        const i = idx++;
+        const { bucket, id } = flat[i];
+        const e = byId.get(id);
+        if (!e) { results[i] = `  ? [${bucket}] ${id}  ⟨条目不存在⟩`; continue; }
+        const m = e.report.meta;
+        try {
+          const v = await classify(buildPrompt(catList, tagSection, m.name, m.description ?? ""));
+          const c = buildCopy(v, m.name, m.content_hash, MODEL);
+          if (!c) { results[i] = `  ∅ [${bucket}] ${id}  ⟨无 tagline(MOCK?)⟩`; return; }
+          const mark = c.lint_pass ? "✓" : "✗";
+          const fit = c.fit_line ? ` · fit:${c.fit_line}` : "";
+          results[i] = `  ${mark} [${bucket}] ${id}\n      «${c.tagline}»  场景:[${c.scene_tags.join("、")}]${fit}`;
+        } catch (err) {
+          results[i] = `  ✗ [${bucket}] ${id}  ⟨失败: ${(err as Error).message}⟩`;
+        }
+      }
+    }),
+  );
+  for (const r of results) {
+    lines.push(r);
+    if (r.includes("∅")) nullc++;
+    else if (r.trimStart().startsWith("✓")) { ok++; gen++; }
+    else if (r.trimStart().startsWith("✗")) gen++;
+  }
+  for (const l of lines) console.log(l);
+  const rate = gen ? ok / gen : 0;
+  const pass = gen > 0 && rate >= file.gate;
+  console.log(
+    `\n微文案金标:${pass ? "✓" : "✗"} lint 通过 ${ok}/${gen} = ${(rate * 100).toFixed(1)}%` +
+      `${nullc ? ` · ${nullc} 条无文案(MOCK 或缺 tagline,金标须真 key)` : ""}` +
+      `\n  (另需人工抽读上表满意 ≥22/25 再放行——机器只管 lint 通过率)`,
+  );
+  return pass;
 }
 
 // ---------- 主流程 ----------
@@ -320,8 +450,10 @@ async function main() {
   let changed = 0;
   let failed = 0;
   let done = 0;
+  let copyOk = 0, copyFail = 0, copyNull = 0;
   const dist: Record<string, number> = {};
   const tagDist: Record<string, number> = {};
+  const sceneDist: Record<string, number> = {};
   const vrows: string[] = [];
 
   async function handle(e: CatalogEntry) {
@@ -334,13 +466,20 @@ async function main() {
       dist[category] = (dist[category] ?? 0) + 1;
       for (const t of tags) tagDist[t] = (tagDist[t] ?? 0) + 1;
 
+      // 微文案:单条调用顺带产出,lint 后组装(MOCK/无 tagline → null)
+      const newCopy = buildCopy(v, m.name, m.content_hash, MODEL);
+      if (newCopy) { newCopy.lint_pass ? copyOk++ : copyFail++; if (newCopy.lint_pass) for (const s of newCopy.scene_tags) sceneDist[s] = (sceneDist[s] ?? 0) + 1; }
+      else copyNull++;
+
       const oldCat = m.category ?? null;
-      if (verbose) vrows.push(`  ${category.padEnd(12)} ⟵ ${(oldCat ?? "uncategorized").padEnd(13)} ${m.id}  [${tags.join(",")}]`);
+      if (verbose) vrows.push(`  ${category.padEnd(12)} ⟵ ${(oldCat ?? "uncategorized").padEnd(13)} ${m.id}  [${tags.join(",")}]  «${newCopy?.tagline ?? "—"}»`);
       const oldTags = JSON.stringify(m.tags ?? []);
-      if (oldCat !== category || oldTags !== JSON.stringify(tags)) {
+      const copyChanged = !copyMateriallyEqual(e.report.copy, newCopy);
+      if (oldCat !== category || oldTags !== JSON.stringify(tags) || copyChanged) {
         changed++;
         m.category = category;
         m.tags = tags;
+        if (copyChanged) e.report.copy = newCopy; // 实质变了才换(含刷新 generated_at);否则留旧,免时间戳 churn
         if (!dry) await writeFile(e.path, JSON.stringify(e.report, null, 2) + "\n");
       }
     } catch (err) {
@@ -367,6 +506,16 @@ async function main() {
   console.log("分面标签分布(top 20):");
   for (const [k, v] of Object.entries(tagDist).sort((a, b) => b[1] - a[1]).slice(0, 20)) {
     console.log(`  ${String(v).padStart(5)}  ${k}`);
+  }
+  const copyTotal = copyOk + copyFail;
+  console.log(
+    `微文案:lint 通过 ${copyOk} / 生成 ${copyTotal}` +
+      `${copyTotal ? `(${((copyOk / copyTotal) * 100).toFixed(1)}%)` : ""} · 无文案(MOCK/缺 tagline) ${copyNull}`,
+  );
+  const sceneTop = Object.entries(sceneDist).sort((a, b) => b[1] - a[1]);
+  if (sceneTop.length) {
+    console.log(`场景词分布(top 25;≥${SCENE_VISIBLE_MIN} 者构建期升为可点 chip):`);
+    for (const [k, v] of sceneTop.slice(0, 25)) console.log(`  ${String(v).padStart(5)}  ${k}`);
   }
   if (verbose) {
     console.log("\n逐条(new ⟵ old):");

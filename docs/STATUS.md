@@ -10,6 +10,7 @@
 > ⛔ **安全扫描已整套下架**(2026-07-04,[ADR 0011](decisions/0011-unlist-security-scan.md)):前端认证徽章/权限披露/审计文案全部摘除,`audit`/`review`/`audit:l3` scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。
 
 ### 已完成
+- **微文案 P0 · 代码落地**(2026-07-05,[ADR 0013](decisions/0013-microcopy-sources.md)):机器副标题(tagline)+ 场景词 + fit_line,埋点先行。四处落子——① `schemas`:`SkillReport.copy` 顶层块(锚 content_hash)+ `sceneTags.ts`(别名归一/查重/`SCENE_VISIBLE_MIN=15`)+ `copyLint.ts`(`BANNED_WORDS` + L1-L6,判据单一来源);② `categorize-llm`:prompt 追加三字段、单次调用顺带产出、代码层 lint、写 copy 块,`--canary` 加 25 条微文案金标(lint 通过率门 95%);③ `web`:卡片副标题=tagline(回退 description 截断)+ 场景 chip(点击=搜索,不进 facet)、详情页 fit_line + 全量场景词、搜索并入 tagline/scene、build-index 按词频裁可见 chip(`scene`)与召回串(`skw`)+ `meta.sceneVocab`;④ 埋点 schema 冻结(`docs/design/analytics-events.md`)+ 前端 beacon(collector 后补,未配置即 no-op)。**验收:schemas/pipeline/web 三侧 `tsc` 全绿;lint+场景归一离线单测过;scene-split 单测过;MOCK 管路通(copy=null)。** ⚠ **全量重打待真实 LLM 环境**——本沙箱网络策略屏蔽 LLM host(proxy 403),需在配好 `.env` 的本机跑 `--canary` 过金标后 `--scope all`。不新建 job、不动 facet schema(ADR 0010)、不动 verdicts。
 - **verdict 服务 S0 ④**(2026-07-05,ADR 0012):商店三插拔点接线完成,全部默认 off——ingest `TRUST_SUBMIT=1` 才提交判定;build-index `TRUST_DISPLAY=1` **且 policy 定稿**才 join verdict 到瘦卡(hash 不符不展示);`TrustBadge` 开关组件(verdict 缺省恒 null);CLI `TRUST_DISPLAY=1` 且 verdict 命中 hash 才披露。已验证:flag 开但 policy=draft 时 displayReady 仍 false。**S0 工程面收官,重新上架 = policy v1 定稿 + 开 flag。**(⚠ 本机需 `npm install` 链接新 workspace 包)
 - **verdict 服务 S0 ②③**(2026-07-05,ADR 0012):`packages/verdicts` 落地——scan-verdict@v1 契约 + 五接口 + 编排器 + 插件(scanners 三件套 git mv 入 engines/,旧 audit/review jobs 删除);**skill-report schema v2**:security_audit 拆出,55 条真实判定迁入 `catalog/verdicts/` 账本(engine=legacy),6,122 条 pending 占位丢弃;ingest/sync/eval/status.mjs 配套改造(Supabase 需执行 `infra/migrations/2026-07-05-verdict-service.sql`)。TRUST_DISPLAY / TRUST_GATE 均 off,货架外观不变。
 - **安全扫描下架**(2026-07-04,ADR 0011):CertBadge 删除、`SkillCard`/`Skill` 剥离 status/risk/l3/review、「仅无网络请求」筛选移除、CLI 装前披露移除(哈希校验保留);判定数据现已迁入 verdict 账本(见上)。
@@ -26,6 +27,7 @@
 - 前端 v4 重设计 + 审计结果 + 本 docs 整理**待 git 提交留痕**(当前工作区未提交约 200 处)。
 
 ### 下一步
+- **微文案全量重打**([ADR 0013](decisions/0013-microcopy-sources.md)):本机(配好 `.env` 的真实 LLM 环境)跑 `npm run categorize:llm -- --canary` 过金标(分类/标签 + 25 条微文案 lint≥95% + 人工抽读≥22/25),再 `--scope all`(约 5,811 条);随后统计场景词频 top 200 人工补 `SCENE_ALIASES` → 只重跑归一;`npm run web:index && npm run web` 浏览器回归卡片副标题/场景 chip/详情 fit_line/回退链。⚠ 注:`build-index.ts` 存在**既有**顶层 await(verdict-join 块),在 `packages/web` 无 `type:module` 时于某些 tsx 环境报 cjs 错——本机若命中,把该 await 包进 async IIFE 即可(与微文案无关)。
 - **verdict 服务步骤⑤⑥**([ADR 0012](decisions/0012-verdict-service.md)):研究议题(裁决口径/误报率基线/复核吞吐/徽章语义)在 `packages/verdicts/policies/` 草稿里迭代;policy v1 定稿 + 全量重扫 + 开 TRUST_DISPLAY = 重新上架(验收:diff 只有 flag)。
 - Supabase:下次 sync 前执行 `infra/migrations/2026-07-05-verdict-service.sql`(放开 audit_status 非空)。
 - 扩 catalog 到 500+(接更多源)。
@@ -46,6 +48,7 @@
 - [0010 · facet 字段名冻结](decisions/0010-facet-schema-freeze.md)
 - [0011 · 安全扫描整套下架(待重新设计)](decisions/0011-unlist-security-scan.md)
 - [0012 · 扫描重生为可插拔 verdict 判定服务](decisions/0012-verdict-service.md)
+- [0013 · 微文案三来源与「场景词不进 facet」红线](decisions/0013-microcopy-sources.md)
 
 ## 文档地图(唯一入口)
 所有规划 / 架构 / 设计文档已收进 `docs/`,点开即看。

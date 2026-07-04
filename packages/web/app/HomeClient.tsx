@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { StaticStore, type Pack, type SearchResult, type SkillCard } from "@/lib/store";
 import SkillRow from "@/components/SkillRow";
+import { trackSearch } from "@/lib/analytics";
 
 type Chip = { slug: string; label: string; n: number };
 type TagChip = Chip & { facet: string };
@@ -98,11 +99,13 @@ export default function HomeClient({ first, meta, cats, tags, facets, catTag, pa
       return;
     }
     setBusy(true);
-    const run = () =>
-      store.search(q, { cat, tags: selTags, repo, publisher: pub }, page)
+    const run = () => {
+      if (q.trim() && page === 1) trackSearch(q); // 埋点:一次执行的搜索(防抖后),翻页不重复计
+      return store.search(q, { cat, tags: selTags, repo, publisher: pub }, page)
         .then((r) => { if (seq.current === my) { setRes(r); setErr(false); } })
         .catch(() => { if (seq.current === my) setErr(true); })
         .finally(() => { if (seq.current === my) setBusy(false); });
+    };
     const timer = setTimeout(run, q ? 160 : 0);
     return () => clearTimeout(timer);
   }, [q, cat, selTags, repo, pub, page, first, meta]);

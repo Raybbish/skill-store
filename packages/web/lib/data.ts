@@ -24,10 +24,14 @@ function scan(): Cache {
       for (const name of readdirSync(join(CATALOG, owner, repo))) {
         try {
           const r = JSON.parse(readFileSync(join(CATALOG, owner, repo, name, "skill-report.json"), "utf8"));
+          // 微文案回退闸:缺失 / lint 未过 / content_hash 过期 → 视作无文案(前端回退 description)
+          const copy =
+            r.copy && r.copy.lint_pass === true && r.copy.content_hash === r.meta.content_hash ? r.copy : null;
           all.push({
             id: r.meta.id, owner, repo, name: r.meta.name, description: r.meta.description,
             license: r.meta.license, hosting: r.meta.hosting, publisher: r.meta.publisher,
             upstream: r.meta.upstream, category: r.meta.category ?? undefined, tags: r.meta.tags ?? [],
+            tagline: copy?.tagline, sceneTags: copy?.scene_tags, fitLine: copy?.fit_line,
             hasMirror: existsSync(join(CATALOG, owner, repo, name, "mirror")),
             duplicateOf: r.meta.duplicate_of ?? null,
             frontmatterValid: r.frontmatter_valid !== false,

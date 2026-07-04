@@ -16,7 +16,7 @@ import { allSkills } from "../lib/data";
 import { PAGE_SIZE, toCard, type CardVerdict, type IdxMeta, type Pack, type SkillCard } from "../lib/store";
 import { batchGetVerdicts, displayReady } from "@skill-store/verdicts";
 import { applyRepoCap, byPopularity } from "../lib/skill-utils";
-import { featuredLabels, tagLabels } from "@skill-store/schemas";
+import { featuredLabels, tagLabels, SCENE_VISIBLE_MIN } from "@skill-store/schemas";
 
 const t0 = Date.now();
 const OUT = join(process.cwd(), "public/idx");
@@ -69,6 +69,24 @@ if (displayReady()) {
   console.log(`[build-index] TRUST_DISPLAY=on · verdict join: ${joined}/${docs.length}`);
 }
 
+// 场景词可见性(§02/§05):全局词频 ≥ SCENE_VISIBLE_MIN 的升为可点 chip(留在 scene),
+// 其余降为搜索召回串(skw,UI 不显示)。天然保证「点 chip 出去 ≥ 阈值 条」的红线,无需额外逻辑。
+const sceneFreq: Record<string, number> = {};
+for (const c of docs) for (const w of c.scene ?? []) sceneFreq[w] = (sceneFreq[w] ?? 0) + 1;
+const sceneVocab = Object.entries(sceneFreq)
+  .filter(([, n]) => n >= SCENE_VISIBLE_MIN)
+  .sort((a, b) => b[1] - a[1])
+  .map(([w]) => w);
+const visibleScene = new Set(sceneVocab);
+for (const c of docs) {
+  if (!c.scene?.length) continue;
+  const vis = c.scene.filter((w) => visibleScene.has(w));
+  const hid = c.scene.filter((w) => !visibleScene.has(w));
+  if (vis.length) c.scene = vis;
+  else delete c.scene;
+  if (hid.length) c.skw = hid.join(" ");
+}
+
 const shelf = applyRepoCap(docs);
 
 // 计数(与 matchFilters/货架口径一致:分类=主分类命中;标签=tags 命中)
@@ -103,6 +121,7 @@ const meta: IdxMeta = {
   generatedAt: new Date().toISOString(),
   total: docs.length, pages, size: PAGE_SIZE,
   cats, tags, catTag,
+  ...(sceneVocab.length ? { sceneVocab } : {}),
 };
 writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta));
 writeFileSync(join(OUT, "docs.json"), JSON.stringify(docs));
@@ -131,5 +150,5 @@ writeFileSync(join(OUT, "packs.json"), JSON.stringify(packs));
 
 const kb = (f: string) => `${Math.round(statSync(join(OUT, f)).size / 1024)}KB`;
 console.log(
-  `[build-index] ${docs.length} 条 → ${pages} 片 × ${PAGE_SIZE} · meta ${kb("meta.json")} · docs ${kb("docs.json")} · p1 ${kb("pages/p1.json")} · 新上架 ${fresh.length} · 包 ${packs.length} · ${Date.now() - t0}ms`,
+  `[build-index] ${docs.length} 条 → ${pages} 片 × ${PAGE_SIZE} · meta ${kb("meta.json")} · docs ${kb("docs.json")} · p1 ${kb("pages/p1.json")} · 新上架 ${fresh.length} · 包 ${packs.length} · 可见场景词 ${sceneVocab.length} · ${Date.now() - t0}ms`,
 );

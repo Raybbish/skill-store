@@ -30,6 +30,16 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
           {s.curatedBy && s.curatedBy.length > 0 && <span className="d-tag">★ 社区精选</span>}
         </div>
         <p className="d-desc">{s.description ?? "(无描述)"}</p>
+        {/* 场景词全量展示(详情页不裁词频);点击 = 以该词搜索,不进 facet(ADR-B) */}
+        {s.sceneTags && s.sceneTags.length > 0 && (
+          <div className="d-scene">
+            {s.sceneTags.map((w) => (
+              <Link key={w} href={`/?q=${encodeURIComponent(w)}`} className="sc">{w}</Link>
+            ))}
+          </div>
+        )}
+        {/* fit_line 放安装按钮上方(决策位):最典型那类用户的处境 */}
+        {s.fitLine && <p className="d-fit">{s.fitLine}</p>}
         <InstallBox skill={s} />
         <div className="d-stats">
           {s.installs != null && <div><b>{fmtInstalls(s.installs)}</b><span>安装量</span></div>}

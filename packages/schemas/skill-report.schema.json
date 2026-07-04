@@ -56,6 +56,21 @@
         "method": { "type": "string" }
       }
     },
-    "eval": { "type": ["object", "null"], "description": "M1 基准评测结果(category/runner/model/score/lift_pp/evaluable_tasks/total_tasks/tasks);未评测为 null。产物缺失记 N/A(不计 0 分);仅带模型元数据且无 N/A 任务的真实结果才回写(见 pipeline jobs/eval.ts 写入闸)" }
+    "eval": { "type": ["object", "null"], "description": "M1 基准评测结果(category/runner/model/score/lift_pp/evaluable_tasks/total_tasks/tasks);未评测为 null。产物缺失记 N/A(不计 0 分);仅带模型元数据且无 N/A 任务的真实结果才回写(见 pipeline jobs/eval.ts 写入闸)" },
+    "copy": {
+      "type": ["object", "null"],
+      "description": "派生微文案(categorize:llm 生成,M1 认领后可被 author 稿替换)。与 eval 同级挂顶层,不进 meta;锚 meta.content_hash,不一致=过期重算。lint_pass=false 时前端回退 description 截断。",
+      "required": ["tagline", "scene_tags", "source", "content_hash", "model", "generated_at", "lint_pass"],
+      "properties": {
+        "tagline": { "type": "string", "maxLength": 60, "description": "一句话用途:动词开头、用户视角、≤40 字" },
+        "scene_tags": { "type": "array", "items": { "type": "string" }, "description": "场景标签 2~4 个(归一后的「什么时候用」,非技术形态)" },
+        "fit_line": { "type": "string", "maxLength": 80, "description": "「适合你,如果…」一行,仅详情页" },
+        "source": { "enum": ["llm", "author"], "description": "llm 生成 | author(M1 原作者认领)稿;author 稿同样过 lint" },
+        "content_hash": { "type": "string", "description": "生成时锚定的 meta.content_hash;不一致=过期" },
+        "model": { "type": "string" },
+        "generated_at": { "type": "string", "format": "date-time" },
+        "lint_pass": { "type": "boolean", "description": "代码层 lint 结果;false→前端回退,不展示 chips" }
+      }
+    }
   }
 }

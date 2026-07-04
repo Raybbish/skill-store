@@ -28,6 +28,12 @@ export interface SkillCard {
   id: string; owner: string; repo: string; name: string;
   description?: string; publisher: string;
   category?: string; tags?: string[];
+  /** 微文案标题(回退 description);搜索字段之一 */
+  tagline?: string;
+  /** 可点场景 chip(build-index 裁到词频≥SCENE_VISIBLE_MIN 的可见词);点击=以该词搜索 */
+  scene?: string[];
+  /** 不达标场景词(词频<阈值)拼成的搜索召回串,UI 不显示;多为空,省字节时省略 */
+  skw?: string;
   upstream: string;
   stars?: number | null; installs?: number | null; repoSkillCount?: number;
   bulkSource?: boolean;
@@ -86,6 +92,8 @@ export interface IdxMeta {
   tags: Record<string, number>;
   /** 分类 slug → (标签 slug → 该分类内命中数),桶内细分用 */
   catTag: Record<string, Record<string, number>>;
+  /** 可见场景词表(词频 ≥ SCENE_VISIBLE_MIN;卡片 chip 与「场景」入口取自这里)。缺省=尚无微文案 */
+  sceneVocab?: string[];
 }
 
 /** Skill → SkillCard(构建索引与服务端列表页共用;undefined 字段不落 JSON) */
@@ -96,6 +104,9 @@ export function toCard(s: Skill): SkillCard {
     publisher: s.publisher,
     ...(s.category ? { category: s.category } : {}),
     ...(s.tags?.length ? { tags: s.tags } : {}),
+    ...(s.tagline ? { tagline: s.tagline } : {}),
+    // scene 此处装全量归一场景词;build-index 按全局词频裁成可见 chip(scene)+ 召回串(skw)
+    ...(s.sceneTags?.length ? { scene: s.sceneTags } : {}),
     upstream: s.upstream,
     ...(s.stars != null ? { stars: s.stars } : {}),
     ...(s.installs != null ? { installs: s.installs } : {}),
@@ -122,6 +133,9 @@ export function matchScore(c: SkillCard, terms: string[]): number {
   let total = 0;
   const name = c.name.toLowerCase();
   const id = c.id.toLowerCase();
+  const tagline = (c.tagline ?? "").toLowerCase();
+  const scene = (c.scene ?? []).map((x) => x.toLowerCase());
+  const skw = (c.skw ?? "").toLowerCase(); // 不可见场景词的召回串
   const desc = (c.description ?? "").toLowerCase();
   const pub = c.publisher.toLowerCase();
   for (const t of terms) {
@@ -129,8 +143,11 @@ export function matchScore(c: SkillCard, terms: string[]): number {
     if (name.startsWith(t)) s = 100;
     else if (name.includes(t)) s = 60;
     else if (id.includes(t)) s = 40;
+    else if (scene.some((x) => x.includes(t))) s = 30; // 场景词命中:比技术标签更贴用户意图
     else if ((c.tags ?? []).some((x) => x.toLowerCase().includes(t))) s = 25;
+    else if (tagline.includes(t)) s = 18;
     else if (desc.includes(t) || pub.includes(t)) s = 12;
+    else if (skw.includes(t)) s = 8; // 不达标场景词只做兜底召回
     if (!s) return 0;
     total += s;
   }

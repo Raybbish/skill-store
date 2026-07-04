@@ -2,6 +2,9 @@
 
 /** taxonomy 词表(分类 / 标签单一来源) */
 export * from "./labels";
+/** 场景词治理(别名归一 + 可见性阈值)与微文案 lint(禁用词 + L1-L6) */
+export * from "./sceneTags";
+export * from "./copyLint";
 
 export type Hosting = "mirrored" | "indexed";
 
@@ -71,6 +74,31 @@ export interface SkillReport {
   };
   /** M1 基准评测结果;未评测为 null(与 pipeline eval/types.ts 的 EvalResult 对应) */
   eval: SkillEval | null;
+  /**
+   * 派生微文案(P0:llm 生成;M1 认领后可被 author 稿替换)。
+   * 与 eval 同级挂顶层,不塞进 meta——meta 是采集事实,copy 是我们的转述,生命周期不同:
+   * meta 变 = 内容变了;copy 变 = 转述变了。分开后「重算微文案」永不污染采集事实的 diff。
+   * 锚 meta.content_hash(与 verdict 账本同构):不一致 = 过期,下次重算。
+   */
+  copy?: SkillCopy | null;
+}
+
+/** 派生微文案。生成侧 categorize:llm 写入;前端 lint_pass=false 时回退 description 截断(见 copyLint.ts)。 */
+export interface SkillCopy {
+  /** 一句话用途:动词开头、用户视角、≤40 字 */
+  tagline: string;
+  /** 场景标签 2~4 个:归一后的词(「什么时候用」,非技术形态) */
+  scene_tags: string[];
+  /** 「适合你,如果…」一行,仅详情页 */
+  fit_line?: string;
+  /** 词的来源:llm | author(M1 认领)。author 稿同样过 lint */
+  source: "llm" | "author";
+  /** 生成时锚定的 meta.content_hash;不一致 = 过期,下次重算 */
+  content_hash: string;
+  model: string;
+  generated_at: string;
+  /** 代码层 lint 结果;false → 前端回退 description 截断,不展示 chips */
+  lint_pass: boolean;
 }
 
 /**

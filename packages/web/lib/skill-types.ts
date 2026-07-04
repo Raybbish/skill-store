@@ -10,6 +10,12 @@ export interface Skill {
   category?: string;
   /** 标签 slug 列表(featured:false 标签) */
   tags?: string[];
+  /** 派生微文案标题(仅 copy.lint_pass 时填充;否则 undefined → 前端回退 description)。见 schemas copy 块。 */
+  tagline?: string;
+  /** 场景词(归一后;详情页全量展示,卡片按词频≥阈值裁 chip) */
+  sceneTags?: string[];
+  /** 「适合你,如果…」一行,仅详情页决策位 */
+  fitLine?: string;
   /** 是否已下载 mirror/ 副本(决定能否提供 zip 下载;否则回上游) */
   hasMirror?: boolean;
   /** 采集去重:非 null 表示本条是另一条(canonical)的副本/搬运;默认列表隐藏 */
