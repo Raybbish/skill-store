@@ -366,11 +366,13 @@ export const LABELS: LabelDef[] = [
     rules: [r('\\bcli\\b', 1), r('command.?line', 1), r('terminal', 1), r('shell (tool|command)', 1)],
   },
   {
+    // 唯一 universal 的 surface:MCP 连接器类技能天然跨域(productivity/marketing/ecommerce 桶大量存在),
+    // 锁死技术集群会被 sanitizeTags 剥掉——2026-07-04 金标验证发现,遂放开。
     slug: 'mcp', label_zh: 'MCP', label_en: 'MCP', featured: false, order: 43, promote: DEFAULT_PROMOTE,
-    facet: 'surface', appliesTo: TECH_CLUSTER,
-    definition: '本体在运行时作为 MCP server/client 交付能力——用户装它是为了「通过 MCP 用某能力」',
-    positiveExamples: ['notion MCP 连接器', '浏览器控制 MCP'],
-    negativeExamples: ['生成/调试/管理 MCP server 的工具(→ meta: mcp-server;双命中时 meta 优先)'],
+    facet: 'surface', appliesTo: 'universal',
+    definition: '本体经 MCP 交付或操作:作为 MCP server/client 运行,经某个具体 MCP 连接器(azure-mcp、odoo-mcp、Rube MCP 等)操作外部系统,或指导使用某 MCP 工具集——用户装它是为了「通过 MCP 用某能力」',
+    positiveExamples: ['notion MCP 连接器', '经 Rube MCP 自动化 Airtable/Asana 的技能', '教你使用某 MCP 工具集的指南'],
+    negativeExamples: ['实现/脚手架/调试 MCP server 本身(→ meta: mcp-server;双命中时 meta 优先)', '只顺带提到 MCP 作为可选数据源之一的技能'],
     rules: [r('\\bmcp\\b', 1), r('model context protocol', 2)],
   },
   {
@@ -488,13 +490,15 @@ export const LABELS: LabelDef[] = [
   },
 
   // ---------- E · 元能力 Meta(造/管 skill、agent、MCP 本身;本生态特有) ----------
+  // appliesTo 为 universal:meta 工具的主分类在 dev/utility/uncategorized 间易漂移(金标发现),
+  // 锁 dev 会被 sanitizeTags 误剥;口径同时把它们钉回 dev,universal 只是防漂移的保险。
   {
     // ⚠ 历史教训:定义一模糊就被打花(名义 1,248 条,真实约一两百)。判据从严。
     slug: 'skill-tooling', label_zh: 'Skills 工具', label_en: 'Skill Tooling', featured: false, order: 80, promote: DEFAULT_PROMOTE,
-    facet: 'meta', appliesTo: ['dev'],
-    definition: '服务 skill/agent 系统**本身**的元工具:创建、打包、测试、分发、发现 skill。「本身是个 skill」不算',
-    positiveExamples: ['skill-creator(生成新 skill 的脚手架)', 'skillify(把仓库打包成 skill)', 'skill 市场搜索器'],
-    negativeExamples: ['调试 Python 的 skill(它只是「是个 skill」,不服务 skill 系统)', '抓取网页评论的 skill', '视频转字幕的 skill'],
+    facet: 'meta', appliesTo: 'universal',
+    definition: '判据看**工作对象**:只要直接操作的对象是 skill/command/agent 扩展物本身——创建、导入、打包、测试、审计、改进、发布、发现**它们**——就打此标签;对象是业务任务(代码/文档/营销…)则不打,即便它自己是个 skill',
+    positiveExamples: ['skill-creator(创建/优化 skill——对象是 skill,必打)', '导入既有 skill 做校验/打包/发布的工具', 'skill 市场搜索器', 'skill 安全审计器(装前审计)', 'slash command 生成器'],
+    negativeExamples: ['调试 Python 的 skill(它只是「是个 skill」,不服务 skill 系统)', '抓取网页评论的 skill', '视频转字幕的 skill', '处理与 agent 无关、恰好叫「skills」的业务数据(员工技能清单、游戏技能表)——对象不是 agent skill 系统'],
     rules: [
       r('skill.?creator', 4), r('skill.?maker', 4), r('template.?skill', 4),
       r('find.?skills?\\b', 3), r('discover and install', 3), r('create new skill', 3), r('package.+skill', 2),
@@ -502,7 +506,7 @@ export const LABELS: LabelDef[] = [
   },
   {
     slug: 'agent-ops', label_zh: '智能体编排', label_en: 'Agent Ops', featured: false, order: 81, promote: DEFAULT_PROMOTE,
-    facet: 'meta', appliesTo: ['dev'],
+    facet: 'meta', appliesTo: 'universal',
     definition: '编排/管理 agent 本身:多 agent 协作、subagent、handoff、agent 记忆与上下文管理',
     positiveExamples: ['多 agent 任务分发框架', 'agent 会话记忆管理器'],
     negativeExamples: ['用 agent 完成某业务任务的 skill(看业务归类,不进 meta)'],
@@ -510,10 +514,10 @@ export const LABELS: LabelDef[] = [
   },
   {
     slug: 'mcp-server', label_zh: 'MCP 构建', label_en: 'MCP Server Tooling', featured: false, order: 82, promote: DEFAULT_PROMOTE,
-    facet: 'meta', appliesTo: ['dev'],
-    definition: '工作对象是 MCP server 本身:生成、调试、部署、管理它们——用户装它是为了「造/管 MCP」',
-    positiveExamples: ['mcp-inspector(调试 MCP server)', 'create-mcp-app(脚手架)'],
-    negativeExamples: ['本体作为 MCP server 运行的连接器(→ surface: mcp;双命中时本标签优先)'],
+    facet: 'meta', appliesTo: 'universal',
+    definition: '关键问:**产出物或直接工作对象是不是一个 MCP server 本身**(实现、脚手架、调试、部署、管理它)?是才打。描述里出现「MCP server」字样不等于造 server',
+    positiveExamples: ['mcp-inspector(调试 MCP server)', 'create-mcp-app(脚手架)', '实现 MCP server 的开发模式指南'],
+    negativeExamples: ['本体作为 MCP server/连接器运行(→ surface: mcp;双命中时本标签优先)', '在应用/agent 框架代码里包装、调用、消费 MCP 工具(→ surface: mcp)', '配置/连接现成 MCP 连接器(→ surface: mcp)', '安装依赖/配环境让某个现成 MCP server 能启动的 setup 工具——对象是环境不是 server'],
     rules: [r('mcp.?(server|builder|inspector)', 2), r('create.?mcp', 2), r('(build|generat|scaffold).{0,20}mcp', 2)],
   },
 
