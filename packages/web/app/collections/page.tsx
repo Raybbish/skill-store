@@ -5,7 +5,7 @@ import { readIdxMeta } from "@/lib/store-server";
 
 export const metadata = {
   title: "收录标准 · oh-my-skill",
-  description: "全网几万个 skill,这里只上架审核过的。为什么不照单全收、每个源收了多少、其余在哪,这页讲清楚。",
+  description: "全网几万个 skill,这里只放挑出来的。为什么不照单全收、每个源收了多少、其余在哪,这页讲清楚。",
 };
 
 /** 收录比例条:上架数占源内总量的比例(视觉直接传达「只挑一部分」) */
@@ -37,14 +37,14 @@ export default function Collections() {
 
       <section className="hero">
         <div className="eyebrow">收录标准</div>
-        <h1 className="small">全网很大,<span className="hl">审过才上架</span></h1>
+        <h1 className="small">全网很大,<span className="hl">只放挑出来的</span></h1>
         <p className="lede">
-          有些源把成百上千个 skill 打包在一起。我们不照单全收:<b>每个源只挑一部分,逐个审核后上架</b>;
+          有些源把成百上千个 skill 打包在一起。我们不照单全收:<b>每个源只挑一部分上架</b>;
           其余列在这里,你随时可以去源头看全部。
         </p>
         <div className="d-stats">
           <div><b>{(meta.total + upstreamTotal).toLocaleString()}</b><span>全网 skill</span></div>
-          <div><b>{meta.total.toLocaleString()}</b><span>已审核上架</span></div>
+          <div><b>{meta.total.toLocaleString()}</b><span>已上架</span></div>
           <div><b>{collections.length}</b><span>打包大源</span></div>
         </div>
       </section>
@@ -55,7 +55,7 @@ export default function Collections() {
           {[
             ["不灌水", "货架上的每个位置,都留给值得看的。"],
             ["不刷榜", "大源不能靠数量霸占热门榜。"],
-            ["审核是承诺", "上架多少,就审多少——宁可少,不掺假。"],
+            ["宁缺毋滥", "上架的每一个,都被认真看过——宁可少,不掺假。"],
           ].map(([t, d]) => (
             <div key={t} style={{ borderTop: "1px solid var(--hair)", padding: "14px 2px 6px" }}>
               <div style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: 15 }}>{t}</div>
@@ -68,14 +68,14 @@ export default function Collections() {
       <div className="sec">
         <div className="sec-h">
           <h2>这些大源</h2>
-          <span className="k">「已收录 ›」看它家审核过的 · 「源头 ↗」看它全部(未审核)</span>
+          <span className="k">「已收录 ›」看它家上架的 · 「源头 ↗」看它全部</span>
         </div>
         <div className="list">
           {collections.map((c) => (
             <div className="row" key={c.id}>
               <div className="main">
                 <div className="nm">{c.id}</div>
-                <div className="ds">共 {c.skillCount.toLocaleString()} 个 · 已审核上架 {c.sampledCount} 个</div>
+                <div className="ds">共 {c.skillCount.toLocaleString()} 个 · 上架 {c.sampledCount} 个</div>
                 <Ratio sampled={c.sampledCount} total={c.skillCount} />
               </div>
               <div className="rt">

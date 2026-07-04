@@ -29,8 +29,8 @@ export default function Home() {
       {upstreamTotal > 0 && (
         <Link href="/collections/" className="band" style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div>
-            <div className="bt">全网几万个 skill,这里只上架审核过的<small>{(skills.length + upstreamTotal).toLocaleString()} → {skills.length.toLocaleString()}</small></div>
-            <div className="bs">每一个都带权限说明 · 点任何盾牌图标,能看到它的完整审核过程</div>
+            <div className="bt">全网几万个 skill,这里只放挑出来的<small>{(skills.length + upstreamTotal).toLocaleString()} → {skills.length.toLocaleString()}</small></div>
+            <div className="bs">点开任何盾牌图标,看它为什么在这里</div>
           </div>
           <span className="allget">看收录标准 ›</span>
         </Link>

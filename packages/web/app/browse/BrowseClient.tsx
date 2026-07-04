@@ -6,6 +6,8 @@ import SkillRow from "@/components/SkillRow";
 
 type Chip = { slug: string; label: string; n: number };
 const cn = { color: "var(--faint)", marginLeft: 4, fontWeight: 600 } as const;
+/** 防御式数字格式化:热更新/产物错配等异常下也绝不因 undefined 崩渲染 */
+const nf = (x: number | null | undefined) => (typeof x === "number" && !Number.isNaN(x) ? x.toLocaleString() : "–");
 
 /** 模块级单例:分片与 docs 缓存跨渲染复用 */
 const store = new StaticStore();
@@ -86,8 +88,8 @@ export default function BrowseClient({ first, meta, cats, tags, catTag, upstream
     <>
       <section className="hero"><div className="eyebrow">浏览</div><h1 className="small">全部 skill</h1></section>
 
-      {/* 严选比例条(方案 B):不用读字就能看懂「全网很大,这里只放审核过的」;点击进收录标准 */}
-      {upstream != null && upstream > 0 && (
+      {/* 严选比例条(方案 B):蓝段=上架,灰段=全网;不用读字就能看懂,点击进收录标准 */}
+      {upstream != null && upstream > 0 && typeof meta.total === "number" && (
         <Link href="/collections/" style={{ display: "block", maxWidth: 640, margin: "2px 0 6px" }}>
           <span style={{ display: "flex", height: 8, gap: 2 }} aria-hidden="true">
             <span style={{ width: `${Math.max(5, Math.round((meta.total / (meta.total + upstream)) * 100))}%`, background: "var(--blue)", borderRadius: "5px 0 0 5px" }} />
@@ -95,10 +97,10 @@ export default function BrowseClient({ first, meta, cats, tags, catTag, upstream
           </span>
           <span style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 7, fontSize: 12.5, gap: 12 }}>
             <span style={{ fontWeight: 700, color: "var(--ink)" }}>
-              <span style={{ color: "var(--blue)", fontFamily: "var(--display)", fontSize: 14 }}>{meta.total.toLocaleString()}</span> 个已审核上架
+              <span style={{ color: "var(--blue)", fontFamily: "var(--display)", fontSize: 14 }}>{nf(meta.total)}</span> 个上架
             </span>
             <span style={{ color: "var(--sub)", fontWeight: 600, whiteSpace: "nowrap" }}>
-              全网 {(meta.total + upstream).toLocaleString()} 个 · <span style={{ color: "var(--blue)", fontWeight: 700 }}>为什么只上架这些 ›</span>
+              全网 {nf(meta.total + upstream)} 个 · <span style={{ color: "var(--blue)", fontWeight: 700 }}>为什么只上架这些 ›</span>
             </span>
           </span>
         </Link>
@@ -106,7 +108,7 @@ export default function BrowseClient({ first, meta, cats, tags, catTag, upstream
 
       <div className="searchbar" style={{ marginTop: 4 }}>
         <span>🔍</span>
-        <input value={q} onChange={(e) => { setQ(e.target.value); resetPage(); }} placeholder={`搜索 ${meta.total.toLocaleString()} 个 skill…`} />
+        <input value={q} onChange={(e) => { setQ(e.target.value); resetPage(); }} placeholder={`搜索 ${nf(meta.total)} 个 skill…`} />
       </div>
 
       {/* 深链来源筛选(合集页「已收录 ›」/ 发布者):显式展示,可一键清除 */}
@@ -146,7 +148,7 @@ export default function BrowseClient({ first, meta, cats, tags, catTag, upstream
         <span style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600 }}>{q.trim() ? "相关度排序" : "热门排序"}</span>
         <button className={`chip ${safeOnly ? "on" : ""}`} onClick={() => { setSafeOnly(!safeOnly); resetPage(); }}>🛡️ 仅无网络请求</button>
         {selectedCat && <Link href={`/category/${selectedCat.slug}/`} className="chip">看「{selectedCat.label}」分类页 ↗</Link>}
-        <span className="fcount">{res.total.toLocaleString()} / {meta.total.toLocaleString()}</span>
+        <span className="fcount">{nf(res.total)} / {nf(meta.total)}</span>
       </div>
 
       <div className="list" style={busy ? { opacity: 0.55, transition: "opacity .15s" } : undefined}>
@@ -159,7 +161,7 @@ export default function BrowseClient({ first, meta, cats, tags, catTag, upstream
       {res.pages > 1 && (
         <div className="filters" style={{ marginTop: 16, justifyContent: "center" }}>
           <button className="chip" disabled={res.page <= 1} style={res.page <= 1 ? { opacity: 0.4 } : undefined} onClick={() => goto(res.page - 1)}>‹ 上一页</button>
-          <span style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600, alignSelf: "center" }}>第 {res.page} / {res.pages.toLocaleString()} 页</span>
+          <span style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600, alignSelf: "center" }}>第 {res.page} / {nf(res.pages)} 页</span>
           <button className="chip" disabled={res.page >= res.pages} style={res.page >= res.pages ? { opacity: 0.4 } : undefined} onClick={() => goto(res.page + 1)}>下一页 ›</button>
         </div>
       )}
