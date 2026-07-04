@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { allSkills, byPopularity } from "@/lib/data";
+import { allCollections, allSkills, byPopularity } from "@/lib/data";
 import { toCard } from "@/lib/store";
 import SkillRow from "@/components/SkillRow";
 
@@ -11,6 +11,7 @@ export default function Home() {
   const official = skills.filter((s) => OFFICIAL.has(s.publisher) && s.status === "pass").sort(byPopularity).slice(0, 6);
   const featured = (official.length ? official : skills.slice(0, 6)).map(toCard);
   const trending = [...skills].sort(byPopularity).slice(0, 6).map(toCard);
+  const upstreamTotal = allCollections().reduce((a, c) => a + c.skillCount, 0);
 
   return (
     <>
@@ -23,6 +24,17 @@ export default function Home() {
           <span className="go">浏览</span>
         </Link>
       </section>
+
+      {/* 品牌陈述位(方案 C · .band):全站只在首页说一次「我们是谁」 */}
+      {upstreamTotal > 0 && (
+        <Link href="/collections/" className="band" style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div>
+            <div className="bt">全网几万个 skill,这里只上架审核过的<small>{(skills.length + upstreamTotal).toLocaleString()} → {skills.length.toLocaleString()}</small></div>
+            <div className="bs">每一个都带权限说明 · 点任何盾牌图标,能看到它的完整审核过程</div>
+          </div>
+          <span className="allget">看收录标准 ›</span>
+        </Link>
+      )}
 
       <div className="sec">
         <div className="sec-h"><h2>编辑精选</h2><span className="k">已验证发布者</span><Link href="/browse/">查看全部 ›</Link></div>

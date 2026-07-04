@@ -4,11 +4,11 @@ import { fmtInstalls } from "@/lib/skill-utils";
 import { readIdxMeta } from "@/lib/store-server";
 
 export const metadata = {
-  title: "批量源合集 · 收录方法论 · oh-my-skill",
-  description: "上游有 6 万+ 条 skill,我们审过才上架。批量源仓库按「每仓折叠采样」收录——为什么、怎么采、其余在哪,这页讲清楚。",
+  title: "收录标准 · oh-my-skill",
+  description: "全网几万个 skill,这里只上架审核过的。为什么不照单全收、每个源收了多少、其余在哪,这页讲清楚。",
 };
 
-/** 收录比例条:采样占全量的比例(通常 <2%,视觉直接传达「折叠」力度) */
+/** 收录比例条:上架数占源内总量的比例(视觉直接传达「只挑一部分」) */
 function Ratio({ sampled, total }: { sampled: number; total: number }) {
   const pct = (sampled / Math.max(1, total)) * 100;
   const label = pct >= 10 ? `${Math.round(pct)}%` : pct >= 1 ? `${pct.toFixed(1)}%` : `${pct.toFixed(2)}%`;
@@ -17,47 +17,45 @@ function Ratio({ sampled, total }: { sampled: number; total: number }) {
       <div style={{ flex: "0 0 120px", height: 3, borderRadius: 2, background: "var(--hair)", overflow: "hidden" }}>
         <div style={{ width: `${Math.max(1.5, pct)}%`, height: "100%", background: "var(--blue)" }} />
       </div>
-      <span style={{ fontSize: 11.5, color: "var(--faint)", fontFamily: "var(--mono)" }}>已审计收录 {label}</span>
+      <span style={{ fontSize: 11.5, color: "var(--faint)", fontFamily: "var(--mono)" }}>已上架 {label}</span>
     </div>
   );
 }
 
 /**
- * 收录方法论页(v4 去盒子):把「折叠采样」讲成正面资产 ——
- * 上游宇宙很大,货架只放审过的;每行都能「回到货架」看这个仓已收录的条目(信任边界向内拉)。
+ * 收录标准页(用户语言版):不出现「审计/折叠/采样/上游/批量源」等内部词。
+ * 与 browse 的严选比例条共用同一视觉母题;每行「已收录 ›」深链回货架(拉回信任边界内)。
  */
 export default function Collections() {
   const collections = allCollections();
   const meta = readIdxMeta();
   const upstreamTotal = collections.reduce((a, c) => a + c.skillCount, 0);
-  const sampledTotal = collections.reduce((a, c) => a + c.sampledCount, 0);
 
   return (
     <>
       <Link href="/browse/" className="back">‹ 浏览</Link>
 
       <section className="hero">
-        <div className="eyebrow">收录方法论</div>
-        <h1 className="small">上游很大,<span className="hl">审过才上架</span></h1>
+        <div className="eyebrow">收录标准</div>
+        <h1 className="small">全网很大,<span className="hl">审过才上架</span></h1>
         <p className="lede">
-          有 {collections.length} 个仓库把成百上千个 skill 塞在一个 repo 里(聚合仓、awesome 合集、批量生成)。
-          我们不照单全收:<b>每仓折叠采样、逐条过三层审计</b>,其余记录在这里,全量永远可以去上游看。
+          有些源把成百上千个 skill 打包在一起。我们不照单全收:<b>每个源只挑一部分,逐个审核后上架</b>;
+          其余列在这里,你随时可以去源头看全部。
         </p>
         <div className="d-stats">
-          <div><b>{upstreamTotal.toLocaleString()}</b><span>上游 skill 总量</span></div>
-          <div><b>{sampledTotal.toLocaleString()}</b><span>采样进审计流程</span></div>
-          <div><b>{meta.total.toLocaleString()}</b><span>全站已审计上架</span></div>
-          <div><b>50 / 仓</b><span>采样上限</span></div>
+          <div><b>{(meta.total + upstreamTotal).toLocaleString()}</b><span>全网 skill</span></div>
+          <div><b>{meta.total.toLocaleString()}</b><span>已审核上架</span></div>
+          <div><b>{collections.length}</b><span>打包大源</span></div>
         </div>
       </section>
 
       <div className="sec">
-        <div className="sec-h"><h2>为什么折叠</h2><span className="k">三个理由,一条边界</span></div>
+        <div className="sec-h"><h2>为什么只挑一部分</h2></div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "0 28px" }}>
           {[
-            ["防灌水", "一个 2.6 万条的仓能淹没整个货架;折叠后货架每条都值得被看到。"],
-            ["防霸榜", "同仓 skill 共享仓库级 stars,不折叠会集体聚顶,热门榜失真。"],
-            ["审计是承诺", "每条上架都要过 L1/L2/L3 扫描;采样让审计深度不被供给量稀释。"],
+            ["不灌水", "货架上的每个位置,都留给值得看的。"],
+            ["不刷榜", "大源不能靠数量霸占热门榜。"],
+            ["审核是承诺", "上架多少,就审多少——宁可少,不掺假。"],
           ].map(([t, d]) => (
             <div key={t} style={{ borderTop: "1px solid var(--hair)", padding: "14px 2px 6px" }}>
               <div style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: 15 }}>{t}</div>
@@ -69,28 +67,25 @@ export default function Collections() {
 
       <div className="sec">
         <div className="sec-h">
-          <h2>全部合集</h2>
-          <span className="k">「已收录 ›」= 过了审计的货架条目 · 「上游 ↗」= 未经审计的全集</span>
+          <h2>这些大源</h2>
+          <span className="k">「已收录 ›」看它家审核过的 · 「源头 ↗」看它全部(未审核)</span>
         </div>
         <div className="list">
-          {collections.map((c) => {
-            const owner = c.id.split("/")[0];
-            return (
-              <div className="row" key={c.id}>
-                <div className="main">
-                  <div className="nm">{c.id}</div>
-                  <div className="ds">全量 {c.skillCount.toLocaleString()} 条 · 采样 {c.sampledCount} 条进三层审计 · @{owner}</div>
-                  <Ratio sampled={c.sampledCount} total={c.skillCount} />
-                </div>
-                <div className="rt">
-                  {c.stars != null && <div className="score"><span className="gold">★</span> {fmtInstalls(c.stars)}</div>}
-                  <Link href={`/browse/?repo=${encodeURIComponent(c.id)}`} className="go">已收录 ›</Link>
-                  <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600 }}>上游 ↗</a>
-                </div>
+          {collections.map((c) => (
+            <div className="row" key={c.id}>
+              <div className="main">
+                <div className="nm">{c.id}</div>
+                <div className="ds">共 {c.skillCount.toLocaleString()} 个 · 已审核上架 {c.sampledCount} 个</div>
+                <Ratio sampled={c.sampledCount} total={c.skillCount} />
               </div>
-            );
-          })}
-          {!collections.length && <div className="empty">暂无合集条目</div>}
+              <div className="rt">
+                {c.stars != null && <div className="score"><span className="gold">★</span> {fmtInstalls(c.stars)}</div>}
+                <Link href={`/browse/?repo=${encodeURIComponent(c.id)}`} className="go">已收录 ›</Link>
+                <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600 }}>源头 ↗</a>
+              </div>
+            </div>
+          ))}
+          {!collections.length && <div className="empty">暂无条目</div>}
         </div>
       </div>
     </>

@@ -99,7 +99,7 @@ export default function CertBadge({ skill, size = 17 }: { skill: SkillCard; size
 
               <div className="m-sub">认证流程如何运作</div>
               <div className="steps">
-                <div className="step"><div className="dot"></div><div className="st">采集 · 去重哈希</div><div className="sd">从官方精选仓与头部榜单收录;content_hash 去重,并作为安装时的校验锚点。<a href="/collections/" style={{ color: "var(--blue)", fontWeight: 700 }}> 收录口径 ›</a></div></div>
+                <div className="step"><div className="dot"></div><div className="st">采集 · 去重哈希</div><div className="sd">从官方精选仓与头部榜单收录;content_hash 去重,并作为安装时的校验锚点。<a href="/collections/" style={{ color: "var(--blue)", fontWeight: 700 }}> 收录标准 ›</a></div></div>
                 <div className="step"><div className="dot"></div><div className="st">L1 静态签名</div><div className="sd">YARA + 正则,拦已知恶意模式(密钥外传、危险命令)。</div></div>
                 <div className="step"><div className="dot"></div><div className="st">L2 脚本数据流</div><div className="sd">追踪脚本读取→外传路径,产出上面的风险五因子。</div></div>
                 <div className="step"><div className="dot"></div><div className="st">L3 意图审查</div><div className="sd">模型审查 SKILL.md 指令意图,抓提示注入,双模型交叉。</div></div>

@@ -17,12 +17,14 @@ const store = new StaticStore();
  *   P1 换 Typesense 时只换 store 实现。
  * 支持深链:/browse/?cat=…&tag=…&q=…(分类页「看全部」跳转用)。
  */
-export default function BrowseClient({ first, meta, cats, tags, catTag }: {
+export default function BrowseClient({ first, meta, cats, tags, catTag, upstream }: {
   first: SkillCard[];
   meta: { total: number; pages: number; size: number };
   cats: Chip[];
   tags: Chip[];
   catTag: Record<string, Record<string, number>>;
+  /** 全网折叠收录总量(严选比例条用);null 不渲染 */
+  upstream?: number | null;
 }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string | null>(null); // 第一步:主分类(每个 skill 归一个)
@@ -82,8 +84,25 @@ export default function BrowseClient({ first, meta, cats, tags, catTag }: {
 
   return (
     <>
-      {/* 用户导向:货架零口径说明 —— 收录方法论收进 CertBadge 弹窗与页脚(好奇发生的地方) */}
       <section className="hero"><div className="eyebrow">浏览</div><h1 className="small">全部 skill</h1></section>
+
+      {/* 严选比例条(方案 B):不用读字就能看懂「全网很大,这里只放审核过的」;点击进收录标准 */}
+      {upstream != null && upstream > 0 && (
+        <Link href="/collections/" style={{ display: "block", maxWidth: 640, margin: "2px 0 6px" }}>
+          <span style={{ display: "flex", height: 8, gap: 2 }} aria-hidden="true">
+            <span style={{ width: `${Math.max(5, Math.round((meta.total / (meta.total + upstream)) * 100))}%`, background: "var(--blue)", borderRadius: "5px 0 0 5px" }} />
+            <span style={{ flex: 1, background: "#e6e8ee", borderRadius: "0 5px 5px 0" }} />
+          </span>
+          <span style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 7, fontSize: 12.5, gap: 12 }}>
+            <span style={{ fontWeight: 700, color: "var(--ink)" }}>
+              <span style={{ color: "var(--blue)", fontFamily: "var(--display)", fontSize: 14 }}>{meta.total.toLocaleString()}</span> 个已审核上架
+            </span>
+            <span style={{ color: "var(--sub)", fontWeight: 600, whiteSpace: "nowrap" }}>
+              全网 {(meta.total + upstream).toLocaleString()} 个 · <span style={{ color: "var(--blue)", fontWeight: 700 }}>为什么只上架这些 ›</span>
+            </span>
+          </span>
+        </Link>
+      )}
 
       <div className="searchbar" style={{ marginTop: 4 }}>
         <span>🔍</span>
