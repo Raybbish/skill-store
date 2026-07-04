@@ -139,7 +139,7 @@ export default function HomeClient({ first, meta, cats, tags, facets, catTag, pa
       <PackMarquee packs={packs} />
 
       <div className="sec">
-        <div className="sec-h"><h2>全部 skill</h2>{q.trim() ? <span className="k">相关度排序</span> : <span className="k">热门排序</span>}</div>
+        <div className="sec-h"><h2>全部 skill</h2>{q.trim() && <span className="k">相关度排序</span>}</div>
       </div>
 
       {/* 深链来源筛选(收录页「已收录 ›」/ 发布者):显式展示,可一键清除 */}

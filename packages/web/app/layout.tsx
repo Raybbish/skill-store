@@ -24,7 +24,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/community/">社区</Link>
             <Link href="/collections/">收录</Link>
           </nav>
-          <div className="nav-r"><Link href="/">🔍</Link><Link href="/community/" className="new">＋ 发布</Link></div>
         </div></div>
         <div className="wrap">{children}</div>
         <footer>oh-my-skill · catalog 公开可验证 · <Link href="/collections/">收录标准</Link> · Agent Skills 商店</footer>
