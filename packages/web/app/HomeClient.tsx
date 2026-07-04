@@ -175,8 +175,9 @@ export default function HomeClient({ first, meta, cats, tags, facets, catTag, pa
         </div>
       ))}
 
+      {/* 分类页不再有站内入口:IA 合并后首页筛选视图功能严格超集(同排序口径+交叉筛+全量分页),
+          跳过去只会失去能力;分类页仅作 SEO 落地页与站外深链目标存在 */}
       <div className="filters">
-        {selectedCat && <Link href={`/category/${selectedCat.slug}/`} className="chip">看「{selectedCat.label}」精选 ↗</Link>}
         <span className="fcount">{nf(res.total)} / {nf(meta.total)}</span>
       </div>
 
