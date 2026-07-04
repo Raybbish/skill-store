@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const name = def?.label_zh ?? (slug === "uncategorized" ? "未分类" : slug);
   return {
     title: `${name} · oh-my-skill`,
-    description: `${name} 下的 Agent Skills —— 浏览、比较、一键安装,每个都带权限披露与审计。`,
+    description: `${name} 下的 Agent Skills —— 浏览、比较、一键安装。`,
   };
 }
 

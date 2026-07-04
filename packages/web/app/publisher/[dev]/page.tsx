@@ -32,7 +32,7 @@ export default async function PublisherPage({ params }: { params: Promise<{ dev:
       </section>
 
       <div className="sec">
-        <div className="sec-h"><h2>作品集</h2><span className="k">每个带认证图标</span></div>
+        <div className="sec-h"><h2>作品集</h2></div>
         <div className="list">{v.works.map((s) => <SkillRow key={s.id} skill={s} />)}</div>
       </div>
 

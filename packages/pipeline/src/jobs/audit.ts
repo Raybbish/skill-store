@@ -1,3 +1,5 @@
+// ⛔ 已下架(2026-07-04,ADR 见 docs/decisions):安全扫描整套功能暂停,npm scripts 已移除。
+// 代码保留仅作重新设计时参考,勿直接重新接线。详见 docs/STATUS.md。
 /**
  * audit:对 catalog 里的条目跑 L1/L2 静态审计,填充风险五因子。
  * 按上游仓分组、每仓 clone 一次,多仓有界并发;顺带做 content_hash 漂移检测。

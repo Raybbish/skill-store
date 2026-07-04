@@ -4,7 +4,6 @@ import { allSkills, getSkill, fmtInstalls } from "@/lib/data";
 import { threadVMsForSkill } from "@/lib/community";
 import SkillCommunity from "./SkillCommunity";
 import InstallBox from "./InstallBox";
-import CertBadge from "@/components/CertBadge";
 
 export function generateStaticParams() {
   return allSkills().map((s) => ({ owner: s.owner, repo: s.repo, name: s.name }));
@@ -25,7 +24,7 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
       <Link href="/" className="back">‹ 首页</Link>
 
       <section className="detail-hero">
-        <h1 className="d-name">{s.name} <CertBadge skill={s} size={22} /></h1>
+        <h1 className="d-name">{s.name}</h1>
         <div className="d-pub">
           <Link href={`/publisher/${s.publisher}/`}>@{s.publisher}</Link>
           {s.curatedBy && s.curatedBy.length > 0 && <span className="d-tag">★ 社区精选</span>}

@@ -58,7 +58,7 @@ _生成于 ${now} · 分支 \`${branch}\`${dirty ? ` · 未提交改动 ${dirty}
 
 ## Catalog
 - **skill 总数:${total}**
-- 审计状态:${kv(status)}  →  通过 **${passed} / ${pct}%**
+- 审计状态(⛔ 扫描已下架,ADR 0011;此为历史数据):${kv(status)}  →  通过 **${passed} / ${pct}%**
 - 托管:${kv(hosting)}
 - 已评测:**${evaluated}** · 发布者:**${publishers.size}**
 
@@ -106,7 +106,7 @@ const statusBody = existsSync(statusMdPath) ? mdToHtml(readFileSync(statusMdPath
 const card = (big, label, tone = "") => `<div class="card"><b class="${tone}">${big}</b><span>${label}</span></div>`;
 const cards = [
   card(total, "skill 总数"),
-  card(`${passed}<i>/${pct}%</i>`, "审计通过", "ok"),
+  card(`${passed}<i>/${pct}%</i>`, "审计通过(已下架·历史)", "ok"),
   card(kv(hosting).replace(/·/g, "<i>·</i>"), "托管"),
   card(status.needs_review ?? 0, "待复核", (status.needs_review ?? 0) ? "warn" : ""),
   card(evaluated, "已评测"),

@@ -30,7 +30,7 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
         <h1 className="d-name"><span style={{ fontSize: 26 }}>{p.emoji}</span> {p.title}</h1>
         <p className="d-desc">{p.tagline}。{p.members.length} 件套,装一次就够。</p>
         <CopyCmd cmd={cmd} />
-        <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 8 }}>安装前会逐个展示权限说明并确认;每个成员也可以单独安装。</div>
+        <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 8 }}>安装时逐个校验内容哈希;每个成员也可以单独安装。</div>
       </section>
 
       <div className="list" style={{ marginTop: 14 }}>

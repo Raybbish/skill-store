@@ -41,7 +41,7 @@ export default function CommunityClient({ boards, threads }: { boards: Board[]; 
       )}
       {cur === "announce" && (
         <div className="card" style={{ fontSize: 13, color: "var(--sub)" }}>
-          📢 <b style={{ color: "var(--ink)" }}>为什么公开复盘:</b>认证 skill 被确认恶意的数量目标恒为 0;一旦出现即公开下架并复盘。透明本身就是信任的一部分。
+          📢 <b style={{ color: "var(--ink)" }}>为什么公开复盘:</b>上架 skill 被确认恶意的数量目标恒为 0;一旦出现即公开下架并复盘。透明本身就是信任的一部分。
         </div>
       )}
     </>

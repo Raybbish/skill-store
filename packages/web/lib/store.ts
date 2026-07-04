@@ -7,22 +7,19 @@
  *
  * 本文件**客户端安全**(不 import fs);服务端构建期读取见 store-server.ts。
  */
-import type { Factor, Skill } from "./skill-types";
+import type { Skill } from "./skill-types";
 import { applyRepoCap } from "./skill-utils";
 
 /** 每页条数:DOM 恒 ≤ ~30 行,免虚拟化 */
 export const PAGE_SIZE = 30;
 
-/** 列表行 + 认证徽章弹窗所需的最小字段面(瘦卡片)。
- *  刻意不含 evidence / eval.tasks / license 等重字段——那些只在详情页(全量 Skill)出现。
+/** 列表行所需的最小字段面(瘦卡片)。
+ *  刻意不含 eval.tasks / license 等重字段——那些只在详情页(全量 Skill)出现。
  *  字段与 Skill 同名同型,因此全量 Skill 结构上就是一张合法的 SkillCard,组件两边通吃。 */
 export interface SkillCard {
   id: string; owner: string; repo: string; name: string;
   description?: string; publisher: string;
   category?: string; tags?: string[];
-  status: string; risk: Record<string, Factor>;
-  l3?: { model: string; verdict?: { intent_summary: string } };
-  review?: { verdict: string; by: string; at: string; note: string };
   upstream: string;
   stars?: number | null; installs?: number | null; repoSkillCount?: number;
   bulkSource?: boolean;
@@ -32,7 +29,7 @@ export interface SkillCard {
   addedAt?: number;
 }
 
-/** 场景包:一套一起装的 skill(catalog/packs 策展,成员全 pass 才出包) */
+/** 场景包:一套一起装的 skill(catalog/packs 策展) */
 export interface Pack {
   id: string;
   emoji: string;
@@ -46,8 +43,6 @@ export interface Pack {
 export interface SearchFilters {
   cat?: string | null;
   tag?: string | null;
-  /** 仅无网络请求(risk.network.present !== true) */
-  safeOnly?: boolean;
   /** 仅已评测(ev != null) */
   evaledOnly?: boolean;
   publisher?: string | null;
@@ -89,9 +84,6 @@ export function toCard(s: Skill): SkillCard {
     publisher: s.publisher,
     ...(s.category ? { category: s.category } : {}),
     ...(s.tags?.length ? { tags: s.tags } : {}),
-    status: s.status, risk: s.risk,
-    ...(s.l3?.verdict?.intent_summary ? { l3: { model: s.l3.model, verdict: { intent_summary: s.l3.verdict.intent_summary } } } : {}),
-    ...(s.review ? { review: s.review } : {}),
     upstream: s.upstream,
     ...(s.stars != null ? { stars: s.stars } : {}),
     ...(s.installs != null ? { installs: s.installs } : {}),
@@ -105,7 +97,6 @@ export function toCard(s: Skill): SkillCard {
 export function matchFilters(c: SkillCard, f: SearchFilters): boolean {
   if (f.cat && c.category !== f.cat) return false;
   if (f.tag && !(c.tags ?? []).includes(f.tag)) return false;
-  if (f.safeOnly && c.risk.network?.present === true) return false;
   if (f.evaledOnly && c.ev == null) return false;
   if (f.publisher && c.publisher !== f.publisher) return false;
   if (f.repo && `${c.owner}/${c.repo}` !== f.repo) return false;
@@ -138,7 +129,7 @@ export function queryTerms(q: string): string[] {
 }
 
 const hasFilters = (f: SearchFilters) =>
-  Boolean(f.cat || f.tag || f.safeOnly || f.evaledOnly || f.publisher || f.repo);
+  Boolean(f.cat || f.tag || f.evaledOnly || f.publisher || f.repo);
 
 /**
  * P0 实现:静态分片 + 客户端过滤。

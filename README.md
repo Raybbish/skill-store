@@ -1,6 +1,8 @@
 # oh-my-skill
 
-以**安全透明、可复现评测、效果可见**为核心的 Agent Skills 商店。发现是红海,我们卖信任。
+以**可复现评测、效果可见**为核心的 Agent Skills 商店。发现是红海,我们卖信任。
+
+> ⛔ **安全扫描整套已下架**(2026-07-04,[ADR 0011](docs/decisions/0011-unlist-security-scan.md)):审计链路(L1/L2/L3 + 人工复核)与全部产品面展示暂停,待详细研究与设计后再上架。下文带 ~~删除线~~ 或标注「已下架」的条目为历史记录。
 
 当前阶段:**M0 可信目录**(详见 `M0 详细设计`)。
 
@@ -31,19 +33,18 @@ npm run ingest -- --limit 10           # 限量试跑
 
 - **托管/索引双轨**:宽松 licence(MIT/Apache 等)→ `mirrored` 镜像;其余 → `indexed` 只存元数据 + 跳转上游
 - **content_hash**:对目录内 (path, git blob sha) 排序集合取 sha256,CLI 安装时校验,防上游篡改
-- **security_audit.status = pending**:采集只做静态清点(脚本盘点),L1-L3 审计由独立 audit job 填充(W2-W3)
-- 措辞红线:全站只说「已扫描/已评测」,不说「保证安全」
+- **security_audit 字段**:catalog 中保留历史数据,但审计管线已下架(ADR 0011),前端与 CLI 不再读取
+- 措辞红线:全站不说「保证安全」
 
 ## 路线
 
 - [x] W1 骨架 + official adapter(clone 模式,首批 27 条:12 mirrored / 15 indexed)
-- [x] W2 审计 L1(critical 签名)+ L2(五因子静态分析)— 首轮 27 条:19 pass / 8 needs_review;`npm run audit`
-- [x] W3a 审计 L3(LLM 意图审查):`npm run audit:l3`,OpenAI 兼容任意供应商
-      (`LLM_BASE_URL`/`LLM_API_KEY`/`LLM_MODEL`;`LLM_MOCK=1` 测管路;fail-closed,只升不降,不覆盖人工签名)
+- [x] ~~W2 审计 L1(critical 签名)+ L2(五因子静态分析)~~ **已下架**(ADR 0011;源码留仓,scripts 已移除)
+- [x] ~~W3a 审计 L3(LLM 意图审查)~~ **已下架**(ADR 0011;源码留仓,scripts 已移除)
 - [x] W3b Supabase 同步:`npm run sync`(增量,游标存 sync_state;infra/schema.sql 建表;sync.yml 自动触发)
 - [x] W3c 供给扩量:GitHub 全域采集器 `npm run ingest -- --github-search 100`(topic 搜头部仓,注入 stars,每仓折叠采样 MAX_PER_REPO + catalog/collections 合集条目);skills.sh 榜单 `--skills-sh 200`(解析 SSR 榜单注入安装量);三段式 ID owner/repo/name;详见 docs/供给采集设计.md
 - [x] W4 商店前端:Next.js 纯静态导出,构建时直读 catalog;`npm run web` 本地预览,`npm run web:build` 出静态站
-- [x] W5 CLI:`node packages/cli/bin/oh-my-skill.mjs add <owner/repo/name>` — 安装前营养标签确认,逐文件复算 blob sha 校验 content_hash,篡改即拒装
+- [x] W5 CLI:`node packages/cli/bin/oh-my-skill.mjs add <owner/repo/name>` — 逐文件复算 blob sha 校验 content_hash,篡改即拒装
 
 ## M1 评测(进行中 · 可复现协议,平台做赛道不做裁判)
 

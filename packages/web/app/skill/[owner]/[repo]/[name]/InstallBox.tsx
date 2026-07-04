@@ -28,7 +28,7 @@ function CopyBtn({ text }: { text: string }) {
 /**
  * 安装区:对标 ModelScope 的多方式安装,但保留本店差异点——
  *   - 下载 zip 仅 mirrored(宽松 licence)可打包;indexed 回上游(licence 双轨 + DMCA)
- *   - npx / bash 装前显示权限营养标签、装时校验 content_hash(别家盲装,这里不是)
+ *   - npx / bash 装时校验 content_hash(别家盲装,这里不是)
  *   - 不做 ModelScope 的「SDK 安装」:本店 agent / 模型中立,无自家 SDK,照搬会错位
  */
 export default function InstallBox({ skill }: { skill: Skill }) {
@@ -56,7 +56,7 @@ export default function InstallBox({ skill }: { skill: Skill }) {
       </div>
 
       <div className="inst-m">
-        <div className="inst-h"><span>/</span> 通过 npx 安装 <em className="inst-tag">装前看权限标签 · 校验哈希</em></div>
+        <div className="inst-h"><span>/</span> 通过 npx 安装 <em className="inst-tag">校验哈希</em></div>
         <div className="inst-cmd"><code className="cli">{npx}</code><CopyBtn text={npx} /></div>
       </div>
 

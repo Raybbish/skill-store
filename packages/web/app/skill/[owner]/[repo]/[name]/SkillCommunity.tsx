@@ -21,7 +21,7 @@ export default function SkillCommunity({ help, challenge, show }: { help: Thread
       <div className="card" style={{ padding: 16, marginTop: 10 }}>
         {tab === "reviews" && (
           <div className="review-box" style={{ marginTop: 0 }}>
-            🔎 <b>平台审计摘要</b>:已通过 L1 签名 / L2 五因子 / L3 意图三层审计与人工复核,权限见上。冷启动期评价位由审计摘要占位;仅「已验证安装」用户可评价,评测走可复现协议(开发中),成熟后并入带元数据的跑分摘要。
+            💬 <b>评价冷启动中</b>:仅「已验证安装」用户可评价,评测走可复现协议(开发中),成熟后并入带元数据的跑分摘要。
           </div>
         )}
         {tab === "help" && (help.length ? help.map((t, i) => <ThreadRow vm={t} key={i} />) : empty("还没有求助帖 · 遇到问题可发起提问(需登录)"))}

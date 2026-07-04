@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import type { SkillCard } from "@/lib/store";
-import CertBadge from "./CertBadge";
 
 const fmt = (n: number) => (n >= 1e6 ? `${Math.round(n / 1e5) / 10}M` : n >= 1e3 ? `${Math.round(n / 100) / 10}K` : String(n));
 
@@ -13,7 +12,7 @@ export default function SkillRow({ skill, rank, isNew }: { skill: SkillCard; ran
     <div className="row">
       {rank != null && <div className={`idx ${rank <= 3 ? "top" : ""}`}>{String(rank).padStart(2, "0")}</div>}
       <div className="main">
-        <div className="nm"><Link href={href}>{s.name}</Link> <CertBadge skill={s} />{isNew && <span className="new-tag">NEW</span>}</div>
+        <div className="nm"><Link href={href}>{s.name}</Link>{isNew && <span className="new-tag">NEW</span>}</div>
         {s.description && <div className="ds">{s.description}</div>}
         <div className="au">@{s.publisher}</div>
       </div>

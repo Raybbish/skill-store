@@ -56,7 +56,6 @@ export default function HomeClient({ first, meta, cats, tags, catTag, packs }: {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string | null>(null); // 第一步:主分类(每个 skill 归一个)
   const [tag, setTag] = useState<string | null>(null); // 第二步:分类内细分标签(横切,选填)
-  const [safeOnly, setSafeOnly] = useState(false);
   const [repo, setRepo] = useState<string | null>(null); // 深链:精确到仓(收录页「已收录 ›」)
   const [pub, setPub] = useState<string | null>(null);   // 深链:发布者
   const [page, setPage] = useState(1);
@@ -79,7 +78,7 @@ export default function HomeClient({ first, meta, cats, tags, catTag, packs }: {
   // 取数:防抖 + 防竞态,全部走 store.search 一条缝
   useEffect(() => {
     const my = ++seq.current;
-    const plain = !q.trim() && !cat && !tag && !safeOnly && !repo && !pub;
+    const plain = !q.trim() && !cat && !tag && !repo && !pub;
     if (plain && page === 1) {
       setRes({ items: first, total: meta.total, page: 1, pages: meta.pages });
       setBusy(false); setErr(false);
@@ -87,13 +86,13 @@ export default function HomeClient({ first, meta, cats, tags, catTag, packs }: {
     }
     setBusy(true);
     const run = () =>
-      store.search(q, { cat, tag, safeOnly, repo, publisher: pub }, page)
+      store.search(q, { cat, tag, repo, publisher: pub }, page)
         .then((r) => { if (seq.current === my) { setRes(r); setErr(false); } })
         .catch(() => { if (seq.current === my) setErr(true); })
         .finally(() => { if (seq.current === my) setBusy(false); });
     const timer = setTimeout(run, q ? 160 : 0);
     return () => clearTimeout(timer);
-  }, [q, cat, tag, safeOnly, repo, pub, page, first, meta]);
+  }, [q, cat, tag, repo, pub, page, first, meta]);
 
   const goto = (p: number) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const resetPage = () => setPage(1);
@@ -159,7 +158,6 @@ export default function HomeClient({ first, meta, cats, tags, catTag, packs }: {
       )}
 
       <div className="filters">
-        <button className={`chip ${safeOnly ? "on" : ""}`} onClick={() => { setSafeOnly(!safeOnly); resetPage(); }}>🛡️ 仅无网络请求</button>
         {selectedCat && <Link href={`/category/${selectedCat.slug}/`} className="chip">看「{selectedCat.label}」分类页 ↗</Link>}
         <span className="fcount">{nf(res.total)} / {nf(meta.total)}</span>
       </div>

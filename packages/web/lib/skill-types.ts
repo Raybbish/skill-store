@@ -1,5 +1,3 @@
-export interface Factor { present: boolean | null; detail?: string }
-
 export interface EvalData {
   category: string; runner: string; score: number; lift_pp: number;
   tasks: { task: string; with_skill: { score: number }; without_skill: { score: number }; delta: number }[];
@@ -18,10 +16,6 @@ export interface Skill {
   duplicateOf?: string | null;
   /** SKILL.md frontmatter 是否合规;false(不合规)默认列表隐藏 */
   frontmatterValid?: boolean;
-  status: string; risk: Record<string, Factor>;
-  evidence: { factor: string; file: string; line?: number | null; note?: string }[];
-  review?: { verdict: string; by: string; at: string; note: string };
-  l3?: { model: string; verdict?: { intent_summary: string } };
   tokens: number; stars?: number | null;
   installs?: number | null;
   /** 上游仓库 SKILL.md 总数(巨仓降权信号) */

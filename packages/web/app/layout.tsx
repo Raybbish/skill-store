@@ -9,7 +9,7 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["500"], variable: "--f
 
 export const metadata: Metadata = {
   title: "oh-my-skill — 可信的 Agent Skills 商店",
-  description: "浏览、比较、一键安装 Agent Skills。每个 skill 带一个认证图标,点开可看它的审计流程与权限披露。",
+  description: "浏览、比较、一键安装 Agent Skills。安装时逐文件校验内容哈希,与上游一致才落盘。",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="nav-r"><Link href="/">🔍</Link><Link href="/community/" className="new">＋ 发布</Link></div>
         </div></div>
         <div className="wrap">{children}</div>
-        <footer>oh-my-skill · 审计报告随公开 catalog 仓可验证 · <Link href="/collections/">收录标准</Link> · Agent Skills 认证商店</footer>
+        <footer>oh-my-skill · catalog 公开可验证 · <Link href="/collections/">收录标准</Link> · Agent Skills 商店</footer>
       </body>
     </html>
   );

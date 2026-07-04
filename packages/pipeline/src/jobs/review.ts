@@ -1,3 +1,5 @@
+// ⛔ 已下架(2026-07-04,ADR 见 docs/decisions):安全扫描整套功能暂停,npm scripts 已移除。
+// 代码保留仅作重新设计时参考,勿直接重新接线。详见 docs/STATUS.md。
 /**
  * review:人工复核 needs_review 条目。复核是唯一能把条目改成 pass/rejected 的通道,
  * 且必须留签名(who/when/note),写进 security_audit.review 永久留痕。

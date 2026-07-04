@@ -94,7 +94,7 @@ writeFileSync(join(OUT, "docs.json"), JSON.stringify(docs));
 const fresh = docs.filter((c) => c.addedAt).sort((a, b) => b.addedAt! - a.addedAt!).slice(0, 100);
 writeFileSync(join(OUT, "new.json"), JSON.stringify(fresh));
 
-// 场景包:catalog/packs/*.json → 成员从瘦卡池解析;成员缺失或未过审 → 整包跳过(包=放心一键装的承诺)
+// 场景包:catalog/packs/*.json → 成员从瘦卡池解析;成员缺失 → 整包跳过(包=放心一键装的承诺)
 const byId = new Map<string, SkillCard>(docs.map((c) => [c.id, c]));
 const packs: Pack[] = [];
 try {
@@ -103,8 +103,8 @@ try {
     if (!f.endsWith(".json")) continue;
     const p = JSON.parse(readFileSync(join(PACKS, f), "utf8"));
     const members = (p.skills as string[]).map((id) => byId.get(id)).filter((c): c is SkillCard => Boolean(c));
-    if (members.length !== p.skills.length || members.some((m) => m.status !== "pass")) {
-      console.warn(`[build-index] pack ${p.id} 成员缺失或未过审,跳过`);
+    if (members.length !== p.skills.length) {
+      console.warn(`[build-index] pack ${p.id} 成员缺失,跳过`);
       continue;
     }
     packs.push({ id: p.id, emoji: p.emoji, tile: p.tile, title: p.title, tagline: p.tagline, members });

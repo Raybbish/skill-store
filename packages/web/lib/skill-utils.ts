@@ -41,8 +41,3 @@ export function applyRepoCap<T extends { owner: string; repo: string }>(list: T[
   }
   return tail.length ? head.concat(tail) : head;
 }
-
-export const FACTOR_LABELS: Record<string, [string, string]> = {
-  scripts: ["📜", "脚本执行"], network: ["🌐", "网络请求"], filesystem: ["📂", "文件读写"],
-  env_access: ["🔑", "环境变量"], external_commands: ["⚙️", "外部命令"],
-};

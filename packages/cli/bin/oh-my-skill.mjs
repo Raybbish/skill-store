@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 /**
  * oh-my-skill CLI — 别家 npx 是盲装,我们不是:
- *   1. 安装前展示权限营养标签(五因子 + 审计状态 + 复核签名),要求确认
- *   2. 安装时对每个文件复算 git blob sha,与货架 content_hash 比对(防上游被篡改)
- *   3. 校验失败 → 拒装,绝不落盘
+ *   1. 安装时对每个文件复算 git blob sha,与货架 content_hash 比对(防上游被篡改)
+ *   2. 校验失败 → 拒装,绝不落盘
  *
  * 用法:
  *   oh-my-skill add <owner/repo/name> [--yes] [--to <dir>]
@@ -39,8 +38,6 @@ function targets() {
   return out;
 }
 
-const FACTORS = { scripts: "📜 脚本执行", network: "🌐 网络请求", filesystem: "📂 文件读写", env_access: "🔑 环境变量", external_commands: "⚙️ 外部命令" };
-
 function blobSha(buf) {
   return createHash("sha1").update(`blob ${buf.length}\0`).update(buf).digest("hex");
 }
@@ -75,7 +72,6 @@ async function fetchReport(id) {
   // Supabase 行 → 报告形状归一
   return {
     meta: { id: r.id, hosting: r.hosting, license: r.license, upstream: r.upstream, content_hash: r.content_hash },
-    security_audit: { status: r.audit_status, risk_factors: r.risk_factors, review: r.review },
   };
 }
 
@@ -98,22 +94,9 @@ async function confirm(msg) {
 
 async function add(id) {
   const report = await fetchReport(id);
-  const m = report.meta, sa = report.security_audit;
+  const m = report.meta;
   console.log(`\n■ ${m.id}  (${m.license} / ${m.hosting})`);
-  console.log(`  审计状态: ${sa.status === "pass" ? "✓ 已通过三层审计" : "⚠ " + sa.status}`);
-  let privileged = false;
-  for (const [k, label] of Object.entries(FACTORS)) {
-    const f = sa.risk_factors?.[k];
-    const mark = f?.present === true ? "含" : f?.present === false ? "无" : "未判定";
-    if (f?.present === true) privileged = true;
-    console.log(`  ${label}: ${mark}${f?.detail ? ` — ${f.detail}` : ""}`);
-  }
-  if (sa.review) console.log(`  人工复核: ${sa.review.by} · ${sa.review.note}`);
-  if (sa.status !== "pass") {
-    if (!(await confirm("⚠ 该 skill 未通过审计,仍要安装?"))) return console.log("已取消");
-  } else if (privileged) {
-    if (!(await confirm("该 skill 含特权行为(见上),确认安装?"))) return console.log("已取消");
-  } else if (!(await confirm("确认安装?"))) return console.log("已取消");
+  if (!(await confirm("确认安装?"))) return console.log("已取消");
 
   // 获取文件:本地 catalog 的 mirror/,或 clone 上游
   const work = join(tmpdir(), `oh-my-skill-${Date.now()}`);
@@ -133,7 +116,7 @@ async function add(id) {
   const actual = await dirContentHash(srcDir);
   if (m.content_hash && actual !== m.content_hash) {
     await rm(work, { recursive: true, force: true });
-    throw new Error(`✗ 内容哈希不匹配!货架 ${m.content_hash.slice(0, 20)}… vs 实际 ${actual.slice(0, 20)}…\n  内容可能在审计后被修改,已拒绝安装。`);
+    throw new Error(`✗ 内容哈希不匹配!货架 ${m.content_hash.slice(0, 20)}… vs 实际 ${actual.slice(0, 20)}…\n  内容可能在收录后被修改,已拒绝安装。`);
   }
   console.log(`  ✓ 内容哈希校验通过 ${actual.slice(0, 27)}…`);
 
@@ -163,7 +146,7 @@ if (!run || (cmd !== "list" && !target)) {
 }
 (async () => {
   if (cmd === "add") {
-    // 多目标顺序安装(场景包「装整套」);每个仍走完整的披露→确认→哈希校验流程
+    // 多目标顺序安装(场景包「装整套」);每个仍走完整的确认→哈希校验流程
     const ids = targets();
     for (const id of ids) await add(id);
     if (ids.length > 1) console.log(`\n✓ 一套装齐:${ids.length} 个 skill 处理完毕`);

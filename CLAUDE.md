@@ -15,12 +15,12 @@
 - **一次改动 = 一个分支 + 一个 PR**;PR 描述写清"这个 agent 在做什么"。PR 列表就是全体 agent 的看板。
 
 ## 目录
-- `packages/` 代码:`pipeline`(采集+审计+评测)· `web`(Next 前端)· `cli` · `schemas`
-- `catalog/` **事实源**(公开;审计报告随之可验证,改动走 PR、带 commit 溯源)
+- `packages/` 代码:`pipeline`(采集+评测;审计已下架)· `web`(Next 前端)· `cli` · `schemas`
+- `catalog/` **事实源**(公开;改动走 PR、带 commit 溯源)
 - `docs/` 文档,**Markdown 为准**:`STATUS.md` 手写现状 · `STATUS.generated.md` 脚本自动生成 · `decisions/` ADR
 - `scripts/status.mjs` 从 catalog + git 派生状态快照
 
 ## 硬约束(沿用 PRD)
-- **措辞:全站只说「已扫描 / 已评测」,禁「保证安全」。** 权限标签是披露,不是背书。
-- 含网络外联的 skill 一律至少 needs_review,人工放行。
+- ⛔ **安全扫描整套已下架**(2026-07-04,[ADR 0011](docs/decisions/0011-unlist-security-scan.md)):不得在产品面展示任何审计/认证/权限披露内容,不得重新接线 `audit`/`review`/`audit:l3`——重新上架需先完成 ADR 0011 列的研究与设计。content_hash 完整性校验、发布者认证、评测(eval)不在下架范围。
+- **措辞:全站禁「保证安全」**;涉及评测只说「已评测」。
 - 品牌名:**oh-my-skill**。

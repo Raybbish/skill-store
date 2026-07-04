@@ -8,8 +8,8 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import type { Collection, Skill } from "./skill-types";
 
-export type { Collection, EvalData, Factor, Skill } from "./skill-types";
-export { byPopularity, FACTOR_LABELS, fmtInstalls, normStars } from "./skill-utils";
+export type { Collection, EvalData, Skill } from "./skill-types";
+export { byPopularity, fmtInstalls, normStars } from "./skill-utils";
 
 const CATALOG = join(process.cwd(), "../../catalog/skills");
 
@@ -24,7 +24,6 @@ function scan(): Cache {
       for (const name of readdirSync(join(CATALOG, owner, repo))) {
         try {
           const r = JSON.parse(readFileSync(join(CATALOG, owner, repo, name, "skill-report.json"), "utf8"));
-          const sa = r.security_audit;
           all.push({
             id: r.meta.id, owner, repo, name: r.meta.name, description: r.meta.description,
             license: r.meta.license, hosting: r.meta.hosting, publisher: r.meta.publisher,
@@ -32,8 +31,6 @@ function scan(): Cache {
             hasMirror: existsSync(join(CATALOG, owner, repo, name, "mirror")),
             duplicateOf: r.meta.duplicate_of ?? null,
             frontmatterValid: r.frontmatter_valid !== false,
-            status: sa.status, risk: sa.risk_factors ?? {},
-            evidence: sa.evidence ?? [], review: sa.review, l3: sa.l3,
             tokens: r.token_cost?.body_tokens ?? 0, stars: r.signals?.stars_github,
             installs: r.signals?.installs_skills_sh ?? null,
             repoSkillCount: r.signals?.repo_skill_count,

@@ -1,3 +1,5 @@
+// ⛔ 已下架(2026-07-04,ADR 见 docs/decisions):安全扫描整套功能暂停,npm scripts 已移除。
+// 代码保留仅作重新设计时参考,勿直接重新接线。详见 docs/STATUS.md。
 /**
  * audit-l3:对已过 L1/L2 的条目跑 LLM(默认 DeepSeek)意图审查,并由它做最终裁决。
  * 裁决口径:仅「重大风险」转人工——外传路径 / 提示注入 / 模型自评 severity=major / L1 恶意签名命中;
