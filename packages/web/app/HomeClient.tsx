@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { StaticStore, type SearchResult, type SkillCard } from "@/lib/store";
+import { StaticStore, type Pack, type SearchResult, type SkillCard } from "@/lib/store";
 import SkillRow from "@/components/SkillRow";
 
 type Chip = { slug: string; label: string; n: number };
@@ -12,27 +12,52 @@ const nf = (x: number | null | undefined) => (typeof x === "number" && !Number.i
 /** 模块级单例:分片与 docs 缓存跨渲染复用 */
 const store = new StaticStore();
 
+/** 场景包跑马灯:双轨无缝循环,hover 暂停;reduced-motion 降级为静态横滑(见 globals.css) */
+function PackMarquee({ packs }: { packs: Pack[] }) {
+  if (!packs.length) return null;
+  const Card = ({ p }: { p: Pack }) => (
+    <Link href={`/pack/${p.id}/`} className="pk">
+      <span className="tile" style={{ background: p.tile }}>{p.emoji}</span>
+      <span>
+        <span className="pt">{p.title}</span>
+        <span className="pd">{p.tagline}</span>
+      </span>
+      <span className="arr">›</span>
+    </Link>
+  );
+  return (
+    <div className="sec">
+      <div className="sec-h"><h2>一套装齐</h2><span className="k">按场景配好,一条命令</span></div>
+      <div className="mq">
+        <div className="mq-track">
+          {packs.map((p) => <Card p={p} key={p.id} />)}
+          <span aria-hidden="true" style={{ display: "contents" }}>
+            {packs.map((p) => <Card p={p} key={`${p.id}-b`} />)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
- * P0(ADR 0007):任何时刻 DOM 只有 ≤30 行,免虚拟化。
- * - 默认视图:走构建期分片(首屏来自服务端 props,翻页 fetch /idx/pages/pN.json);
- * - 筛选/搜索:懒加载一次 /idx/docs.json 后本地过滤 —— 全部经 store.search() 一条缝,
- *   P1 换 Typesense 时只换 store 实现。
- * 支持深链:/browse/?cat=…&tag=…&q=…(分类页「看全部」跳转用)。
+ * 首页 = 搜索 + 场景包 + 完整货架(原 /browse 整体并入,ADR 0007 的缝不变)。
+ * - 默认视图走构建期分片(首屏 30 条服务端直出);筛选/搜索懒加载 docs 本地过滤;
+ * - 深链 /?cat=&tag=&q=&repo=&pub= 全部支持(原 /browse 深链由薄壳跳转保活)。
  */
-export default function BrowseClient({ first, meta, cats, tags, catTag, upstream }: {
+export default function HomeClient({ first, meta, cats, tags, catTag, packs }: {
   first: SkillCard[];
   meta: { total: number; pages: number; size: number };
   cats: Chip[];
   tags: Chip[];
   catTag: Record<string, Record<string, number>>;
-  /** 全网折叠收录总量(严选比例条用);null 不渲染 */
-  upstream?: number | null;
+  packs: Pack[];
 }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string | null>(null); // 第一步:主分类(每个 skill 归一个)
   const [tag, setTag] = useState<string | null>(null); // 第二步:分类内细分标签(横切,选填)
   const [safeOnly, setSafeOnly] = useState(false);
-  const [repo, setRepo] = useState<string | null>(null); // 深链:精确到仓(合集页「已收录 ›」)
+  const [repo, setRepo] = useState<string | null>(null); // 深链:精确到仓(收录页「已收录 ›」)
   const [pub, setPub] = useState<string | null>(null);   // 深链:发布者
   const [page, setPage] = useState(1);
   const [res, setRes] = useState<SearchResult>({ items: first, total: meta.total, page: 1, pages: meta.pages });
@@ -86,32 +111,21 @@ export default function BrowseClient({ first, meta, cats, tags, catTag, upstream
 
   return (
     <>
-      <section className="hero"><div className="eyebrow">浏览</div><h1 className="small">全部 skill</h1></section>
+      <section className="hero">
+        <h1>给你的 agent,<br />找对 <span className="hl">skill</span></h1>
+        <div className="searchbar" style={{ marginTop: 22 }}>
+          <span>🔍</span>
+          <input value={q} onChange={(e) => { setQ(e.target.value); resetPage(); }} placeholder={`搜索 ${nf(meta.total)} 个 skill…`} />
+        </div>
+      </section>
 
-      {/* 严选比例条(方案 B):蓝段=上架,灰段=全网;不用读字就能看懂,点击进收录标准 */}
-      {upstream != null && upstream > 0 && typeof meta.total === "number" && (
-        <Link href="/collections/" style={{ display: "block", maxWidth: 640, margin: "2px 0 6px" }}>
-          <span style={{ display: "flex", height: 8, gap: 2 }} aria-hidden="true">
-            <span style={{ width: `${Math.max(5, Math.round((meta.total / (meta.total + upstream)) * 100))}%`, background: "var(--blue)", borderRadius: "5px 0 0 5px" }} />
-            <span style={{ flex: 1, background: "#e6e8ee", borderRadius: "0 5px 5px 0" }} />
-          </span>
-          <span style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 7, fontSize: 12.5, gap: 12 }}>
-            <span style={{ fontWeight: 700, color: "var(--ink)" }}>
-              <span style={{ color: "var(--blue)", fontFamily: "var(--display)", fontSize: 14 }}>{nf(meta.total)}</span> 个上架
-            </span>
-            <span style={{ color: "var(--sub)", fontWeight: 600, whiteSpace: "nowrap" }}>
-              全网 {nf(meta.total + upstream)} 个 · <span style={{ color: "var(--blue)", fontWeight: 700 }}>为什么只上架这些 ›</span>
-            </span>
-          </span>
-        </Link>
-      )}
+      <PackMarquee packs={packs} />
 
-      <div className="searchbar" style={{ marginTop: 4 }}>
-        <span>🔍</span>
-        <input value={q} onChange={(e) => { setQ(e.target.value); resetPage(); }} placeholder={`搜索 ${nf(meta.total)} 个 skill…`} />
+      <div className="sec">
+        <div className="sec-h"><h2>全部 skill</h2>{q.trim() ? <span className="k">相关度排序</span> : <span className="k">热门排序</span>}</div>
       </div>
 
-      {/* 深链来源筛选(合集页「已收录 ›」/ 发布者):显式展示,可一键清除 */}
+      {/* 深链来源筛选(收录页「已收录 ›」/ 发布者):显式展示,可一键清除 */}
       {(repo || pub) && (
         <div className="filters">
           <span style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600, alignSelf: "center" }}>只看{repo ? "仓库" : "发布者"}</span>
@@ -145,7 +159,6 @@ export default function BrowseClient({ first, meta, cats, tags, catTag, upstream
       )}
 
       <div className="filters">
-        <span style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600 }}>{q.trim() ? "相关度排序" : "热门排序"}</span>
         <button className={`chip ${safeOnly ? "on" : ""}`} onClick={() => { setSafeOnly(!safeOnly); resetPage(); }}>🛡️ 仅无网络请求</button>
         {selectedCat && <Link href={`/category/${selectedCat.slug}/`} className="chip">看「{selectedCat.label}」分类页 ↗</Link>}
         <span className="fcount">{nf(res.total)} / {nf(meta.total)}</span>

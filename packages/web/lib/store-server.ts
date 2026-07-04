@@ -5,7 +5,7 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { IdxMeta, SkillCard } from "./store";
+import type { IdxMeta, Pack, SkillCard } from "./store";
 
 const IDX = join(process.cwd(), "public/idx");
 
@@ -25,4 +25,13 @@ export function readIdxMeta(): IdxMeta {
 
 export function readIdxPage(n: number): SkillCard[] {
   return readJson<SkillCard[]>(`pages/p${n}.json`);
+}
+
+export function readIdxPacks(): Pack[] {
+  return readJson<Pack[]>("packs.json");
+}
+
+/** 新上架(按收录时间降序,build-index 产出) */
+export function readIdxNew(): SkillCard[] {
+  return readJson<SkillCard[]>("new.json");
 }

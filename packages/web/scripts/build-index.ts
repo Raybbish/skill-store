@@ -9,10 +9,11 @@
  * dev/build 经 predev/prebuild 自动执行。**必须以 packages/web 为 cwd**(data.ts 按 cwd 找 catalog)。
  * 产物是派生物,不进 git(见 .gitignore);搜索/浏览查它,catalog 仍是唯一事实源。
  */
-import { mkdirSync, rmSync, writeFileSync, statSync } from "node:fs";
+import { execSync } from "node:child_process";
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { allSkills } from "../lib/data";
-import { PAGE_SIZE, toCard, type IdxMeta } from "../lib/store";
+import { PAGE_SIZE, toCard, type IdxMeta, type Pack, type SkillCard } from "../lib/store";
 import { applyRepoCap, byPopularity } from "../lib/skill-utils";
 import { featuredLabels, tagLabels } from "@skill-store/schemas";
 
@@ -25,8 +26,32 @@ if (!skills.length) {
   process.exit(1);
 }
 
+// 收录时间 = skill-report.json 首次进入 git 账本的 commit 时间(一次遍历,不动采集管线)
+function gitAddedAt(): Map<string, number> {
+  const added = new Map<string, number>();
+  try {
+    const out = execSync("git log --diff-filter=A --format=%x01%ct --name-only -- catalog/skills", {
+      cwd: join(process.cwd(), "../.."), encoding: "utf8", maxBuffer: 512 * 1024 * 1024,
+    });
+    let ts = 0;
+    for (const line of out.split("\n")) {
+      if (line.charCodeAt(0) === 1) { ts = parseInt(line.slice(1), 10); continue; }
+      const m = line.match(/^catalog\/skills\/(.+)\/skill-report\.json$/);
+      if (m && !added.has(m[1])) added.set(m[1], ts);
+    }
+  } catch (e) {
+    console.warn("[build-index] git 收录时间不可用(浅克隆/无 git?),新上架榜将为空:", (e as Error).message);
+  }
+  return added;
+}
+const addedAt = gitAddedAt();
+
 // 纯热门序全量瘦卡(docs.json);分片视图在此之上套 per-repo cap
-const docs = [...skills].sort(byPopularity).map(toCard);
+const docs = [...skills].sort(byPopularity).map((s) => {
+  const c = toCard(s);
+  const t = addedAt.get(c.id);
+  return t ? { ...c, addedAt: t } : c;
+});
 const shelf = applyRepoCap(docs);
 
 // 计数(与 matchFilters/货架口径一致:分类=主分类命中;标签=tags 命中)
@@ -65,7 +90,29 @@ const meta: IdxMeta = {
 writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta));
 writeFileSync(join(OUT, "docs.json"), JSON.stringify(docs));
 
+// 新上架(榜单「今日」):按收录时间降序,取前 100
+const fresh = docs.filter((c) => c.addedAt).sort((a, b) => b.addedAt! - a.addedAt!).slice(0, 100);
+writeFileSync(join(OUT, "new.json"), JSON.stringify(fresh));
+
+// 场景包:catalog/packs/*.json → 成员从瘦卡池解析;成员缺失或未过审 → 整包跳过(包=放心一键装的承诺)
+const byId = new Map<string, SkillCard>(docs.map((c) => [c.id, c]));
+const packs: Pack[] = [];
+try {
+  const PACKS = join(process.cwd(), "../../catalog/packs");
+  for (const f of readdirSync(PACKS).sort()) {
+    if (!f.endsWith(".json")) continue;
+    const p = JSON.parse(readFileSync(join(PACKS, f), "utf8"));
+    const members = (p.skills as string[]).map((id) => byId.get(id)).filter((c): c is SkillCard => Boolean(c));
+    if (members.length !== p.skills.length || members.some((m) => m.status !== "pass")) {
+      console.warn(`[build-index] pack ${p.id} 成员缺失或未过审,跳过`);
+      continue;
+    }
+    packs.push({ id: p.id, emoji: p.emoji, tile: p.tile, title: p.title, tagline: p.tagline, members });
+  }
+} catch { /* packs 目录可缺省 */ }
+writeFileSync(join(OUT, "packs.json"), JSON.stringify(packs));
+
 const kb = (f: string) => `${Math.round(statSync(join(OUT, f)).size / 1024)}KB`;
 console.log(
-  `[build-index] ${docs.length} 条 → ${pages} 片 × ${PAGE_SIZE} · meta ${kb("meta.json")} · docs ${kb("docs.json")} · p1 ${kb("pages/p1.json")} · ${Date.now() - t0}ms`,
+  `[build-index] ${docs.length} 条 → ${pages} 片 × ${PAGE_SIZE} · meta ${kb("meta.json")} · docs ${kb("docs.json")} · p1 ${kb("pages/p1.json")} · 新上架 ${fresh.length} · 包 ${packs.length} · ${Date.now() - t0}ms`,
 );

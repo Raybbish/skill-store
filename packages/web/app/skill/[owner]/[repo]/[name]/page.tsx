@@ -22,7 +22,7 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
 
   return (
     <>
-      <Link href="/browse/" className="back">‹ 浏览</Link>
+      <Link href="/" className="back">‹ 首页</Link>
 
       <section className="detail-hero">
         <h1 className="d-name">{s.name} <CertBadge skill={s} size={22} /></h1>

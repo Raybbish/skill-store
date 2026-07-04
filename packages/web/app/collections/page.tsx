@@ -30,7 +30,7 @@ export default function Collections() {
 
   return (
     <>
-      <Link href="/browse/" className="back">‹ 浏览</Link>
+      <Link href="/" className="back">‹ 首页</Link>
 
       <section className="hero">
         <div className="eyebrow">收录</div>
@@ -52,7 +52,7 @@ export default function Collections() {
             </div>
             <div className="rt">
               {c.stars != null && <div className="score"><span className="gold">★</span> {fmtInstalls(c.stars)}</div>}
-              <Link href={`/browse/?repo=${encodeURIComponent(c.id)}`} className="go">已收录 ›</Link>
+              <Link href={`/?repo=${encodeURIComponent(c.id)}`} className="go">已收录 ›</Link>
               <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600 }}>源头 ↗</a>
             </div>
           </div>

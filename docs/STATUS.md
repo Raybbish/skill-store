@@ -12,6 +12,7 @@
 - **审计**:L1 静态签名 + L2 脚本数据流已跑;风险五因子 + 三段式 ID(`owner/repo/name`)入 schema。
 - **前端(`packages/web`)**:v4「认证图标 + 去盒子编辑向」已落地——`CertBadge` 弹窗、`SkillRow`、home / browse / charts / detail(精简)/ community / publisher;`tsc --noEmit` 通过。
 - **货架指标口径**(ADR 0005):stars 与 installs 实测零重叠(98.8% / 0.8%),故头条统一 stars、缺失回落 installs→「新」;排序 `byPopularity` = 归一 stars(`stars/√repo_skill_count` 抑制巨仓)+ installs 次键;去 browse 双轴、首页「大家都在装」改「热门」。`tsc` 通过。
+- **新 IA + 场景包**(2026-07-04,用户导向裁决):nav 五收四(首页/榜单/社区/收录);「浏览」并入首页(搜索 + 场景包跑马灯 + 完整货架),`/browse/` 留薄壳跳转保深链;榜单改双 tab——🆕 新上架(按收录日分组,数据 = catalog git 首次提交时间,build-index 一次遍历)+ 🔥 热门(+评测榜占位);场景包 8 套(`catalog/packs/*.json`,成员全 pass 才出包)→ `idx/packs.json` → 首页跑马灯 + `/pack/[id]` 页;CLI `add` 支持多目标(包页「装整套」命令);文案红线:货架/包页零内部词汇。待本机浏览器回归。
 - **P0 规模化止血 + 取数缝**(ADR 0007,2026-07-04):`lib/store.ts` 定 `SkillStore` 接口(search/getSkill,签名冻结)+ `SkillCard` 瘦卡;`build-index.ts` 构建期产 `public/idx/`(30 条/片 ×194 + docs.json + meta.json,热门序含 per-repo cap=3,收掉同仓聚顶);browse 改服务端首屏 30 条 + 分片翻页 + 懒加载本地搜索(深链 `?cat=&tag=&q=`);`data.ts` 单扫缓存 + `getSkill` O(1);全站客户端组件只喂瘦卡。**基线:browse 首屏 6.0MB→25KB;build-index 3.4s@5,816 条;docs.json 4.9MB(P1 门控:>1.5万条 或 >8MB 或搜索 p95>200ms → Typesense)**。两侧 `tsc` 全绿;待本机 `npm run web` 浏览器回归。
 
 ### 进行中

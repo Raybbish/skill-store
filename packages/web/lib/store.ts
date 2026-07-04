@@ -28,6 +28,19 @@ export interface SkillCard {
   bulkSource?: boolean;
   /** 评测总分(未评测为 null/缺省);全量 Skill 上对应 eval.score */
   ev?: number | null;
+  /** 收录时间(Unix 秒,来自 catalog git 首次提交;build-index 注入,Skill 上没有) */
+  addedAt?: number;
+}
+
+/** 场景包:一套一起装的 skill(catalog/packs 策展,成员全 pass 才出包) */
+export interface Pack {
+  id: string;
+  emoji: string;
+  /** 图标底色(跑马灯瓷片) */
+  tile: string;
+  title: string;
+  tagline: string;
+  members: SkillCard[];
 }
 
 export interface SearchFilters {

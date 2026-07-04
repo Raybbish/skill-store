@@ -27,6 +27,17 @@ const cmd = args[0];
 const target = args[1];
 const flag = (n) => args.includes(`--${n}`);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : undefined; };
+/** 取值型 flag(其后跟一个值),解析多目标位置参数时要跳过它们的值 */
+const VALUE_FLAGS = new Set(["--to", "--from-dir"]);
+/** add 支持多目标:oh-my-skill add a b c(场景包页的「全装一套」命令) */
+function targets() {
+  const out = [];
+  for (let i = 1; i < args.length; i++) {
+    if (args[i].startsWith("--")) { if (VALUE_FLAGS.has(args[i])) i++; continue; }
+    out.push(args[i]);
+  }
+  return out;
+}
 
 const FACTORS = { scripts: "📜 脚本执行", network: "🌐 网络请求", filesystem: "📂 文件读写", env_access: "🔑 环境变量", external_commands: "⚙️ 外部命令" };
 
@@ -147,7 +158,16 @@ async function remove(id) {
 
 const run = { add, list, remove }[cmd];
 if (!run || (cmd !== "list" && !target)) {
-  console.log("用法: oh-my-skill add <owner/repo/name> [--yes] [--to <dir>] [--from-dir <catalog>] | list | remove <name>");
+  console.log("用法: oh-my-skill add <owner/repo/name>… [--yes] [--to <dir>] [--from-dir <catalog>] | list | remove <name>");
   process.exit(1);
 }
-run(target).catch((e) => { console.error(e.message); process.exit(1); });
+(async () => {
+  if (cmd === "add") {
+    // 多目标顺序安装(场景包「装整套」);每个仍走完整的披露→确认→哈希校验流程
+    const ids = targets();
+    for (const id of ids) await add(id);
+    if (ids.length > 1) console.log(`\n✓ 一套装齐:${ids.length} 个 skill 处理完毕`);
+  } else {
+    await run(target);
+  }
+})().catch((e) => { console.error(e.message); process.exit(1); });

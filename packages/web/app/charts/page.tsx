@@ -1,19 +1,38 @@
-import { allSkills } from "@/lib/data";
-import { toCard } from "@/lib/store";
-import SkillRow from "@/components/SkillRow";
+import { readIdxNew, readIdxPage } from "@/lib/store-server";
+import ChartsClient, { type DayGroup } from "./ChartsClient";
 
+const fmtDay = new Intl.DateTimeFormat("zh-CN", { timeZone: "Asia/Shanghai", month: "long", day: "numeric" });
+const keyDay = new Intl.DateTimeFormat("zh-CN", { timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit" });
+
+/**
+ * 榜单:新上架(按收录日分组,数据=catalog git 首次提交时间)+ 热门(货架热门序前 20)。
+ * 「今天/昨天」以构建时刻为准 —— 站点随每日 ingest 重建,足够准。
+ */
 export default function Charts() {
-  const byInstall = [...allSkills()].filter((s) => s.installs != null).sort((a, b) => (b.installs ?? 0) - (a.installs ?? 0)).slice(0, 10).map(toCard);
+  const fresh = readIdxNew();
+  const hot = readIdxPage(1).slice(0, 20);
+
+  const now = Date.now();
+  const todayKey = keyDay.format(new Date(now));
+  const yesterdayKey = keyDay.format(new Date(now - 86400000));
+  const groups: DayGroup[] = [];
+  for (const c of fresh) {
+    if (!c.addedAt) continue;
+    const d = new Date(c.addedAt * 1000);
+    const k = keyDay.format(d);
+    const label = k === todayKey ? `今天 · ${fmtDay.format(d)}` : k === yesterdayKey ? `昨天 · ${fmtDay.format(d)}` : fmtDay.format(d);
+    const g = groups.find((x) => x.label === label);
+    if (g) g.items.push(c);
+    else groups.push({ label, isToday: k === todayKey, items: [c] });
+  }
+
   return (
     <>
       <section className="hero">
         <div className="eyebrow">榜单</div>
-        <h1 className="small">大家都在装</h1>
-        <p className="lede">按累计安装量排名。可复现评测榜开发中——分数将带 runner / 模型元数据,可复现、可挑战。</p>
+        <h1 className="small">今天有什么新的</h1>
       </section>
-      <div className="list">
-        {byInstall.map((s, i) => <SkillRow key={s.id} skill={s} rank={i + 1} />)}
-      </div>
+      <ChartsClient groups={groups} hot={hot} />
     </>
   );
 }

@@ -6,14 +6,14 @@ import CertBadge from "./CertBadge";
 const fmt = (n: number) => (n >= 1e6 ? `${Math.round(n / 1e5) / 10}M` : n >= 1e3 ? `${Math.round(n / 100) / 10}K` : String(n));
 
 /** 列表行只吃瘦卡(SkillCard);全量 Skill 结构上兼容,详情页直接传也行(ADR 0007) */
-export default function SkillRow({ skill, rank }: { skill: SkillCard; rank?: number }) {
+export default function SkillRow({ skill, rank, isNew }: { skill: SkillCard; rank?: number; isNew?: boolean }) {
   const s = skill;
   const href = `/skill/${s.owner}/${s.repo}/${s.name}/`;
   return (
     <div className="row">
       {rank != null && <div className={`idx ${rank <= 3 ? "top" : ""}`}>{String(rank).padStart(2, "0")}</div>}
       <div className="main">
-        <div className="nm"><Link href={href}>{s.name}</Link> <CertBadge skill={s} /></div>
+        <div className="nm"><Link href={href}>{s.name}</Link> <CertBadge skill={s} />{isNew && <span className="new-tag">NEW</span>}</div>
         {s.description && <div className="ds">{s.description}</div>}
         <div className="au">@{s.publisher}</div>
       </div>

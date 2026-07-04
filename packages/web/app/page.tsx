@@ -1,50 +1,26 @@
-import Link from "next/link";
-import { allCollections, allSkills, byPopularity } from "@/lib/data";
-import { toCard } from "@/lib/store";
-import SkillRow from "@/components/SkillRow";
+import { readIdxMeta, readIdxPacks, readIdxPage } from "@/lib/store-server";
+import { featuredLabels, tagLabels } from "@skill-store/schemas";
+import HomeClient from "./HomeClient";
 
-const OFFICIAL = new Set(["anthropics", "vercel-labs", "microsoft", "supabase", "larksuite", "remotion-dev"]);
-
+/**
+ * 首页 = 搜索 + 场景包跑马灯 + 完整货架(原 /browse 并入,「浏览」作为概念取消)。
+ * 只带首屏分片(30 条)+ 计数元数据 + 包定义;其余交互由 HomeClient 按需 fetch /idx/。
+ */
 export default function Home() {
-  const skills = allSkills();
-  // 客户端组件只喂瘦卡(toCard),别把全量 Skill(evidence 等)序列化进页面(ADR 0007)
-  const official = skills.filter((s) => OFFICIAL.has(s.publisher) && s.status === "pass").sort(byPopularity).slice(0, 6);
-  const featured = (official.length ? official : skills.slice(0, 6)).map(toCard);
-  const trending = [...skills].sort(byPopularity).slice(0, 6).map(toCard);
-  const upstreamTotal = allCollections().reduce((a, c) => a + c.skillCount, 0);
+  const meta = readIdxMeta();
+  const first = readIdxPage(1);
+  const packs = readIdxPacks();
+  const cats = featuredLabels().map((l) => ({ slug: l.slug, label: l.label_zh, n: meta.cats[l.slug] ?? 0 }));
+  const tags = tagLabels().map((l) => ({ slug: l.slug, label: l.label_zh, n: meta.tags[l.slug] ?? 0 })).filter((t) => t.n > 0);
 
   return (
-    <>
-      <section className="hero">
-        <div className="eyebrow">Agent Skills 商店</div>
-        <h1>给你的 agent,<br />找对 <span className="hl">skill</span></h1>
-        <Link href="/browse/" className="searchbar">
-          <span>🔍</span>
-          <span style={{ color: "var(--faint)", flex: 1 }}>搜索 {skills.length} 个 skill…</span>
-          <span className="go">浏览</span>
-        </Link>
-      </section>
-
-      {/* 品牌陈述位(方案 C · .band):全站只在首页说一次「我们是谁」 */}
-      {upstreamTotal > 0 && (
-        <Link href="/collections/" className="band" style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div>
-            <div className="bt">全网几万个 skill,这里只放挑出来的<small>{(skills.length + upstreamTotal).toLocaleString()} → {skills.length.toLocaleString()}</small></div>
-            <div className="bs">点开任何盾牌图标,看它为什么在这里</div>
-          </div>
-          <span className="allget">看收录标准 ›</span>
-        </Link>
-      )}
-
-      <div className="sec">
-        <div className="sec-h"><h2>编辑精选</h2><span className="k">已验证发布者</span><Link href="/browse/">查看全部 ›</Link></div>
-        <div className="list">{featured.map((s) => <SkillRow key={s.id} skill={s} />)}</div>
-      </div>
-
-      <div className="sec">
-        <div className="sec-h"><h2>热门</h2><span className="k">GitHub 人气 · 按仓库归一</span></div>
-        <div className="list">{trending.map((s, i) => <SkillRow key={s.id} skill={s} rank={i + 1} />)}</div>
-      </div>
-    </>
+    <HomeClient
+      first={first}
+      meta={{ total: meta.total, pages: meta.pages, size: meta.size }}
+      cats={cats}
+      tags={tags}
+      catTag={meta.catTag}
+      packs={packs}
+    />
   );
 }

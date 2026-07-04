@@ -16,7 +16,7 @@ export default async function PublisherPage({ params }: { params: Promise<{ dev:
 
   return (
     <>
-      <Link href="/browse/" className="back">‹ 浏览</Link>
+      <Link href="/" className="back">‹ 首页</Link>
 
       <section className="detail-hero">
         <h1 className="d-name">{v.pub}{v.verified && <span className="vbadge">已认证发布者 ✓</span>}</h1>
