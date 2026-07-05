@@ -173,24 +173,33 @@ export class StaticStore implements SkillStore {
   private pageCache = new Map<number, SkillCard[]>();
   private docs: SkillCard[] | null = null;
   private docsPromise: Promise<SkillCard[]> | null = null;
+  /** 构建版本号(meta.generatedAt),缓存击穿用:重建 index 后 URL 变、浏览器不会喂旧 docs/分片 */
+  private ver = "";
 
   constructor(private base = "/idx") {}
 
-  private async fetchJson<T>(path: string): Promise<T> {
-    const r = await fetch(`${this.base}${path}`);
+  private async fetchJson<T>(path: string, noStore = false): Promise<T> {
+    const r = await fetch(`${this.base}${path}`, noStore ? { cache: "no-store" } : undefined);
     if (!r.ok) throw new Error(`idx fetch ${path}: ${r.status}`);
     return r.json() as Promise<T>;
   }
 
   async getMeta(): Promise<IdxMeta> {
-    if (!this.meta) this.meta = await this.fetchJson<IdxMeta>("/meta.json");
+    // meta 小(~4KB),永远 no-store 拿最新;它带的 generatedAt 给 docs/分片做缓存击穿键
+    if (!this.meta) {
+      this.meta = await this.fetchJson<IdxMeta>("/meta.json", true);
+      this.ver = encodeURIComponent(this.meta.generatedAt ?? "");
+    }
     return this.meta;
   }
 
   private loadDocs(): Promise<SkillCard[]> {
     if (this.docs) return Promise.resolve(this.docs);
     if (!this.docsPromise) {
-      this.docsPromise = this.fetchJson<SkillCard[]>("/docs.json").then((d) => (this.docs = d));
+      // 先确保 meta(拿到 ver),再按版本取 docs——重建后 ?v= 变,旧缓存自动失效
+      this.docsPromise = this.getMeta()
+        .then(() => this.fetchJson<SkillCard[]>(`/docs.json?v=${this.ver}`))
+        .then((d) => (this.docs = d));
     }
     return this.docsPromise;
   }
@@ -203,7 +212,8 @@ export class StaticStore implements SkillStore {
       const p = Math.min(Math.max(1, page), Math.max(1, meta.pages));
       let items = this.pageCache.get(p);
       if (!items) {
-        items = await this.fetchJson<SkillCard[]>(`/pages/p${p}.json`);
+        // meta 已在上方 await(this.ver 就绪);分片按版本取,重建后不吃旧缓存
+        items = await this.fetchJson<SkillCard[]>(`/pages/p${p}.json?v=${this.ver}`);
         this.pageCache.set(p, items);
       }
       return { items, total: meta.total, page: p, pages: meta.pages };
