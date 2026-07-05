@@ -193,13 +193,14 @@ async function classify(prompt: string): Promise<LlmVerdict> {
 
 /** 微文案规则段(与 DEFS、fmtTag 同级维护在代码里,不散落)。禁用词表由 schemas 单一来源注入,避免漂移。 */
 const MICROCOPY_RULES =
-  `另输出三个微文案字段(写给完全不懂技术的人,用户视角):\n` +
+  `完成上面的 category 与 tags 之后,再额外输出三个面向用户的微文案字段。` +
+  `这三个字段**只影响文案、不改变上面的分类与标签判断**(尤其别因为要写场景词就少打 tags)。写给完全不懂技术的人:\n` +
   `- tagline:一句话说清「装了它,用户能把什么事变成什么样」。动词开头,8~40 字。` +
   `禁止出现:skill 名字本身、以「一个/这是/该/本」开头、以及这些水词——${BANNED_WORDS.join("、")}。\n` +
-  `- scene_tags:${SCENE_TAG_MIN_COUNT}~${SCENE_TAG_MAX_COUNT} 个短词(每个 ≤${SCENE_TAG_MAX_LEN} 字),回答「用户在什么时候会需要它」——` +
-  `写**场景**(如"周报"、"合同审阅"、"上线前检查"),不写技术形态(react/pdf/mcp 这类已有标签体系管,写了会被丢弃)。\n` +
+  `- scene_tags:${SCENE_TAG_MIN_COUNT}~${SCENE_TAG_MAX_COUNT} 个短词(至少 ${SCENE_TAG_MIN_COUNT} 个,每个 ≤${SCENE_TAG_MAX_LEN} 字),回答「用户在什么时候会需要它」——` +
+  `写**使用场景**(如"周报"、"合同审阅"、"上线前检查"),不要写技术名词或框架名(那是上面 tags 的事,写进场景词会被丢弃)。\n` +
   `- fit_line:以「适合你,如果」开头的一句话,≤50 字,描述最典型那类用户的处境。\n` +
-  `信息不足时宁可保守:tagline 只转述 README 里确凿的能力,不脑补效果。\n\n`;
+  `信息不足时宁可保守:tagline 只转述 README 里确凿的能力,不脑补效果;但场景词仍尽量从不同角度凑够 ${SCENE_TAG_MIN_COUNT} 个。\n\n`;
 
 function buildPrompt(catList: string, tagSection: string, name: string, description: string): string {
   return (
