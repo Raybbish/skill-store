@@ -2,7 +2,7 @@
  * ingest:读 sources.yaml → 逐源发现 skill → 哈希去重 → 写 catalog/
  * 用法:npm run ingest [-- --limit 20] [-- --source anthropics/skills]
  */
-import { cp, mkdir, readFile, writeFile, readdir } from "node:fs/promises";
+import { mkdir, readFile, writeFile, readdir, stat, copyFile } from "node:fs/promises";
 import { join } from "node:path";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,6 +14,36 @@ import { categorize } from "../categorize.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const COLLECTIONS = join(ROOT, "catalog", "collections");
+
+/** 镜像单文件上限:超过则跳过不镜像(挡编译产物/大二进制进 git)。可用 MIRROR_MAX_FILE_MB 覆盖。 */
+const MIRROR_MAX_BYTES = (Number(process.env.MIRROR_MAX_FILE_MB) || 2) * 1024 * 1024;
+
+/**
+ * 过滤式镜像拷贝:递归复制 src→dest,但**跳过单文件超过 maxBytes 的文件**。
+ * 账本(Git catalog)只该装 SKILL.md 与小体积文本资产;大 blob(编译产物、数据集)属于对象存储,
+ * 不属于 Git——见《走向百万级》。返回被跳过的文件(相对路径 + 字节),供上层置 mirror_complete=false。
+ * 用 stat(跟随 symlink)+ copyFile,等价旧 `cp({dereference:true})`(合集仓常用软链共享)。
+ */
+async function copyMirrorFiltered(src: string, dest: string, maxBytes: number): Promise<{ path: string; bytes: number }[]> {
+  const skipped: { path: string; bytes: number }[] = [];
+  async function walk(rel: string): Promise<void> {
+    for (const name of await readdir(join(src, rel))) {
+      const r = rel ? join(rel, name) : name;
+      const st = await stat(join(src, r)); // 跟随 symlink
+      if (st.isDirectory()) {
+        await mkdir(join(dest, r), { recursive: true });
+        await walk(r);
+      } else if (st.isFile()) {
+        if (st.size > maxBytes) { skipped.push({ path: r, bytes: st.size }); continue; }
+        await mkdir(dirname(join(dest, r)), { recursive: true });
+        await copyFile(join(src, r), join(dest, r));
+      }
+    }
+  }
+  await mkdir(dest, { recursive: true });
+  await walk("");
+  return skipped;
+}
 
 /** 加载 catalog 已有条目:id → 报告(用于跨运行去重 + 保留审计/评测/人工结果) */
 async function loadExisting(): Promise<Map<string, SkillReport>> {
@@ -137,7 +167,7 @@ async function main() {
   for (const c of all.slice(0, limit)) if (!byId.has(c.report.meta.id)) byId.set(c.report.meta.id, c);
 
   let written = 0;
-  const stats = { added: 0, updated: 0, unchanged: 0, dup: 0, preserved: 0, fmInvalid: 0, uncategorized: 0 };
+  const stats = { added: 0, updated: 0, unchanged: 0, dup: 0, preserved: 0, fmInvalid: 0, uncategorized: 0, mirrorSkipped: 0 };
   const touched: { skill_id: string; content_hash: string }[] = [];
   for (const c of byId.values()) {
     const prev = existing.get(c.report.meta.id);
@@ -175,12 +205,20 @@ async function main() {
 
     const dir = entryDir(c.report.meta.id); // catalog/skills/<owner>/<repo>/<name>
     await mkdir(dir, { recursive: true });
-    await writeFile(join(dir, "skill-report.json"), JSON.stringify(c.report, null, 2) + "\n");
     if (c.mirrorSrcDir) {
-      // force 覆盖已存在;dereference 把源里的 symlink 落成真实文件(合集仓常用软链共享)
-      await cp(c.mirrorSrcDir, join(dir, "mirror"), { recursive: true, force: true, dereference: true })
-        .catch((e) => console.warn(`  ⚠ 镜像 ${c.report.meta.id} 失败(降级为索引): ${(e as Error).message}`));
+      // 过滤式镜像:跳过超 MIRROR_MAX_BYTES 的文件(大 blob 不进 git);有跳过或整体失败 → mirror 非完整
+      const skipped = await copyMirrorFiltered(c.mirrorSrcDir, join(dir, "mirror"), MIRROR_MAX_BYTES)
+        .catch((e) => { console.warn(`  ⚠ 镜像 ${c.report.meta.id} 失败(降级为索引): ${(e as Error).message}`); return null; });
+      if (skipped === null || skipped.length) {
+        c.report.meta.mirror_complete = false;
+        for (const s of skipped ?? []) {
+          stats.mirrorSkipped++;
+          console.warn(`  ⚠ 镜像跳过大文件(不入 git)${c.report.meta.id}/${s.path} — ${(s.bytes / 1048576).toFixed(1)}MB > ${(MIRROR_MAX_BYTES / 1048576).toFixed(0)}MB`);
+        }
+      }
     }
+    // mirror 写完再落 skill-report.json,确保 mirror_complete 一次写对
+    await writeFile(join(dir, "skill-report.json"), JSON.stringify(c.report, null, 2) + "\n");
 
     written++;
     if (c.report.meta.duplicate_of) stats.dup++;
@@ -227,6 +265,7 @@ async function main() {
   console.log(`  保留了已有审计结果: ${stats.preserved}`);
   console.log(`  frontmatter 不合规: ${stats.fmInvalid}`);
   console.log(`  待归类(uncategorized,需人工补标): ${stats.uncategorized}`);
+  if (stats.mirrorSkipped) console.log(`  镜像跳过大文件(>${(MIRROR_MAX_BYTES / 1048576).toFixed(0)}MB,未入 git): ${stats.mirrorSkipped}`);
   console.log(`输出目录: ${CATALOG}`);
   await Promise.all(cleanups.map((fn) => fn().catch(() => {})));
 }
