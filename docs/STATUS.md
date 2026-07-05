@@ -27,7 +27,7 @@
 - 前端 v4 重设计 + 审计结果 + 本 docs 整理**待 git 提交留痕**(当前工作区未提交约 200 处)。
 
 ### 下一步
-- **微文案全量重打**([ADR 0013](decisions/0013-microcopy-sources.md)):**真机金标已过**(2026-07-05:tag mcp 90.5% / skill-tooling 92.6% / 微文案 24/25=96%;commit 4465ae23 修 prompt 解耦——微文案段勿拿 tag 具名当反例——+ 换掉 QA 伪货 fixture)。**下一步只剩全量**:`npm run categorize:llm -- --scope all`(约 5,811 条,deepseek 约一杯咖啡)→ 统计场景词频 top 200 人工补 `SCENE_ALIASES` → 只重跑归一 → `npm run web:index && npm run web` 浏览器回归卡片副标题/场景 chip/详情 fit_line/回退链。⚠ 注:`build-index.ts` 存在**既有**顶层 await(verdict-join 块),在 `packages/web` 无 `type:module` 时于某些 tsx 环境报 cjs 错——本机若命中,把该 await 包进 async IIFE 即可(与微文案无关)。
+- **微文案全量已跑 + 词表复核**([ADR 0013](decisions/0013-microcopy-sources.md)):真机金标已过(tag mcp 90.5% / 微文案 24/25=96%),**全量 5,816 条已判**(lint 通过 5,433 / 93.5%)。词频复核后新增工具 `scene:renorm`(纯本地不调 LLM:打印全量词频 + 同义簇 / `--apply` 重归一)+ 8 条同义别名 + normScene 去「拉丁↔中日韩」边界空格(`api 设计`→`api设计`)。dry 验证:重归一 644 条、唯一场景词 7914→7846、**lint_pass 净 +91**(全是 fail→pass:此前带空格的场景词超 8 字被误判 L4,去空格后恢复;0 回退)。**下一步(本机)**:`npm run scene:renorm -- --apply` 写回 catalog → `npm run web:index && npm run web` 目检卡片副标题/场景 chip/详情 fit_line/回退链 → 提交 catalog 数据变更。⚠ 注:`build-index.ts` 有**既有**顶层 await(verdict-join),`packages/web` 无 `type:module` 时某些 tsx 环境报 cjs 错——命中就把该 await 包进 async IIFE(与微文案无关)。
 - **verdict 服务步骤⑤⑥**([ADR 0012](decisions/0012-verdict-service.md)):研究议题(裁决口径/误报率基线/复核吞吐/徽章语义)在 `packages/verdicts/policies/` 草稿里迭代;policy v1 定稿 + 全量重扫 + 开 TRUST_DISPLAY = 重新上架(验收:diff 只有 flag)。
 - Supabase:下次 sync 前执行 `infra/migrations/2026-07-05-verdict-service.sql`(放开 audit_status 非空)。
 - 扩 catalog 到 500+(接更多源)。

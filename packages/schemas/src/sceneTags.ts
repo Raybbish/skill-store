@@ -28,7 +28,15 @@ export const SCENE_ALIASES: Record<string, string> = {
   "代码审查": "代码评审", "code review": "代码评审",
   "简历筛选": "简历初筛", "resume screening": "简历初筛",
   "数据清洗": "数据整理", "data cleaning": "数据整理",
-  // ⬆ 首次全量跑完后,对词频 top 200 人工过一遍补齐别名
+  // ⬇ 首次全量(5,816 条)后按词频 top + 同义簇人工过一遍补齐(2026-07-05)
+  "性能优化": "性能调优",
+  "系统设计": "架构设计",
+  "需求梳理": "需求分析",
+  "市场分析": "市场调研", "市场研究": "市场调研",
+  "合规审计": "合规检查",
+  "社交媒体": "社媒运营",
+  "视频创作": "视频制作", "视频生成": "视频制作",
+  "ai搜索适配": "ai搜索优化",
 };
 
 /**
@@ -43,9 +51,14 @@ export const SCENE_TAG_MAX_LEN = 8;
 export const SCENE_TAG_MIN_COUNT = 2;
 export const SCENE_TAG_MAX_COUNT = 4;
 
-/** 归一:小写 + trim + 折叠空白 + 别名合并。生成侧与搜索侧共用这一个函数。 */
+/** 归一:小写 + trim + 折叠空白 + 去拉丁↔中日韩间空格 + 别名合并。生成侧与搜索侧共用这一个函数。 */
 export function normScene(raw: string): string {
-  const base = raw.trim().toLowerCase().replace(/\s+/g, " ").replace(/[，。、·]+$/u, "");
+  const collapsed = raw.trim().toLowerCase().replace(/\s+/g, " ").replace(/[，。、·]+$/u, "");
+  // 拉丁/数字 与 中日韩 之间的空格去掉:"api 设计"→"api设计"、"seo 优化"→"seo优化"
+  // (只去跨脚本边界的空格;拉丁-拉丁间空格保留,不破坏 "weekly report" 这类别名键)
+  const base = collapsed
+    .replace(/([a-z0-9])\s+([一-鿿])/g, "$1$2")
+    .replace(/([一-鿿])\s+([a-z0-9])/g, "$1$2");
   return SCENE_ALIASES[base] ?? base;
 }
 
