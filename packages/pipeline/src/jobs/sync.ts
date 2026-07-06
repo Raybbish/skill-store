@@ -12,6 +12,9 @@ import { promisify } from "node:util";
 import type { SkillReport } from "@skill-store/schemas";
 
 const exec = promisify(execFile);
+// catalog 规模下 git 列表输出会超过 execFile 默认 1MB 的 stdout 上限,
+// 放大 maxBuffer 以免 "stdout maxBuffer length exceeded"(catalog 涨大后触发)。
+const GIT_OPTS = { maxBuffer: 1024 * 1024 * 512 }; // 512MB 上限(仅上限,不预分配)
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const URL_ = process.env.SUPABASE_URL;
 const KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -46,19 +49,19 @@ function flatten(r: SkillReport, commit: string) {
 
 async function main() {
   if (!URL_ || !KEY) throw new Error("缺少 SUPABASE_URL / SUPABASE_SERVICE_KEY");
-  const head = (await exec("git", ["-C", ROOT, "rev-parse", "HEAD"])).stdout.trim();
+  const head = (await exec("git", ["-C", ROOT, "rev-parse", "HEAD"], GIT_OPTS)).stdout.trim();
   const state = (await (await rest("/sync_state?id=eq.1")).json()) as { last_commit?: string }[];
   const last = process.argv.includes("--full") ? null : state[0]?.last_commit ?? null;
 
   let paths: string[];
   if (last) {
-    const out = (await exec("git", ["-C", ROOT, "diff", "--name-only", `${last}..HEAD`, "--", "catalog/skills"])).stdout;
+    const out = (await exec("git", ["-C", ROOT, "diff", "--name-only", `${last}..HEAD`, "--", "catalog/skills"], GIT_OPTS)).stdout;
     // catalog/skills/<owner>/<repo>/<name> = 5 段
     paths = [...new Set(out.split("\n").filter(Boolean).map((p) => p.split("/").slice(0, 5).join("/")))]
       .map((p) => join(ROOT, p, "skill-report.json"));
     console.log(`增量模式 ${last.slice(0, 7)}..HEAD:${paths.length} 条变更`);
   } else {
-    const out = (await exec("git", ["-C", ROOT, "ls-files", "catalog/skills/*/*/*/skill-report.json"])).stdout;
+    const out = (await exec("git", ["-C", ROOT, "ls-files", "catalog/skills/*/*/*/skill-report.json"], GIT_OPTS)).stdout;
     paths = out.split("\n").filter(Boolean).map((p) => join(ROOT, p));
     console.log(`全量模式:${paths.length} 条`);
   }
