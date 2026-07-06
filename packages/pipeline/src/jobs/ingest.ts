@@ -10,6 +10,7 @@ import { parse } from "yaml";
 import type { CollectionReport, SkillReport } from "@skill-store/schemas";
 import { discoverFromRepo, type SkillCandidate } from "../sources/official.ts";
 import { CATALOG, loadCatalogEntries, entryDir } from "../catalog.ts";
+import { CONTEXT_SIZE_COUNTER_ID } from "../context-size.ts";
 import { categorize } from "../categorize.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
@@ -18,16 +19,21 @@ const COLLECTIONS = join(ROOT, "catalog", "collections");
 /** 镜像单文件上限:超过则跳过不镜像(挡编译产物/大二进制进 git)。可用 MIRROR_MAX_FILE_MB 覆盖。 */
 const MIRROR_MAX_BYTES = (Number(process.env.MIRROR_MAX_FILE_MB) || 2) * 1024 * 1024;
 
+// 镜像时跳过的目录名。首要是 .git:拷进 mirror/.git 会让 catalog 把 mirror/ 当 gitlink(子模块),
+// 结果镜像内容根本没被 catalog 跟踪,还塞一堆嵌套 VCS 元数据。.svn/.hg 同理。
+const MIRROR_SKIP_DIRS = new Set([".git", ".svn", ".hg"]);
+
 /**
- * 过滤式镜像拷贝:递归复制 src→dest,但**跳过单文件超过 maxBytes 的文件**。
+ * 过滤式镜像拷贝:递归复制 src→dest,跳过 .git/.svn/.hg 目录与单文件超过 maxBytes 的文件。
  * 账本(Git catalog)只该装 SKILL.md 与小体积文本资产;大 blob(编译产物、数据集)属于对象存储,
- * 不属于 Git——见《走向百万级》。返回被跳过的文件(相对路径 + 字节),供上层置 mirror_complete=false。
+ * 不属于 Git——见《走向百万级》。返回被跳过的大文件(相对路径 + 字节),供上层置 mirror_complete=false。
  * 用 stat(跟随 symlink)+ copyFile,等价旧 `cp({dereference:true})`(合集仓常用软链共享)。
  */
 async function copyMirrorFiltered(src: string, dest: string, maxBytes: number): Promise<{ path: string; bytes: number }[]> {
   const skipped: { path: string; bytes: number }[] = [];
   async function walk(rel: string): Promise<void> {
     for (const name of await readdir(join(src, rel))) {
+      if (MIRROR_SKIP_DIRS.has(name)) continue; // .git 等不进镜像(拷进去会让 catalog 把 mirror 当 gitlink)
       const r = rel ? join(rel, name) : name;
       const st = await stat(join(src, r)); // 跟随 symlink
       if (st.isDirectory()) {
@@ -174,13 +180,14 @@ async function main() {
 
     // 内容与上游 commit 都没变、且已归类 → 跳过(幂等,不产生噪音 diff)。
     // 加 category != null 是为了给旧条目回填分类:首次接入后,存量条目会被重新归类一次。
-    // 缺 context_size 的存量条目(ADR 0015)做**外科式回填**:只把新算的 context_size 补进旧报告,
-    // 其余(category/tags/copy/eval)原样保留——不走完整更新路径,避免启发式归类冲掉
-    // categorize:llm 的权威判定、或把微文案 copy 块整个丢掉。
+    // 缺 context_size **或计数器版本过旧**的存量条目(ADR 0015)做**外科式回填/升级**:
+    // 只把新算的 context_size 补进旧报告,其余(category/tags/copy/eval)原样保留——
+    // 不走完整更新路径,避免启发式归类冲掉 categorize:llm 的权威判定、或把微文案 copy 块整个丢掉。
     if (prev && prev.meta.content_hash === c.report.meta.content_hash &&
         prev.meta.upstream_commit === c.report.meta.upstream_commit &&
         prev.meta.category != null) {
-      if (prev.context_size == null && c.report.context_size != null) {
+      if ((prev.context_size == null || prev.context_size.counter.id !== CONTEXT_SIZE_COUNTER_ID) &&
+          c.report.context_size != null) {
         prev.context_size = c.report.context_size;
         await writeFile(join(entryDir(prev.meta.id), "skill-report.json"), JSON.stringify(prev, null, 2) + "\n");
         stats.backfilled++;
@@ -282,7 +289,7 @@ async function main() {
   console.log(`  新增: ${stats.added}`);
   console.log(`  更新(内容变化): ${stats.updated}`);
   console.log(`  未变跳过: ${stats.unchanged}`);
-  if (stats.backfilled) console.log(`  外科式回填 context_size(其余字段未动): ${stats.backfilled}`);
+  if (stats.backfilled) console.log(`  外科式回填/升级 context_size(其余字段未动): ${stats.backfilled}`);
   console.log(`  重复(标记 duplicate_of): ${stats.dup}`);
   console.log(`  保留了已有审计结果: ${stats.preserved}`);
   console.log(`  frontmatter 不合规: ${stats.fmInvalid}`);
