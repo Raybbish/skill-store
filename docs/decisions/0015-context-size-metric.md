@@ -27,6 +27,9 @@ M0 先使用 `static-mixed-estimate-v1` 启发式计数器,字段里显式标 `m
 - **存量回填走外科式路径**:ingest 幂等闸对「内容与 commit 均未变、仅缺 `context_size`」的条目只补该字段后原样写回,category/tags/copy/eval 一律不动——避免启发式归类冲掉 categorize:llm 权威判定、或丢掉微文案 copy 块。首次全量回填需重克隆全部源仓,成本一次性。
 - **存量库迁移**:`infra/migrations/2026-07-06-context-size.sql`(`token_cost int` → `context_size jsonb`);`schema.sql` 的 `create table if not exists` 不会改已有表,不执行迁移则 sync 报列不存在。
 - **声明引用 = availability 驱动的字面匹配**:以包内实际存在的文本文件为候选集,在 `SKILL.md` 里做边界感知匹配(支持裸同级文件名、`./` 前缀、非 ASCII 路径;不会命中 URL/包外路径)。只认字面提及,不做语义解析。
+- **匹配大小写不敏感**(v1.1):Anthropic 官方 skill 即存在「正文写 `FORMS.md`、盘上是 `forms.md`」的写法,大小写不敏感文件系统上运行时真实可达,匹配器必须跟随。
+- **license 族文件不算声明引用**(v1.1):frontmatter 的 `license: … LICENSE.txt` 是许可证声明不是装载资源,LICENSE/LICENCE/NOTICE/COPYING 从 refs 候选排除(仍计入文本包总量)。
+- **估算管线带版本号**:`counter.id`(如 `static-mixed-estimate-v1.1`)即版本;语义修订必须 bump,ingest 幂等闸按 id 识别旧版本存量并外科式重算,升级自动收敛、不需要人工批量任务。
 - **计数排除规则**:单文本文件 >256KB 不计入任何 scope(连 `files` 清单也不进);symlink 解析到 clone 外的不读(git tree 把 symlink 当 blob,恶意仓库可借此让采集机读任意文件;仓内软链照常跟随)。
 - **scope 不带 `label`**:UI 文案(「最小装载」等)由前端按 scope id 渲染,不固化进 catalog 数据。
 - **schema 不把 `context_size` 设为 required**(TS 类型同为可选):存量条目缺失属合法状态,消费方必须写守卫。
