@@ -67,7 +67,9 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
         meta: {
           id: `${owner}/${repoSeg}/${name}`,
           name,
-          description: typeof fm?.description === "string" ? fm.description.slice(0, 1024) : undefined,
+          // 去 NUL:描述可能字面含 (文件上传绕过等 payload),JSON 合法但 Postgres text/jsonb 不收(22P05)。
+          // 源头清洗,让 catalog 与下游 DB 一致;sync 侧另有边界防御兜存量。
+          description: typeof fm?.description === "string" ? fm.description.replace(/\u0000/g, "").slice(0, 1024) : undefined,
           upstream: `https://github.com/${repoSlug}/tree/${clone.branch}/${dir.replace(/\/$/, "")}`,
           upstream_commit: clone.headCommit,
           content_hash: contentHash(dir, clone.entries),
