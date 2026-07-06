@@ -15,7 +15,7 @@ create table if not exists public.skills (
   evidence jsonb,
   review jsonb,
   l3 jsonb,
-  token_cost int,
+  context_size jsonb,
   stars_github int,
   installs_skills_sh int,
   upstream text,

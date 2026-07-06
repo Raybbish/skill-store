@@ -3,6 +3,27 @@ export interface EvalData {
   tasks: { task: string; with_skill: { score: number }; without_skill: { score: number }; delta: number }[];
 }
 
+export type ContextSizeScopeId =
+  | "activation_core"
+  | "activation_with_declared_refs"
+  | "package_total_text";
+
+export interface ContextSizeScope {
+  label: string;
+  files: string[];
+  text_files: number;
+  bytes: number;
+  chars: number;
+  tokens: number;
+}
+
+export interface ContextSize {
+  version: "1";
+  counter: { id: string; method: "official-tokenizer" | "heuristic"; tokenizer?: string; description?: string };
+  generated_at: string;
+  scopes: Record<ContextSizeScopeId, ContextSizeScope>;
+}
+
 export interface Skill {
   id: string; owner: string; repo: string; name: string; description?: string;
   license: string; hosting: string; publisher: string; upstream: string;
@@ -24,7 +45,8 @@ export interface Skill {
   frontmatterValid?: boolean;
   /** 内容哈希(verdict 锚点;build-index 查账本用,不进瘦卡) */
   contentHash?: string;
-  tokens: number; stars?: number | null;
+  contextSize?: ContextSize | null;
+  stars?: number | null;
   installs?: number | null;
   /** 上游仓库 SKILL.md 总数(巨仓降权信号) */
   repoSkillCount?: number;

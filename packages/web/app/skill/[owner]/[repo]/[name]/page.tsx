@@ -5,6 +5,19 @@ import { threadVMsForSkill } from "@/lib/community";
 import SkillCommunity from "./SkillCommunity";
 import InstallBox from "./InstallBox";
 
+function fmtContextTokens(tokens?: number | null): string {
+  if (tokens == null) return "待重算"; // 只有缺失才是「待重算」;0 是合法计数
+
+  if (tokens < 1000) return `~${tokens}`;
+  return `~${Math.round(tokens / 100) / 10}K`;
+}
+
+function contextCounterLabel(s: NonNullable<ReturnType<typeof getSkill>>): string {
+  const c = s.contextSize?.counter;
+  if (!c) return "待重算";
+  return c.tokenizer ?? (c.method === "heuristic" ? "静态估算" : c.id);
+}
+
 export function generateStaticParams() {
   return allSkills().map((s) => ({ owner: s.owner, repo: s.repo, name: s.name }));
 }
@@ -18,6 +31,7 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
   const help = my.filter((t) => t.board === "help");
   const challenge = my.filter((t) => t.board === "challenge");
   const show = my.filter((t) => t.board === "show");
+  const contextSize = s.contextSize;
 
   return (
     <>
@@ -44,7 +58,10 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
         <div className="d-stats">
           {s.installs != null && <div><b>{fmtInstalls(s.installs)}</b><span>安装量</span></div>}
           <div><b>{s.stars ?? "–"}</b><span>GitHub stars</span></div>
-          <div><b>~{Math.round(s.tokens / 100) / 10}K</b><span>token / 次</span></div>
+          <div><b>{fmtContextTokens(contextSize?.scopes?.activation_core?.tokens)}</b><span>最小装载</span></div>
+          <div><b>{fmtContextTokens(contextSize?.scopes?.activation_with_declared_refs?.tokens)}</b><span>含声明引用</span></div>
+          <div><b>{fmtContextTokens(contextSize?.scopes?.package_total_text?.tokens)}</b><span>文本包总量</span></div>
+          <div><b>{contextCounterLabel(s)}</b><span>上下文体积</span></div>
           <div><b>{s.hosting === "mirrored" ? "镜像" : "索引"}</b><span>托管</span></div>
         </div>
       </section>

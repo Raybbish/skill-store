@@ -5,6 +5,7 @@ import { cloneShallow } from "../git.ts";
 import { parseFrontmatter, normalizeName } from "../frontmatter.ts";
 import { classifyLicense } from "../license.ts";
 import { contentHash } from "../hash.ts";
+import { computeContextSize } from "../context-size.ts";
 
 export interface SkillCandidate {
   report: SkillReport;
@@ -84,7 +85,7 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
         frontmatter_issues: issues,
         // v2(ADR 0012):判定拆出至 catalog/verdicts 账本;采集不再写 security_audit
         signals: { stars_github: null, installs_skills_sh: null, fetched_at: now },
-        token_cost: { body_tokens: Math.round(md.length / 4), method: "chars/4-estimate" },
+        context_size: await computeContextSize({ root: clone.dir, dirPrefix: dir, skillMd: md, entries: clone.entries, generatedAt: now }),
         eval: null,
       };
 

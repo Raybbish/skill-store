@@ -167,17 +167,26 @@ async function main() {
   for (const c of all.slice(0, limit)) if (!byId.has(c.report.meta.id)) byId.set(c.report.meta.id, c);
 
   let written = 0;
-  const stats = { added: 0, updated: 0, unchanged: 0, dup: 0, preserved: 0, fmInvalid: 0, uncategorized: 0, mirrorSkipped: 0 };
+  const stats = { added: 0, updated: 0, unchanged: 0, backfilled: 0, dup: 0, preserved: 0, fmInvalid: 0, uncategorized: 0, mirrorSkipped: 0 };
   const touched: { skill_id: string; content_hash: string }[] = [];
   for (const c of byId.values()) {
     const prev = existing.get(c.report.meta.id);
 
     // 内容与上游 commit 都没变、且已归类 → 跳过(幂等,不产生噪音 diff)。
     // 加 category != null 是为了给旧条目回填分类:首次接入后,存量条目会被重新归类一次。
+    // 缺 context_size 的存量条目(ADR 0015)做**外科式回填**:只把新算的 context_size 补进旧报告,
+    // 其余(category/tags/copy/eval)原样保留——不走完整更新路径,避免启发式归类冲掉
+    // categorize:llm 的权威判定、或把微文案 copy 块整个丢掉。
     if (prev && prev.meta.content_hash === c.report.meta.content_hash &&
         prev.meta.upstream_commit === c.report.meta.upstream_commit &&
         prev.meta.category != null) {
-      stats.unchanged++;
+      if (prev.context_size == null && c.report.context_size != null) {
+        prev.context_size = c.report.context_size;
+        await writeFile(join(entryDir(prev.meta.id), "skill-report.json"), JSON.stringify(prev, null, 2) + "\n");
+        stats.backfilled++;
+      } else {
+        stats.unchanged++;
+      }
       continue;
     }
 
@@ -189,6 +198,13 @@ async function main() {
       stats.preserved++;
     }
 
+    // 微文案同理:copy 锚 meta.content_hash,内容没变(hash 相同)则沿用(含 M1 author 稿);
+    // 变了 = 锚过期,这里不带,由 categorize:llm 重算。此前更新路径会无条件丢 copy,
+    // 上游 commit 前进而 skill 目录未动时就白丢——现在按锚语义保留。
+    if (prev?.copy && prev.copy.content_hash === c.report.meta.content_hash) {
+      c.report.copy = prev.copy;
+    }
+
     // 归类:采集期打 meta.category + meta.tags(启发式引擎;sources.yaml 可 per-source 覆盖)。
     // 人工锁定(category_locked)的分类不被采集覆盖——与「采集不冲掉下游成果」一致。
     // uncategorized / 平票(引擎已判)保持 category="uncategorized",由分类复核挑走人工补标。
@@ -196,6 +212,11 @@ async function main() {
       c.report.meta.category = prev.meta.category ?? "uncategorized";
       c.report.meta.tags = prev.meta.tags ?? [];
       c.report.meta.category_locked = true;
+    } else if (prev && prev.meta.content_hash === c.report.meta.content_hash && prev.meta.category != null) {
+      // 内容没变(仅上游 commit 前进等):沿用既有判定——可能是 categorize:llm 的权威结果,
+      // 启发式不重判。内容真变了才走下面的启发式初判(权威判定随后由 categorize:llm 补)。
+      c.report.meta.category = prev.meta.category;
+      c.report.meta.tags = prev.meta.tags ?? [];
     } else {
       const { category, tags } = categorize(c.report.meta, overrideFor(c.report.meta.id));
       c.report.meta.category = category;
@@ -261,6 +282,7 @@ async function main() {
   console.log(`  新增: ${stats.added}`);
   console.log(`  更新(内容变化): ${stats.updated}`);
   console.log(`  未变跳过: ${stats.unchanged}`);
+  if (stats.backfilled) console.log(`  外科式回填 context_size(其余字段未动): ${stats.backfilled}`);
   console.log(`  重复(标记 duplicate_of): ${stats.dup}`);
   console.log(`  保留了已有审计结果: ${stats.preserved}`);
   console.log(`  frontmatter 不合规: ${stats.fmInvalid}`);

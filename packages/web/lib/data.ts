@@ -19,24 +19,27 @@ let CACHE: Cache | null = null;
 function scan(): Cache {
   if (CACHE) return CACHE;
   const all: Skill[] = [];
-  for (const owner of readdirSync(CATALOG)) {
-    for (const repo of readdirSync(join(CATALOG, owner))) {
-      for (const name of readdirSync(join(CATALOG, owner, repo))) {
+  for (const owner of readdirSync(CATALOG, { withFileTypes: true })) {
+    if (!owner.isDirectory()) continue;
+    for (const repo of readdirSync(join(CATALOG, owner.name), { withFileTypes: true })) {
+      if (!repo.isDirectory()) continue;
+      for (const name of readdirSync(join(CATALOG, owner.name, repo.name), { withFileTypes: true })) {
+        if (!name.isDirectory()) continue;
         try {
-          const r = JSON.parse(readFileSync(join(CATALOG, owner, repo, name, "skill-report.json"), "utf8"));
+          const r = JSON.parse(readFileSync(join(CATALOG, owner.name, repo.name, name.name, "skill-report.json"), "utf8"));
           // 微文案回退闸:缺失 / lint 未过 / content_hash 过期 → 视作无文案(前端回退 description)
           const copy =
             r.copy && r.copy.lint_pass === true && r.copy.content_hash === r.meta.content_hash ? r.copy : null;
           all.push({
-            id: r.meta.id, owner, repo, name: r.meta.name, description: r.meta.description,
+            id: r.meta.id, owner: owner.name, repo: repo.name, name: r.meta.name, description: r.meta.description,
             license: r.meta.license, hosting: r.meta.hosting, publisher: r.meta.publisher,
             upstream: r.meta.upstream, category: r.meta.category ?? undefined, tags: r.meta.tags ?? [],
             tagline: copy?.tagline, sceneTags: copy?.scene_tags, fitLine: copy?.fit_line,
-            hasMirror: existsSync(join(CATALOG, owner, repo, name, "mirror")),
+            hasMirror: existsSync(join(CATALOG, owner.name, repo.name, name.name, "mirror")),
             duplicateOf: r.meta.duplicate_of ?? null,
             frontmatterValid: r.frontmatter_valid !== false,
             contentHash: r.meta.content_hash,
-            tokens: r.token_cost?.body_tokens ?? 0, stars: r.signals?.stars_github,
+            contextSize: r.context_size ?? null, stars: r.signals?.stars_github,
             installs: r.signals?.installs_skills_sh ?? null,
             repoSkillCount: r.signals?.repo_skill_count,
             bulkSource: r.signals?.bulk_source === true,

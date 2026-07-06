@@ -40,7 +40,7 @@ function flatten(r: SkillReport, commit: string) {
     hosting: m.hosting, category: m.category, publisher: m.publisher,
     publisher_verified: m.publisher_verified, audit_status: null,
     risk_factors: null, evidence: null, review: null,
-    l3: null, token_cost: r.token_cost.body_tokens,
+    l3: null, context_size: r.context_size ?? null,
     stars_github: r.signals.stars_github, installs_skills_sh: r.signals.installs_skills_sh,
     upstream: m.upstream, upstream_commit: m.upstream_commit, content_hash: m.content_hash,
     marketplace_commit: commit, updated_at: new Date().toISOString(),

@@ -68,10 +68,11 @@ export interface SkillReport {
     bulk_source?: boolean;
     fetched_at: string;
   };
-  token_cost: {
-    body_tokens: number;
-    method: string;
-  };
+  /**
+   * 静态上下文体积:只描述可复现的装载边界,不承诺任一模型的真实调用消耗。
+   * 可选:存量条目可能尚未回填(缺失 = 前端「待重算」;ingest 幂等闸会外科式补齐)。
+   */
+  context_size?: ContextSize;
   /** M1 基准评测结果;未评测为 null(与 pipeline eval/types.ts 的 EvalResult 对应) */
   eval: SkillEval | null;
   /**
@@ -81,6 +82,36 @@ export interface SkillReport {
    * 锚 meta.content_hash(与 verdict 账本同构):不一致 = 过期,下次重算。
    */
   copy?: SkillCopy | null;
+}
+
+export type ContextSizeScopeId =
+  | "activation_core"
+  | "activation_with_declared_refs"
+  | "package_total_text";
+
+export interface ContextSizeCounter {
+  id: string;
+  method: "official-tokenizer" | "heuristic";
+  tokenizer?: string;
+  description?: string;
+}
+
+/** UI 标签(「最小装载」等)由前端按 scope id 渲染,不固化进 catalog 数据(ADR 0015)。 */
+export interface ContextSizeScope {
+  /** 被纳入此 scope 的相对文件路径 */
+  files: string[];
+  /** 文本文件数量;package_total_text 可用它解释包内规模 */
+  text_files: number;
+  bytes: number;
+  chars: number;
+  tokens: number;
+}
+
+export interface ContextSize {
+  version: "1";
+  counter: ContextSizeCounter;
+  generated_at: string;
+  scopes: Record<ContextSizeScopeId, ContextSizeScope>;
 }
 
 /** 派生微文案。生成侧 categorize:llm 写入;前端 lint_pass=false 时回退 description 截断(见 copyLint.ts)。 */

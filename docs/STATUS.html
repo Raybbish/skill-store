@@ -36,29 +36,32 @@ footer{margin-top:22px;color:var(--faint);font-size:12px;text-align:center;font-
 <header>
   <div class="e">OH-MY-SKILL · 项目状态面板</div>
   <h1>我们在哪</h1>
-  <div class="m">生成于 2026-07-05 05:34 UTC · 分支 feat/microcopy-p0 · 未提交 2 处</div>
+  <div class="m">生成于 2026-07-06 04:33 UTC · 分支 fix/sync-maxbuffer · 未提交 21 处</div>
 </header>
 <div class="grid"><div class="card"><b class="">6177</b><span>skill 总数</span></div><div class="card"><b class="ok">52<i>/55</i></b><span>verdict pass(legacy·历史)</span></div><div class="card"><b class="">mirrored 4941 <i>·</i> indexed 1236</b><span>托管</span></div><div class="card"><b class="warn">3</b><span>flagged 待裁决</span></div><div class="card"><b class="">0</b><span>已评测</span></div><div class="card"><b class="">414</b><span>发布者</span></div></div>
 <div class="doc">
   <h2>最近提交</h2>
-  <pre>4465ae233 fix(microcopy): 解耦 prompt 修 tag 回退 + 换掉 QA 伪货 fixture
-14a550cb5 feat(microcopy): P0 微文案——机器副标题+场景词+lint+埋点(ADR 0013)
-a55d3050d Merge branch 'main' of https://github.com/Raybbish/skill-store into feat/microcopy-p0
-484f8a080 ci: status.yml 断乒乓——push 只校验不提交,快照提交只走每日定时/手动
-265ae3179 chore: refresh status snapshot [skip ci]
-16e0c71e0 Merge branch 'main' of https://github.com/Raybbish/skill-store
-ca7975197 chore: lockfiles 收录 @skill-store/verdicts workspace
-ddbca85fe chore: refresh status snapshot [skip ci]</pre>
+  <pre>160ce0948 fix(sync): 放大 git 调用 maxBuffer,解 catalog 规模下 stdout 溢出
+6c740cea5 fix(ingest): mirror 加单文件大小闸(默认2MB),挡编译产物/大blob进git;清 71MB pomodoro 二进制
+a5926c192 data(microcopy): 全量 copy 块 + scene:renorm 归一(5,816 条 ~95% tagline;ADR 0013)
+d3ece6c63 docs(status): 同步微文案全链路——全量已跑+复核工具+.mts/缓存击穿两修复;下一步收敛为用户端 3 步
+0eb127b5d fix(web): idx 取数缓存击穿——meta no-store + docs/分片按 generatedAt 版本键
+c22b03b10 fix(web): build-index 改名 .mts 修顶层-await/cjs 阻塞 + 全量微文案实测
+49577579c feat(microcopy): scene:renorm 复核工具 + 全量后词表复核
+77553b72c docs: 微文案真机金标已过(tag 90.5% / 微文案 96%),下一步只剩全量</pre>
   <h1>STATUS — 我们在哪</h1>
 <blockquote>手写现状。可派生的数字(catalog / 审计 / 提交)见 <a href="./STATUS.generated.md"><code>STATUS.generated.md</code></a>,由 <code>npm run status</code> 自动生成——别在这里手抄数字。</blockquote>
 <blockquote></blockquote>
-<blockquote>_上次人工更新:2026-07-04(安全扫描整套下架,ADR 0011)_</blockquote>
+<blockquote>_上次人工更新:2026-07-06(上下文体积口径替换 token / 次,ADR 0015)_</blockquote>
 <h2>里程碑:M0 · 可信目录(进行中)</h2>
 <p>目标:500+ 已收录 skill、可浏览 / 可搜 / 可一键装、catalog 公开可验证。</p>
 <blockquote>⛔ <strong>安全扫描已整套下架</strong>(2026-07-04,<a href="decisions/0011-unlist-security-scan.md">ADR 0011</a>):前端认证徽章/权限披露/审计文案全部摘除,<code>audit</code>/<code>review</code>/<code>audit:l3</code> scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。</blockquote>
 <h3>已完成</h3>
 <ul>
-<li><strong>微文案 P0 · 代码落地</strong>(2026-07-05,<a href="decisions/0013-microcopy-sources.md">ADR 0013</a>):机器副标题(tagline)+ 场景词 + fit_line,埋点先行。四处落子——① <code>schemas</code>:<code>SkillReport.copy</code> 顶层块(锚 content_hash)+ <code>sceneTags.ts</code>(别名归一/查重/<code>SCENE_VISIBLE_MIN=15</code>)+ <code>copyLint.ts</code>(<code>BANNED_WORDS</code> + L1-L6,判据单一来源);② <code>categorize-llm</code>:prompt 追加三字段、单次调用顺带产出、代码层 lint、写 copy 块,<code>--canary</code> 加 25 条微文案金标(lint 通过率门 95%);③ <code>web</code>:卡片副标题=tagline(回退 description 截断)+ 场景 chip(点击=搜索,不进 facet)、详情页 fit_line + 全量场景词、搜索并入 tagline/scene、build-index 按词频裁可见 chip(<code>scene</code>)与召回串(<code>skw</code>)+ <code>meta.sceneVocab</code>;④ 埋点 schema 冻结(<code>docs/design/analytics-events.md</code>)+ 前端 beacon(collector 后补,未配置即 no-op)。<strong>验收:schemas/pipeline/web 三侧 <code>tsc</code> 全绿;lint+场景归一离线单测过;scene-split 单测过;MOCK 管路通(copy=null)。</strong> ⚠ <strong>全量重打待真实 LLM 环境</strong>——本沙箱网络策略屏蔽 LLM host(proxy 403),需在配好 <code>.env</code> 的本机跑 <code>--canary</code> 过金标后 <code>--scope all</code>。不新建 job、不动 facet schema(ADR 0010)、不动 verdicts。</li>
+<li><strong>上下文体积口径替换 token / 次</strong>(2026-07-06,<a href="decisions/0015-context-size-metric.md">ADR 0015</a>):旧链路 <code>chars/4 → token_cost.body_tokens → token / 次</code> 直接下线,不做 legacy fallback;新字段 <code>context_size</code> 只表达静态、可复现的装载边界:最小装载(<code>SKILL.md</code>)、含声明引用、文本包总量。M0 先用显式标注的 <code>static-mixed-estimate-v1</code> 启发式计数器,前端缺回填显示「待重算」,不再把估算伪装成真实每次消耗。</li>
+<li><strong>微文案全量数据已入库 + 词表归一</strong>(2026-07-05,<a href="decisions/0013-microcopy-sources.md">ADR 0013</a>,<code>a5926c192</code>):全量 copy 块(约 5,816 条 <code>skill-report.json</code> 的 tagline / 场景词 / fit_line)+ <code>scene:renorm --apply</code>(8 别名 + 空格归一,约 +90 覆盖)一并提交——「微文案 P0 全链路」的 catalog 数据变更收口,仅剩用户端浏览器回归一步。</li>
+<li><strong>mirror 单文件大小闸</strong>(2026-07-05,<code>6c740cea5</code>):<code>--mirror</code> 托管环节加默认 2MB 单文件闸,挡编译产物 / 大 blob 进 git,并清掉一个已混入的 71MB pomodoro 二进制。仓库卫生。</li>
+<li><strong>微文案 P0 · 全链路落地 + 全量已跑</strong>(2026-07-05,<a href="decisions/0013-microcopy-sources.md">ADR 0013</a>,分支 <code>feat/microcopy-p0</code>):机器副标题(tagline)+ 场景词 + fit_line,埋点先行。① <code>schemas</code>:<code>SkillReport.copy</code> 顶层块(锚 content_hash)+ <code>sceneTags.ts</code>(别名归一/查重/<code>SCENE_VISIBLE_MIN=15</code>/去「拉丁↔中日韩」边界空格)+ <code>copyLint.ts</code>(<code>BANNED_WORDS</code> + L1-L6,判据单一来源);② <code>categorize-llm</code>:prompt 追加三字段单次产出 + 代码层 lint + 写 copy 块,<code>--canary</code> 加 25 条微文案金标(lint≥95%);③ <code>web</code>:卡片副标题=tagline(回退 description 截断)+ 场景 chip(点击=搜索,<strong>不进 facet</strong>)+ 详情页 fit_line/全量场景词 + build-index 按词频裁可见 chip(<code>scene</code>)/召回串(<code>skw</code>)+ <code>meta.sceneVocab</code>;④ 埋点三事件 schema 冻结(<code>docs/design/analytics-events.md</code>)+ beacon(未配置即 no-op)。<strong>真机金标已过</strong>(tag mcp 90.5% / 微文案 24/25=96%;修了一处 prompt 把 tag 具名(mcp)当场景反例、连带压掉 mcp 标签的 bug)。<strong>全量 5,816 条已判</strong>——<code>build-index</code> 实测 <strong>5,529 张卡片有 tagline(≈95%)+ 可见场景 chip 70</strong>,<code>skw</code> 召回生效(例:understand→tagline+chip「代码评审」+skw「项目交接 架构理解」)。<strong>词表复核</strong>:新增 <code>scene:renorm</code>(纯本地复核工具:全量词频 + 同义簇 / <code>--apply</code> 重归一,季度复核复用)+ 8 条同义别名 + 空格归一(dry:重归一 644、约 +90 条 fail→pass、0 回退)。<strong>顺清两个既有阻塞</strong>:<code>build-index</code> 顶层 await 改名 <code>.mts</code> 修 cjs 报错;idx 取数缓存击穿(<code>meta</code> no-store + <code>docs</code>/分片按 <code>generatedAt</code> 版本键),修「重建后计数是新的、筛选却吃旧 docs 返回 0」的假象。三侧 <code>tsc</code> 全绿;lint/场景归一/scene-split 离线单测过。不新建 job、不动 facet schema(ADR 0010)、不动 verdicts。</li>
 <li><strong>verdict 服务 S0 ④</strong>(2026-07-05,ADR 0012):商店三插拔点接线完成,全部默认 off——ingest <code>TRUST_SUBMIT=1</code> 才提交判定;build-index <code>TRUST_DISPLAY=1</code> <strong>且 policy 定稿</strong>才 join verdict 到瘦卡(hash 不符不展示);<code>TrustBadge</code> 开关组件(verdict 缺省恒 null);CLI <code>TRUST_DISPLAY=1</code> 且 verdict 命中 hash 才披露。已验证:flag 开但 policy=draft 时 displayReady 仍 false。<strong>S0 工程面收官,重新上架 = policy v1 定稿 + 开 flag。</strong>(⚠ 本机需 <code>npm install</code> 链接新 workspace 包)</li>
 <li><strong>verdict 服务 S0 ②③</strong>(2026-07-05,ADR 0012):<code>packages/verdicts</code> 落地——scan-verdict@v1 契约 + 五接口 + 编排器 + 插件(scanners 三件套 git mv 入 engines/,旧 audit/review jobs 删除);<strong>skill-report schema v2</strong>:security_audit 拆出,55 条真实判定迁入 <code>catalog/verdicts/</code> 账本(engine=legacy),6,122 条 pending 占位丢弃;ingest/sync/eval/status.mjs 配套改造(Supabase 需执行 <code>infra/migrations/2026-07-05-verdict-service.sql</code>)。TRUST_DISPLAY / TRUST_GATE 均 off,货架外观不变。</li>
 <li><strong>安全扫描下架</strong>(2026-07-04,ADR 0011):CertBadge 删除、<code>SkillCard</code>/<code>Skill</code> 剥离 status/risk/l3/review、「仅无网络请求」筛选移除、CLI 装前披露移除(哈希校验保留);判定数据现已迁入 verdict 账本(见上)。</li>
@@ -73,11 +76,12 @@ ddbca85fe chore: refresh status snapshot [skip ci]</pre>
 <ul>
 <li><strong>分类 / 标签体系</strong>:<code>packages/schemas</code> 词表(<code>featuredLabels</code> / <code>tagLabels</code>)+ <code>skill.category/tags</code> + browse/home 分类导航 + <code>/category/[slug]</code> 分类页——开发中,未提交。</li>
 <li>可复现评测:OpenAI runner + <code>score</code>/<code>types</code> 迭代中(未提交)。</li>
-<li>前端 v4 重设计 + 审计结果 + 本 docs 整理<strong>待 git 提交留痕</strong>(当前工作区未提交约 200 处)。</li>
+<li><strong>微文案分支 <code>feat/microcopy-p0</code></strong>:代码 + ADR 0013 + 文档 + 全量 catalog 数据变更(<code>a5926c192</code>,约 5,816 条 skill-report.json)均已提交本地,待 push 开 PR。</li>
+<li>前端 v4 重设计 + 早期 docs 整理若仍有未提交项,一并留痕。</li>
 </ul>
 <h3>下一步</h3>
 <ul>
-<li><strong>微文案全量重打</strong>(<a href="decisions/0013-microcopy-sources.md">ADR 0013</a>):<strong>真机金标已过</strong>(2026-07-05:tag mcp 90.5% / skill-tooling 92.6% / 微文案 24/25=96%;commit 4465ae23 修 prompt 解耦——微文案段勿拿 tag 具名当反例——+ 换掉 QA 伪货 fixture)。<strong>下一步只剩全量</strong>:<code>npm run categorize:llm -- --scope all</code>(约 5,811 条,deepseek 约一杯咖啡)→ 统计场景词频 top 200 人工补 <code>SCENE_ALIASES</code> → 只重跑归一 → <code>npm run web:index &amp;&amp; npm run web</code> 浏览器回归卡片副标题/场景 chip/详情 fit_line/回退链。⚠ 注:<code>build-index.ts</code> 存在<strong>既有</strong>顶层 await(verdict-join 块),在 <code>packages/web</code> 无 <code>type:module</code> 时于某些 tsx 环境报 cjs 错——本机若命中,把该 await 包进 async IIFE 即可(与微文案无关)。</li>
+<li><strong>微文案收尾(仅剩本机回归一步)</strong>:<code>npm run web:index &amp;&amp; npm run web</code> + 硬刷新浏览器,回归卡片副标题 / 场景 chip / 详情 fit_line / 回退链。<code>scene:renorm --apply</code> 归一 + 全量 copy 数据已随 <code>a5926c192</code> 提交(见「已完成」),故原「本机 3 步」只余此一步。</li>
 <li><strong>verdict 服务步骤⑤⑥</strong>(<a href="decisions/0012-verdict-service.md">ADR 0012</a>):研究议题(裁决口径/误报率基线/复核吞吐/徽章语义)在 <code>packages/verdicts/policies/</code> 草稿里迭代;policy v1 定稿 + 全量重扫 + 开 TRUST_DISPLAY = 重新上架(验收:diff 只有 flag)。</li>
 <li>Supabase:下次 sync 前执行 <code>infra/migrations/2026-07-05-verdict-service.sql</code>(放开 audit_status 非空)。</li>
 <li>扩 catalog 到 500+(接更多源)。</li>
@@ -100,6 +104,8 @@ ddbca85fe chore: refresh status snapshot [skip ci]</pre>
 <li><a href="decisions/0011-unlist-security-scan.md">0011 · 安全扫描整套下架(待重新设计)</a></li>
 <li><a href="decisions/0012-verdict-service.md">0012 · 扫描重生为可插拔 verdict 判定服务</a></li>
 <li><a href="decisions/0013-microcopy-sources.md">0013 · 微文案三来源与「场景词不进 facet」红线</a></li>
+<li><a href="decisions/0014-pack-curation.md">0014 · 场景包:定义、收录标准与生命周期</a></li>
+<li><a href="decisions/0015-context-size-metric.md">0015 · 上下文体积取代 token / 次</a></li>
 </ul>
 <h2>文档地图(唯一入口)</h2>
 <p>所有规划 / 架构 / 设计文档已收进 <code>docs/</code>,点开即看。</p>
