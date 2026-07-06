@@ -10,7 +10,6 @@ import { parse } from "yaml";
 import type { CollectionReport, SkillReport } from "@skill-store/schemas";
 import { discoverFromRepo, type SkillCandidate } from "../sources/official.ts";
 import { CATALOG, loadCatalogEntries, entryDir } from "../catalog.ts";
-import { CONTEXT_SIZE_COUNTER_ID } from "../context-size.ts";
 import { categorize } from "../categorize.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
@@ -175,14 +174,13 @@ async function main() {
 
     // 内容与上游 commit 都没变、且已归类 → 跳过(幂等,不产生噪音 diff)。
     // 加 category != null 是为了给旧条目回填分类:首次接入后,存量条目会被重新归类一次。
-    // 缺 context_size **或计数器版本过旧**的存量条目(ADR 0015)做**外科式回填/升级**:
-    // 只把新算的 context_size 补进旧报告,其余(category/tags/copy/eval)原样保留——
-    // 不走完整更新路径,避免启发式归类冲掉 categorize:llm 的权威判定、或把微文案 copy 块整个丢掉。
+    // 缺 context_size 的存量条目(ADR 0015)做**外科式回填**:只把新算的 context_size 补进旧报告,
+    // 其余(category/tags/copy/eval)原样保留——不走完整更新路径,避免启发式归类冲掉
+    // categorize:llm 的权威判定、或把微文案 copy 块整个丢掉。
     if (prev && prev.meta.content_hash === c.report.meta.content_hash &&
         prev.meta.upstream_commit === c.report.meta.upstream_commit &&
         prev.meta.category != null) {
-      if ((prev.context_size == null || prev.context_size.counter.id !== CONTEXT_SIZE_COUNTER_ID) &&
-          c.report.context_size != null) {
+      if (prev.context_size == null && c.report.context_size != null) {
         prev.context_size = c.report.context_size;
         await writeFile(join(entryDir(prev.meta.id), "skill-report.json"), JSON.stringify(prev, null, 2) + "\n");
         stats.backfilled++;
@@ -284,7 +282,7 @@ async function main() {
   console.log(`  新增: ${stats.added}`);
   console.log(`  更新(内容变化): ${stats.updated}`);
   console.log(`  未变跳过: ${stats.unchanged}`);
-  if (stats.backfilled) console.log(`  外科式回填/升级 context_size(其余字段未动): ${stats.backfilled}`);
+  if (stats.backfilled) console.log(`  外科式回填 context_size(其余字段未动): ${stats.backfilled}`);
   console.log(`  重复(标记 duplicate_of): ${stats.dup}`);
   console.log(`  保留了已有审计结果: ${stats.preserved}`);
   console.log(`  frontmatter 不合规: ${stats.fmInvalid}`);
