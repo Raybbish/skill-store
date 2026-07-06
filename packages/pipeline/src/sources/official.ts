@@ -86,7 +86,8 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
         frontmatter_valid: issues.length === 0,
         frontmatter_issues: issues,
         // v2(ADR 0012):判定拆出至 catalog/verdicts 账本;采集不再写 security_audit
-        signals: { stars_github: null, installs_skills_sh: null, fetched_at: now },
+        // first_seen_at 默认盖发现时刻;更新既有条目时 ingest 会用旧值顶掉(盖一次、永不覆盖,ADR 0016)
+        signals: { stars_github: null, installs_skills_sh: null, fetched_at: now, first_seen_at: now },
         context_size: await computeContextSize({ root: clone.dir, dirPrefix: dir, skillMd: md, entries: clone.entries, generatedAt: now }),
         eval: null,
       };

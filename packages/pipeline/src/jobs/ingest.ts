@@ -212,6 +212,11 @@ async function main() {
       c.report.copy = prev.copy;
     }
 
+    // first_seen_at:首次进 catalog 的时间,盖一次章、永不覆盖(驱动「新上架」榜,ADR 0016)。
+    // 有 prev 就沿用旧值顶掉新候选默认的 now;存量缺 first_seen_at 的条目由
+    // jobs/backfill-first-seen.ts 从 catalog git 历史一次性回填,不在采集热路径推导 git。
+    if (prev) c.report.signals.first_seen_at = prev.signals.first_seen_at ?? c.report.signals.first_seen_at;
+
     // 归类:采集期打 meta.category + meta.tags(启发式引擎;sources.yaml 可 per-source 覆盖)。
     // 人工锁定(category_locked)的分类不被采集覆盖——与「采集不冲掉下游成果」一致。
     // uncategorized / 平票(引擎已判)保持 category="uncategorized",由分类复核挑走人工补标。

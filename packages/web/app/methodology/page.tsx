@@ -23,7 +23,7 @@ function Ratio({ sampled, total }: { sampled: number; total: number }) {
 }
 
 /** 收录页(零文案版):数据自己说话——数字、比例条、来源列表,没有一句解释性文字。 */
-export default function Collections() {
+export default function Methodology() {
   const collections = allCollections();
   const meta = readIdxMeta();
   const upstreamTotal = collections.reduce((a, c) => a + c.skillCount, 0);

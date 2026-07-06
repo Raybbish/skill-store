@@ -22,6 +22,7 @@ create table if not exists public.skills (
   upstream_commit text,
   content_hash text,
   marketplace_commit text not null,       -- 溯源:来自 catalog 仓哪个 commit
+  first_seen_at timestamptz,              -- 首次进 catalog 的时间(catalog git 派生,盖一次永不覆盖):「新上架」榜排序键(ADR 0016)。区别于 updated_at(每次同步刷新)
   updated_at timestamptz not null default now(),
   fts tsvector generated always as (
     to_tsvector('simple', coalesce(name,'') || ' ' || coalesce(description,''))
@@ -29,6 +30,7 @@ create table if not exists public.skills (
 );
 create index if not exists skills_fts on public.skills using gin (fts);
 create index if not exists skills_status on public.skills (audit_status);
+create index if not exists skills_first_seen on public.skills (first_seen_at desc);  -- 「新上架」榜排序(ADR 0016)
 
 create table if not exists public.sync_state (
   id int primary key default 1,

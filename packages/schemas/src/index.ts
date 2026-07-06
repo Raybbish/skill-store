@@ -67,6 +67,13 @@ export interface SkillReport {
     /** 上游仓库 skill 数超过每仓上限(MAX_PER_REPO),本条目来自折叠采样收录 */
     bulk_source?: boolean;
     fetched_at: string;
+    /**
+     * 首次进入 catalog 的时间(ISO):驱动「新上架」榜排序(见 ADR 0016)。
+     * 不变式:首次写入时盖章,之后**永不覆盖**(与 eval/copy 同,「采集不冲下游」)。
+     * 事实源是 catalog git 历史(首个 `--diff-filter=A` commit);本字段是其物化缓存,
+     * 缺失可由 `jobs/backfill-first-seen.ts` 从 git 回填。区别于 `fetched_at`(每次采到/变更即刷新)。
+     */
+    first_seen_at?: string;
   };
   /**
    * 静态上下文体积:只描述可复现的装载边界,不承诺任一模型的真实调用消耗。
