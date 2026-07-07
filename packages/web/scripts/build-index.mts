@@ -13,7 +13,7 @@ import { execSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { allSkills } from "../lib/data";
-import { PAGE_SIZE, toCard, type CardVerdict, type IdxMeta, type Pack, type SkillCard } from "../lib/store";
+import { PAGE_SIZE, toCard, toWire, type CardVerdict, type IdxMeta, type Pack, type SkillCard } from "../lib/store";
 import { batchGetVerdicts, displayReady } from "@skill-store/verdicts";
 import { applyRepoCap, byPopularity } from "../lib/skill-utils";
 import { featuredLabels, tagLabels, SCENE_VISIBLE_MIN } from "@skill-store/schemas";
@@ -127,9 +127,10 @@ for (const t of tagSlugs) {
 try { rmSync(OUT, { recursive: true, force: true }); } catch { /* 覆盖写兜底 */ }
 mkdirSync(join(OUT, "pages"), { recursive: true });
 
+// 落盘一律线格式(WireCard,去可派生字段;读侧统一水合)——载荷工程,见 store.ts toWire
 const pages = Math.max(1, Math.ceil(shelf.length / PAGE_SIZE));
 for (let p = 1; p <= pages; p++) {
-  writeFileSync(join(OUT, "pages", `p${p}.json`), JSON.stringify(shelf.slice((p - 1) * PAGE_SIZE, p * PAGE_SIZE)));
+  writeFileSync(join(OUT, "pages", `p${p}.json`), JSON.stringify(shelf.slice((p - 1) * PAGE_SIZE, p * PAGE_SIZE).map(toWire)));
 }
 const meta: IdxMeta = {
   generatedAt: new Date().toISOString(),
@@ -138,11 +139,11 @@ const meta: IdxMeta = {
   ...(sceneVocab.length ? { sceneVocab } : {}),
 };
 writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta));
-writeFileSync(join(OUT, "docs.json"), JSON.stringify(docs));
+writeFileSync(join(OUT, "docs.json"), JSON.stringify(docs.map(toWire)));
 
 // 新上架(榜单「今日」):按收录时间降序,取前 100
 const fresh = docs.filter((c) => c.addedAt).sort((a, b) => b.addedAt! - a.addedAt!).slice(0, 100);
-writeFileSync(join(OUT, "new.json"), JSON.stringify(fresh));
+writeFileSync(join(OUT, "new.json"), JSON.stringify(fresh.map(toWire)));
 
 // 场景包:catalog/packs/*.json → 成员从瘦卡池解析;成员缺失 → 整包跳过(包=放心一键装的承诺)
 const byId = new Map<string, SkillCard>(docs.map((c) => [c.id, c]));
@@ -164,7 +165,7 @@ try {
     });
   }
 } catch { /* packs 目录可缺省 */ }
-writeFileSync(join(OUT, "packs.json"), JSON.stringify(packs));
+writeFileSync(join(OUT, "packs.json"), JSON.stringify(packs.map((p) => ({ ...p, members: p.members.map(toWire) }))));
 
 const kb = (f: string) => `${Math.round(statSync(join(OUT, f)).size / 1024)}KB`;
 console.log(

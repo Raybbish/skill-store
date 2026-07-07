@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { StaticStore, type Pack, type SearchResult, type SkillCard } from "@/lib/store";
+import { type Pack, type SearchResult, type SkillCard } from "@/lib/store";
+import { createStore } from "@/lib/store-typesense";
 import SkillRow from "@/components/SkillRow";
 import { trackSearch } from "@/lib/analytics";
 
@@ -12,8 +13,10 @@ const cn = { color: "var(--faint)", marginLeft: 4, fontWeight: 600 } as const;
 /** 防御式数字格式化:热更新/产物错配等异常下也绝不因 undefined 崩渲染 */
 const nf = (x: number | null | undefined) => (typeof x === "number" && !Number.isNaN(x) ? x.toLocaleString() : "–");
 
-/** 模块级单例:分片与 docs 缓存跨渲染复用 */
-const store = new StaticStore();
+/** 模块级单例:分片与 docs 缓存跨渲染复用。
+ *  工厂按 env 决定后端:配了 NEXT_PUBLIC_TYPESENSE_* → 带词搜索走 Typesense(失败回落本地);
+ *  未配 → 纯 StaticStore,行为与 P0 完全一致。 */
+const store = createStore();
 
 /** 场景包跑马灯:双轨无缝循环,hover 暂停;reduced-motion 降级为静态横滑(见 globals.css) */
 function PackMarquee({ packs }: { packs: Pack[] }) {

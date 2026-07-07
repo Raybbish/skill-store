@@ -2,12 +2,16 @@
  * SkillStore 的服务端(构建期)读取面:直接读 build-index 产出的 public/idx。
  * 只允许在 server component / 构建期代码里 import(依赖 node:fs)。
  * 与客户端 StaticStore 吃同一份产物 —— 首屏(SSG)和交互(fetch)天然一致。
+ * idx 落盘为线格式(WireCard,去可派生字段),读取时统一水合;组件永远只见完整瘦卡。
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { IdxMeta, Pack, SkillCard } from "./store";
+import { hydrateCard, type IdxMeta, type Pack, type SkillCard, type WireCard } from "./store";
 
 const IDX = join(process.cwd(), "public/idx");
+
+/** packs.json 的线格式:成员为 WireCard */
+type WirePack = Omit<Pack, "members"> & { members: WireCard[] };
 
 function readJson<T>(file: string): T {
   try {
@@ -24,14 +28,14 @@ export function readIdxMeta(): IdxMeta {
 }
 
 export function readIdxPage(n: number): SkillCard[] {
-  return readJson<SkillCard[]>(`pages/p${n}.json`);
+  return readJson<WireCard[]>(`pages/p${n}.json`).map(hydrateCard);
 }
 
 export function readIdxPacks(): Pack[] {
-  return readJson<Pack[]>("packs.json");
+  return readJson<WirePack[]>("packs.json").map((p) => ({ ...p, members: p.members.map(hydrateCard) }));
 }
 
 /** 新上架(按收录时间降序,build-index 产出) */
 export function readIdxNew(): SkillCard[] {
-  return readJson<SkillCard[]>("new.json");
+  return readJson<WireCard[]>("new.json").map(hydrateCard);
 }

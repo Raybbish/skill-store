@@ -1,0 +1,13 @@
+# P1 第一期:本地 Typesense(搜索后端)。产品公开时把前端 NEXT_PUBLIC_TYPESENSE_URL
+# 指向云端实例(自托管 VPS / Typesense Cloud)即可,商店代码零改动(见 lib/store-typesense.ts)。
+#   启动:docker compose -f infra/typesense/docker-compose.yml up -d
+#   数据:./data(gitignore;删掉重跑 typesense:push 即可重建)
+services:
+  typesense:
+    image: typesense/typesense:27.1
+    restart: unless-stopped
+    ports:
+      - "8108:8108"
+    volumes:
+      - ./data:/data
+    command: "--data-dir /data --api-key=${TYPESENSE_API_KEY:-oms-dev-key} --enable-cors"
