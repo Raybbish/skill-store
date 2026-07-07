@@ -2,7 +2,8 @@
  * ingest:读 sources.yaml → 逐源发现 skill → 哈希去重 → 写 catalog/
  * 用法:npm run ingest [-- --limit 20] [-- --source anthropics/skills]
  */
-import { mkdir, readFile, writeFile, readdir, stat, copyFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile, readdir, stat, copyFile, rm } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -238,19 +239,37 @@ async function main() {
 
     const dir = entryDir(c.report.meta.id); // catalog/skills/<owner>/<repo>/<name>
     await mkdir(dir, { recursive: true });
+    const mirrorDir = join(dir, "mirror");
     if (c.mirrorSrcDir) {
-      // 过滤式镜像:跳过超 MIRROR_MAX_BYTES 的文件(大 blob 不进 git);有跳过或整体失败 → mirror 非完整
-      const skipped = await copyMirrorFiltered(c.mirrorSrcDir, join(dir, "mirror"), MIRROR_MAX_BYTES)
+      // 过滤式镜像:跳过超 MIRROR_MAX_BYTES 的文件(大 blob 不进 git);有跳过 → mirror 非完整
+      const skipped = await copyMirrorFiltered(c.mirrorSrcDir, mirrorDir, MIRROR_MAX_BYTES)
         .catch((e) => { console.warn(`  ⚠ 镜像 ${c.report.meta.id} 失败(降级为索引): ${(e as Error).message}`); return null; });
-      if (skipped === null || skipped.length) {
+      if (skipped === null) {
+        // 整体失败:降级说到做到——hosting 回 indexed、清掉半拉子副本;字段永远=磁盘事实
+        await rm(mirrorDir, { recursive: true, force: true }).catch(() => {});
+        c.report.meta.hosting = "indexed";
+        delete c.report.meta.mirror_complete;
+      } else if (skipped.length) {
         c.report.meta.mirror_complete = false;
-        for (const s of skipped ?? []) {
+        for (const s of skipped) {
           stats.mirrorSkipped++;
           console.warn(`  ⚠ 镜像跳过大文件(不入 git)${c.report.meta.id}/${s.path} — ${(s.bytes / 1048576).toFixed(1)}MB > ${(MIRROR_MAX_BYTES / 1048576).toFixed(0)}MB`);
         }
       }
+    } else {
+      // 索引趟(未带 --mirror):hosting 只表达「本店实际托管」,以磁盘事实定值——
+      // licence 允许(候选分类=mirrored)且磁盘已有副本 → 沿用 mirrored(完整度沿用 prev);
+      // 其余一律 indexed。候选默认的 licence 分类值在此被磁盘事实覆盖,杜绝「标 mirrored 无副本」再产生。
+      if (c.report.meta.hosting === "mirrored" && existsSync(mirrorDir)) {
+        c.report.meta.mirror_complete = prev?.meta.mirror_complete ?? true;
+      } else {
+        if (existsSync(mirrorDir))
+          console.warn(`  ⚠ ${c.report.meta.id} licence 收紧但磁盘遗留 mirror/(hosting 置 indexed,副本去留人工核)`);
+        c.report.meta.hosting = "indexed";
+        delete c.report.meta.mirror_complete;
+      }
     }
-    // mirror 写完再落 skill-report.json,确保 mirror_complete 一次写对
+    // mirror 状态定妥再落 skill-report.json,确保 hosting / mirror_complete 一次写对
     await writeFile(join(dir, "skill-report.json"), JSON.stringify(c.report, null, 2) + "\n");
 
     written++;
