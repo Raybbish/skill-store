@@ -2,7 +2,7 @@
 
 > 手写现状。可派生的数字(catalog / 审计 / 提交)见 [`STATUS.generated.md`](./STATUS.generated.md),由 `npm run status` 自动生成——别在这里手抄数字。
 >
-> _上次人工更新:2026-07-06(上下文体积口径替换 token / 次,ADR 0015)_
+> _上次人工更新:2026-07-07(补录 sync/mirror 修复批与仓库卫生 chores;场景包条目「新上架」口径改引 ADR 0016)_
 
 ## 里程碑:M0 · 可信目录(进行中)
 目标:500+ 已收录 skill、可浏览 / 可搜 / 可一键装、catalog 公开可验证。
@@ -10,7 +10,9 @@
 > ⛔ **安全扫描已整套下架**(2026-07-04,[ADR 0011](decisions/0011-unlist-security-scan.md)):前端认证徽章/权限披露/审计文案全部摘除,`audit`/`review`/`audit:l3` scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。
 
 ### 已完成
-- **上下文体积口径替换 token / 次**(2026-07-06,[ADR 0015](decisions/0015-context-size-metric.md)):旧链路 `chars/4 → token_cost.body_tokens → token / 次` 直接下线,不做 legacy fallback;新字段 `context_size` 只表达静态、可复现的装载边界:最小装载(`SKILL.md`)、含声明引用、文本包总量。M0 先用显式标注的 `static-mixed-estimate-v1` 启发式计数器,前端缺回填显示「待重算」,不再把估算伪装成真实每次消耗。同日修订(ADR 0015 补充):补 DB 迁移 `infra/migrations/2026-07-06-context-size.sql`(**存量 Supabase 必须执行**,否则 sync 报列不存在);ingest 幂等闸对缺 `context_size` 的存量条目做**外科式回填**(只补该字段,LLM 分类与微文案不动;顺带修了更新路径无条件丢 copy、冲 LLM 分类的旧账);声明引用改 availability 驱动字面匹配(裸文件名/非 ASCII 可命中);symlink 逃逸包外不读;scope 去掉 `label`(UI 文案归前端)。
+- **sync/mirror 修复批 + 仓库卫生**(2026-07-06):sync 增量路径解析三处修复 + NUL 边界防御(`e4b685d16`)、mirror 目录 gitlink 路径反推(`8f062810d`)、镜像跳过 `.git/.svn/.hg` 不再拷成 gitlink(`4b6524f27`)、64 个损坏 gitlink mirror 降级 index-only(`21027d47f`)、`normalizeName` 保证非空并清一条空 name 坏条目(`0d2a1ee3c`);另统一包管理器为 npm、去跟踪 tsbuildinfo、各 pipeline job 自动加载 .env(`3651fb870` / `8aab2e830` / `c5386eda1`)。
+- **新上架口径 first_seen_at**(2026-07-06,[ADR 0016](decisions/0016-new-arrivals-ranking.md),`b82b64bbd` + `eaa241062`):「新上架」轴 = 首次进**我们**货架,不是上游发布。`signals.first_seen_at` 以 catalog git 为事实源的物化缓存,首次盖章永不覆盖(official 新候选盖发现时刻;ingest 更新用旧值顶掉;`jobs/backfill-first-seen.ts` 从 git `--diff-filter=A` 一次性回填存量 10,716 条);sync 传导 Supabase(`infra/migrations/2026-07-06-first-seen.sql`,**存量库须执行**)。取代此前「build-index 一次遍历 git 首次提交时间」的临时做法。
+- **上下文体积口径替换 token / 次**(2026-07-06,[ADR 0015](decisions/0015-context-size-metric.md)):旧链路 `chars/4 → token_cost.body_tokens → token / 次` 直接下线,不做 legacy fallback;新字段 `context_size` 只表达静态、可复现的装载边界:最小装载(`SKILL.md`)、含声明引用、文本包总量。M0 先用显式标注的 `static-mixed-estimate-v1` 启发式计数器,前端缺回填显示「待重算」,不再把估算伪装成真实每次消耗。同日修订(ADR 0015 补充):补 DB 迁移 `infra/migrations/2026-07-06-context-size.sql`(**存量 Supabase 必须执行**,否则 sync 报列不存在);ingest 幂等闸对缺 `context_size` 的存量条目做**外科式回填**(只补该字段,LLM 分类与微文案不动;顺带修了更新路径无条件丢 copy、冲 LLM 分类的旧账);声明引用改 availability 驱动字面匹配(裸文件名/非 ASCII 可命中);symlink 逃逸包外不读;scope 去掉 `label`(UI 文案归前端)。**回填已基本收敛**(2026-07-06 实测,商店三层口径):catalog 10,735 条中 10,569 条已有 `context_size`,缺 166 条正确显示「待重算」,随下次 ingest 幂等闸外科式补齐。**详情页展示二次修订**(同日,ADR 0015 补充):单文本文件包(全量 49%,三 scope 文本集合相同、三格数字必然一样)折叠为一格「上下文体积 · 单文件」(判据 `text_files === 1` 结构事实,非三值相等);「静态估算」不再占独立格,计数方式收进数值格悬停提示;缺失由三格「待重算」收成单格。`tsc` 通过,`web:build` 待下次构建顺带回归。
 - **微文案全量数据已入库 + 词表归一**(2026-07-05,[ADR 0013](decisions/0013-microcopy-sources.md),`a5926c192`):全量 copy 块(约 5,816 条 `skill-report.json` 的 tagline / 场景词 / fit_line)+ `scene:renorm --apply`(8 别名 + 空格归一,约 +90 覆盖)一并提交——「微文案 P0 全链路」的 catalog 数据变更收口,仅剩用户端浏览器回归一步。
 - **mirror 单文件大小闸**(2026-07-05,`6c740cea5`):`--mirror` 托管环节加默认 2MB 单文件闸,挡编译产物 / 大 blob 进 git,并清掉一个已混入的 71MB pomodoro 二进制。仓库卫生。
 - **微文案 P0 · 全链路落地 + 全量已跑**(2026-07-05,[ADR 0013](decisions/0013-microcopy-sources.md),分支 `feat/microcopy-p0`):机器副标题(tagline)+ 场景词 + fit_line,埋点先行。① `schemas`:`SkillReport.copy` 顶层块(锚 content_hash)+ `sceneTags.ts`(别名归一/查重/`SCENE_VISIBLE_MIN=15`/去「拉丁↔中日韩」边界空格)+ `copyLint.ts`(`BANNED_WORDS` + L1-L6,判据单一来源);② `categorize-llm`:prompt 追加三字段单次产出 + 代码层 lint + 写 copy 块,`--canary` 加 25 条微文案金标(lint≥95%);③ `web`:卡片副标题=tagline(回退 description 截断)+ 场景 chip(点击=搜索,**不进 facet**)+ 详情页 fit_line/全量场景词 + build-index 按词频裁可见 chip(`scene`)/召回串(`skw`)+ `meta.sceneVocab`;④ 埋点三事件 schema 冻结(`docs/design/analytics-events.md`)+ beacon(未配置即 no-op)。**真机金标已过**(tag mcp 90.5% / 微文案 24/25=96%;修了一处 prompt 把 tag 具名(mcp)当场景反例、连带压掉 mcp 标签的 bug)。**全量 5,816 条已判**——`build-index` 实测 **5,529 张卡片有 tagline(≈95%)+ 可见场景 chip 70**,`skw` 召回生效(例:understand→tagline+chip「代码评审」+skw「项目交接 架构理解」)。**词表复核**:新增 `scene:renorm`(纯本地复核工具:全量词频 + 同义簇 / `--apply` 重归一,季度复核复用)+ 8 条同义别名 + 空格归一(dry:重归一 644、约 +90 条 fail→pass、0 回退)。**顺清两个既有阻塞**:`build-index` 顶层 await 改名 `.mts` 修 cjs 报错;idx 取数缓存击穿(`meta` no-store + `docs`/分片按 `generatedAt` 版本键),修「重建后计数是新的、筛选却吃旧 docs 返回 0」的假象。三侧 `tsc` 全绿;lint/场景归一/scene-split 离线单测过。不新建 job、不动 facet schema(ADR 0010)、不动 verdicts。
@@ -21,7 +23,7 @@
 - **审计**:L1 静态签名 + L2 脚本数据流已跑;风险五因子 + 三段式 ID(`owner/repo/name`)入 schema。
 - **前端(`packages/web`)**:v4「认证图标 + 去盒子编辑向」已落地——`CertBadge` 弹窗、`SkillRow`、home / browse / charts / detail(精简)/ community / publisher;`tsc --noEmit` 通过。
 - **货架指标口径**(ADR 0005):stars 与 installs 实测零重叠(98.8% / 0.8%),故头条统一 stars、缺失回落 installs→「新」;排序 `byPopularity` = 归一 stars(`stars/√repo_skill_count` 抑制巨仓)+ installs 次键;去 browse 双轴、首页「大家都在装」改「热门」。`tsc` 通过。
-- **新 IA + 场景包**(2026-07-04,用户导向裁决):nav 五收四(首页/榜单/社区/收录);「浏览」并入首页(搜索 + 场景包跑马灯 + 完整货架),`/browse/` 留薄壳跳转保深链;榜单改双 tab——🆕 新上架(按收录日分组,数据 = catalog git 首次提交时间,build-index 一次遍历)+ 🔥 热门(+评测榜占位);场景包 8 套(`catalog/packs/*.json`,成员全 pass 才出包)→ `idx/packs.json` → 首页跑马灯 + `/pack/[id]` 页;CLI `add` 支持多目标(包页「装整套」命令);文案红线:货架/包页零内部词汇。待本机浏览器回归。
+- **新 IA + 场景包**(2026-07-04,用户导向裁决):nav 五收四(首页/榜单/社区/收录);「浏览」并入首页(搜索 + 场景包跑马灯 + 完整货架),`/browse/` 留薄壳跳转保深链;榜单改双 tab——🆕 新上架(按收录日分组;数据口径现为 `signals.first_seen_at`,ADR 0016 已取代当初「build-index 一次遍历 git 首次提交时间」的临时做法)+ 🔥 热门(+评测榜占位);场景包 8 套(`catalog/packs/*.json`,成员全 pass 才出包)→ `idx/packs.json` → 首页跑马灯 + `/pack/[id]` 页;CLI `add` 支持多目标(包页「装整套」命令);文案红线:货架/包页零内部词汇。待本机浏览器回归。
 - **P0 规模化止血 + 取数缝**(ADR 0007,2026-07-04):`lib/store.ts` 定 `SkillStore` 接口(search/getSkill,签名冻结)+ `SkillCard` 瘦卡;`build-index.ts` 构建期产 `public/idx/`(30 条/片 ×194 + docs.json + meta.json,热门序含 per-repo cap=3,收掉同仓聚顶);browse 改服务端首屏 30 条 + 分片翻页 + 懒加载本地搜索(深链 `?cat=&tag=&q=`);`data.ts` 单扫缓存 + `getSkill` O(1);全站客户端组件只喂瘦卡。**基线:browse 首屏 6.0MB→25KB;build-index 3.4s@5,816 条;docs.json 4.9MB(P1 门控:>1.5万条 或 >8MB 或搜索 p95>200ms → Typesense)**。两侧 `tsc` 全绿;待本机 `npm run web` 浏览器回归。
 
 ### 进行中
@@ -55,6 +57,7 @@
 - [0013 · 微文案三来源与「场景词不进 facet」红线](decisions/0013-microcopy-sources.md)
 - [0014 · 场景包:定义、收录标准与生命周期](decisions/0014-pack-curation.md)
 - [0015 · 上下文体积取代 token / 次](decisions/0015-context-size-metric.md)
+- [0016 · 新上架时间 first_seen_at 与「新上架」榜口径](decisions/0016-new-arrivals-ranking.md)
 
 ## 文档地图(唯一入口)
 所有规划 / 架构 / 设计文档已收进 `docs/`,点开即看。

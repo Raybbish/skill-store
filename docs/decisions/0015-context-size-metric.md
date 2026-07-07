@@ -33,3 +33,4 @@ M0 先使用 `static-mixed-estimate-v1` 启发式计数器,字段里显式标 `m
 - **计数排除规则**:单文本文件 >256KB 不计入任何 scope(连 `files` 清单也不进);symlink 解析到 clone 外的不读(git tree 把 symlink 当 blob,恶意仓库可借此让采集机读任意文件;仓内软链照常跟随)。
 - **scope 不带 `label`**:UI 文案(「最小装载」等)由前端按 scope id 渲染,不固化进 catalog 数据。
 - **schema 不把 `context_size` 设为 required**(TS 类型同为可选):存量条目缺失属合法状态,消费方必须写守卫。
+- **详情页展示修订**(2026-07-06 二次修订):计数方式不再占独立展示格——「静态估算」放在「上下文体积」标签下形似坏数值;改为收进各数值格的 `title` 悬停提示(tokenizer 名或「静态估算」+ counter description),数值前 `~` 本身已表达估算。单文本文件包(全量约 49%)三个 scope 文本集合相同、三格数字必然一样,折叠为一格「上下文体积 · 单文件」——判据用 `package_total_text.text_files === 1`(结构事实),不用三值相等(数值巧合也会命中)。缺 `context_size` 时由三格「待重算」收成单格。
