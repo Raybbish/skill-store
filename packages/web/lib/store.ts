@@ -34,7 +34,8 @@ export interface SkillCard {
   scene?: string[];
   /** 不达标场景词(词频<阈值)拼成的搜索召回串,UI 不显示;多为空,省字节时省略 */
   skw?: string;
-  upstream: string;
+  /** 上游链接:列表线格式(WireCard)不携带——只有详情页用,走全量 Skill(必有) */
+  upstream?: string;
   stars?: number | null; installs?: number | null; repoSkillCount?: number;
   bulkSource?: boolean;
   /** 信任披露(见 CardVerdict;S0 恒缺省) */
@@ -116,6 +117,30 @@ export function toCard(s: Skill): SkillCard {
     ...(s.bulkSource ? { bulkSource: true } : {}),
     ...(s.eval ? { ev: s.eval.score } : {}),
   };
+}
+
+/** 线格式(idx 落盘/传输的瘦卡):SkillCard 去掉可派生与列表不用的字段——
+ *  owner/repo 由三段式 id 派生;publisher 与 id 首段相同时省略(≈100% 命中);
+ *  upstream 不进列表(详情页走全量 Skill);description 裁到 WIRE_DESC_MAX
+ *  (卡片只显 60 字,搜索对超长描述的召回边际趋零;详情页不受影响)。
+ *  载荷工程(2026-07-07):docs.json 7.7MB → 大幅回落,P1 门槛口径不变、数值自然回落;
+ *  P1 换 Typesense 时线格式随 adapter 一起退役。 */
+export type WireCard = Omit<SkillCard, "owner" | "repo" | "publisher"> & { publisher?: string };
+export const WIRE_DESC_MAX = 160;
+
+/** SkillCard → 线格式(build-index 落盘用) */
+export function toWire(c: SkillCard): WireCard {
+  const { owner: _o, repo: _r, publisher, upstream: _u, ...rest } = c;
+  const w: WireCard = rest;
+  if (publisher && publisher !== c.id.split("/")[0]) w.publisher = publisher;
+  if (w.description && w.description.length > WIRE_DESC_MAX) w.description = w.description.slice(0, WIRE_DESC_MAX);
+  return w;
+}
+
+/** 线格式 → SkillCard(StaticStore 与 store-server 读取时水合;组件永远只见完整瘦卡) */
+export function hydrateCard(w: WireCard): SkillCard {
+  const [owner = "", repo = ""] = w.id.split("/");
+  return { owner, repo, publisher: w.publisher ?? owner, ...w };
 }
 
 /** 过滤谓词(客户端与构建期计数共用同一口径) */
@@ -200,8 +225,8 @@ export class StaticStore implements SkillStore {
     if (!this.docsPromise) {
       // 先确保 meta(拿到 ver),再按版本取 docs——重建后 ?v= 变,旧缓存自动失效
       this.docsPromise = this.getMeta()
-        .then(() => this.fetchJson<SkillCard[]>(`/docs.json?v=${this.ver}`))
-        .then((d) => (this.docs = d));
+        .then(() => this.fetchJson<WireCard[]>(`/docs.json?v=${this.ver}`))
+        .then((d) => (this.docs = d.map(hydrateCard)));
     }
     return this.docsPromise;
   }
@@ -214,8 +239,8 @@ export class StaticStore implements SkillStore {
       const p = Math.min(Math.max(1, page), Math.max(1, meta.pages));
       let items = this.pageCache.get(p);
       if (!items) {
-        // meta 已在上方 await(this.ver 就绪);分片按版本取,重建后不吃旧缓存
-        items = await this.fetchJson<SkillCard[]>(`/pages/p${p}.json?v=${this.ver}`);
+        // meta 已在上方 await(this.ver 就绪);分片按版本取,重建后不吃旧缓存;线格式水合成完整瘦卡
+        items = (await this.fetchJson<WireCard[]>(`/pages/p${p}.json?v=${this.ver}`)).map(hydrateCard);
         this.pageCache.set(p, items);
       }
       return { items, total: meta.total, page: p, pages: meta.pages };
