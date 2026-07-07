@@ -1,0 +1,100 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>活人感 P0 · 执行方案</title>
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--sub:#6e6e73;--faint:#86868b;--line:#e6e6ea;--accent:#3b6cf0;--accent-bg:#eef2fe;--red:#d23f31;--red-bg:#fdeeec;--green:#2e9e5b;--yellow:#c77b12}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.7}
+.wrap{max-width:860px;margin:0 auto;padding:36px 20px 80px}
+header{background:linear-gradient(135deg,#eef2fe,#f7f9ff);border:1px solid var(--line);border-radius:18px;padding:26px 28px;margin-bottom:18px}
+header .e{color:var(--accent);font-weight:600;font-size:12.5px;letter-spacing:.04em}
+header h1{font-size:24px;margin:6px 0 10px;letter-spacing:-.01em}
+header p{color:var(--sub);font-size:13.5px}
+.meta{margin-top:10px;color:var(--faint);font-size:12.5px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin-bottom:16px}
+h2{font-size:17px;margin-bottom:4px}
+h3{font-size:14.5px;margin:14px 0 6px}
+.sub{color:var(--faint);font-size:12.5px;margin-bottom:12px}
+p{margin-bottom:10px}
+table{width:100%;border-collapse:collapse;margin:8px 0 4px}
+td,th{padding:9px 8px;border-top:1px solid var(--line);vertical-align:top;font-size:13.5px;text-align:left}
+th{color:var(--faint);font-weight:600;font-size:12px;border-top:none}
+td.k{width:24%;font-weight:600}
+code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:#f0f0f3;border:1px solid var(--line);border-radius:4px;padding:0 4px}
+pre{background:#14181f;color:#c9d4e6;border-radius:10px;padding:12px 14px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.7;margin:8px 0}
+pre code{background:none;border:none;padding:0;color:inherit}
+.callout{border-left:3px solid var(--accent);background:var(--accent-bg);border-radius:0 10px 10px 0;padding:10px 14px;margin:10px 0;font-size:13.5px}
+.callout.warn{border-color:var(--red);background:var(--red-bg)}
+ul.clean{list-style:none}
+ul.clean li{padding:8px 0;border-top:1px solid var(--line)}
+ul.clean li:first-child{border-top:none}
+footer{margin-top:22px;color:var(--faint);font-size:12px;text-align:center;line-height:1.8}
+</style></head><body><div class="wrap">
+
+<header>
+  <div class="e">OH-MY-SKILL · 执行方案</div>
+  <h1>活人感 P0 —— 零用户期的三个体温来源</h1>
+  <p>重定位(ADR 0017 §背景)后性价比最高的一批活:编辑、作者、商店自己——三个不需要用户就成立的活人感来源。全部不依赖账号层、不动采集管线。</p>
+  <div class="meta">日期 2026-07-07 · 关联:<b>社区层设计 v2</b>(§0 设计公理)· ADR 0013(微文案)· ADR 0014(场景包)· ADR 0016(first_seen_at)</div>
+</header>
+
+<section>
+  <h2>0 · 为什么是这三件</h2>
+  <p>活人感的两个陷阱是<b>零人社区</b>与<b>机器装人</b>。零用户期唯一诚实的活人感来自三处:<b>编辑</b>(署名策展)、<b>作者</b>(供给侧本来就活着)、<b>商店自己</b>(build in public)。规模化的机器文案(5,800+ tagline)解决覆盖率,恰恰不提供活人感——几十段人写的、有署名的字,比一万条机器副标题更像有人在。</p>
+</section>
+
+<section>
+  <h2>1 · 包页编辑手记(编辑的活人感)</h2>
+  <div class="sub">最优先——纯内容 + 轻渲染,一天内可上线</div>
+  <table>
+    <tr><td class="k">形态</td><td>每个场景包一段 80–200 字手记:为什么选这几个、怎么搭配着用、坑在哪。<b>署名 + 日期</b>,口语,允许有观点。</td></tr>
+    <tr><td class="k">数据</td><td><code>catalog/packs/*.json</code> 加可选字段 <code>editor_note: { text, author, date }</code> → build-index 透传 <code>idx/packs.json</code> → <code>/pack/[id]</code> 渲染「编辑手记」块(引用体版式,署名右下)。</td></tr>
+    <tr><td class="k">生产</td><td>Claude 可出草稿,但<b>定稿必须人过手改写并署名</b>——机器写的标机器,人写的署名,这批属于后者。8 包 ≈ 一杯咖啡的工作量。</td></tr>
+    <tr><td class="k">红线</td><td>沿用 ADR 0014:零内部词汇(审计/采样/上游/收录不出现);不吹「保证」;手记内容只谈使用,不谈机制。</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>2 · 详情页作者行(作者的活人感)</h2>
+  <div class="sub">供给侧本来就在真实地 commit,把它透出来</div>
+  <table>
+    <tr><td class="k">形态</td><td>详情页头部一行(纯文字,守 v4 无图标版式):<code>@publisher · 收录于 X 天前 · 上游提交 Y 天前</code>。作者名已链 publisher 页,不新增路由。</td></tr>
+    <tr><td class="k">数据·已有</td><td>「收录于」= <code>signals.first_seen_at</code>(ADR 0016,10,010+ 条已有)。相对时间客户端算。</td></tr>
+    <tr><td class="k">数据·新增</td><td>「上游提交」需新字段 <code>signals.upstream_commit_at</code>:采集时 clone 已在手,<code>git log -1 --format=%cI</code> 零成本带出。<b>新条目起攒,存量不回填,缺失整段隐藏</b>——绝不拿 fetched_at 冒充。</td></tr>
+    <tr><td class="k">不做</td><td>作者头像(v4 纯文字版式 + 图标 IP 策略保守,ADR 0002);「最近核对」等内部语义不上货架。</td></tr>
+  </table>
+  <div class="callout warn"><b>诚实红线</b>:<code>fetched_at</code> 是「我们最近一次采到」,不是「上游更新」——两者严禁混用文案。上游时间只认 <code>upstream_commit_at</code>,没有就不显示。</div>
+</section>
+
+<section>
+  <h2>3 · 商店 changelog(商店自己的活人感)</h2>
+  <div class="sub">「公告&复盘」拆出社区后的新家(ADR 0017),build in public 的载体</div>
+  <table>
+    <tr><td class="k">形态</td><td><code>/changelog</code> 静态页:按周一条,人写摘要(本周做了什么、为什么)+ 自动统计行(本周新收录 N 条、新包 X——由 build-index meta 派生)。<b>署名 + 日期</b>。</td></tr>
+    <tr><td class="k">数据</td><td>手写部分落 <code>catalog/changelog.json</code>(数组,append-only);自动行构建期算。不建 CMS、不做评论。</td></tr>
+    <tr><td class="k">语气</td><td>对用户说人话,不是 release note:「上新了 3 套视频制作的组合」而非「feat: packs+3」。内部词汇红线同样适用。</td></tr>
+    <tr><td class="k">导航</td><td>页脚入口即可,不占 nav 主位(nav 维持四项;若社区入口按 ADR 0017 摘除,changelog 可暂顶其位,密度达标后归还)。</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>4 · 排序、验收与明确不做</h2>
+  <h3>做的顺序</h3>
+  <p>① 包手记(纯内容,当天可上)→ ② changelog 页(轻,顺手立 build in public 节奏)→ ③ 作者行(含 ingest 小增项 <code>upstream_commit_at</code>,随下次采集起攒)。</p>
+  <h3>验收</h3>
+  <ul class="clean">
+    <li>8/8 包页有署名手记,措辞过零内部词汇自查</li>
+    <li>/changelog 首条发布(含自动统计行)</li>
+    <li>详情页作者行上线;无 upstream_commit_at 的条目整段隐藏、无占位</li>
+  </ul>
+  <h3>明确不做(P0 边界)</h3>
+  <ul class="clean">
+    <li>LLM 代写手记/周报后直接上架——机器装人红线;草稿可以,定稿必须人签</li>
+    <li>评论、账号、回执——那是 M1(ADR 0017 §排期)</li>
+    <li>/community 聚合页、作者头像、产物画廊——密度/版式/IP 各有门槛,后置</li>
+  </ul>
+</section>
+
+<footer>oh-my-skill · 活人感 P0 执行方案 · 2026-07-07 · 上位设计见《社区层设计 v2》</footer>
+
+</div></body></html>

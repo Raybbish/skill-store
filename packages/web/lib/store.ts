@@ -54,6 +54,8 @@ export interface Pack {
   title: string;
   tagline: string;
   members: SkillCard[];
+  /** 编辑手记(活人感 P0):人写人签,机器只出草稿;缺省不渲染 */
+  editorNote?: { text: string; author: string; date: string };
 }
 
 export interface SearchFilters {
