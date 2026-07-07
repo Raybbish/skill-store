@@ -40,7 +40,7 @@
 - **微文案批量补跑(触发点=P1 门槛 1.5万条,2026-07-07 裁决)**:07-06 采集翻倍后覆盖率从 ~95% 掉到 **48%**(10,735 条中 copy 有效 5,218;~5.2k 新条目没进过 `categorize:llm`,另有 276 条 hash 过期)。**不即时增量补**——继续采集,目录到 1.5万 时与 Typesense 同批动手(一次 regime change),届时 `categorize:llm` 批量跑缺失+过期、再 `web:index`。理由:边采边补会被内容更新的 hash 过期反复浪费 LLM 跑量;缺文案条目按设计回退 description(宁可平淡,不可说谎),UX 可接受。
 - **verdict 服务步骤⑤⑥**([ADR 0012](decisions/0012-verdict-service.md)):研究议题(裁决口径/误报率基线/复核吞吐/徽章语义)在 `packages/verdicts/policies/` 草稿里迭代(现状 `v0-draft`,账本仅 55 条 legacy);policy v1 定稿 + 全量重扫 + 开 TRUST_DISPLAY = 重新上架(验收:diff 只有 flag)。
 - **Supabase:下次 sync 前执行三个迁移**(按日期顺序):`2026-07-05-verdict-service.sql`(放开 audit_status 非空)、`2026-07-06-context-size.sql`(**不执行 sync 直接报列不存在**)、`2026-07-06-first-seen.sql`。
-- **M1**:可复现评测协议上线 + 信任原生社区最小切片 + 账号层 + 原作者一键认领入口(见 [ADR 0001](decisions/0001-trust-native-community.md) · [ADR 0006](decisions/0006-one-click-claim.md))。
+- **M1**:社区最小切片改按 [ADR 0017](decisions/0017-object-anchored-community-and-invisible-verify.md) 执行——短评/求助 Q&A/开发者说挂对象页 + 账号层(邮箱 OTP 延迟注册)+ 隐形验证回执(.skill 下载为主路径)+ 原作者一键认领([ADR 0006](decisions/0006-one-click-claim.md);ADR 0001 实现层由 0017 修订)。`/community` demo 四板块不上线,聚合页密度门控(周新帖 >20)。可复现评测协议随评测线另行排期。
 - **规模化架构 P1:从「等触发」提为「准备动手」**(ADR 0004 → 0007):2026-07-07 实测 docs.json **7.58MB**(阈值 8MB 的 95%)、目录 10,744 条(阈值 1.5万 的 72%)——下一波采集大概率越线。届时上自托管 Typesense:实现新 adapter 即可,接口不动;**微文案批量补跑与此同批触发**(见上条)。详见[架构与迁移计划](architecture/走向百万级-架构与迁移计划.html)。
 
 > 已从本清单移除:「扩 catalog 到 500+」——catalog 已 10,744 条(2026-07-07 快照),M0 供给目标超额完成;后续供给扩展另立目标再入清单。
@@ -62,6 +62,7 @@
 - [0014 · 场景包:定义、收录标准与生命周期](decisions/0014-pack-curation.md)
 - [0015 · 上下文体积取代 token / 次](decisions/0015-context-size-metric.md)
 - [0016 · 新上架时间 first_seen_at 与「新上架」榜口径](decisions/0016-new-arrivals-ranking.md)
+- [0017 · 社区对象锚定 + 隐形验证安装](decisions/0017-object-anchored-community-and-invisible-verify.md)
 
 ## 文档地图(唯一入口)
 所有规划 / 架构 / 设计文档已收进 `docs/`,点开即看。
@@ -70,7 +71,7 @@
 - [PRD](planning/PRD.html)
 - [竞品调研报告](planning/竞品调研报告.html)
 - [ModelScope 功能对标](planning/ModelScope-功能对标.html)
-- [社区层设计与需求收敛](planning/社区层设计与需求收敛.html)
+- [社区层设计 v2 · 对象锚定与隐形验证](planning/社区层设计v2-对象锚定与隐形验证.html) — 四内容类型挂对象 + .skill 下载回执(ADR 0017;v1 已移 _archive)
 - [文档总览与进度对齐](planning/文档总览与进度对齐.html)
 
 **架构与实现**(架构图直接画在 HTML 里)
