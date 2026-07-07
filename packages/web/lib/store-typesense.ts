@@ -84,8 +84,9 @@ export class TypesenseStore extends StaticStore implements SkillStore {
       const total = data.found ?? items.length;
       const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
       return { items, total, page: Math.min(Math.max(1, page), pages), pages };
-    } catch {
-      // fail-open:搜索服务缺席/超时 → 本地 docs 兜底(行为=P0),绝不白屏
+    } catch (e) {
+      // fail-open:搜索服务缺席/超时 → 本地 docs 兜底(行为=P0),绝不白屏;出声便于排障
+      console.warn("[store] typesense 不可达,本次搜索已回落本地:", (e as Error).message);
       return super.search(query, filters, page);
     }
   }
@@ -95,6 +96,8 @@ export class TypesenseStore extends StaticStore implements SkillStore {
 export function createStore(): SkillStore {
   const url = process.env.NEXT_PUBLIC_TYPESENSE_URL;
   const key = process.env.NEXT_PUBLIC_TYPESENSE_SEARCH_KEY;
+  // 自报家门(仅浏览器):验收/排障一眼分辨搜索后端;env 未注入时这里会打出 static
+  if (typeof window !== "undefined") console.info(`[store] 搜索后端: ${url && key ? `typesense @ ${url}` : "static(本地)"}`);
   return url && key ? new TypesenseStore(url.replace(/\/$/, ""), key) : new StaticStore();
 }
 

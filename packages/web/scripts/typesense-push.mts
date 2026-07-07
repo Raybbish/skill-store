@@ -41,6 +41,16 @@ const docs: TsDoc[] = wire.map((w, i) => {
   };
 });
 
+// 等就绪:容器冷启动/raft 选主要几秒,/health ok 才动手(30s 超时)——否则 503 "Not Ready or Lagging"
+for (let i = 0; ; i++) {
+  try {
+    const h = await api("/health");
+    if (h.ok && ((await h.json()) as { ok: boolean }).ok) break;
+  } catch { /* 还没监听 */ }
+  if (i >= 30) throw new Error(`typesense ${URL} 30s 未就绪——容器起了吗?docker compose -f infra/typesense/docker-compose.yml ps`);
+  await new Promise((r) => setTimeout(r, 1000));
+}
+
 // drop(容忍 404)→ create → import
 const del = await api(`/collections/${TS_COLLECTION}`, { method: "DELETE" });
 if (!del.ok && del.status !== 404) throw new Error(`drop collection: ${del.status} ${await del.text()}`);
