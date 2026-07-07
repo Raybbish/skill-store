@@ -49,9 +49,10 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
           {s.curatedBy && s.curatedBy.length > 0 && <span className="d-tag">★ 社区精选</span>}
         </div>
         <p className="d-desc">{s.description ?? "(无描述)"}</p>
-        {/* 场景词全量展示(详情页不裁词频);点击 = 以该词搜索,不进 facet(ADR-B) */}
+        {/* 场景词全量展示(详情页不裁词频);「话题」层样式,点击 = 搜索聚合,不进 facet(ADR 0013 补充) */}
         {s.sceneTags && s.sceneTags.length > 0 && (
           <div className="d-scene">
+            <span className="sc-k">场景</span>
             {s.sceneTags.map((w) => (
               <Link key={w} href={`/?q=${encodeURIComponent(w)}`} className="sc">{w}</Link>
             ))}

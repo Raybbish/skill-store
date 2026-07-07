@@ -20,9 +20,10 @@ export default function SkillRow({ skill, rank, isNew }: { skill: SkillCard; ran
         {(s.tagline || s.description) && (
           <div className="ds">{s.tagline ?? (s.description!.length > 60 ? s.description!.slice(0, 60) + "…" : s.description)}</div>
         )}
-        {/* 场景 chip(仅词频达标的可见词);点击 = 以该词发起站内搜索,不进 facet(ADR-B) */}
+        {/* 场景词 =「话题」层:行首微标签 + 话题样式与 facet #tag 分化;点击 = 搜索聚合,不进 facet(ADR 0013 补充) */}
         {s.scene && s.scene.length > 0 && (
           <div className="scene">
+            <span className="sc-k">场景</span>
             {s.scene.slice(0, 3).map((w) => (
               <Link key={w} href={`/?q=${encodeURIComponent(w)}`} className="sc" prefetch={false}>{w}</Link>
             ))}
