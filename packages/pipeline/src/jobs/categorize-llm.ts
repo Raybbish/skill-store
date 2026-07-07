@@ -20,6 +20,7 @@
  *   LLM_MOCK=1 npm run categorize:llm -- --limit 20       # 无 key 测管路
  *   npm run categorize:llm -- --scope uncategorized       # 只判未分类(省钱)
  *   npm run categorize:llm -- --scope all                 # 全量重判(默认,含已分类的以纠错)
+ *   npm run categorize:llm -- --scope missing-copy        # 只补微文案缺失/锚过期的(批量采集后补跑)
  *   npm run categorize:llm -- --dry                       # 只判不写盘
  * 规则:category_locked 不动;隐藏条目(duplicate / frontmatter 不合规)跳过;
  *       单条 LLM 调用失败 → 保留原分类(fail-safe,绝不清空)。
@@ -430,6 +431,9 @@ async function main() {
     if (m.category_locked) return false;
     if (m.duplicate_of || e.report.frontmatter_valid === false) return false;
     if (scope === "uncategorized" && m.category && m.category !== "uncategorized") return false;
+    // missing-copy:只补微文案缺失或锚过期(copy.content_hash ≠ 当前内容)的条目——
+    // 大批量采集后补跑用,比 --scope all 省一半以上 LLM 花费;分类顺带重判(同一次调用,零额外成本)
+    if (scope === "missing-copy" && e.report.copy && e.report.copy.content_hash === m.content_hash) return false;
     if (only && m.category !== only) return false;
     if (onlyTag && !(m.tags ?? []).includes(onlyTag)) return false;
     return true;
