@@ -37,6 +37,7 @@
 - 前端 v4 重设计 + 早期 docs 整理若仍有未提交项,一并留痕。
 
 ### 下一步
+- **活人感 P0**(重定位后最高性价比,方案:[活人感P0-执行方案](planning/活人感P0-执行方案.html)):**① 包手记已全链路落地**(2026-07-07:`Pack.editorNote` 类型 + 8 包 `editor_note` 草稿 + build-index 透传 + `/pack/[id]` 引用体渲染;双侧 `tsc` 绿,idx 实测 8/8 透传。⚠ **草稿署名「主理人」,公开前必须人改写并签名**——机器写的标机器红线)→ ② `/changelog` 商店周报页(`catalog/changelog.json` + build-index 自动统计行)→ ③ 详情页作者行「@publisher · 收录于 X · 上游提交 Y」(新字段 `signals.upstream_commit_at` 采集起攒不回填;**fetched_at 严禁冒充上游更新**)。红线:零内部词汇。
 - **微文案批量补跑(触发点=P1 门槛 1.5万条,2026-07-07 裁决)**:07-06 采集翻倍后覆盖率从 ~95% 掉到 **48%**(10,735 条中 copy 有效 5,218;~5.2k 新条目没进过 `categorize:llm`,另有 276 条 hash 过期)。**不即时增量补**——继续采集,目录到 1.5万 时与 Typesense 同批动手(一次 regime change),届时 `categorize:llm` 批量跑缺失+过期、再 `web:index`。理由:边采边补会被内容更新的 hash 过期反复浪费 LLM 跑量;缺文案条目按设计回退 description(宁可平淡,不可说谎),UX 可接受。
 - **verdict 服务步骤⑤⑥**([ADR 0012](decisions/0012-verdict-service.md)):研究议题(裁决口径/误报率基线/复核吞吐/徽章语义)在 `packages/verdicts/policies/` 草稿里迭代(现状 `v0-draft`,账本仅 55 条 legacy);policy v1 定稿 + 全量重扫 + 开 TRUST_DISPLAY = 重新上架(验收:diff 只有 flag)。
 - ~~Supabase 三迁移~~ **已确认执行完毕**(2026-07-07 验证:PR #16 合并后 CI sync 以新代码全量跑通并把游标打到 `ca51800`——能成功写入 first_seen_at/context_size 即证明三迁移均已生效)。

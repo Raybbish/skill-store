@@ -33,6 +33,14 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
         <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 8 }}>安装时逐个校验内容哈希;每个成员也可以单独安装。</div>
       </section>
 
+      {p.editorNote && (
+        <section className="editor-note">
+          <div className="en-label">编辑手记</div>
+          <p className="en-text">{p.editorNote.text}</p>
+          <div className="en-sign">—— {p.editorNote.author} · {p.editorNote.date}</div>
+        </section>
+      )}
+
       <div className="list" style={{ marginTop: 14 }}>
         {p.members.map((s) => <SkillRow key={s.id} skill={s} />)}
       </div>

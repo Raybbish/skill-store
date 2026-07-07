@@ -157,7 +157,11 @@ try {
       console.warn(`[build-index] pack ${p.id} 成员缺失,跳过`);
       continue;
     }
-    packs.push({ id: p.id, emoji: p.emoji, tile: p.tile, title: p.title, tagline: p.tagline, members });
+    packs.push({
+      id: p.id, emoji: p.emoji, tile: p.tile, title: p.title, tagline: p.tagline, members,
+      // 编辑手记透传(活人感 P0):catalog 侧 editor_note{text,author,date},缺省不带
+      ...(p.editor_note ? { editorNote: p.editor_note } : {}),
+    });
   }
 } catch { /* packs 目录可缺省 */ }
 writeFileSync(join(OUT, "packs.json"), JSON.stringify(packs));
