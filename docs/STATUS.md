@@ -10,6 +10,7 @@
 > ⛔ **安全扫描已整套下架**(2026-07-04,[ADR 0011](decisions/0011-unlist-security-scan.md)):前端认证徽章/权限披露/审计文案全部摘除,`audit`/`review`/`audit:l3` scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。
 
 ### 已完成
+- **hosting 对账收口:字段=磁盘事实**(2026-07-07,当日立案当日销):① 新 job `npm run reconcile:hosting`(dry / `--apply`,外科式只动 `hosting`/`mirror_complete`)——10,864 条中 **3,786 条「标 mirrored 无 mirror/」已回写 indexed**,真镜像 4,832 与 pack-zips 实打数一致,0 条反向异常,写后复跑漂移归零;② `status.mjs` 托管计数改按磁盘事实(mirror/ 目录,web `hasMirror` 同判据),字段漂移 >0 时快照亮告警;③ ingest 写入时机修正——镜像整体失败时降级说到做到(hosting 回 indexed + 清残副本),索引趟以磁盘事实定 hosting(licence 分类值不再直写盘),杜绝再产生。语义收口:**hosting 只表达「本店实际托管」**,licence 权限由 `meta.license` 自行可推,无信息丢失。根侧 `tsc` 全绿。
 - **场景词「话题层」分离**(2026-07-07,ADR 0013 补充):目检发现卡片场景 chip「代码评审」与 facet「#代码审查」近义并存观感打架。参照小红书三层词体系(类目/话题/筛选器同义共存但从不混排)裁决:**不做跨层同义查重丢弃**,做层分离——场景 chip 改话题样式(软蓝底/无边框/hover 下划线,与 facet 白底描边胶囊分化)+ 卡片/详情行首「场景」微标签;搜索精确命中 `meta.sceneVocab` 时抬头换「〔场景〕词」聚合页壳 + ✕ 退出(清 q 与 URL,防刷新弹回;实现仍是搜索,零新路由);prompt「场景词必须是情境非动作名词」约束推迟到 1.5万 批跑。四文件改动(globals.css / SkillRow / 详情页 / HomeClient+page 传参),`tsc` 绿,**浏览器目检已过**(卡片场景行 / 详情页 / 场景抬头 + ✕ 退出)。
 - **build-index「新上架」切换 first_seen_at 事实源**(2026-07-07,补切 ADR 0016 漏项):ADR 0016 只落了采集/回填侧,`web/scripts/build-index.mts` 仍在遍历 git log(本机有 .git 一直没暴露;无 git 环境「新上架」直接为空)。现改为 `signals.first_seen_at` 为主(10,010/10,036 命中)、git 遍历降级为缺失回退(27 条漏网待下次 ingest 盖章);`Skill` 类型与 `data.ts` 补 `firstSeenAt` 映射。无 git 沙箱实测:新上架 0 → 100;web 侧 `tsc` 零错误;仓内 `public/idx` 已用新逻辑重建(输出与旧逻辑逐字节同规格:10,036 条/335 片/docs 7402KB)。
 - **回归(2026-07-07,全部收口)**:沙箱侧数据与源码级已过——idx 重建正常(包 8/可见场景词 62/新上架 100);渲染条件核对:卡片 `tagline ?? description` 60 字截断回退、场景 chip=`/?q=` 搜索链接(不进 facet)、详情 fit_line 在安装按钮上方决策位、ADR 0015 单文件折叠判据 `text_files===1`、`tokens==null` 才显「待重算」(0 合法)。catalog 实测:缺 context_size 166(与 STATUS 口径一致)、缺 first_seen_at 27。**本机浏览器目检已过**(用户执行,截图核对):首页卡片 tagline/场景行 + 计数 10,036;榜单新上架 tab(100 个、按收录日分组,first_seen_at 切换后首次目检)+ 热门 tab;详情页 fit_line + 多文件三格(~9.8K/~28.4K/~72.7K)+ 安装三通道;回退链(新采集条目 description 截断、无场景行);场景抬头 + ✕ 退出。单文件折叠/待重算两个微状态未逐页目检,以源码判据 + 全量构建通过背书。期间发现并顺手修掉:`.next` 生产/开发缓存混用致 /charts 500(清缓存即愈,属操作顺序问题非代码缺陷)。
@@ -36,10 +37,9 @@
 - 前端 v4 重设计 + 早期 docs 整理若仍有未提交项,一并留痕。
 
 ### 下一步
-- **hosting 字段对账(2026-07-07 构建时发现)**:8,496 条标 `meta.hosting=mirrored`,其中 **3,664 条磁盘无 `mirror/` 目录**——字段与事实脱节(pack-zips 实打 4,832 个 zip;前端侥幸无恙:`hasMirror` 走 `existsSync` 磁盘事实,这批自动回退上游)。待做:① 对账 job——无 mirror/ 的回写 `indexed`(或补下载);② `status.mjs` 快照改按磁盘事实计数(现在「托管 8,499」是虚数);③ ingest 把 `hosting=mirrored` 的写入时机挪到 mirror 落盘成功之后,杜绝再产生。
 - **微文案批量补跑(触发点=P1 门槛 1.5万条,2026-07-07 裁决)**:07-06 采集翻倍后覆盖率从 ~95% 掉到 **48%**(10,735 条中 copy 有效 5,218;~5.2k 新条目没进过 `categorize:llm`,另有 276 条 hash 过期)。**不即时增量补**——继续采集,目录到 1.5万 时与 Typesense 同批动手(一次 regime change),届时 `categorize:llm` 批量跑缺失+过期、再 `web:index`。理由:边采边补会被内容更新的 hash 过期反复浪费 LLM 跑量;缺文案条目按设计回退 description(宁可平淡,不可说谎),UX 可接受。
 - **verdict 服务步骤⑤⑥**([ADR 0012](decisions/0012-verdict-service.md)):研究议题(裁决口径/误报率基线/复核吞吐/徽章语义)在 `packages/verdicts/policies/` 草稿里迭代(现状 `v0-draft`,账本仅 55 条 legacy);policy v1 定稿 + 全量重扫 + 开 TRUST_DISPLAY = 重新上架(验收:diff 只有 flag)。
-- **Supabase:下次 sync 前执行三个迁移**(按日期顺序):`2026-07-05-verdict-service.sql`(放开 audit_status 非空)、`2026-07-06-context-size.sql`(**不执行 sync 直接报列不存在**)、`2026-07-06-first-seen.sql`。
+- ~~Supabase 三迁移~~ **已确认执行完毕**(2026-07-07 验证:PR #16 合并后 CI sync 以新代码全量跑通并把游标打到 `ca51800`——能成功写入 first_seen_at/context_size 即证明三迁移均已生效)。
 - **M1**:社区最小切片改按 [ADR 0017](decisions/0017-object-anchored-community-and-invisible-verify.md) 执行——短评/求助 Q&A/开发者说挂对象页 + 账号层(邮箱 OTP 延迟注册)+ 隐形验证回执(.skill 下载为主路径)+ 原作者一键认领([ADR 0006](decisions/0006-one-click-claim.md);ADR 0001 实现层由 0017 修订)。`/community` demo 四板块不上线,聚合页密度门控(周新帖 >20)。可复现评测协议随评测线另行排期。
 - **规模化架构 P1:从「等触发」提为「准备动手」**(ADR 0004 → 0007):2026-07-07 实测 docs.json **7.58MB**(阈值 8MB 的 95%)、目录 10,744 条(阈值 1.5万 的 72%)——下一波采集大概率越线。届时上自托管 Typesense:实现新 adapter 即可,接口不动;**微文案批量补跑与此同批触发**(见上条)。详见[架构与迁移计划](architecture/走向百万级-架构与迁移计划.html)。
 

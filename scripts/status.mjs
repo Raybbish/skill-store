@@ -24,14 +24,16 @@ function walk(dir) {
 }
 
 const reports = walk(CATALOG);
-const hosting = {};
+const hosting = {}; // 磁盘事实:有 mirror/ 目录才算 mirrored(与 web 的 hasMirror 同判据),不信字段
+let hostingDrift = 0; // 字段 ≠ 磁盘的条数(>0 该跑 npm run reconcile:hosting)
 let evaluated = 0;
 const publishers = new Set();
 for (const f of reports) {
   try {
     const r = JSON.parse(readFileSync(f, "utf8"));
-    const h = r.meta?.hosting ?? "unknown";
+    const h = existsSync(join(dirname(f), "mirror")) ? "mirrored" : "indexed";
     hosting[h] = (hosting[h] ?? 0) + 1;
+    if ((r.meta?.hosting ?? "indexed") !== h) hostingDrift++;
     if (r.eval) evaluated++;
     if (r.meta?.publisher) publishers.add(r.meta.publisher);
   } catch { /* skip malformed */ }
@@ -76,7 +78,7 @@ _生成于 ${now} · 分支 \`${branch}\`${dirty ? ` · 未提交改动 ${dirty}
 ## Catalog
 - **skill 总数:${total}**
 - verdict 账本(catalog/verdicts,ADR 0012;扫描停摆中,现存均为 legacy 历史判定):有判定 **${judged}** —— ${kv(status)}
-- 托管:${kv(hosting)}
+- 托管(磁盘事实):${kv(hosting)}${hostingDrift ? ` · ⚠ 字段漂移 ${hostingDrift} 条(\`npm run reconcile:hosting\` 对账)` : ""}
 - 已评测:**${evaluated}** · 发布者:**${publishers.size}**
 
 ## 最近提交
@@ -124,7 +126,7 @@ const card = (big, label, tone = "") => `<div class="card"><b class="${tone}">${
 const cards = [
   card(total, "skill 总数"),
   card(`${passed}<i>/${judged}</i>`, "verdict pass(legacy·历史)", "ok"),
-  card(kv(hosting).replace(/·/g, "<i>·</i>"), "托管"),
+  card(kv(hosting).replace(/·/g, "<i>·</i>"), hostingDrift ? `托管(磁盘)·漂移${hostingDrift}` : "托管(磁盘)"),
   card(status.flagged ?? 0, "flagged 待裁决", (status.flagged ?? 0) ? "warn" : ""),
   card(evaluated, "已评测"),
   card(publishers.size, "发布者"),
