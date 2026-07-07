@@ -46,6 +46,8 @@ export interface Skill {
   /** 内容哈希(verdict 锚点;build-index 查账本用,不进瘦卡) */
   contentHash?: string;
   contextSize?: ContextSize | null;
+  /** 首次进货架时间(ISO;signals.first_seen_at 物化缓存,ADR 0016)——「新上架」榜事实源 */
+  firstSeenAt?: string | null;
   stars?: number | null;
   installs?: number | null;
   /** 上游仓库 SKILL.md 总数(巨仓降权信号) */

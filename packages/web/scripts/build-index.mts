@@ -27,7 +27,8 @@ if (!skills.length) {
   process.exit(1);
 }
 
-// 收录时间 = skill-report.json 首次进入 git 账本的 commit 时间(一次遍历,不动采集管线)
+// 收录时间事实源 = signals.first_seen_at(物化缓存,ADR 0016);
+// git 遍历只作缺失回退(存量已回填,理论上仅覆盖回填前的极少漏网)。
 function gitAddedAt(): Map<string, number> {
   const added = new Map<string, number>();
   try {
@@ -41,11 +42,24 @@ function gitAddedAt(): Map<string, number> {
       if (m && !added.has(m[1])) added.set(m[1], ts);
     }
   } catch (e) {
-    console.warn("[build-index] git 收录时间不可用(浅克隆/无 git?),新上架榜将为空:", (e as Error).message);
+    console.warn("[build-index] git 回退不可用(浅克隆/无 git?),缺 first_seen_at 的条目将无收录时间:", (e as Error).message);
   }
   return added;
 }
-const addedAt = gitAddedAt();
+const addedAt = new Map<string, number>();
+{
+  let missing = 0;
+  for (const s of skills) {
+    const t = s.firstSeenAt ? Math.floor(Date.parse(s.firstSeenAt) / 1000) : NaN;
+    if (Number.isFinite(t)) addedAt.set(s.id, t);
+    else missing++;
+  }
+  if (missing > 0) {
+    const git = gitAddedAt();
+    for (const s of skills) if (!addedAt.has(s.id) && git.has(s.id)) addedAt.set(s.id, git.get(s.id)!);
+    console.warn(`[build-index] ${missing} 条缺 signals.first_seen_at,git 回退补到 ${addedAt.size} 条`);
+  }
+}
 
 // 纯热门序全量瘦卡(docs.json);分片视图在此之上套 per-repo cap
 const docs = [...skills].sort(byPopularity).map((s) => {
