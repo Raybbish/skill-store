@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <HomeClient
       first={first}
-      meta={{ total: meta.total, pages: meta.pages, size: meta.size }}
+      meta={{ total: meta.total, pages: meta.pages, size: meta.size, sceneVocab: meta.sceneVocab }}
       cats={cats}
       tags={tags}
       facets={facets}

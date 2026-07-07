@@ -51,7 +51,8 @@
 
 <div class="kicker">Skill Store · Pipeline Design</div>
 <h1>供给与采集设计</h1>
-<div class="meta">架构图「① 供给源 + ② 采集」两层的实现文档 · 以代码实际行为为准 · 2026-07-02 · <code>packages/pipeline/src/</code> · 同步维护于仓库 <code>docs/供给采集设计.md</code></div>
+<div class="meta">架构图「① 供给源 + ② 采集」两层的实现文档 · 以代码实际行为为准 · 2026-07-06 · <code>packages/pipeline/src/</code> · 同步维护于仓库 <code>docs/供给采集设计.md</code></div>
+<div class="callout"><b>勘误(2026-07-06):</b>安全扫描整套下架待重设计(ADR 0011)、判定迁 <code>catalog/verdicts</code> 独立账本(ADR 0012)后,采集期已<b>不再写 <code>security_audit</code></b>。§②-4 脚本清点、§②-7 下游成果保留相应更新,并补齐微文案 copy 保留、镜像单文件闸、verdict submit 插拔点。</div>
 
 <!-- ═══════════ 总览 ═══════════ -->
 <div class="card">
@@ -63,7 +64,7 @@
     <tr><th style="width:180px">原则</th><th>含义</th></tr>
     <tr><td>情报不当货</td><td>skills.sh、awesome-list 等第三方站只提供「哪里有 skill、谁被精选、装了多少次」的发现与信号,内容一律回上游 GitHub 采集,不搬运任何第三方数据库。</td></tr>
     <tr><td>收录有门槛</td><td>GitHub 存在批量生成仓(实测单仓 26,134 个 SKILL.md)与聚合搬运仓。用「每仓折叠采样 + 合集条目」控制供给质量——与 SkillsMP(180 万条全收、噪音极大)的根本差异。</td></tr>
-    <tr><td>采集不冲下游</td><td>审计 / 评测 / 人工复核结果在同 id 更新时全部保留;内容未变时连文件都不重写(幂等,git diff 无噪音)。</td></tr>
+    <tr><td>采集不冲下游</td><td>评测(eval)/ 微文案(copy)/ 人工分类锁定(category_locked)在同 id 更新时按锚保留;判定(verdict)自 ADR 0012 起在 <code>catalog/verdicts</code> 独立账本、天然不受采集影响;内容未变时连文件都不重写(幂等,git diff 无噪音)。</td></tr>
     <tr><td>归属还原</td><td>同内容多处出现时 canonical 按「已有条目 &gt; 官方源 &gt; stars 最高」裁决,搬运仓标 <code>duplicate_of</code> 指回原作者。竞品均为先到先得或不去重,此为差异化点。</td></tr>
   </table>
 
@@ -129,8 +130,8 @@
   <h3>4 · 元数据提取</h3>
   <ul>
     <li><b>licence 双轨分流</b>(license.ts):skill 目录内 LICENSE 优先,否则回落仓库根。文本朴素识别(MIT / Apache-2.0 / BSD / ISC / Unlicense / CC0);宽松 → <code>hosting: mirrored</code>(可镜像),识别不出 → <code>local-file(needs-review)</code> / <code>none(all-rights-reserved)</code> → <code>indexed</code>(仅索引跳转上游)。</li>
-    <li><b>脚本静态清点</b>(hash.ts):按扩展名(py / sh / js / ts / rb / ps1 / exe…)清点可执行文件,写入 <code>risk_factors.scripts</code> + evidence(前 20)。pre-audit 提示,非审计结论;其余四风险因子置 null 待 W2 填充。</li>
-    <li><b>token 成本</b>:SKILL.md 正文 chars/4 估算。</li>
+    <li><b>脚本清点 / 安全审计已从采集剥离</b>(ADR 0011 + 0012):<code>hash.ts</code> 仍保留 <code>inventoryScripts()</code> 工具,但采集期<b>不再写 <code>security_audit</code></b>——安全扫描整套下架待重设计(ADR 0011);判定迁至 <code>catalog/verdicts</code> 独立账本(锚 content_hash、服务侧 submit 触发,ADR 0012),不随采集产出。<code>sync.ts</code> 相应把 <code>audit_status / risk_factors / …</code> 列写 null。</li>
+    <li><b>上下文体积</b>(ADR 0015):写入 <code>context_size</code>,只表达静态装载边界,不承诺真实每次调用消耗。三类 scope:最小装载(<code>SKILL.md</code>)、含声明引用、文本包总量;旧 <code>token_cost.body_tokens</code> / chars/4 链路已下线。</li>
     <li><b>采集期归类</b>(<code>categorize.ts</code>):按名称/描述/路径启发式打 <code>meta.category</code>(featured 主类,每 skill 归一个)+ <code>meta.tags</code>(非 featured 二级);<code>category_locked</code> 人工锁定则跳过重算;<code>sources.yaml</code> 可 per-source 覆盖类目。词表 <code>schemas/src/labels.ts</code>,featured 增删由 <code>promote.ts</code> 依数据自动提议(详见「分类与安装入口 · 实施拆解」)。</li>
   </ul>
 
@@ -150,11 +151,13 @@
   <h3>7 · 写入 catalog(幂等)</h3>
   <ul>
     <li>路径 <code>catalog/skills/&lt;owner&gt;/&lt;repo&gt;/&lt;name&gt;/skill-report.json</code>,符合 skill-report.schema.json;</li>
-    <li><b>未变跳过</b>:content_hash 与 upstream_commit 都没变 → 不重写,无噪音 diff;</li>
-    <li><b>下游成果保留</b>:同 id 更新时已有审计(status ≠ pending 或有人工 review)与 eval 原样保留,重审由 audit 哈希漂移检测触发;</li>
-    <li><b>两段式镜像</b>:默认索引层只写元数据;<code>--mirror</code>(INGEST_MIRROR=1)且 licence 为 mirrored 才拷贝完整副本到 <code>mirror/</code>(symlink 解引用落地);</li>
+    <li><b>未变跳过</b>:content_hash 与 upstream_commit 都没变、且已归类 → 不重写,无噪音 diff;</li>
+    <li><b>context_size 外科式回填</b>(ADR 0015):缺 <code>context_size</code> 的存量条目只补该字段进旧报告,其余(category / tags / copy / eval)原样保留、不走完整更新路径——避免启发式归类冲掉 <code>categorize:llm</code> 的权威判定;</li>
+    <li><b>下游成果保留</b>(采集只写元数据,不冲下游):<code>eval</code> 原样保留;<code>category_locked</code> 人工锁定的分类不被覆盖;微文案 <code>copy</code> 按 <code>content_hash</code> 锚保留(内容没变则沿用,含 M1 author 稿,ADR 0013),变了才交 <code>categorize:llm</code> 重算;判定(verdict)在 <code>catalog/verdicts</code> 独立账本、锚 content_hash,采集天然不会冲掉(ADR 0012);</li>
+    <li><b>两段式镜像 + 单文件闸</b>:默认索引层只写元数据;<code>--mirror</code>(INGEST_MIRROR=1)且 licence 为 mirrored 才拷贝完整副本到 <code>mirror/</code>(symlink 解引用落地)。镜像有<b>单文件上限</b>(<code>MIRROR_MAX_FILE_MB</code>,默认 2MB):超限文件跳过不入 git(挡编译产物 / 大 blob),该条目标 <code>mirror_complete: false</code>;</li>
+    <li><b>verdict 提交插拔点</b>(ADR 0012,默认关):收录完成后 <code>TRUST_SUBMIT=1</code> 才异步 submit 变更条目触发判定(幂等);服务缺席 / 关闭时采集完整可用,<b>收录永不等扫描</b>;</li>
     <li><b>合集条目</b>:<code>catalog/collections/…</code>,字段没变不重写;</li>
-    <li>汇总统计:新增 / 更新 / 未变跳过 / 重复 / 保留审计 / frontmatter 不合规 / 批量源合集。</li>
+    <li>汇总统计:新增 / 更新 / 未变跳过 / 外科式回填 / 重复 / 保留 eval / frontmatter 不合规 / 待归类 / 镜像跳过大文件 / 批量源合集。</li>
   </ul>
 </div>
 
@@ -204,7 +207,8 @@ npm run ingest -- <span class="k">--mirror</span> ...                <span class
     <tr><td><code>curated_by[]</code></td><td>awesome 清单</td><td>精选背书;补 category</td></tr>
     <tr><td><code>repo_skill_count</code></td><td>采集时统计</td><td>巨仓降权</td></tr>
     <tr><td><code>bulk_source</code></td><td>折叠采样标记</td><td>前端标签 / 排序降权</td></tr>
-    <tr><td><code>fetched_at</code></td><td>采集时间戳</td><td>新鲜度</td></tr>
+    <tr><td><code>fetched_at</code></td><td>采集时间戳(采到 / 变更即刷新)</td><td>新鲜度</td></tr>
+    <tr><td><code>first_seen_at</code></td><td>首次进 catalog 盖章、永不覆盖(git 派生;存量 <code>backfill:first-seen</code> 回填)</td><td>「新上架」榜排序(ADR 0016)</td></tr>
   </table></div>
 
   <h3>已知限制与后续</h3>
@@ -214,7 +218,7 @@ npm run ingest -- <span class="k">--mirror</span> ...                <span class
     <tr><td><span class="pill warn">中</span></td><td><b>SSR 解析脆弱</b>:skills.sh 页面改版会报「解析到 0 条」需更新正则;API key 申请中</td></tr>
     <tr><td><span class="pill warn">中</span></td><td><b>召回</b>:补 GitHub Code Search(filename:SKILL.md)扩召回</td></tr>
     <tr><td><span class="pill">低</span></td><td>well-known 非 GitHub 源(open.feishu.cn 等)未支持</td></tr>
-    <tr><td><span class="pill">低</span></td><td>W2 衔接:skills.sh audit 端点作外部对照;四风险因子待 L1-L3 填充</td></tr>
+    <tr><td><span class="pill warn">中</span></td><td><b>信任层重设计</b>:安全扫描整套下架(ADR 0011)、判定服务化迁 <code>catalog/verdicts</code> + 可插拔 submit(ADR 0012)进行中;skills.sh audit 端点可留作重设计后的外部对照</td></tr>
     <tr><td><span class="pill">低</span></td><td>长期:参考 skills.sh 遥测模型,有安装信号后把「被用过」纳入收录 / 排序核心</td></tr>
   </table>
 
@@ -228,7 +232,7 @@ npm run ingest -- <span class="k">--mirror</span> ...                <span class
   </table></div>
 </div>
 
-<footer>Skill Store · 供给与采集设计 · 2026-07-02 · 与 <code>docs/供给采集设计.md</code> 同步维护</footer>
+<footer>Skill Store · 供给与采集设计 · 2026-07-06 · 与 <code>docs/供给采集设计.md</code> 同步维护</footer>
 </div>
 </body>
 </html>

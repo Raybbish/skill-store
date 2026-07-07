@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { StaticStore, type Pack, type SearchResult, type SkillCard } from "@/lib/store";
 import SkillRow from "@/components/SkillRow";
+import { trackSearch } from "@/lib/analytics";
 
 type Chip = { slug: string; label: string; n: number };
 type TagChip = Chip & { facet: string };
@@ -49,7 +50,7 @@ function PackMarquee({ packs }: { packs: Pack[] }) {
  */
 export default function HomeClient({ first, meta, cats, tags, facets, catTag, packs }: {
   first: SkillCard[];
-  meta: { total: number; pages: number; size: number };
+  meta: { total: number; pages: number; size: number; sceneVocab?: string[] };
   cats: Chip[];
   tags: TagChip[];
   facets: FacetDef[];
@@ -98,11 +99,13 @@ export default function HomeClient({ first, meta, cats, tags, facets, catTag, pa
       return;
     }
     setBusy(true);
-    const run = () =>
-      store.search(q, { cat, tags: selTags, repo, publisher: pub }, page)
+    const run = () => {
+      if (q.trim() && page === 1) trackSearch(q); // 埋点:一次执行的搜索(防抖后),翻页不重复计
+      return store.search(q, { cat, tags: selTags, repo, publisher: pub }, page)
         .then((r) => { if (seq.current === my) { setRes(r); setErr(false); } })
         .catch(() => { if (seq.current === my) setErr(true); })
         .finally(() => { if (seq.current === my) setBusy(false); });
+    };
     const timer = setTimeout(run, q ? 160 : 0);
     return () => clearTimeout(timer);
   }, [q, cat, selTags, repo, pub, page, first, meta]);
@@ -126,6 +129,12 @@ export default function HomeClient({ first, meta, cats, tags, facets, catTag, pa
 
   const selectedCat = cats.find((c) => c.slug === cat);
 
+  // 搜索词命中可见场景词 → 「话题聚合页」抬头(实现上仍是搜索,只换壳;ADR 0013 补充)
+  const sceneHit = (() => {
+    const w = q.trim().toLowerCase();
+    return w ? (meta.sceneVocab ?? []).find((v) => v.toLowerCase() === w) : undefined;
+  })();
+
   return (
     <>
       <section className="hero">
@@ -139,7 +148,26 @@ export default function HomeClient({ first, meta, cats, tags, facets, catTag, pa
       <PackMarquee packs={packs} />
 
       <div className="sec">
-        <div className="sec-h"><h2>全部 skill</h2>{q.trim() && <span className="k">相关度排序</span>}</div>
+        <div className="sec-h">
+          {sceneHit
+            ? (
+              <h2>
+                <span className="sc-mark">场景</span>{sceneHit}
+                <button
+                  className="sc-x"
+                  aria-label="退出场景"
+                  onClick={() => {
+                    setQ(""); resetPage();
+                    const sp = new URLSearchParams(window.location.search);
+                    sp.delete("q");
+                    window.history.replaceState(null, "", window.location.pathname + (sp.size ? `?${sp}` : ""));
+                  }}
+                >✕</button>
+              </h2>
+            )
+            : <h2>全部 skill</h2>}
+          {q.trim() && <span className="k">相关度排序</span>}
+        </div>
       </div>
 
       {/* 深链来源筛选(收录页「已收录 ›」/ 发布者):显式展示,可一键清除 */}

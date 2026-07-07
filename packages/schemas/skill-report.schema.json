@@ -46,16 +46,67 @@
         },
         "repo_skill_count": { "type": "integer", "description": "采集时上游仓库内 SKILL.md 总数(巨仓降权信号)" },
         "bulk_source": { "type": "boolean", "description": "上游仓库 skill 数超过每仓上限(MAX_PER_REPO),本条目来自折叠采样收录" },
-        "fetched_at": { "type": "string", "format": "date-time" }
+        "fetched_at": { "type": "string", "format": "date-time" },
+        "first_seen_at": { "type": "string", "format": "date-time", "description": "首次进入 catalog 的时间;驱动「新上架」排序(ADR 0016)。首次写入盖章、永不覆盖;事实源 = catalog git 首个 add commit(可由 jobs/backfill-first-seen.ts 回填)。区别于 fetched_at(采到/变更即刷新)" }
       }
     },
-    "token_cost": {
+    "context_size": {
       "type": "object",
+      "description": "静态上下文体积。只描述 catalog 可复现的装载边界,不承诺任一模型/宿主的真实调用消耗。非必填:存量条目未回填时缺失(前端显示「待重算」)。计数排除:单文本文件 >256KB、symlink 逃逸包外的不计入。",
+      "required": ["version", "counter", "generated_at", "scopes"],
       "properties": {
-        "body_tokens": { "type": "integer", "description": "SKILL.md 正文 token 估算(chars/4)" },
-        "method": { "type": "string" }
+        "version": { "enum": ["1"] },
+        "counter": {
+          "type": "object",
+          "required": ["id", "method"],
+          "properties": {
+            "id": { "type": "string", "description": "计数器 id,如 static-mixed-estimate-v1 / o200k_base" },
+            "method": { "enum": ["official-tokenizer", "heuristic"] },
+            "tokenizer": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        },
+        "generated_at": { "type": "string", "format": "date-time" },
+        "scopes": {
+          "type": "object",
+          "required": ["activation_core", "activation_with_declared_refs", "package_total_text"],
+          "properties": {
+            "activation_core": { "$ref": "#/$defs/contextSizeScope" },
+            "activation_with_declared_refs": { "$ref": "#/$defs/contextSizeScope" },
+            "package_total_text": { "$ref": "#/$defs/contextSizeScope" }
+          }
+        }
       }
     },
-    "eval": { "type": ["object", "null"], "description": "M1 基准评测结果(category/runner/model/score/lift_pp/evaluable_tasks/total_tasks/tasks);未评测为 null。产物缺失记 N/A(不计 0 分);仅带模型元数据且无 N/A 任务的真实结果才回写(见 pipeline jobs/eval.ts 写入闸)" }
+    "eval": { "type": ["object", "null"], "description": "M1 基准评测结果(category/runner/model/score/lift_pp/evaluable_tasks/total_tasks/tasks);未评测为 null。产物缺失记 N/A(不计 0 分);仅带模型元数据且无 N/A 任务的真实结果才回写(见 pipeline jobs/eval.ts 写入闸)" },
+    "copy": {
+      "type": ["object", "null"],
+      "description": "派生微文案(categorize:llm 生成,M1 认领后可被 author 稿替换)。与 eval 同级挂顶层,不进 meta;锚 meta.content_hash,不一致=过期重算。lint_pass=false 时前端回退 description 截断。",
+      "required": ["tagline", "scene_tags", "source", "content_hash", "model", "generated_at", "lint_pass"],
+      "properties": {
+        "tagline": { "type": "string", "maxLength": 60, "description": "一句话用途:动词开头、用户视角、≤40 字" },
+        "scene_tags": { "type": "array", "items": { "type": "string" }, "description": "场景标签 2~4 个(归一后的「什么时候用」,非技术形态)" },
+        "fit_line": { "type": "string", "maxLength": 80, "description": "「适合你,如果…」一行,仅详情页" },
+        "source": { "enum": ["llm", "author"], "description": "llm 生成 | author(M1 原作者认领)稿;author 稿同样过 lint" },
+        "content_hash": { "type": "string", "description": "生成时锚定的 meta.content_hash;不一致=过期" },
+        "model": { "type": "string" },
+        "generated_at": { "type": "string", "format": "date-time" },
+        "lint_pass": { "type": "boolean", "description": "代码层 lint 结果;false→前端回退,不展示 chips" }
+      }
+    }
+  },
+  "$defs": {
+    "contextSizeScope": {
+      "type": "object",
+      "description": "UI 标签由前端按 scope id 渲染,数据里不固化文案",
+      "required": ["files", "text_files", "bytes", "chars", "tokens"],
+      "properties": {
+        "files": { "type": "array", "items": { "type": "string" } },
+        "text_files": { "type": "integer" },
+        "bytes": { "type": "integer" },
+        "chars": { "type": "integer" },
+        "tokens": { "type": "integer" }
+      }
+    }
   }
 }

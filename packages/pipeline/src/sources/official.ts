@@ -5,6 +5,7 @@ import { cloneShallow } from "../git.ts";
 import { parseFrontmatter, normalizeName } from "../frontmatter.ts";
 import { classifyLicense } from "../license.ts";
 import { contentHash } from "../hash.ts";
+import { computeContextSize } from "../context-size.ts";
 
 export interface SkillCandidate {
   report: SkillReport;
@@ -66,7 +67,9 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
         meta: {
           id: `${owner}/${repoSeg}/${name}`,
           name,
-          description: typeof fm?.description === "string" ? fm.description.slice(0, 1024) : undefined,
+          // 去 NUL:描述可能字面含 (文件上传绕过等 payload),JSON 合法但 Postgres text/jsonb 不收(22P05)。
+          // 源头清洗,让 catalog 与下游 DB 一致;sync 侧另有边界防御兜存量。
+          description: typeof fm?.description === "string" ? fm.description.replace(/\u0000/g, "").slice(0, 1024) : undefined,
           upstream: `https://github.com/${repoSlug}/tree/${clone.branch}/${dir.replace(/\/$/, "")}`,
           upstream_commit: clone.headCommit,
           content_hash: contentHash(dir, clone.entries),
@@ -83,8 +86,9 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
         frontmatter_valid: issues.length === 0,
         frontmatter_issues: issues,
         // v2(ADR 0012):判定拆出至 catalog/verdicts 账本;采集不再写 security_audit
-        signals: { stars_github: null, installs_skills_sh: null, fetched_at: now },
-        token_cost: { body_tokens: Math.round(md.length / 4), method: "chars/4-estimate" },
+        // first_seen_at 默认盖发现时刻;更新既有条目时 ingest 会用旧值顶掉(盖一次、永不覆盖,ADR 0016)
+        signals: { stars_github: null, installs_skills_sh: null, fetched_at: now, first_seen_at: now },
+        context_size: await computeContextSize({ root: clone.dir, dirPrefix: dir, skillMd: md, entries: clone.entries, generatedAt: now }),
         eval: null,
       };
 

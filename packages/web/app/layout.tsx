@@ -22,11 +22,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/">首页</Link>
             <Link href="/charts/">榜单</Link>
             <Link href="/community/">社区</Link>
-            <Link href="/collections/">收录</Link>
+            <Link href="/methodology/">收录</Link>
           </nav>
         </div></div>
         <div className="wrap">{children}</div>
-        <footer>oh-my-skill · catalog 公开可验证 · <Link href="/collections/">收录标准</Link> · Agent Skills 商店</footer>
+        <footer>oh-my-skill · catalog 公开可验证 · <Link href="/methodology/">收录标准</Link> · Agent Skills 商店</footer>
       </body>
     </html>
   );

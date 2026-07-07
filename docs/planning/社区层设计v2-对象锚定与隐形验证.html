@@ -1,0 +1,168 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>社区层设计 v2 · 对象锚定与隐形验证</title>
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--sub:#6e6e73;--faint:#86868b;--line:#e6e6ea;--accent:#3b6cf0;--accent-bg:#eef2fe;--red:#d23f31;--red-bg:#fdeeec;--green:#2e9e5b;--green-bg:#ebf7f0;--yellow:#c77b12;--yellow-bg:#fdf5e7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.7}
+.wrap{max-width:880px;margin:0 auto;padding:36px 20px 80px}
+header{background:linear-gradient(135deg,#eef2fe,#f7f9ff);border:1px solid var(--line);border-radius:18px;padding:26px 28px;margin-bottom:18px}
+header .e{color:var(--accent);font-weight:600;font-size:12.5px;letter-spacing:.04em}
+header h1{font-size:24px;margin:6px 0 10px;letter-spacing:-.01em}
+header p{color:var(--sub);font-size:13.5px}
+.meta{margin-top:12px;color:var(--faint);font-size:12.5px;line-height:1.9}
+.meta b{color:var(--ink)}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin-bottom:16px}
+h2{font-size:17px;margin-bottom:4px;letter-spacing:-.01em}
+h3{font-size:14.5px;margin:16px 0 6px}
+.sub{color:var(--faint);font-size:12.5px;margin-bottom:12px}
+p{margin-bottom:10px}
+p.tight{margin-bottom:4px}
+table{width:100%;border-collapse:collapse;margin:8px 0 4px}
+td,th{padding:9px 8px;border-top:1px solid var(--line);vertical-align:top;font-size:13.5px;text-align:left}
+th{color:var(--faint);font-weight:600;font-size:12px;border-top:none}
+td.k{width:22%;font-weight:600;white-space:nowrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:#f0f0f3;border:1px solid var(--line);border-radius:4px;padding:0 4px}
+pre{background:#14181f;color:#c9d4e6;border-radius:10px;padding:12px 14px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.7;margin:8px 0}
+pre code{background:none;border:none;padding:0;color:inherit}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;margin-right:6px}
+.pill.blue{background:var(--accent-bg);color:var(--accent)}
+.pill.green{background:var(--green-bg);color:var(--green)}
+.pill.yellow{background:var(--yellow-bg);color:var(--yellow)}
+.pill.red{background:var(--red-bg);color:var(--red)}
+.callout{border-left:3px solid var(--accent);background:var(--accent-bg);border-radius:0 10px 10px 0;padding:10px 14px;margin:10px 0;font-size:13.5px}
+.callout.warn{border-color:var(--red);background:var(--red-bg)}
+ul.clean{list-style:none}
+ul.clean li{padding:8px 0;border-top:1px solid var(--line)}
+ul.clean li:first-child{border-top:none}
+ul.clean b{display:inline-block;min-width:6.5em}
+footer{margin-top:22px;color:var(--faint);font-size:12px;text-align:center;line-height:1.8}
+</style></head><body><div class="wrap">
+
+<header>
+  <div class="e">OH-MY-SKILL · 设计文档</div>
+  <h1>社区层设计 v2 —— 对象锚定与隐形验证</h1>
+  <p>结构上像豆瓣,不像论坛:社区是挂在条目上的四种内容类型,不是四个板块。验证藏在安装动作里,用户永远不见「请验证」。</p>
+  <div class="meta">
+    日期 <b>2026-07-07</b> · 状态 <b>已采纳(ADR 0017)</b> · 取代 <b>《社区层设计与需求收敛》</b>(已移 _archive)<br>
+    关联:ADR 0001(信任原生社区,实现层由本稿修订)· ADR 0006(一键认领)· ADR 0013(微文案三来源)· ADR 0014(场景包)
+  </div>
+</header>
+
+<section>
+  <h2>0 · 定位前提(与 v1 的差异)</h2>
+  <div class="sub">2026-07-06 重定位后,本稿全部推导基于此</div>
+  <p><b>不以「卖信任」为主叙事。</b>安全检查降级为小功能(卫生标准:content_hash 校验静默保留,verdict 服务冻结在 flag off,ADR 0011/0012),因为不成熟的扫描卖不了任何信任。主动打造的是<b>活人感</b>:真实的人、真实的产物、真实的更新,出现在货架上。</p>
+  <p class="tight">由此推出三条设计公理:</p>
+  <table>
+    <tr><td class="k">验证要隐形</td><td>参照 App Store:「已验证」不是步骤,是获取渠道本身。用户从头到尾不知道有验证这回事。</td></tr>
+    <tr><td class="k">内容挂对象</td><td>参照豆瓣:评论/求助/笔记全部锚在条目(skill/作者/包)上,不存在脱离对象的帖子流。</td></tr>
+    <tr><td class="k">零回复自价值</td><td>每种内容类型在零回复时对发帖人自己必须有价值,否则冷启动期就是空板块。</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>1 · 七平台参照 —— 各偷一件事</h2>
+  <table>
+    <tr><th>平台</th><th>偷什么</th><th>落到我们</th></tr>
+    <tr><td class="k">豆瓣 ⭐</td><td>条目中心:评论/评分/清单全挂条目;豆列</td><td>skill=条目,社区的家在详情页;豆列=开放期社区清单(ADR 0014 三阶段)</td></tr>
+    <tr><td class="k">知乎</td><td>问答是沉淀资产,可被搜索引擎索引</td><td>求助绑 skill+版本,已解决问题=该 skill 使用知识库+SEO 入口;邀请回答路由给认领作者</td></tr>
+    <tr><td class="k">小红书</td><td>内容单元=带真实产物的笔记</td><td>用法笔记:截图/生成文件/跑过的命令,「我用它做成了什么」,活人感浓度最高</td></tr>
+    <tr><td class="k">Reddit</td><td>社区围绕实践不围绕产品;投票投内容不投人</td><td>不按 skill 建子版(必空),按场景聚合;早期只要「有用」计数,不做 downvote</td></tr>
+    <tr><td class="k">推特</td><td>关注=订阅原语;build in public</td><td>关注作者/skill 得更新流;开发者说=git release 自动成帖+作者加注(供给侧活人感免费拿)</td></tr>
+    <tr><td class="k">Instagram</td><td>作者页=作品集</td><td>视觉产出类 skill(pptx/design/video)配产物画廊</td></tr>
+    <tr><td class="k">OnlyFans</td><td>卖关系不卖文件</td><td>与 C2C 证伪结论一致;免费承诺期只留钩子(作者页 GitHub Sponsors 直链,零抽成零基建);付费墙杀 SEO,不做</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>2 · 结构 —— 四种内容类型,不是四个板块</h2>
+  <div class="sub">原型里的四板块(求助台/晒用法/评测挑战/公告复盘)重构为:</div>
+  <table>
+    <tr><th>内容类型</th><th>参照</th><th>锚点</th><th>零回复自价值</th><th>排期</th></tr>
+    <tr><td class="k">短评</td><td>豆瓣短评</td><td>skill 详情页</td><td>「已验证安装」的公开使用记录</td><td><span class="pill blue">M1</span></td></tr>
+    <tr><td class="k">求助 Q&A</td><td>知乎</td><td>skill 详情页(绑版本)</td><td>求助记录本身+SEO 页面</td><td><span class="pill blue">M1</span></td></tr>
+    <tr><td class="k">开发者说</td><td>推特/TapTap</td><td>作者页+skill 详情页</td><td>作者的 changelog(自动生成可加注)</td><td><span class="pill blue">M1</span></td></tr>
+    <tr><td class="k">用法笔记</td><td>小红书/Ins</td><td>skill 详情页+作者页+包页</td><td>发帖人的作品展示</td><td><span class="pill yellow">M2</span></td></tr>
+    <tr><td class="k">评测挑战</td><td>独有</td><td>skill 详情页评测区</td><td>挑战记录=复现报告</td><td><span class="pill red">M3(等评测线真实跑通)</span></td></tr>
+  </table>
+  <p><b>「公告&复盘」拆出社区</b>——那是商店自己的声音,做成官方 blog/changelog(build in public 的载体),不占社区心智。</p>
+  <div class="callout"><b>/community 聚合页最后建</b>:它只是上述对象上内容的聚合流。密度门槛:周新帖 &gt; 20 才开页面;在此之前导航不出现「社区」入口。现有 demo threads(lib/community.ts 演示数据)<b>不上线</b>——空板块+假数据是活人感的反面。</div>
+</section>
+
+<section>
+  <h2>3 · 「已验证安装才可评」—— 隐形验证机制</h2>
+  <div class="sub">目标用户包含大量不会用 GitHub/终端的人;原则:验证藏在安装动作里</div>
+
+  <h3>3.1 先认清边界</h3>
+  <p>skill 文件公开、安装免费且发生在本地,<b>密码学上无法证明安装</b>(不装也能算哈希)。所以机制目标是:服务端留痕 + 提高刷评成本 + 措辞诚实,不是「证明」。</p>
+
+  <h3>3.2 回执的三个来源,按用户能力分层</h3>
+  <table>
+    <tr><th>路径</th><th>用户动作</th><th>回执产生</th><th>面向</th></tr>
+    <tr><td class="k">① .skill 下载(主)</td><td>网页点「安装」→ 下载 .skill → 拖进 Claude</td><td>下载发生在服务端,天然回执 <code>(会话/账号, skill_id, content_hash, channel=download)</code></td><td>不会终端的大多数;Cowork 型用户唯一现实路径</td></tr>
+    <tr><td class="k">② 命令带 token(次)</td><td>点「复制安装命令」→ 粘贴运行</td><td>命令即 <code>npx oh-my-skill add pptx --t 8f3k</code>,CLI 装完(哈希校验过)带 token 回传,自动绑到生成命令的网页会话</td><td>会用终端的;免 login、免 device flow</td></tr>
+    <tr><td class="k">③ 补验(兜底)</td><td>评价框提示运行 <code>verify</code> 命令</td><td><code>npx oh-my-skill verify owner/repo/name --code ABC</code>:本地找到 skill 目录、复算哈希对上 content_hash、带短码提交回执</td><td>手动拷贝/其他渠道装的;挡住「装都没装」的最懒刷评</td></tr>
+  </table>
+
+  <h3>3.3 账号:邮箱验证码 + 延迟注册</h3>
+  <p>浏览、下载<b>不要求登录</b>(回执先挂匿名会话);只在按下「写评价」那一刻要邮箱验证码(Supabase Auth email OTP),登录后把该会话的回执并入账号。GitHub OAuth 降级为开发者可选项。用户感知只有「评价前输个验证码」。</p>
+
+  <h3>3.4 评价 UX:豆瓣短评,不是知乎长文</h3>
+  <p>点选「好用 / 一般 / 不好用」+ 可选一句话「它帮我做成了什么」+ 可点场景词 chip(接微文案词表,ADR 0013)。打字可选,点两下就是一条有效评价。评价行绑定回执里的 <code>content_hash</code>:徽章显示「评于 v3」;目录哈希已更新的显示「评于旧版本」。一人一 skill 一评,换大版本可追评。</p>
+
+  <h3>3.5 反刷 = 权重,不是门槛</h3>
+  <ul class="clean">
+    <li><b>冷却期</b>下载/安装后 24h 才能评</li>
+    <li><b>限频</b>单设备/IP 限频;邮箱账号龄与行为做先验</li>
+    <li><b>进榜权重</b>榜单评分只算「有回执 + 有账号龄」的评价;刷子能发评,撬不动分数</li>
+    <li><b>利益回避</b>认领作者不可评自己的 skill(对 claimed publisher 匹配)</li>
+  </ul>
+  <p class="tight" style="margin-top:8px;color:var(--sub)">诚实认账:邮箱账号的 sybil 成本远低于 GitHub 账号。本方案在当前规模够用;规模化信任升级留给 P3(与 [走向百万级] 对齐)。</p>
+
+  <h3>3.6 徽章措辞红线</h3>
+  <div class="callout warn">徽章写「<b>从本店安装</b>」,tooltip 写清验证的是获取渠道(经本店下载/CLI 哈希校验),<b>不是使用深度,更不是安全背书</b>。全站沿用「不说保证安全」的既有红线。</div>
+
+  <h3>3.7 副产品:自有装机量</h3>
+  <p>回执匿名聚合 = 自己的装机量信号(App Store 模式),发现排序的燃料自产,摆脱对 skills.sh 榜单的依赖。可先于账号层上线:CLI 首跑生成 machine-id 匿名计数,首跑明示、<code>--no-telemetry</code> 可关;登录后 machine-id 回执并入账号。</p>
+</section>
+
+<section>
+  <h2>4 · 数据模型(沿用 M0 预留,不改表结构)</h2>
+  <pre><code>install_receipts: { id, user_id?, session_id?, machine_id?, skill_id, content_hash,
+                    channel: download|cli|verify, cli_version?, created_at }
+reviews:          { id, user_id, skill_id, receipt_id, content_hash_at_install,
+                    verdict: good|ok|bad, text?, scene_tags[], created_at }
+                  UNIQUE(user_id, skill_id)   -- 换大版本追评另行放开
+threads/comments: M0 预留 schema(skill_id + version + verified_install)原样够用</code></pre>
+  <p class="tight" style="color:var(--sub)">RLS:回执只能插自己的、读自己的;聚合计数走服务端视图。评论/评分是「第一条不可重建的关系型用户数据」——命中 ADR 0008 的 M1×P2 合并判据,与 Postgres 选型同批落。</p>
+</section>
+
+<section>
+  <h2>5 · 排期</h2>
+  <table>
+    <tr><th>里程碑</th><th>内容</th></tr>
+    <tr><td class="k"><span class="pill blue">M1</span></td><td>短评(隐形验证全链路:.skill 下载回执 + token 命令 + 邮箱 OTP 延迟注册)+ 求助 Q&A 挂详情页 + 开发者说 + 作者认领入口(ADR 0006 提前,活人感定位下价值上升)</td></tr>
+    <tr><td class="k"><span class="pill yellow">M2</span></td><td>用法笔记(带产物)+ 社区清单(豆列,接 ADR 0014 开放期)+ /community 聚合流(密度门槛达标后)+ 关注/订阅</td></tr>
+    <tr><td class="k"><span class="pill red">M3</span></td><td>评测挑战(评测线真实跑通为前置)+ 委托/打赏钩子(Sponsors 直链)</td></tr>
+  </table>
+  <p><b>工程排序的真话</b>:整套验证依赖「经我们渠道安装」是主流路径。第一优先级是把「下载 .skill 拖进 Claude」修得丝滑——<b>验证系统是它的免费副产品</b>,不是反过来。</p>
+</section>
+
+<section>
+  <h2>6 · 红线汇总</h2>
+  <ul class="clean">
+    <li><b>不装活</b>demo threads 不上线;空板块即砍;机器写的标机器、人写的署名(对齐 ADR 0015「不把估算伪装成真实」)</li>
+    <li><b>不越语义</b>「从本店安装」只claims获取渠道;不说「保证安全」</li>
+    <li><b>不建空壳</b>/community 聚合页密度门控;不按 skill 建子版</li>
+    <li><b>不收费</b>M0-M1 全免费承诺不破;OnlyFans 机制只留 Sponsors 钩子</li>
+    <li><b>零内部词汇</b>货架文案红线沿用(ADR 0014):审计/采样/上游等词不出现在社区 UI</li>
+  </ul>
+</section>
+
+<footer>
+  oh-my-skill · 社区层设计 v2 · 2026-07-07<br>
+  本稿取代《社区层设计与需求收敛》(docs/_archive/);决策记录见 ADR 0017
+</footer>
+
+</div></body></html>

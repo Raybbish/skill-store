@@ -2,6 +2,9 @@
 
 /** taxonomy 词表(分类 / 标签单一来源) */
 export * from "./labels";
+/** 场景词治理(别名归一 + 可见性阈值)与微文案 lint(禁用词 + L1-L6) */
+export * from "./sceneTags";
+export * from "./copyLint";
 
 export type Hosting = "mirrored" | "indexed";
 
@@ -64,13 +67,76 @@ export interface SkillReport {
     /** 上游仓库 skill 数超过每仓上限(MAX_PER_REPO),本条目来自折叠采样收录 */
     bulk_source?: boolean;
     fetched_at: string;
+    /**
+     * 首次进入 catalog 的时间(ISO):驱动「新上架」榜排序(见 ADR 0016)。
+     * 不变式:首次写入时盖章,之后**永不覆盖**(与 eval/copy 同,「采集不冲下游」)。
+     * 事实源是 catalog git 历史(首个 `--diff-filter=A` commit);本字段是其物化缓存,
+     * 缺失可由 `jobs/backfill-first-seen.ts` 从 git 回填。区别于 `fetched_at`(每次采到/变更即刷新)。
+     */
+    first_seen_at?: string;
   };
-  token_cost: {
-    body_tokens: number;
-    method: string;
-  };
+  /**
+   * 静态上下文体积:只描述可复现的装载边界,不承诺任一模型的真实调用消耗。
+   * 可选:存量条目可能尚未回填(缺失 = 前端「待重算」;ingest 幂等闸会外科式补齐)。
+   */
+  context_size?: ContextSize;
   /** M1 基准评测结果;未评测为 null(与 pipeline eval/types.ts 的 EvalResult 对应) */
   eval: SkillEval | null;
+  /**
+   * 派生微文案(P0:llm 生成;M1 认领后可被 author 稿替换)。
+   * 与 eval 同级挂顶层,不塞进 meta——meta 是采集事实,copy 是我们的转述,生命周期不同:
+   * meta 变 = 内容变了;copy 变 = 转述变了。分开后「重算微文案」永不污染采集事实的 diff。
+   * 锚 meta.content_hash(与 verdict 账本同构):不一致 = 过期,下次重算。
+   */
+  copy?: SkillCopy | null;
+}
+
+export type ContextSizeScopeId =
+  | "activation_core"
+  | "activation_with_declared_refs"
+  | "package_total_text";
+
+export interface ContextSizeCounter {
+  id: string;
+  method: "official-tokenizer" | "heuristic";
+  tokenizer?: string;
+  description?: string;
+}
+
+/** UI 标签(「最小装载」等)由前端按 scope id 渲染,不固化进 catalog 数据(ADR 0015)。 */
+export interface ContextSizeScope {
+  /** 被纳入此 scope 的相对文件路径 */
+  files: string[];
+  /** 文本文件数量;package_total_text 可用它解释包内规模 */
+  text_files: number;
+  bytes: number;
+  chars: number;
+  tokens: number;
+}
+
+export interface ContextSize {
+  version: "1";
+  counter: ContextSizeCounter;
+  generated_at: string;
+  scopes: Record<ContextSizeScopeId, ContextSizeScope>;
+}
+
+/** 派生微文案。生成侧 categorize:llm 写入;前端 lint_pass=false 时回退 description 截断(见 copyLint.ts)。 */
+export interface SkillCopy {
+  /** 一句话用途:动词开头、用户视角、≤40 字 */
+  tagline: string;
+  /** 场景标签 2~4 个:归一后的词(「什么时候用」,非技术形态) */
+  scene_tags: string[];
+  /** 「适合你,如果…」一行,仅详情页 */
+  fit_line?: string;
+  /** 词的来源:llm | author(M1 认领)。author 稿同样过 lint */
+  source: "llm" | "author";
+  /** 生成时锚定的 meta.content_hash;不一致 = 过期,下次重算 */
+  content_hash: string;
+  model: string;
+  generated_at: string;
+  /** 代码层 lint 结果;false → 前端回退 description 截断,不展示 chips */
+  lint_pass: boolean;
 }
 
 /**

@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
 import type { Skill } from "@/lib/skill-types";
+import { trackInstall } from "@/lib/analytics";
 
 // CLI / 下载 / 安装脚本的 base 域名 —— 正式域名替换处
 const HOST = "https://oh-my-skill.dev";
 
-function CopyBtn({ text }: { text: string }) {
+function CopyBtn({ text, onCopied }: { text: string; onCopied?: () => void }) {
   const [ok, setOk] = useState(false);
   return (
     <button
@@ -14,6 +15,7 @@ function CopyBtn({ text }: { text: string }) {
         try {
           await navigator.clipboard.writeText(text);
           setOk(true);
+          onCopied?.(); // 埋点:复制安装命令 = 强安装意图
           setTimeout(() => setOk(false), 1200);
         } catch {
           /* clipboard 不可用则忽略 */
@@ -46,7 +48,7 @@ export default function InstallBox({ skill }: { skill: Skill }) {
           <div className="inst-cmd">
             <code className="inst-file">{leaf}.zip</code>
             <span className="inst-note">含 skill-report.json + content_hash,可离线手动校验</span>
-            <a className="cp" href={`${HOST}/dl/${id}.zip`}>↓ 下载</a>
+            <a className="cp" href={`${HOST}/dl/${id}.zip`} onClick={() => trackInstall(id)}>↓ 下载</a>
           </div>
         ) : (
           <div className="inst-cmd">
@@ -57,12 +59,12 @@ export default function InstallBox({ skill }: { skill: Skill }) {
 
       <div className="inst-m">
         <div className="inst-h"><span>/</span> 通过 npx 安装 <em className="inst-tag">校验哈希</em></div>
-        <div className="inst-cmd"><code className="cli">{npx}</code><CopyBtn text={npx} /></div>
+        <div className="inst-cmd"><code className="cli">{npx}</code><CopyBtn text={npx} onCopied={() => trackInstall(id)} /></div>
       </div>
 
       <div className="inst-m">
         <div className="inst-h"><span>/</span> 通过 bash 安装</div>
-        <div className="inst-cmd"><code className="cli">{curl}</code><CopyBtn text={curl} /></div>
+        <div className="inst-cmd"><code className="cli">{curl}</code><CopyBtn text={curl} onCopied={() => trackInstall(id)} /></div>
       </div>
 
       <div className="inst-foot">

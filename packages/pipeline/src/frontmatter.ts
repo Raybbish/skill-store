@@ -1,4 +1,5 @@
 import { parse } from "yaml";
+import { createHash } from "node:crypto";
 
 export interface FrontmatterResult {
   data: Record<string, unknown> | null;
@@ -33,11 +34,17 @@ export function parseFrontmatter(md: string): FrontmatterResult {
   return { data, issues };
 }
 
-/** 统一成 kebab-case 的 skill 名 */
+/**
+ * 统一成 kebab-case 的 skill 名。保证**非空**:纯非 ASCII / 纯符号的名字清洗后会变空串,
+ * 此时用原串的短哈希兜底(稳定、同输入同名、不同输入不撞),避免 id 出现空 name 段
+ * (如 `owner/repo/`,既违反 schema 的三段式,又让 sync 路径反推拼错)。
+ */
 export function normalizeName(raw: string): string {
-  return raw
+  const n = raw
     .toLowerCase()
     .replace(/[^a-z0-9._-]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 64);
+  if (n) return n;
+  return "skill-" + createHash("sha256").update(raw).digest("hex").slice(0, 8);
 }
