@@ -31,6 +31,21 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
         <p className="d-desc">{p.tagline}。{p.members.length} 件套,装一次就够。</p>
         <CopyCmd cmd={cmd} />
         <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 8 }}>安装时逐个校验内容哈希;每个成员也可以单独安装。</div>
+        {p.members.some((m) => m.dl) && (
+          <div className="pack-dl">
+            <span className="pack-dl-h">不用终端?</span>
+            {p.members.filter((m) => m.dl).map((m) => {
+              const leaf = m.id.split("/").pop();
+              return (
+                <a key={m.id} className="cp" href={`/dl/${m.id}.skill`} download={`${leaf}.skill`}>↓ {leaf}.skill</a>
+              );
+            })}
+            {p.members.every((m) => m.dl) && (
+              <a className="cp" href={`/dl/packs/${p.id}.zip`} download={`${p.id}-pack.zip`}>↓ 整包 .zip</a>
+            )}
+            <span className="pack-dl-note">.skill 双击或拖进 Claude 即装;整包 zip 解压后把文件夹放进你工具的技能目录</span>
+          </div>
+        )}
       </section>
 
       {p.editorNote && (

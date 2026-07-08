@@ -43,13 +43,26 @@ export default function InstallBox({ skill }: { skill: Skill }) {
   return (
     <div className="inst">
       <div className="inst-m">
-        <div className="inst-h"><span>/</span> 下载</div>
+        <div className="inst-h"><span>/</span> 下载安装</div>
         {hasMirror ? (
-          <div className="inst-cmd">
-            <code className="inst-file">{leaf}.zip</code>
-            <span className="inst-note">含 skill-report.json + content_hash,可离线手动校验</span>
-            <a className="cp" href={`${HOST}/dl/${id}.zip`} onClick={() => trackInstall(id)}>↓ 下载</a>
-          </div>
+          <>
+            <div className="inst-cmd">
+              <code className="inst-file">{leaf}.skill</code>
+              <span className="inst-note">双击,或拖进 Claude 桌面版 / Cowork,即完成安装</span>
+              {/* 同一份文件、两个下载名:.skill 给拖拽安装,.zip 给手动放置(download 属性同源改名) */}
+              <a className="cp" href={`/dl/${id}.skill`} download={`${leaf}.skill`} onClick={() => trackInstall(id)}>↓ .skill</a>
+              <a className="cp" href={`/dl/${id}.skill`} download={`${leaf}.zip`} onClick={() => trackInstall(id)}>↓ .zip</a>
+            </div>
+            <details className="inst-dirs">
+              <summary>用别的 agent?下载 .zip 解压,把文件夹放进它的技能目录</summary>
+              <div className="inst-dirs-t">
+                <div><b>Claude Code</b><code>~/.claude/skills/</code>(项目级 <code>.claude/skills/</code>)</div>
+                <div><b>Codex CLI</b><code>~/.codex/skills/</code></div>
+                <div><b>Cursor</b>自动读取上面两处目录</div>
+                <div><b>其他工具</b>见其文档的「skills」目录;两个下载是同一份文件,只是名字不同</div>
+              </div>
+            </details>
+          </>
         ) : (
           <div className="inst-cmd">
             <a className="inst-url" href={upstream} target="_blank" rel="noopener noreferrer">{upstream}<span style={{ whiteSpace: "nowrap" }}> ↗</span></a>
