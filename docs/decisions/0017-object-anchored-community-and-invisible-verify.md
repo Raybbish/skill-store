@@ -42,3 +42,13 @@
 - **数据**:`install_receipts` / `reviews`(绑 `content_hash`,UNIQUE(user,skill))+ M0 预留 threads/comments schema 原样够用。评论/评分是「第一条不可重建的关系型用户数据」→ 命中 ADR 0008 判据,与 M1×P2 Postgres 同批落。
 - **对 ADR 0001 的修订**:保留其内核(互动挂在资产上、评价需已验证安装);「信任原生」叙事改述为「对象原生 + 活人感」;其 M1「社区最小切片」的实现即本 ADR 的 M1 三类型。
 - **移除项**:`packages/web` 的 `/community` 四板块页与 `lib/community.ts` demo 数据不随 M1 上线(代码可留,导航摘除)。
+
+## 补充裁决(2026-07-08):verify 升主通道 + 徽章语义分档
+用户指出:早期用户大多**已经装过**这些 skill(skills.sh / 手动 / 插件渠道),为验证身份重装一次不可接受——路径③(verify)对早期人群不是兜底,是**主通道**。随之收紧语义红线:verify 只能证明「本机确有此物」,证明不了来源,故徽章分两档——download/cli 回执 =「**从本店安装**」,verify 回执 =「**已验证本机安装**」,不得混用。落地:CLI `verify <id>`(找本地副本→复算哈希→与货架比对→回执记**实际持有**的哈希,评价侧据此显示「评于版本」)+ `verify --all`(扫描本地全部已装,逐个比对——顺带充当 outdated 检查,单人价值自足);详情页安装区第四小节「已经装过?」给可复制的 verify 命令(带 --t token 绑 web 会话)。
+
+## 执行(2026-07-08)
+用户裁决「全扫三处」,超出本 ADR 最小的「仅摘导航、代码可留」—— demo 层整套删除:
+- 删除 `/community` 路由(page + client)、`lib/community.ts`(demo threads + 假发布者指标)、`components/ThreadRow.tsx`、详情页 `SkillCommunity` 块;`lib/community.ts` 重写为 `lib/publishers.ts`(仅 catalog 派生的真实数据:作品集 / 累计安装)。
+- 发布者页只留真实字段;移除假的求助响应·评测复现·bio·加入日期,以及「已认证发布者 ✓」徽章(后者系 ADR 0011 认证下架的残留)。
+- 详情页 `★ 社区精选`(真实 `curatedBy`)保留;`globals.css` 孤儿样式暂留。
+- 验证:web `tsc --noEmit` 绿、全仓零残留引用;`web:build` 回归留本机。

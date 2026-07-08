@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { readIdxPacks } from "@/lib/store-server";
 import SkillRow from "@/components/SkillRow";
 import CopyCmd from "@/components/CopyCmd";
+import DlLink from "@/components/DlLink";
 
 /** 场景包页:名字 + 一句话 + 一条全装命令 + 成员真行。没有任何需要理解的概念。 */
 export function generateStaticParams() {
@@ -37,11 +38,11 @@ export default async function PackPage({ params }: { params: Promise<{ id: strin
             {p.members.filter((m) => m.dl).map((m) => {
               const leaf = m.id.split("/").pop();
               return (
-                <a key={m.id} className="cp" href={`/dl/${m.id}.skill`} download={`${leaf}.skill`}>↓ {leaf}.skill</a>
+                <DlLink key={m.id} id={m.id} href={`/dl/${m.id}.skill`} download={`${leaf}.skill`}>↓ {leaf}.skill</DlLink>
               );
             })}
             {p.members.every((m) => m.dl) && (
-              <a className="cp" href={`/dl/packs/${p.id}.zip`} download={`${p.id}-pack.zip`}>↓ 整包 .zip</a>
+              <DlLink id={`pack:${p.id}`} href={`/dl/packs/${p.id}.zip`} download={`${p.id}-pack.zip`}>↓ 整包 .zip</DlLink>
             )}
             <span className="pack-dl-note">.skill 双击或拖进 Claude 即装;整包 zip 解压后把文件夹放进你工具的技能目录</span>
           </div>
