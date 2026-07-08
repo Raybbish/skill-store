@@ -6,7 +6,7 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { hydrateCard, type IdxMeta, type Pack, type SkillCard, type WireCard } from "./store";
+import { hydrateCard, type Changelog, type IdxMeta, type Pack, type SkillCard, type WireCard } from "./store";
 
 const IDX = join(process.cwd(), "public/idx");
 
@@ -38,4 +38,13 @@ export function readIdxPacks(): Pack[] {
 /** 新上架(按收录时间降序,build-index 产出) */
 export function readIdxNew(): SkillCard[] {
   return readJson<WireCard[]>("new.json").map(hydrateCard);
+}
+
+/** 商店周报(/changelog);缺文件时 fail-open 空,非关键页不因缺索引崩构建 */
+export function readIdxChangelog(): Changelog {
+  try {
+    return JSON.parse(readFileSync(join(IDX, "changelog.json"), "utf8")) as Changelog;
+  } catch {
+    return { generatedAt: "", weekAdded: 0, entries: [] };
+  }
 }

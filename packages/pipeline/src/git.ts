@@ -19,6 +19,9 @@ export interface TreeEntry {
 export interface ClonedRepo {
   dir: string;
   headCommit: string;
+  /** HEAD commit 提交时间(ISO 8601,%cI)= 上游仓库最近一次提交时间。--depth 1 故为**仓库级**
+   *  (monorepo 内各 skill 共享同一 HEAD 时间),非单 skill 路径级;用作维护活性信号 upstream_commit_at。 */
+  headCommitAt: string;
   branch: string;
   entries: TreeEntry[];
   cleanup: () => Promise<void>;
@@ -30,6 +33,8 @@ export async function cloneShallow(repoSlug: string): Promise<ClonedRepo> {
     maxBuffer: 64 * 1024 * 1024,
   });
   const headCommit = (await exec("git", ["-C", dir, "rev-parse", "HEAD"])).stdout.trim();
+  // 上游仓库最近一次提交时间(--depth 1 → HEAD 即唯一 commit;仓库级,非单 skill 路径级)
+  const headCommitAt = (await exec("git", ["-C", dir, "log", "-1", "--format=%cI"])).stdout.trim();
   const branch = (await exec("git", ["-C", dir, "rev-parse", "--abbrev-ref", "HEAD"])).stdout.trim();
   const lsOut = (
     await exec("git", ["-C", dir, "ls-tree", "-r", "HEAD"], { maxBuffer: 256 * 1024 * 1024 })
@@ -44,5 +49,5 @@ export async function cloneShallow(repoSlug: string): Promise<ClonedRepo> {
     if (type === "blob") entries.push({ path: line.slice(tab + 1), type: "blob", sha });
   }
 
-  return { dir, headCommit, branch, entries, cleanup: () => rm(dir, { recursive: true, force: true }) };
+  return { dir, headCommit, headCommitAt, branch, entries, cleanup: () => rm(dir, { recursive: true, force: true }) };
 }

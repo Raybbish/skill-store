@@ -40,7 +40,7 @@ function scan(): Cache {
             frontmatterValid: r.frontmatter_valid !== false,
             contentHash: r.meta.content_hash,
             contextSize: r.context_size ?? null,
-            firstSeenAt: r.signals?.first_seen_at ?? null, stars: r.signals?.stars_github,
+            firstSeenAt: r.signals?.first_seen_at ?? null, upstreamCommitAt: r.signals?.upstream_commit_at ?? null, stars: r.signals?.stars_github,
             installs: r.signals?.installs_skills_sh ?? null,
             repoSkillCount: r.signals?.repo_skill_count,
             bulkSource: r.signals?.bulk_source === true,

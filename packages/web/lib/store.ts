@@ -44,6 +44,8 @@ export interface SkillCard {
   ev?: number | null;
   /** 收录时间(Unix 秒,来自 catalog git 首次提交;build-index 注入,Skill 上没有) */
   addedAt?: number;
+  /** 本店有安装包可下(.skill/.zip):构建期磁盘事实(hasMirror),包页/列表的下载入口凭据 */
+  dl?: boolean;
 }
 
 /** 场景包:一套一起装的 skill(catalog/packs 策展) */
@@ -99,6 +101,21 @@ export interface IdxMeta {
   sceneVocab?: string[];
 }
 
+/** 商店周报(/changelog):手写条目来自 catalog/changelog.json;weekAdded 由 build-index 从 addedAt 统计 */
+export interface ChangelogEntry {
+  /** ISO 日期 YYYY-MM-DD */
+  date: string;
+  /** release=上线 / change=变更 / notice=公告;缺省不标签 */
+  kind?: "release" | "change" | "notice";
+  text: string;
+}
+export interface Changelog {
+  generatedAt: string;
+  /** 本周(自最近周一 00:00)新增上架数 */
+  weekAdded: number;
+  entries: ChangelogEntry[];
+}
+
 /** Skill → SkillCard(构建索引与服务端列表页共用;undefined 字段不落 JSON) */
 export function toCard(s: Skill): SkillCard {
   return {
@@ -116,6 +133,7 @@ export function toCard(s: Skill): SkillCard {
     ...(s.repoSkillCount != null ? { repoSkillCount: s.repoSkillCount } : {}),
     ...(s.bulkSource ? { bulkSource: true } : {}),
     ...(s.eval ? { ev: s.eval.score } : {}),
+    ...(s.hasMirror ? { dl: true } : {}),
   };
 }
 
