@@ -64,6 +64,12 @@ export default function Methodology() {
         ))}
         {!collections.length && <div className="empty">暂无</div>}
       </div>
+
+      {collections.some((c) => c.blocked) && (
+        <p style={{ marginTop: 16, fontSize: 12, color: "var(--faint)", fontFamily: "var(--mono)" }}>
+          已拦截 = 单仓 ≥ 1,000 个 skill 的批量源,不逐条收录,仅记录来源与规模
+        </p>
+      )}
     </>
   );
 }
