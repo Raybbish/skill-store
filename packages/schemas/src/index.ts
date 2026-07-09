@@ -66,6 +66,17 @@ export interface SkillReport {
     repo_skill_count?: number;
     /** 上游仓库 skill 数超过每仓上限(MAX_PER_REPO),本条目来自折叠采样收录 */
     bulk_source?: boolean;
+    /**
+     * 出现次数(ADR 0019):同内容(content_hash)在其他仓被观测到的拷贝数。
+     * 拷贝不再落条目,记账于清单对象的 items(catalog/lists);本字段是其派生缓存,
+     * 由 lists.ts 的 recomputeWorkSignals 从 items 重算——幂等,可随时重放,不手写。
+     */
+    appear_count?: number;
+    /**
+     * 被清单引用份数(ADR 0019):引用本作品的 distinct 清单数(catalog/lists)。
+     * 策展信号,进排序;与 appear_count 同为派生缓存,同一函数重算。
+     */
+    list_count?: number;
     fetched_at: string;
     /**
      * 首次进入 catalog 的时间(ISO):驱动「新上架」榜排序(见 ADR 0016)。
@@ -174,9 +185,45 @@ export interface SkillEval {
 }
 
 /**
- * 批量源仓库的合集条目:skill 数超过每仓上限(MAX_PER_REPO)时,
- * 除采样收录外,catalog/collections/<owner>/<repo>.json 保留一条仓库级记录指回上游。
- * 与 collection-report.schema.json 保持一致。
+ * 清单对象(ADR 0019):一组对作品的引用,catalog/lists/<owner>/<repo>.json。
+ * 聚合仓 / awesome-list / 批量源统一入此;官方场景包(catalog/packs)是同一抽象的
+ * editorial 形态,S2 统一渲染。清单仓内容零上架:拷贝不再进 catalog/skills,
+ * hash 命中 canonical 的引用记入 items(即 appearance 的 S0 静态账本),
+ * 作品条目的 appear_count / list_count 由 items 派生重算(见 pipeline/lists.ts)。
+ * 与 list-report.schema.json 保持一致。
+ */
+export interface ListReport {
+  schema_version: "1";
+  /** owner/repo(GitHub slug,owner 小写) */
+  id: string;
+  /** imported = 外来清单。S0 全部只进数据不上架(ADR 0019 裁决);source_repo 对用户隐身 */
+  kind: "imported";
+  url: string;
+  /** 策展人署名:认领后本人填,机器不代写(留空 = 未认领) */
+  curator?: string;
+  /** 推荐语:同上,留空待本人填 */
+  note?: string;
+  /** 上游仓自述(GitHub repo description):采集事实,非本店转述;随采集刷新 */
+  description?: string;
+  /** 仓内 SKILL.md 总数(克隆时点;跳采仓可能缺,沿用上次值) */
+  file_count?: number;
+  stars_github?: number | null;
+  /** 拦截:批量源(生成/搬运,file_count ≥ BULK_SIGNAL_ONLY)零内容上架,仅收录页留痕 */
+  blocked?: boolean;
+  /** 拦截依据,如 "bulk>=1000" */
+  block_reason?: string;
+  /** 引用账本:内容 hash 命中 canonical 作品的拷贝,work = 作品三段式 id */
+  items?: { work: string; name?: string }[];
+  /** = items.length(冗余,读侧方便) */
+  resolved_count?: number;
+  /** 仍在货架的采样条目数(存量原创大仓遗留);拦截仓恒 0 */
+  sampled_count: number;
+  fetched_at: string;
+}
+
+/**
+ * @deprecated ADR 0019:合集记录已升级为清单对象(ListReport,catalog/lists/)。
+ * 本类型仅供 migrate-lists 读取存量 catalog/collections/,迁移完成后随目录一并移除。
  */
 export interface CollectionReport {
   schema_version: "1";
