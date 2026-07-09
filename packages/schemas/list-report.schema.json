@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Raybbish/skill-store/packages/schemas/list-report.schema.json",
+  "title": "ListReport",
+  "description": "清单对象(ADR 0019),v1。一组对作品的引用,catalog/lists/<owner>/<repo>.json。聚合仓/awesome-list/批量源统一入此;清单仓内容零上架,拷贝以 items 记账(appearance 的 S0 静态账本),作品条目的 appear_count/list_count 由 items 派生重算",
+  "type": "object",
+  "required": ["schema_version", "id", "kind", "url", "sampled_count", "fetched_at"],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+/[A-Za-z0-9._-]+$", "description": "GitHub slug:owner/repo(owner 小写)" },
+    "kind": { "const": "imported", "description": "外来清单;S0 全部只进数据不上架,source 对用户隐身" },
+    "url": { "type": "string", "description": "上游仓库 URL" },
+    "curator": { "type": "string", "description": "策展人署名:认领后本人填,机器不代写" },
+    "note": { "type": "string", "description": "推荐语:留空待本人填" },
+    "file_count": { "type": "integer", "description": "仓内 SKILL.md 总数(克隆时点;跳采仓沿用上次值)" },
+    "stars_github": { "type": ["integer", "null"] },
+    "blocked": { "type": "boolean", "description": "拦截:批量源(生成/搬运)零内容上架,仅收录页留痕" },
+    "block_reason": { "type": "string", "description": "拦截依据,如 bulk>=1000" },
+    "items": {
+      "type": "array",
+      "description": "引用账本:内容 hash 命中 canonical 作品的拷贝",
+      "items": {
+        "type": "object",
+        "required": ["work"],
+        "properties": {
+          "work": { "type": "string", "description": "作品三段式 id(owner/repo/name)" },
+          "name": { "type": "string", "description": "拷贝在来源仓内的 skill 名" }
+        }
+      }
+    },
+    "resolved_count": { "type": "integer", "description": "= items.length(冗余,读侧方便)" },
+    "sampled_count": { "type": "integer", "description": "仍在货架的采样条目数(存量原创大仓遗留);拦截仓恒 0" },
+    "fetched_at": { "type": "string", "format": "date-time" }
+  }
+}

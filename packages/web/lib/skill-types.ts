@@ -60,7 +60,7 @@ export interface Skill {
   eval?: EvalData | null;
 }
 
-/** 批量源仓库合集条目(catalog/collections) */
+/** 清单记录(catalog/lists,ADR 0019;原 catalog/collections 合集条目)。blocked = 拦截仓(零内容上架) */
 export interface Collection {
-  id: string; url: string; skillCount: number; sampledCount: number; stars?: number | null;
+  id: string; url: string; skillCount: number; sampledCount: number; stars?: number | null; blocked?: boolean;
 }
