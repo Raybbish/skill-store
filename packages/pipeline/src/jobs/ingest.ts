@@ -146,6 +146,23 @@ async function main() {
     all.push(...candidates);
   }
 
+  // W3d:Code Search 全网扫描(--code-search [N] 新仓上限;ADR 0019 S1)。
+  // 「好货不打标」的仓从这条线进;已知仓(条目/清单/sources.yaml)与已拦截仓零克隆,配额只花在增量。
+  if (process.argv.includes("--code-search")) {
+    const n = Number(arg("code-search")) || 30;
+    console.log(`\n▶ Code Search 全网扫描(新仓上限 ${n})…`);
+    const { discoverFromCodeSearch } = await import("../sources/code-search.ts");
+    const known = new Set<string>();
+    for (const e of await loadCatalogEntries()) known.add(e.report.meta.id.split("/").slice(0, 2).join("/")); // id 已小写
+    for (const id of listsMap.keys()) known.add(id.toLowerCase());
+    for (const s of sourcesFile.sources) if (s.type === "github-repo") known.add(s.repo.toLowerCase());
+    const { candidates, lists: drafts, cleanup } = await discoverFromCodeSearch(n, blockedIds, known);
+    cleanups.push(cleanup);
+    listDrafts.push(...drafts);
+    console.log(`  发现 ${candidates.length} 个 skill,${drafts.length} 条清单草稿`);
+    all.push(...candidates);
+  }
+
   // skills.sh 安装量榜(--skills-sh [N]);解析首页 SSR 榜单,内容回上游采集
   if (process.argv.includes("--skills-sh")) {
     const n = Number(arg("skills-sh")) || 200;

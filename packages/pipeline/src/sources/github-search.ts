@@ -17,7 +17,7 @@ const TOKEN = process.env.GITHUB_TOKEN;
  * 零内容上架,只产出清单记录(blocked)。这是 §08 已知局限里那次「仓级判断」的
  * 结构化形态——1000+ 文件不属灰区;50~1000 的灰区按偏置规则照旧采样(偏向收)。
  */
-const SIGNAL_ONLY = Number(process.env.BULK_SIGNAL_ONLY) || 1000;
+export const SIGNAL_ONLY = Number(process.env.BULK_SIGNAL_ONLY) || 1000;
 
 /** 采集侧产出的清单草稿:由 ingest 与既有 catalog/lists 记录合并落盘(保留 items/curator/blocked) */
 export interface ListDraft {
@@ -66,7 +66,7 @@ async function searchRepos(limit: number): Promise<RepoHit[]> {
  * 参考 buildwithclaude 的 isMarketplace() 折叠思路;与 hub-signals 共用 MAX_PER_REPO。
  * 采样优先级:frontmatter 合规 > 有 description > 原目录顺序(稳定排序)。
  */
-function capPerRepo(candidates: SkillCandidate[], cap: number): SkillCandidate[] {
+export function capPerRepo(candidates: SkillCandidate[], cap: number): SkillCandidate[] {
   for (const c of candidates) (c.report as SkillReport).signals.repo_skill_count = candidates.length;
   if (candidates.length <= cap) return candidates;
   const kept = candidates
