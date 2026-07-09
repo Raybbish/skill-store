@@ -1,7 +1,7 @@
 <!-- 自动生成,勿手改。运行: npm run status -->
 # 项目状态(自动快照)
 
-_生成于 2026-07-09 10:33 UTC · 分支 `feat/s0-work-list-model` · 工作区干净_
+_生成于 2026-07-09 11:07 UTC · 分支 `feat/s0-work-list-model` · 未提交改动 13 处_
 
 ## Catalog
 - **skill 总数:10494**
@@ -11,6 +11,7 @@ _生成于 2026-07-09 10:33 UTC · 分支 `feat/s0-work-list-model` · 工作区
 
 ## 最近提交
 ```
+17ea34ecc docs:STATUS 收口 S0/S1 全线状态(验收/cron/清理迁移已执行),status 快照刷新 10,494
 0c9bc0d47 ingest.yml:cron 加 --code-search 30;PR 抽查清单同步 ADR 0019 口径
 97e825130 ingest:code-search 单源故障降级为跳过,不拖死整趟采集
 f0258d0b4 S1 Code Search 采集器(ADR 0019):filename:SKILL.md 全网扫描,好货不打标的仓从这条线进
@@ -18,5 +19,4 @@ f0258d0b4 S1 Code Search 采集器(ADR 0019):filename:SKILL.md 全网扫描,好�
 3524faab2 收录页去执法语言:「已拦截」退场,只留事实陈述
 88226d70d 收录页补拦截规则注脚:已拦截=单仓≥1000 批量源,不逐条收录
 815688670 收录页大源补自述与拦截态(ADR 0019 随笔补丁)
-3c3fc5fc9 S0 作品与清单对象模型(ADR 0019):lists 账本落地 + 拷贝回收 + 巨仓拦截
 ```

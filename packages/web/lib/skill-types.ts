@@ -41,6 +41,8 @@ export interface Skill {
   hasMirror?: boolean;
   /** 采集去重:非 null 表示本条是另一条(canonical)的副本/搬运;默认列表隐藏 */
   duplicateOf?: string | null;
+  /** 退市墓碑(ADR 0020):上游连续缺席后停止收录;货架隐藏,详情页留事实行 */
+  delistedAt?: string | null;
   /** SKILL.md frontmatter 是否合规;false(不合规)默认列表隐藏 */
   frontmatterValid?: boolean;
   /** 内容哈希(verdict 锚点;build-index 查账本用,不进瘦卡) */

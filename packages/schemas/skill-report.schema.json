@@ -26,7 +26,8 @@
         "version": { "type": ["string", "null"], "description": "frontmatter 声明的版本(如有)" },
         "publisher": { "type": "string" },
         "publisher_verified": { "type": "boolean", "default": false },
-        "duplicate_of": { "type": ["string", "null"], "description": "content_hash 相同的既有条目 id" }
+        "duplicate_of": { "type": ["string", "null"], "description": "content_hash 相同的既有条目 id" },
+        "delisted_at": { "type": ["string", "null"], "format": "date-time", "description": "退市墓碑(ADR 0020):上游连续缺席≥阈值;货架隐藏、历史保留、重新观测到即撤销" }
       }
     },
     "frontmatter_valid": { "type": "boolean", "description": "是否通过 agentskills.io 最小规范校验(name+description)" },
@@ -46,6 +47,10 @@
         },
         "repo_skill_count": { "type": "integer", "description": "采集时上游仓库内 SKILL.md 总数(巨仓降权信号)" },
         "bulk_source": { "type": "boolean", "description": "上游仓库 skill 数超过每仓上限(MAX_PER_REPO),本条目来自折叠采样收录" },
+        "appear_count": { "type": "integer", "description": "出现次数(ADR 0019):同内容在其他仓被观测到的拷贝数;lists items 的派生缓存,禁手写" },
+        "list_count": { "type": "integer", "description": "被清单引用份数(ADR 0019):distinct 清单数;同上派生缓存" },
+        "missing_streak": { "type": "integer", "description": "连续缺席观测日数(ADR 0020);重新观测到即清" },
+        "missing_at": { "type": "string", "format": "date-time", "description": "最后一次缺席观测(同日多趟只计一次的幂等闸)" },
         "fetched_at": { "type": "string", "format": "date-time" },
         "first_seen_at": { "type": "string", "format": "date-time", "description": "首次进入 catalog 的时间;驱动「新上架」排序(ADR 0016)。首次写入盖章、永不覆盖;事实源 = catalog git 首个 add commit(可由 jobs/backfill-first-seen.ts 回填)。区别于 fetched_at(采到/变更即刷新)" },
         "upstream_commit_at": { "type": "string", "format": "date-time", "description": "上游仓库最近一次提交时间(git %cI):维护活性信号(详情页「上游提交 X 前」)。取自采集时 --depth 1 clone 的 HEAD commit,为仓库级(monorepo 内各 skill 共享),非单 skill 路径级。每次采集刷新" }

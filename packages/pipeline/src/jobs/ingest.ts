@@ -13,6 +13,7 @@ import { discoverFromRepo, type SkillCandidate } from "../sources/official.ts";
 import type { ListDraft } from "../sources/github-search.ts";
 import { CATALOG, loadCatalogEntries, entryDir } from "../catalog.ts";
 import { loadLists, writeList, addItem, recomputeWorkSignals } from "../lists.ts";
+import { markMissing } from "../delist.ts";
 import { CONTEXT_SIZE_COUNTER_ID } from "../context-size.ts";
 import { categorize } from "../categorize.ts";
 
@@ -110,12 +111,28 @@ async function main() {
 
   const all: SkillCandidate[] = [];
   const cleanups: (() => Promise<void>)[] = [];
+  // 退市观测(ADR 0020):enumerated = 本次成功枚举的仓 → 完整候选 id 集(在 --limit 截断前记录,
+  // 不会误杀);repoGone = clone not-found(仓删除/改私有)。漏访问的仓两边都不进 → 不判缺席。
+  const enumerated = new Map<string, Set<string>>();
+  const repoGone = new Set<string>();
   for (const repo of repos) {
     console.log(`\n▶ 采集 ${repo} …`);
-    const { candidates, cleanup } = await discoverFromRepo(repo);
-    cleanups.push(cleanup);
-    console.log(`  发现 ${candidates.length} 个 skill`);
-    all.push(...candidates);
+    try {
+      const { candidates, cleanup } = await discoverFromRepo(repo);
+      cleanups.push(cleanup);
+      console.log(`  发现 ${candidates.length} 个 skill`);
+      enumerated.set(repo.toLowerCase(), new Set(candidates.map((c) => c.report.meta.id)));
+      all.push(...candidates);
+    } catch (e) {
+      const msg = (e as Error).message ?? "";
+      // git clone 对不存在/私有仓的报错含 "not found" / "could not read";网络类错误不计缺席
+      if (/not found|could not read|does not exist/i.test(msg)) {
+        repoGone.add(repo.toLowerCase());
+        console.warn(`  ✗ 仓不可达(疑似删除/改私有),计缺席: ${repo}`);
+      } else {
+        console.warn(`  ✗ ${repo} 采集失败(不计缺席): ${msg.slice(0, 140)}`);
+      }
+    }
     if (all.length >= limit) break;
   }
 
@@ -261,6 +278,13 @@ async function main() {
         prev.signals.upstream_commit_at = c.report.signals.upstream_commit_at;
         patched = true;
       }
+      // 重新观测到 → 复活(ADR 0020):清缺席计数、撤墓碑(上游改名回滚/误判自愈)
+      if (prev.signals.missing_streak != null || prev.signals.missing_at != null || prev.meta.delisted_at) {
+        delete prev.signals.missing_streak;
+        delete prev.signals.missing_at;
+        delete prev.meta.delisted_at;
+        patched = true;
+      }
       // 镜像补齐(--mirror 重跑,服务 .skill 下载通道):licence 允许(mirrorSrcDir 有值)而磁盘无副本的
       // 存量条目,外科式落副本并把 hosting 对齐磁盘事实——内容没变,变的只是「本店是否实际托管」。
       // 此前该分支不搬镜像,--mirror 对存量未变条目是空跑(2026-07-08 首发包补镜像时暴露)。
@@ -378,6 +402,25 @@ async function main() {
     touched.push({ skill_id: c.report.meta.id, content_hash: c.report.meta.content_hash });
   }
 
+  // 退市判定(ADR 0020):本次成功枚举的仓里,存量条目不在候选集 → 缺席 +1;仓级 not-found → 全仓缺席。
+  // 连续 ≥ DELIST_STREAK 个观测日 → 盖墓碑(货架隐藏、详情页留痕,镜像/回执/appearance 保留)。
+  // 同日多趟只计一次(missing_at 闸);已退市条目零 diff;长尾仓的死亡由 enrich-stars 的 API 404 兜(同一 helper)。
+  let missCount = 0, tombCount = 0;
+  for (const r of existing.values()) {
+    const repoL = r.meta.id.split("/").slice(0, 2).join("/");
+    const seen = enumerated.get(repoL);
+    if (!seen && !repoGone.has(repoL)) continue; // 本次没访问这个仓,不判
+    if (seen?.has(r.meta.id)) continue;          // 还在(复活走幂等闸/更新路径)
+    const res = markMissing(r);
+    if (res === "noop") continue;
+    await writeFile(join(entryDir(r.meta.id), "skill-report.json"), JSON.stringify(r, null, 2) + "\n");
+    missCount++;
+    if (res === "delisted") {
+      tombCount++;
+      console.warn(`  ⚠ 退市: ${r.meta.id}(连续缺席 ${r.signals.missing_streak} 个观测日,${repoGone.has(repoL) ? "仓不可达" : "上游移除/改名"})`);
+    }
+  }
+
   // 插拔点①(ADR 0012 步骤④):收录完成后异步提交判定。默认 off——
   // TRUST_SUBMIT=1 时才 submit(幂等,同 hash 同 policy 不产生新条目);
   // 服务缺席/关闭时采集完整可用,收录永不等扫描。
@@ -449,6 +492,7 @@ async function main() {
   if (appearNew || appearKnown) console.log(`  跨仓拷贝 → 出现记账(不落条目): 新增 ${appearNew} · 已知 ${appearKnown}`);
   if (sameRepoDup) console.log(`  同仓同内容(改名/软链,不落条目): ${sameRepoDup}`);
   if (blockedSkipped) console.log(`  已拦截仓候选出局: ${blockedSkipped}`);
+  if (missCount) console.log(`  上游缺席计数(ADR 0020): ${missCount} 条${tombCount ? `,其中退市 ${tombCount}` : ""}`);
   if (signalsUpdated) console.log(`  作品派生信号重算(appear_count/list_count): ${signalsUpdated}`);
   console.log(`  保留了已有审计结果: ${stats.preserved}`);
   console.log(`  frontmatter 不合规: ${stats.fmInvalid}`);

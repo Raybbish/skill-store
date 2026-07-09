@@ -33,7 +33,11 @@ function relTime(iso?: string | null): { rel: string; abs: string } | null {
 }
 
 export function generateStaticParams() {
-  return allSkills().map((s) => ({ owner: s.owner, repo: s.repo, name: s.name }));
+  // 可见条目 + 退市墓碑页(ADR 0020:deep link 不 404,留事实行);拷贝/不合规仍不出页
+  const tombs = allSkills({ includeHidden: true }).filter(
+    (s) => s.delistedAt && !s.duplicateOf && s.frontmatterValid !== false,
+  );
+  return [...allSkills(), ...tombs].map((s) => ({ owner: s.owner, repo: s.repo, name: s.name }));
 }
 
 export default async function SkillPage({ params }: { params: Promise<{ owner: string; repo: string; name: string }> }) {
@@ -63,6 +67,12 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
           {/* 认领入口/已认领徽章(ADR 0006 第①档);env 未配自隐藏 */}
           <SkillClaim skillId={s.id} publisher={s.publisher} />
         </div>
+        {/* 退市墓碑(ADR 0020):只陈述事实;镜像/回执/历史保留,重新观测到会自动复活 */}
+        {s.delistedAt && (
+          <p className="d-fit" style={{ color: "var(--faint)" }}>
+            上游已移除或改名,本条目于 {s.delistedAt.slice(0, 10)} 停止收录;历史数据与镜像保留。
+          </p>
+        )}
         <p className="d-desc">{s.description ?? "(无描述)"}</p>
         {/* 场景词全量展示(详情页不裁词频);「话题」层样式,点击 = 搜索聚合,不进 facet(ADR 0013 补充) */}
         {s.sceneTags && s.sceneTags.length > 0 && (

@@ -54,6 +54,12 @@ export interface SkillReport {
     publisher: string;
     publisher_verified: boolean;
     duplicate_of?: string | null;
+    /**
+     * 退市墓碑(ADR 0020):上游连续缺席 ≥ DELIST_STREAK 个观测日后盖章。
+     * 货架隐藏、详情页留事实行;镜像 / 回执 / appearance / 认领全保留(历史事实)。
+     * 重新观测到即撤销(复活)——上游改名回滚 / 误判自愈。
+     */
+    delisted_at?: string | null;
   };
   frontmatter_valid: boolean;
   frontmatter_issues: string[];
@@ -77,6 +83,10 @@ export interface SkillReport {
      * 策展信号,进排序;与 appear_count 同为派生缓存,同一函数重算。
      */
     list_count?: number;
+    /** 连续缺席观测日数(ADR 0020):源成功枚举而条目不在候选集,或仓级 404;重新观测到即清 */
+    missing_streak?: number;
+    /** 最后一次缺席观测时间(ADR 0020):同日多趟(ingest+enrich)只计一次的幂等闸 */
+    missing_at?: string;
     fetched_at: string;
     /**
      * 首次进入 catalog 的时间(ISO):驱动「新上架」榜排序(见 ADR 0016)。

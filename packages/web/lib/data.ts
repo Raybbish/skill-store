@@ -37,6 +37,7 @@ function scan(): Cache {
             tagline: copy?.tagline, sceneTags: copy?.scene_tags, fitLine: copy?.fit_line,
             hasMirror: existsSync(join(CATALOG, owner.name, repo.name, name.name, "mirror")),
             duplicateOf: r.meta.duplicate_of ?? null,
+            delistedAt: r.meta.delisted_at ?? null,
             frontmatterValid: r.frontmatter_valid !== false,
             contentHash: r.meta.content_hash,
             contextSize: r.context_size ?? null,
@@ -52,7 +53,8 @@ function scan(): Cache {
     }
   }
   all.sort((a, b) => a.id.localeCompare(b.id));
-  const visible = all.filter((s) => !s.duplicateOf && s.frontmatterValid !== false);
+  // 退市墓碑(ADR 0020)不进货架/索引;详情页仍可直达(byId 走 all),留事实行
+  const visible = all.filter((s) => !s.duplicateOf && s.frontmatterValid !== false && !s.delistedAt);
   const byId = new Map(all.map((s) => [s.id, s]));
   CACHE = { all, visible, byId };
   return CACHE;
