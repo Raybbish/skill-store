@@ -156,11 +156,16 @@ async function main() {
     for (const e of await loadCatalogEntries()) known.add(e.report.meta.id.split("/").slice(0, 2).join("/")); // id 已小写
     for (const id of listsMap.keys()) known.add(id.toLowerCase());
     for (const s of sourcesFile.sources) if (s.type === "github-repo") known.add(s.repo.toLowerCase());
-    const { candidates, lists: drafts, cleanup } = await discoverFromCodeSearch(n, blockedIds, known);
-    cleanups.push(cleanup);
-    listDrafts.push(...drafts);
-    console.log(`  发现 ${candidates.length} 个 skill,${drafts.length} 条清单草稿`);
-    all.push(...candidates);
+    // 单源故障不拖死整趟采集(缺 token/网络抖动/限流均降级为跳过,其余源照常入库)
+    try {
+      const { candidates, lists: drafts, cleanup } = await discoverFromCodeSearch(n, blockedIds, known);
+      cleanups.push(cleanup);
+      listDrafts.push(...drafts);
+      console.log(`  发现 ${candidates.length} 个 skill,${drafts.length} 条清单草稿`);
+      all.push(...candidates);
+    } catch (e) {
+      console.warn(`  ✗ Code Search 跳过: ${(e as Error).message}`);
+    }
   }
 
   // skills.sh 安装量榜(--skills-sh [N]);解析首页 SSR 榜单,内容回上游采集
