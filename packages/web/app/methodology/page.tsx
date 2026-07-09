@@ -44,20 +44,18 @@ export default function Methodology() {
 
       <div className="list" style={{ marginTop: 18 }}>
         {collections.map((c) => (
-          <div className="row" key={c.id} style={c.blocked ? { opacity: 0.5 } : undefined}>
+          <div className="row" key={c.id}>
             <div className="main">
               <div className="nm">{c.id}</div>
               {c.description && <div className="ds">{c.description}</div>}
               <div className="ds" style={{ fontFamily: "var(--mono)", fontSize: 12 }}>
-                {c.skillCount.toLocaleString()}{c.blocked ? " · 未收录" : ` · 上架 ${c.sampledCount}`}
+                {c.skillCount.toLocaleString()}{c.blocked ? " · 未逐条收录" : ` · 上架 ${c.sampledCount}`}
               </div>
               {!c.blocked && <Ratio sampled={c.sampledCount} total={c.skillCount} />}
             </div>
             <div className="rt">
               {c.stars != null && <div className="score"><span className="gold">★</span> {fmtInstalls(c.stars)}</div>}
-              {c.blocked
-                ? <div style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 700 }}>已拦截</div>
-                : <Link href={`/?repo=${encodeURIComponent(c.id)}`} className="go">已收录 ›</Link>}
+              {!c.blocked && <Link href={`/?repo=${encodeURIComponent(c.id)}`} className="go">已收录 ›</Link>}
               <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600 }}>源头 ↗</a>
             </div>
           </div>
@@ -67,7 +65,7 @@ export default function Methodology() {
 
       {collections.some((c) => c.blocked) && (
         <p style={{ marginTop: 16, fontSize: 12, color: "var(--faint)", fontFamily: "var(--mono)" }}>
-          已拦截 = 单仓 ≥ 1,000 个 skill 的批量源,不逐条收录,仅记录来源与规模
+          单仓 ≥ 1,000 个 skill 的批量源:记录来源与规模,不逐条收录
         </p>
       )}
     </>
