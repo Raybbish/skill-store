@@ -11,6 +11,13 @@ export interface SkillCandidate {
   report: SkillReport;
   /** mirrored 时:本地克隆中该 skill 目录的绝对路径,ingest 负责整体拷贝 */
   mirrorSrcDir: string | null;
+  /**
+   * 托管资格来自「仓级」LICENSE 时,该文件在克隆中的绝对路径——
+   * ingest 镜像时注入为 mirror/LICENSE.upstream(宽松证再分发要求附带许可文本;
+   * 目录级证天然随目录拷贝,无需注入,此字段为 null)。
+   * ⚠ LICENSE.upstream 是保留名:所有内容哈希校验器(CLI dirContentHash / web admit)必须跳过它。
+   */
+  licenseSrcPath?: string | null;
 }
 
 export interface DiscoverResult {
@@ -96,6 +103,11 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
         report,
         // 索引阶段不镜像(海量、近零成本);仅 INGEST_MIRROR=1 且 licence 允许时下载副本
         mirrorSrcDir: process.env.INGEST_MIRROR === "1" && hosting === "mirrored" ? join(clone.dir, dir) : null,
+        // 仓级证入的白名单 → 记证文件位置供镜像注入;不受 INGEST_MIRROR 门控(存量镜像补证也用它)
+        licenseSrcPath:
+          hosting === "mirrored" && !localLicenseEntry && repoLicenseEntry
+            ? join(clone.dir, repoLicenseEntry.path)
+            : null,
       });
     } catch (e) {
       console.warn(`  ✗ 跳过 ${repoSlug}:${dir || "(root)"} — ${(e as Error).message}`);

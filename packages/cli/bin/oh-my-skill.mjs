@@ -80,6 +80,7 @@ function blobSha(buf) {
 async function walkFiles(dir, base = dir, out = []) {
   for (const name of await readdir(dir)) {
     if (name === ".git") continue;
+    if (name === "LICENSE.upstream") continue; // 本店注入的仓级证(保留名),不属上游内容,不参与哈希
     const p = join(dir, name);
     if ((await stat(p)).isDirectory()) await walkFiles(p, base, out);
     else out.push(relative(base, p));

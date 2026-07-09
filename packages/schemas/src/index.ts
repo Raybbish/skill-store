@@ -74,6 +74,13 @@ export interface SkillReport {
      * 缺失可由 `jobs/backfill-first-seen.ts` 从 git 回填。区别于 `fetched_at`(每次采到/变更即刷新)。
      */
     first_seen_at?: string;
+    /**
+     * 上游仓库最近一次提交时间(ISO,git %cI):维护活性信号(详情页「上游提交 X 前」)。
+     * 取自采集时 `--depth 1` clone 的 HEAD commit,故为**仓库级**(monorepo 内各 skill 共享同一 HEAD 时间),
+     * 非单 skill 路径级——精确到路径需非浅克隆的 git 历史,留待后续 clone 策略升级。
+     * 每次采集刷新(区别于 first_seen_at 盖一次永不覆盖)。
+     */
+    upstream_commit_at?: string;
   };
   /**
    * 静态上下文体积:只描述可复现的装载边界,不承诺任一模型的真实调用消耗。

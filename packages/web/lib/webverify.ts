@@ -18,12 +18,13 @@ function hex(buf: ArrayBuffer): string {
 /** 内容条目:file 用 Blob(File 与 zip 解出的字节都装得下,.arrayBuffer()/.text() 两者皆有) */
 export interface PickedFile { rel: string; file: Blob }
 
-/** 跳过规则(与管线/CLI 一致 + .DS_Store) */
+/** 跳过规则(与管线/CLI 一致 + .DS_Store + 本店注入的仓级证保留名) */
 function admit(rel: string): boolean {
   if (!rel) return false;
   const segs = rel.split("/");
   if (segs.includes(".git") || segs.includes(".svn") || segs.includes(".hg")) return false;
   if (segs.at(-1) === ".DS_Store") return false;
+  if (segs.at(-1) === "LICENSE.upstream") return false; // 本店注入的仓级证,不属上游内容,不参与哈希
   return true;
 }
 
