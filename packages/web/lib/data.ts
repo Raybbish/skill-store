@@ -98,7 +98,11 @@ export function allCollections(): Collection[] {
         try {
           const c = JSON.parse(readFileSync(join(LISTS, owner, f), "utf8"));
           if (typeof c.file_count !== "number") continue;
-          out.push({ id: c.id, url: c.url, skillCount: c.file_count, sampledCount: c.sampled_count ?? 0, stars: c.stars_github, blocked: c.blocked === true });
+          out.push({
+            id: c.id, url: c.url, skillCount: c.file_count, sampledCount: c.sampled_count ?? 0,
+            stars: c.stars_github, blocked: c.blocked === true,
+            ...(typeof c.description === "string" && c.description ? { description: c.description } : {}),
+          });
         } catch { /* skip */ }
       }
     } catch { /* skip */ }

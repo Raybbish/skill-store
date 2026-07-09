@@ -379,6 +379,7 @@ async function main() {
     };
     if (d.file_count != null) next.file_count = d.file_count;
     if (d.stars_github != null) next.stars_github = d.stars_github;
+    if (d.description) next.description = d.description; // 上游自述,随采集刷新(观测值,非人写字段)
     if (d.blocked) { next.blocked = true; next.block_reason ??= d.block_reason; }
     next.fetched_at = now;
     listsMap.set(d.id, next);

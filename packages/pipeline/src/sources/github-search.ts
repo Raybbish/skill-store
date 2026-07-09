@@ -24,6 +24,8 @@ export interface ListDraft {
   id: string;
   url: string;
   stars_github: number | null;
+  /** 上游仓自述(GitHub repo description):采集事实,搜索 API 免克隆即有 */
+  description?: string | null;
   /** 克隆时点的 SKILL.md 总数;拦截仓跳采时缺省(沿用上次值) */
   file_count?: number;
   /** 本次采样进候选的条数(仅 >cap 未拦截仓) */
@@ -32,7 +34,7 @@ export interface ListDraft {
   block_reason?: string;
 }
 
-interface RepoHit { repoSlug: string; stars: number; archived: boolean; fork: boolean }
+interface RepoHit { repoSlug: string; stars: number; archived: boolean; fork: boolean; description: string | null }
 
 async function searchRepos(limit: number): Promise<RepoHit[]> {
   const hits: RepoHit[] = [];
@@ -47,10 +49,10 @@ async function searchRepos(limit: number): Promise<RepoHit[]> {
       },
     });
     if (!res.ok) throw new Error(`GitHub search ${res.status}(需 api.github.com 可达,建议本机/CI + GITHUB_TOKEN)`);
-    const data = (await res.json()) as { items: { full_name: string; stargazers_count: number; archived: boolean; fork: boolean }[] };
+    const data = (await res.json()) as { items: { full_name: string; stargazers_count: number; archived: boolean; fork: boolean; description: string | null }[] };
     if (!data.items?.length) break;
     for (const it of data.items) {
-      hits.push({ repoSlug: it.full_name, stars: it.stargazers_count, archived: it.archived, fork: it.fork });
+      hits.push({ repoSlug: it.full_name, stars: it.stargazers_count, archived: it.archived, fork: it.fork, description: it.description ?? null });
       if (hits.length >= limit) break;
     }
     if (data.items.length < perPage) break; // 最后一页
@@ -102,7 +104,7 @@ export async function discoverFromGitHub(limit = 100, blockedIds: Set<string> = 
     const listId = `${owner.toLowerCase()}/${repoName}`;
     // 已拦截仓:不克隆(klotzkette 2.6 万文件的 clone 白费),只刷新 stars/fetched_at
     if (blockedIds.has(listId.toLowerCase())) {
-      lists.push({ id: listId, url: `https://github.com/${r.repoSlug}`, stars_github: r.stars, blocked: true });
+      lists.push({ id: listId, url: `https://github.com/${r.repoSlug}`, stars_github: r.stars, description: r.description, blocked: true });
       console.log(`    ${r.repoSlug}: 已拦截(blocked),跳过克隆,仅刷新清单记录(★${r.stars})`);
       continue;
     }
@@ -112,7 +114,7 @@ export async function discoverFromGitHub(limit = 100, blockedIds: Set<string> = 
       // 新仓命中拦截阈值:零内容上架,清单记录留痕(收录页可见,错拦可被人工纠正=加入 sources.yaml)
       if (candidates.length >= SIGNAL_ONLY) {
         lists.push({
-          id: listId, url: `https://github.com/${r.repoSlug}`, stars_github: r.stars,
+          id: listId, url: `https://github.com/${r.repoSlug}`, stars_github: r.stars, description: r.description,
           file_count: candidates.length, blocked: true, block_reason: `bulk>=${SIGNAL_ONLY}`,
         });
         console.log(`    ${r.repoSlug}: ${candidates.length} skill ≥ ${SIGNAL_ONLY} → 拦截,零候选 + 清单记录(★${r.stars})`);
@@ -125,7 +127,7 @@ export async function discoverFromGitHub(limit = 100, blockedIds: Set<string> = 
       }
       if (kept.length < candidates.length) {
         lists.push({
-          id: listId, url: `https://github.com/${r.repoSlug}`, stars_github: r.stars,
+          id: listId, url: `https://github.com/${r.repoSlug}`, stars_github: r.stars, description: r.description,
           file_count: candidates.length, sampled_count: kept.length,
         });
         console.log(`    ${r.repoSlug}: ${candidates.length} skill → 批量源折叠,采样 ${kept.length} + 清单记录(★${r.stars})`);

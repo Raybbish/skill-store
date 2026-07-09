@@ -44,15 +44,20 @@ export default function Methodology() {
 
       <div className="list" style={{ marginTop: 18 }}>
         {collections.map((c) => (
-          <div className="row" key={c.id}>
+          <div className="row" key={c.id} style={c.blocked ? { opacity: 0.5 } : undefined}>
             <div className="main">
               <div className="nm">{c.id}</div>
-              <div className="ds">{c.skillCount.toLocaleString()} · 上架 {c.sampledCount}</div>
-              <Ratio sampled={c.sampledCount} total={c.skillCount} />
+              {c.description && <div className="ds">{c.description}</div>}
+              <div className="ds" style={{ fontFamily: "var(--mono)", fontSize: 12 }}>
+                {c.skillCount.toLocaleString()}{c.blocked ? " · 未收录" : ` · 上架 ${c.sampledCount}`}
+              </div>
+              {!c.blocked && <Ratio sampled={c.sampledCount} total={c.skillCount} />}
             </div>
             <div className="rt">
               {c.stars != null && <div className="score"><span className="gold">★</span> {fmtInstalls(c.stars)}</div>}
-              <Link href={`/?repo=${encodeURIComponent(c.id)}`} className="go">已收录 ›</Link>
+              {c.blocked
+                ? <div style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 700 }}>已拦截</div>
+                : <Link href={`/?repo=${encodeURIComponent(c.id)}`} className="go">已收录 ›</Link>}
               <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600 }}>源头 ↗</a>
             </div>
           </div>

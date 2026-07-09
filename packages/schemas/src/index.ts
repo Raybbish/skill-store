@@ -203,6 +203,8 @@ export interface ListReport {
   curator?: string;
   /** 推荐语:同上,留空待本人填 */
   note?: string;
+  /** 上游仓自述(GitHub repo description):采集事实,非本店转述;随采集刷新 */
+  description?: string;
   /** 仓内 SKILL.md 总数(克隆时点;跳采仓可能缺,沿用上次值) */
   file_count?: number;
   stars_github?: number | null;
