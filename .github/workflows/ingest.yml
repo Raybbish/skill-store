@@ -39,7 +39,8 @@ jobs:
             npm run ingest -- --source "${{ inputs.source }}"
           else
             # 全源采集:官方仓 + GitHub 全域 topic 头部(每仓折叠采样)+ awesome 精选信号 + skills.sh 安装量榜
-            npm run ingest -- --github-search 100 --hub-signals 300 --skills-sh 200
+            # + Code Search 全网扫描(ADR 0019 S1:filename:SKILL.md 切片续扫,游标在 catalog/_meta/code-search-state.json)
+            npm run ingest -- --github-search 100 --hub-signals 300 --skills-sh 200 --code-search 30
           fi
 
       - name: Create PR with catalog changes
@@ -53,6 +54,6 @@ jobs:
             自动采集产生的 catalog 变更。合并前请抽查:
             - 新增条目的 license/hosting 分流是否正确
             - frontmatter 不合规条目
-            - duplicate_of 标记(canonical:已有条目 > 官方源 > stars 最高)
-            - catalog/collections/ 批量源合集条目(bulk_source 折叠采样的仓库)
+            - catalog/lists/ 清单记录(ADR 0019:跨仓拷贝记 appearance 不落条目;拦截仓 blocked 零内容)
+            - Code Search 新仓质量与游标推进(catalog/_meta/code-search-state.json)
             - skills.sh 榜单解析条数(页面结构变化会解析失败,见日志)
