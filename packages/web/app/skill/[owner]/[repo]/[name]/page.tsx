@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { allSkills, getSkill, fmtInstalls } from "@/lib/data";
-import { threadVMsForSkill } from "@/lib/community";
-import SkillCommunity from "./SkillCommunity";
 import InstallBox from "./InstallBox";
+import SkillReviews from "@/components/SkillReviews";
+import SkillClaim from "@/components/SkillClaim";
 
 function fmtContextTokens(tokens?: number | null): string {
   if (tokens == null) return "待重算"; // 只有缺失才是「待重算」;0 是合法计数
@@ -19,6 +19,19 @@ function contextMethodTip(c: { id: string; method: string; description?: string;
   return c.description ? `${label} · ${c.description}` : label;
 }
 
+/** 相对时间(活人感):构建期计算,粗到「天/周/月/年前」,精确日期进 title 悬停;缺失/非法返回 null。 */
+function relTime(iso?: string | null): { rel: string; abs: string } | null {
+  if (!iso) return null;
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return null;
+  const days = Math.floor((Date.now() - t) / 86_400_000);
+  const rel =
+    days <= 0 ? "今天" : days === 1 ? "昨天" : days < 7 ? `${days} 天前`
+    : days < 30 ? `${Math.floor(days / 7)} 周前` : days < 365 ? `${Math.floor(days / 30)} 个月前`
+    : `${Math.floor(days / 365)} 年前`;
+  return { rel, abs: iso.slice(0, 10) };
+}
+
 export function generateStaticParams() {
   return allSkills().map((s) => ({ owner: s.owner, repo: s.repo, name: s.name }));
 }
@@ -28,15 +41,13 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
   const s = getSkill(owner, repo, name);
   if (!s) notFound();
 
-  const my = threadVMsForSkill(s.id);
-  const help = my.filter((t) => t.board === "help");
-  const challenge = my.filter((t) => t.board === "challenge");
-  const show = my.filter((t) => t.board === "show");
   const contextSize = s.contextSize;
   // 单文本文件包(catalog 全量约 49%):三个 scope 文本集合相同,三格数字必然一样,折叠成一格。
   // 判据用 text_files === 1(结构事实)而非三值相等(数值巧合也会命中)。
   const singleFile = contextSize?.scopes?.package_total_text?.text_files === 1;
   const methodTip = contextSize ? contextMethodTip(contextSize.counter) : undefined;
+  const added = relTime(s.firstSeenAt);         // 收录于(我们首次上架)
+  const upstream = relTime(s.upstreamCommitAt); // 上游提交(维护活性;采集起攒,缺则不显示)
 
   return (
     <>
@@ -46,7 +57,11 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
         <h1 className="d-name">{s.name}</h1>
         <div className="d-pub">
           <Link href={`/publisher/${s.publisher}/`}>@{s.publisher}</Link>
+          {added && <span title={`收录于 ${added.abs}`}> · 收录于 {added.rel}</span>}
+          {upstream && <span title={`上游最近提交 ${upstream.abs}`}> · 上游提交 {upstream.rel}</span>}
           {s.curatedBy && s.curatedBy.length > 0 && <span className="d-tag">★ 社区精选</span>}
+          {/* 认领入口/已认领徽章(ADR 0006 第①档);env 未配自隐藏 */}
+          <SkillClaim skillId={s.id} publisher={s.publisher} />
         </div>
         <p className="d-desc">{s.description ?? "(无描述)"}</p>
         {/* 场景词全量展示(详情页不裁词频);「话题」层样式,点击 = 搜索聚合,不进 facet(ADR 0013 补充) */}
@@ -79,7 +94,8 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
         </div>
       </section>
 
-      <SkillCommunity help={help} challenge={challenge} show={show} />
+      {/* 短评(砖二):env 未配时组件自隐藏;评价挂对象页,不是社区板块(ADR 0017) */}
+      <SkillReviews skillId={s.id} contentHash={s.contentHash} scene={s.sceneTags ?? []} />
     </>
   );
 }

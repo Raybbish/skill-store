@@ -34,9 +34,12 @@ const GIT_OPTS = { maxBuffer: 1024 * 1024 * 512 };
 async function firstAddDates(): Promise<Map<string, string>> {
   // --reverse 让 commit 由旧到新;每个 commit 先输出一行 ISO 日期(--format=%aI),
   // 再输出该 commit 新增(A)的文件路径(--name-only)。首次见到某路径 = 其 add 日期。
+  // --no-renames:关掉改名检测。否则 id-v2 三段式迁移(如 anthropics/pptx → anthropics/skills/pptx)
+  //   被记为 R 而非 A,--diff-filter=A 直接漏掉,这类条目永远填不上——与上方 docstring「取迁移那次日期」
+  //   的意图相悖。关掉后改名会拆成 D(旧路径)+ A(新路径),新路径这条 A 正是我们要的迁移日期。
   const out = (await exec(
     "git",
-    ["-C", ROOT, "log", "--reverse", "--diff-filter=A", "--name-only", "--format=%aI", "--", "catalog/skills"],
+    ["-C", ROOT, "log", "--reverse", "--diff-filter=A", "--no-renames", "--name-only", "--format=%aI", "--", "catalog/skills"],
     GIT_OPTS,
   )).stdout;
 

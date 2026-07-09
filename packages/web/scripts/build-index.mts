@@ -145,6 +145,22 @@ writeFileSync(join(OUT, "docs.json"), JSON.stringify(docs.map(toWire)));
 const fresh = docs.filter((c) => c.addedAt).sort((a, b) => b.addedAt! - a.addedAt!).slice(0, 100);
 writeFileSync(join(OUT, "new.json"), JSON.stringify(fresh.map(toWire)));
 
+// 商店周报(/changelog):自动统计行「本周 +N 条」(自最近周一 00:00 的收录数)+ 手写条目(catalog/changelog.json 事实源)
+const weekStart = (() => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); // 回退到本周一
+  return Math.floor(d.getTime() / 1000);
+})();
+const weekAdded = docs.filter((c) => c.addedAt && c.addedAt >= weekStart).length;
+let clEntries: unknown[] = [];
+try {
+  const raw = JSON.parse(readFileSync(join(process.cwd(), "../../catalog/changelog.json"), "utf8"));
+  if (Array.isArray(raw?.entries)) clEntries = raw.entries;
+} catch { /* 无手写条目也无妨,只出统计行 */ }
+writeFileSync(join(OUT, "changelog.json"), JSON.stringify({ generatedAt: meta.generatedAt, weekAdded, entries: clEntries }));
+console.log(`[build-index] changelog: 本周 +${weekAdded} · 手写条目 ${clEntries.length}`);
+
 // 场景包:catalog/packs/*.json → 成员从瘦卡池解析;成员缺失 → 整包跳过(包=放心一键装的承诺)
 const byId = new Map<string, SkillCard>(docs.map((c) => [c.id, c]));
 const packs: Pack[] = [];

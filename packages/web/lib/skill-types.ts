@@ -48,6 +48,8 @@ export interface Skill {
   contextSize?: ContextSize | null;
   /** 首次进货架时间(ISO;signals.first_seen_at 物化缓存,ADR 0016)——「新上架」榜事实源 */
   firstSeenAt?: string | null;
+  /** 上游仓库最近一次提交时间(ISO;signals.upstream_commit_at)——详情页「上游提交 X 前」维护活性;仓库级、采集起攒 */
+  upstreamCommitAt?: string | null;
   stars?: number | null;
   installs?: number | null;
   /** 上游仓库 SKILL.md 总数(巨仓降权信号) */

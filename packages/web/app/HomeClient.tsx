@@ -109,7 +109,7 @@ export default function HomeClient({ first, meta, cats, tags, facets, catTag, pa
         .catch(() => { if (seq.current === my) setErr(true); })
         .finally(() => { if (seq.current === my) setBusy(false); });
     };
-    const timer = setTimeout(run, q ? 160 : 0);
+    const timer = setTimeout(run, q ? 280 : 0); // 防抖窗口:带词 280ms(收住逐字输入的中间态,省请求),清空/纯筛选即时响应
     return () => clearTimeout(timer);
   }, [q, cat, selTags, repo, pub, page, first, meta]);
 
