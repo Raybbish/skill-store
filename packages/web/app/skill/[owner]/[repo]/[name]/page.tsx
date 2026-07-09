@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { allSkills, getSkill, fmtInstalls } from "@/lib/data";
 import InstallBox from "./InstallBox";
+import SkillReviews from "@/components/SkillReviews";
 
 function fmtContextTokens(tokens?: number | null): string {
   if (tokens == null) return "待重算"; // 只有缺失才是「待重算」;0 是合法计数
@@ -89,6 +90,9 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
           <div><b>{s.hosting === "mirrored" ? "镜像" : "索引"}</b><span>托管</span></div>
         </div>
       </section>
+
+      {/* 短评(砖二):env 未配时组件自隐藏;评价挂对象页,不是社区板块(ADR 0017) */}
+      <SkillReviews skillId={s.id} contentHash={s.contentHash} scene={s.sceneTags ?? []} />
     </>
   );
 }

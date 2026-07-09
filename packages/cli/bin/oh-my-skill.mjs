@@ -20,7 +20,8 @@ import { createInterface } from "node:readline/promises";
 
 const exec = promisify(execFile);
 const API = process.env.OMS_API ?? "https://xlrvinquhuyobewenrlo.supabase.co";
-const KEY = process.env.OMS_KEY ?? ""; // anon key,公开只读;发布 npm 前填默认值
+// anon key 是公开设计的密钥(前端 bundle 同款):只读货架 + 只插回执,RLS 把门。默认内置,OMS_KEY 可覆盖。
+const KEY = process.env.OMS_KEY ?? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhscnZpbnF1aHV5b2Jld2VucmxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NjAyNDEsImV4cCI6MjA5ODUzNjI0MX0.hGZ9NznFZ0Roi2RyIJ-1PVtqr3EVFMfN_9Lovu-SDR8";
 const args = process.argv.slice(2);
 const cmd = args[0];
 const target = args[1];
@@ -184,6 +185,7 @@ async function add(id) {
   await cp(srcDir, dest, { recursive: true });
   await rm(work, { recursive: true, force: true });
   console.log(`✓ 已安装到 ${dest}\n`);
+  if (opt("to")) await rememberDir(opt("to")); // 一次教会:自定义安装路径记住,verify 默认搜得到
   await postReceipt(m.id, "cli", m.content_hash); // 装成才留痕;3s 超时,失败静默
 }
 
@@ -195,13 +197,41 @@ async function add(id) {
  *   oh-my-skill verify <owner/repo/name> [--to <dir>] [--t <码>]
  *   oh-my-skill verify --all          扫描本地全部已装 skill,逐个与货架比对(顺带当 outdated 用)
  */
-function agentDirs() {
+/**
+ * 技能目录搜索面:--to 显式指定 > 已记住的自定义路径 + 常见约定(用户级/项目级/.agents)。
+ * 路径千人千面,硬编码猜不全——所以「一次教会」:--to 验证/安装成功后记进
+ * ~/.oh-my-skill/dirs.json,之后默认搜索自动带上,不用每次都 --to。
+ */
+const DIRS_FILE = join(homedir(), ".oh-my-skill", "dirs.json");
+async function rememberDir(dir) {
+  try {
+    let dirs = [];
+    try { dirs = JSON.parse(await readFile(DIRS_FILE, "utf8")); } catch { /* 首次 */ }
+    if (!dirs.includes(dir)) {
+      dirs.push(dir);
+      await mkdir(dirname(DIRS_FILE), { recursive: true });
+      await writeFile(DIRS_FILE, JSON.stringify(dirs, null, 2) + "\n");
+      console.log(`ℹ 已记住技能目录 ${dir}(下次不用带 --to;记录在 ~/.oh-my-skill/dirs.json)`);
+    }
+  } catch { /* 记不住也不影响本次 */ }
+}
+async function agentDirs() {
   const to = opt("to");
-  if (to) return [to];
-  return [".claude", ".codex", ".cursor"].map((d) => join(homedir(), d, "skills"));
+  if (to) return [to]; // 显式指定 = 只看这里(用户意图明确)
+  const home = homedir();
+  const dirs = [
+    // 用户级约定
+    join(home, ".claude", "skills"), join(home, ".codex", "skills"),
+    join(home, ".cursor", "skills"), join(home, ".agents", "skills"),
+    // 项目级约定(当前目录)
+    join(process.cwd(), ".claude", "skills"), join(process.cwd(), ".codex", "skills"),
+    join(process.cwd(), ".agents", "skills"),
+  ];
+  try { dirs.push(...JSON.parse(await readFile(DIRS_FILE, "utf8"))); } catch { /* 无记忆 */ }
+  return [...new Set(dirs)];
 }
 async function findLocal(leaf) {
-  for (const d of agentDirs()) {
+  for (const d of await agentDirs()) {
     try { if ((await stat(join(d, leaf))).isDirectory()) return join(d, leaf); } catch { /* 该目录无此 skill */ }
   }
   return null;
@@ -212,7 +242,11 @@ async function verifyOne(id, { quiet = false } = {}) {
   const leaf = m.id.split("/").at(-1);
   const local = await findLocal(leaf);
   if (!local) {
-    if (!quiet) console.log(`✗ 本机未找到 ${leaf}(查过 ${agentDirs().join(" / ")};装在别处用 --to 指路径)`);
+    if (!quiet) {
+      console.log(`✗ 本机未找到 ${leaf}(查过 ${(await agentDirs()).join(" / ")};装在别处用 --to 指路径,成功后会记住)`);
+      console.log(`  提示:下载的 .skill 文件躺在下载文件夹里不算安装——拖进 Claude 或 \`oh-my-skill add\` 才算;`);
+      console.log(`  另外,从网站下载本身已留有记录,写短评不需要再跑 verify。`);
+    }
     return false;
   }
   const actual = await dirContentHash(local);
@@ -220,12 +254,13 @@ async function verifyOne(id, { quiet = false } = {}) {
   console.log(match
     ? `✓ ${m.id} — 本机副本与货架一致 ${actual.slice(0, 27)}…`
     : `△ ${m.id} — 本机副本与货架不同(旧版本或已自行修改);按实际内容留痕`);
+  if (opt("to")) await rememberDir(opt("to")); // 一次教会:自定义路径验证成功即记住
   await postReceipt(m.id, "verify", actual); // 回执记「实际持有」的哈希,评价侧据此显示「评于版本」
   return true;
 }
 async function verifyAll() {
   let seen = 0, verified = 0;
-  for (const d of agentDirs()) {
+  for (const d of await agentDirs()) {
     let names = [];
     try { names = await readdir(d); } catch { continue; }
     for (const leaf of names) {

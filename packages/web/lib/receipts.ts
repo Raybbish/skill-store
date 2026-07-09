@@ -35,11 +35,11 @@ export function ridToken(): string {
   return r ? r.replace(/-/g, "").slice(0, 8) : "";
 }
 
-/** 发一条回执;fire-and-forget,静默失败 */
-export function postReceipt(skillId: string, channel: "download", contentHash?: string): void {
+/** 发一条回执;下载场景 fire-and-forget(忽略返回值),网页 verify 场景 await 它再查资格 */
+export async function postReceipt(skillId: string, channel: "download" | "verify", contentHash?: string): Promise<void> {
   if (!URL || !KEY || typeof window === "undefined") return;
   try {
-    void fetch(`${URL}/rest/v1/install_receipts`, {
+    await fetch(`${URL}/rest/v1/install_receipts`, {
       method: "POST",
       keepalive: true, // 页面即将跳转/下载时也尽量送达
       headers: {

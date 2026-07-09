@@ -19,7 +19,7 @@ export default function DlLink({
       download={download}
       onClick={() => {
         trackInstall(id);
-        postReceipt(id, "download", contentHash);
+        void postReceipt(id, "download", contentHash); // fire-and-forget,不阻塞下载
       }}
     >
       {children}
