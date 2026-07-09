@@ -44,9 +44,11 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
     void reviewGateEnabled().then(setGateOn);
     setTok(ridToken());
     try { setNick(localStorage.getItem("oms_nick") ?? ""); } catch { /* 忽略 */ }
-    // 先接魔法链接回跳(hash 令牌),命中则视为「用户正要写短评」直接进表单;否则取既有会话
+    // 先接魔法链接回跳(hash 令牌),命中则视为「用户正要写短评」直接进表单;否则取既有会话。
+    // ?claim=1 = GitHub 认领回跳(SkillClaim 负责),此时只收会话、不抢着开评价表单。
+    const isClaimReturn = new URLSearchParams(window.location.search).has("claim");
     void sessionFromUrlHash().then((fromLink) => {
-      if (fromLink) { setSession(fromLink); void enterForm(fromLink); }
+      if (fromLink) { setSession(fromLink); if (!isClaimReturn) void enterForm(fromLink); }
       else void getSession().then(setSession);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

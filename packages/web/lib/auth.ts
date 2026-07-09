@@ -117,6 +117,16 @@ export function signOut(): void {
 }
 
 /**
+ * GitHub OAuth 登录跳转地址(认领用):Supabase authorize 端点,回跳后令牌在 hash,
+ * 由 sessionFromUrlHash 接住——与魔法链接同一条回收管道。
+ * 注意:这是「以 GitHub 登录」,不是往邮箱账号上链接身份(手动 linking 需额外配置,M1 不做);
+ * 作者用 GitHub 登录产生的账号与其邮箱账号可能是两个,可接受,见 ADR 0006 补充。
+ */
+export function githubAuthorizeUrl(redirectTo: string): string {
+  return `${URL}/auth/v1/authorize?provider=github&redirect_to=${encodeURIComponent(redirectTo)}`;
+}
+
+/**
  * 把匿名回执并入当前账号(idempotent,随便重复调):
  * rid 覆盖网页下载;token(rid 前 8 位)覆盖「复制命令 → CLI 装机」。
  * 纯 CLI 直装的 machine_id 回执需 CLI 登录(M2),诚实边界。

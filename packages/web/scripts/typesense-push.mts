@@ -28,16 +28,24 @@ if (!wire.length) {
   process.exit(1);
 }
 
-// 线格式 → TsDoc:补齐派生字段(publisher/repoFull),pop=热门序反转(docs.json 本身即热门序)
+// 线格式 → TsDoc:补齐派生字段(publisher/repoFull),pop=热门序反转(docs.json 本身即热门序)。
+// cap_overflow = per-repo cap 平价(对齐 lib/skill-utils applyRepoCap 默认 cap=3):docs.json 已是热门序,
+// 逐条按 repoFull 计数,同仓前 3 席留头(0)、其余沉底(1);前端无词浏览 sort cap_overflow:asc,pop:desc 复刻其重排。
+const REPO_CAP = 3;
+const repoSeen = new Map<string, number>();
 const docs: TsDoc[] = wire.map((w, i) => {
   const c = hydrateCard(w);
+  const repoFull = `${c.owner}/${c.repo}`;
+  const rank = (repoSeen.get(repoFull) ?? 0) + 1;
+  repoSeen.set(repoFull, rank);
   return {
     ...w,
     id: w.id.replaceAll("/", "~"), // Typesense 文档 id 不能含 "/"
     sid: w.id,
     publisher: c.publisher,
-    repoFull: `${c.owner}/${c.repo}`,
+    repoFull,
     pop: wire.length - i,
+    cap_overflow: rank > REPO_CAP ? 1 : 0,
   };
 });
 
@@ -60,7 +68,7 @@ const create = await api("/collections", {
   body: JSON.stringify({
     name: TS_COLLECTION,
     // pop 显式声明为默认排序键;其余字段 auto(10k 级全索引无压力,P1 后半场再按需收窄)
-    fields: [{ name: "pop", type: "int32" }, { name: ".*", type: "auto" }],
+    fields: [{ name: "pop", type: "int32" }, { name: "cap_overflow", type: "int32" }, { name: ".*", type: "auto" }],
     default_sorting_field: "pop",
   }),
 });

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { allSkills, getSkill, fmtInstalls } from "@/lib/data";
 import InstallBox from "./InstallBox";
 import SkillReviews from "@/components/SkillReviews";
+import SkillClaim from "@/components/SkillClaim";
 
 function fmtContextTokens(tokens?: number | null): string {
   if (tokens == null) return "待重算"; // 只有缺失才是「待重算」;0 是合法计数
@@ -59,6 +60,8 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
           {added && <span title={`收录于 ${added.abs}`}> · 收录于 {added.rel}</span>}
           {upstream && <span title={`上游最近提交 ${upstream.abs}`}> · 上游提交 {upstream.rel}</span>}
           {s.curatedBy && s.curatedBy.length > 0 && <span className="d-tag">★ 社区精选</span>}
+          {/* 认领入口/已认领徽章(ADR 0006 第①档);env 未配自隐藏 */}
+          <SkillClaim skillId={s.id} publisher={s.publisher} />
         </div>
         <p className="d-desc">{s.description ?? "(无描述)"}</p>
         {/* 场景词全量展示(详情页不裁词频);「话题」层样式,点击 = 搜索聚合,不进 facet(ADR 0013 补充) */}

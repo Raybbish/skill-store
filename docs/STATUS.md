@@ -2,7 +2,7 @@
 
 > 手写现状。可派生的数字(catalog / 审计 / 提交)见 [`STATUS.generated.md`](./STATUS.generated.md),由 `npm run status` 自动生成——别在这里手抄数字。
 >
-> _上次人工更新:2026-07-07(「下一步」按仓库实况核对改写:catalog 500+ 目标已超额删除、Supabase 迁移补齐为三个、P1 触发提为「准备动手」、两条本机回归合并)_
+> _上次人工更新:2026-07-09(P2 退静态落地入账;「下一步」规模化条目改写为后半场;ADR 索引补 0018)_
 
 ## 里程碑:M0 · 可信目录(进行中)
 目标:500+ 已收录 skill、可浏览 / 可搜 / 可一键装、catalog 公开可验证。
@@ -10,6 +10,8 @@
 > ⛔ **安全扫描已整套下架**(2026-07-04,[ADR 0011](decisions/0011-unlist-security-scan.md)):前端认证徽章/权限披露/审计文案全部摘除,`audit`/`review`/`audit:l3` scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。
 
 ### 已完成
+- **原作者一键认领 · 第①档落地**(2026-07-08,ADR 0006 + 同日补充裁决):`2026-07-08-claims.sql`——claims append-only 审计表(唯一活跃认领/公开可读/写入只经 RPC)+ `claim_skill` RPC(**零新基建**:auth.identities 里平台已验证的 GitHub login vs id 首段,纯 SQL;`bulk_source=true` 聚合条目拒绝防误绑搬运工;幂等/冲突/证据快照齐);skills 表补 `repo_skill_count`/`bulk_source` 列,**sync 不再冲写 publisher_verified**(每日采集不得撤销认领)。前端:`SkillClaim` 挂详情页作者行(「是你的作品?」→ GitHub 登录 `?claim=1` 回跳自动续领 → 「✓ 作者已认领」徽章,tooltip 明示身份≠背书),与短评组件的 OAuth 回跳按参数分流互不抢。双侧 `tsc` 绿。**用户裁决:先不上线**——`app_settings.claims` 默认 off(前端入口不渲染 + RPC 服务端拒绝,双层读同一 flag;已认领徽章不受开关影响,归属是既成事实)。**上线三步:配 GitHub OAuth App+provider → `update app_settings set value='on' where key='claims'` → 完**。⚠ 迁移的 ALTER TABLE 段(repo_skill_count/bulk_source 列)**必须在下次 sync 前执行**(sync 已开始写这两列),功能开关与此无关。②org/③frontmatter/④挑战留 Edge Function 时代;静默预填后置。
+- **P2 退静态:browse/筛选/搜索三态全走 Typesense,docs.json 退出浏览器**(2026-07-09,[ADR 0018](decisions/0018-retire-static-docs-typesense-browse.md)):`TypesenseStore.search` 接管三态——带词维持 relevance(`_text_match:desc,pop:desc`,不套 cap);无词 `q=*` + `sort cap_overflow:asc,pop:desc` 复刻 `applyRepoCap`(cap=3)的「头+尾」重排,`cap_overflow` 由 `typesense-push` 按全局 pop 序算每仓 rank 预计算(**口径注**:平价仅无筛选态精确成立,纯筛选态取全局旗标口径,差异与取舍已记 ADR 0018)。`getSkill` 走 search + `filter_by: sid:=…`——**不用文档直取端点**,search-only scoped key(只授 `documents:search`)直接可用。**fail-open 下线(选项 B)**:Typesense 挂即抛错,前端进「索引加载失败,刷新重试」态(HomeClient 既有 err 态接住),SSR 首屏静态分片 `p1` 不受影响;docs.json **保留为构建产物**(push 唯一输入 + 未配 Typesense 时 StaticStore 降级档),配了 Typesense 时浏览器零下载。**新硬约束:每次 `web:index` 后必须跑 `typesense:push`**,否则线上浏览/搜索滞后 catalog。复查顺手:删 `hasAnyFilter` 死代码、store-typesense 头注同步 P2 行为。web `tsc` 绿。
 - **短评资格门改一键 flag,默认关**(2026-07-08,用户裁决:冷启动期评价稀缺,门是摩擦;真出现刷评再开):`2026-07-08-review-gate-flag.sql`——`app_settings` 表(RLS 锁死)+ `review_gate` 键默认 off;`review_allowed()` 门谓词(关=登录即可评,开=需名下回执),RLS 与资格 RPC 都挂它,**开关 = 一行 SQL,前端零改动、拦截页自动复活**。诚实不变式:**`reviews.verified` 按行由服务端触发器盖章**(发布时名下真有回执才 true,客户端不可伪造),「已验证安装」标签只打给 verified 行——门关不虚标,有回执的用户照样得标。拦截页/拖拽验证整套保留,门开即用。web `tsc` 绿。⚠ 用户端:跑此迁移(旧 reviews 迁移已执行过的库直接跑,幂等)。
 - **网页端 verify:拖文件夹即验,零终端零路径**(2026-07-08,用户裁决「这个环节不能让任何用户有疑惑或麻烦」——路径猜测是死路,改内容寻址):`lib/webverify.ts` 浏览器本地复算内容哈希(算法与管线/CLI 逐字节对齐:blob sha1→行排序→sha256;跳 .git 族与 .DS_Store),**文件不上传只传哈希**;资格拦截页改「拖 skill 文件夹到这里/点选」为主、CLI 命令折叠为辅。防混资格:必须含 SKILL.md;哈希不一致时 frontmatter name 必须对得上才按「持有旧版」计,否则拒绝(拖任意文件夹骗不到回执)。**同日补 .skill/.zip 安装包直验**(用户裁决:手里有文件却被拒=制造疑惑;且转发的 .skill 无下载回执,验证是刚需):零依赖手解 zip 中央目录 + 原生 `DecompressionStream` inflate,统一顶层文件夹自动剥壳,同一哈希管线;**沙箱 Node 端到端实测**——单文件(seo)与多文件含二进制(theme-factory 13 条目)均与货架哈希逐字节一致。拖文件夹/拖包/点选三入口齐。CLI 侧同日补:内置 anon key(零配置)、路径记忆(`--to` 成功即记 `~/.oh-my-skill/dirs.json`,默认搜索面=用户级4+项目级3+已学路径)、「下载≠安装」提示。web `tsc` 绿。
 - **M1 砖二:邮箱 OTP + 短评(双层门)全链路落码**(2026-07-08,ADR 0017 M1 三类型之「短评」;待用户端迁移+Auth 配置后验收):① `infra/migrations/2026-07-08-reviews.sql`——`reviews` 表(UNIQUE(user,skill) 一人一评,verdict 三档/text≤500/scene_tags≤5/author_label 昵称/content_hash 评于版本)+ 三个 SECURITY DEFINER 函数(`has_receipt` 资格判定只回布尔不泄回执、`review_eligibility` 资格+评于版本一次拿、`claim_receipts` 登录即并入 rid/token 匿名回执——**machine_id 并入需 CLI 登录,M2 诚实边界**)+ RLS 双层门(select 公开;insert/update = 本人 && 有回执);② `lib/auth.ts` 手写 GoTrue REST(otp/verify/refresh/会话 localStorage,零新依赖),`lib/reviews.ts`(列表匿名读/资格先 claim 再查/upsert 提交,RLS 拒时给「先 verify」人话);③ `SkillReviews` 组件挂详情页(豆瓣短评形态:三档点选+可选一句话+场景 chip 复用+昵称;登录流内联两步;**不合格给 verify 命令出路不逼重装**;每条带「已验证安装」tag+hash 不同显「评于旧版本」);env 未配整块自隐藏。**登录双轨**(内置邮件服务不给改模板,实况适配):默认发魔法链接——`requestOtp` 带 `redirect_to=当前详情页`,点开回跳后 `sessionFromUrlHash` 接住 hash 令牌(建会话/并回执/抹 hash/直进表单);输码轨保留,接自定义 SMTP 且模板含 `{{ .Token }}` 后自动可用。web `tsc` 绿。**待用户端:跑 reviews 迁移 + Auth URL Configuration 加 localhost 回跳白名单 + 真机走一遍评价流。**
@@ -42,6 +44,7 @@
 ### 进行中
 - **分类 / 标签体系**:`packages/schemas` 词表(`featuredLabels` / `tagLabels`)+ `skill.category/tags` + browse/home 分类导航 + `/category/[slug]` 分类页——开发中,未提交。
 - 可复现评测:OpenAI runner + `score`/`types` 迭代中(未提交)。
+- **活人感 P0 ③ 前置:`signals.upstream_commit_at` 字段已落 schema**(`packages/schemas` 双侧,未提交):上游仓 HEAD 提交时间(仓库级,`--depth 1` 采集时刷新),详情页「上游提交 X 前」的数据地基;采集侧写入与前端展示未动。
 - **微文案分支 `feat/microcopy-p0`**:代码 + ADR 0013 + 文档 + 全量 catalog 数据变更(`a5926c192`,约 5,816 条 skill-report.json)**已并入 main**(2026-07-07 核对),分支可清理;仅剩本机浏览器回归(见「下一步」)。
 - 前端 v4 重设计 + 早期 docs 整理若仍有未提交项,一并留痕。
 
@@ -52,7 +55,7 @@
 - **verdict 服务步骤⑤⑥**([ADR 0012](decisions/0012-verdict-service.md)):研究议题(裁决口径/误报率基线/复核吞吐/徽章语义)在 `packages/verdicts/policies/` 草稿里迭代(现状 `v0-draft`,账本仅 55 条 legacy);policy v1 定稿 + 全量重扫 + 开 TRUST_DISPLAY = 重新上架(验收:diff 只有 flag)。
 - ~~Supabase 三迁移~~ **已确认执行完毕**(2026-07-07 验证:PR #16 合并后 CI sync 以新代码全量跑通并把游标打到 `ca51800`——能成功写入 first_seen_at/context_size 即证明三迁移均已生效)。
 - **M1**:社区最小切片改按 [ADR 0017](decisions/0017-object-anchored-community-and-invisible-verify.md) 执行——短评/求助 Q&A/开发者说挂对象页 + 账号层(邮箱 OTP 延迟注册)+ 隐形验证回执(.skill 下载为主路径)+ 原作者一键认领([ADR 0006](decisions/0006-one-click-claim.md);ADR 0001 实现层由 0017 修订)。`/community` demo 四板块不上线,聚合页密度门控(周新帖 >20)。可复现评测协议随评测线另行排期。
-- **规模化架构 P1:第一期已落地(见「已完成」),剩本机验证 + 后半场**:① 本机验证:`docker compose -f infra/typesense/docker-compose.yml up -d` → `npm run web:index && npm run typesense:push` → `packages/web/.env.local` 配 `NEXT_PUBLIC_TYPESENSE_URL=http://localhost:8108` 与 `NEXT_PUBLIC_TYPESENSE_SEARCH_KEY=oms-dev-key` → `npm run web` 搜词(devtools 应见 :8108 请求;`docker compose down` 后搜索应无感回落本地);② 后半场(按需):facet 计数联动、纯筛选路径迁移、collection 版本化 + alias 原子切换、公开时云端实例 + search-only scoped key。载荷面:线格式后 docs.json **4.02MB(8MB 的 50%,容 ~2 万条)**,静态兜底长期健康。详见[架构与迁移计划](architecture/走向百万级-架构与迁移计划.html)。
+- **规模化架构:P1 + P2 退静态已落地(见「已完成」),剩后半场**:① collection 版本化 + alias 原子切换(现 drop+create+import 有秒级空窗,**上生产前必做**;fail-open 已下线,Typesense 挂 = 全站列表不可用,可用性改由服务侧副本/高可用保证);② 公开时云端实例 + search-only scoped key(actions 只需 `documents:search`,`getSkill` 已按此适配);③ facet 计数联动(meta.json 计数仍是全局静态,筛选态不随动);④ 本机回归:push 后无词浏览/纯筛选/带词搜索三态 + 详情页(`docker compose -f infra/typesense/docker-compose.yml up -d` → `npm run web:index && npm run typesense:push` → 搜词与翻页应全打 :8108,停容器应见「索引加载失败」态而非白屏)。P2 的 Postgres 半场按 [ADR 0008](decisions/0008-m1-p2-merge-criterion.md) 判据随用户数据另行触发(M1 回执/短评已在 Supabase 起步)。详见[架构与迁移计划](architecture/走向百万级-架构与迁移计划.html)。
 
 > 已从本清单移除:「扩 catalog 到 500+」——catalog 已 10,744 条(2026-07-07 快照),M0 供给目标超额完成;后续供给扩展另立目标再入清单。
 
@@ -74,6 +77,7 @@
 - [0015 · 上下文体积取代 token / 次](decisions/0015-context-size-metric.md)
 - [0016 · 新上架时间 first_seen_at 与「新上架」榜口径](decisions/0016-new-arrivals-ranking.md)
 - [0017 · 社区对象锚定 + 隐形验证安装](decisions/0017-object-anchored-community-and-invisible-verify.md)
+- [0018 · 退静态 docs.json:三态全走 Typesense(fail-open 下线)](decisions/0018-retire-static-docs-typesense-browse.md)
 
 ## 文档地图(唯一入口)
 所有规划 / 架构 / 设计文档已收进 `docs/`,点开即看。
