@@ -66,10 +66,11 @@ export async function postMessage(s: Session, body: string, replyTo?: number, au
   });
   if (!r.ok) {
     const err = await r.text().catch(() => "");
-    if (err.includes("rate_limited")) throw new Error("发得有点快——稍等几秒再发");
-    if (err.includes("reply_depth")) throw new Error("只支持一层回复");
-    if (r.status === 404) throw new Error("讨论区后端未初始化(posts 表缺失,需执行 2026-07-09-talk.sql 迁移)");
-    throw new Error(`发布失败(${r.status})`);
+    // 抛键值(E:词典键),组件层按 locale 翻译(ADR 0022:lib 保持语言无关)
+    if (err.includes("rate_limited")) throw new Error("E:talk.errFast");
+    if (err.includes("reply_depth")) throw new Error("E:talk.errDepth");
+    if (r.status === 404) throw new Error("E:talk.errInit");
+    throw new Error(`E:talk.errPost:${r.status}`);
   }
 }
 
@@ -79,5 +80,5 @@ export async function deletePost(s: Session, id: number): Promise<void> {
     method: "DELETE",
     headers: { apikey: KEY, authorization: `Bearer ${s.access_token}` },
   });
-  if (!r.ok) throw new Error(`删除失败(${r.status})`);
+  if (!r.ok) throw new Error(`E:talk.errDelete:${r.status}`);
 }

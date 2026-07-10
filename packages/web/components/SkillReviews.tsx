@@ -3,26 +3,32 @@
  * 短评区(ADR 0017 砖二):豆瓣短评形态——点选三档 + 可选一句话,不是知乎长文。
  * 双层门:①登录(email OTP,延迟注册:只在此刻要验证码)②名下有该 skill 回执(RLS 强制)。
  * 不合格 → 给 verify 出路(已装过的人不用重装);未配置 Supabase env → 整块隐藏,货架与今天一致。
+ * 双语(ADR 0022):chrome 词典化(共享页,客户端按偏好切);用户评价内容保持原文。
  */
 import { useEffect, useMemo, useState } from "react";
 import { getSession, requestOtp, sessionFromUrlHash, signOut, verifyOtp, type Session } from "@/lib/auth";
 import { eligibility, listReviews, postReview, reviewGateEnabled, reviewsConfigured, type Review } from "@/lib/reviews";
 import { postReceipt, ridToken } from "@/lib/receipts";
 import { fromDataTransfer, fromFileList, fromZipFile, verifyPickedDir, type PickedFile } from "@/lib/webverify";
+import { relTime, type MsgKey } from "@/lib/i18n";
+import { useLocale, useT } from "@/lib/i18n/client";
 
-const V: Record<Review["verdict"], { label: string; cls: string }> = {
-  good: { label: "✓ 好用", cls: "rv-good" },
-  ok: { label: "− 一般", cls: "rv-ok" },
-  bad: { label: "✗ 不好用", cls: "rv-bad" },
+const V: Record<Review["verdict"], { k: MsgKey; cls: string }> = {
+  good: { k: "rev.good", cls: "rv-good" },
+  ok: { k: "rev.ok", cls: "rv-ok" },
+  bad: { k: "rev.bad", cls: "rv-bad" },
 };
 
-function rel(iso: string): string {
-  const days = Math.floor((Date.now() - Date.parse(iso)) / 86_400_000);
-  return days <= 0 ? "今天" : days < 7 ? `${days} 天前` : days < 30 ? `${Math.floor(days / 7)} 周前`
-    : days < 365 ? `${Math.floor(days / 30)} 个月前` : `${Math.floor(days / 365)} 年前`;
-}
-
 export default function SkillReviews({ skillId, contentHash, scene }: { skillId: string; contentHash?: string; scene: string[] }) {
+  const tt = useT();
+  const locale = useLocale();
+  /** lib 层抛的 E:键值 → 按 locale 翻译;非键值原样透出 */
+  const errText = (e: unknown): string => {
+    const m = (e as Error).message ?? "";
+    if (!m.startsWith("E:")) return m;
+    const [, key, s] = m.split(":");
+    return tt(key as Parameters<typeof tt>[0], s ? { s } : undefined);
+  };
   const [reviews, setReviews] = useState<Review[] | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [mode, setMode] = useState<"idle" | "email" | "code" | "form" | "ineligible">("idle");
@@ -72,10 +78,10 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
   }
 
   async function submitEmail() {
-    if (!/^\S+@\S+\.\S+$/.test(email)) return setErr("邮箱格式不对");
+    if (!/^\S+@\S+\.\S+$/.test(email)) return setErr(tt("talk.errEmail"));
     setBusy(true); setErr("");
     // redirect_to = 当前详情页:点邮件里的链接直接回到这条 skill,hash 会话由 mount 时接住
-    try { await requestOtp(email, window.location.href); setMode("code"); } catch (e) { setErr((e as Error).message); }
+    try { await requestOtp(email, window.location.href); setMode("code"); } catch (e) { setErr(errText(e)); }
     setBusy(false);
   }
 
@@ -85,12 +91,12 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
       const s = await verifyOtp(email, code);
       setSession(s);
       await enterForm(s);
-    } catch (e) { setErr((e as Error).message || "验证码不对或已过期"); }
+    } catch (e) { setErr((e as Error).message || tt("talk.errCode")); }
     setBusy(false);
   }
 
   async function submitReview() {
-    if (!session || !verdict) return setErr("先选一档:好用 / 一般 / 不好用");
+    if (!session || !verdict) return setErr(tt("rev.pickOne"));
     setBusy(true); setErr("");
     try {
       await postReview(session, {
@@ -100,7 +106,7 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
       try { if (nick.trim()) localStorage.setItem("oms_nick", nick.trim()); } catch { /* 忽略 */ }
       setReviews(await listReviews(skillId));
       setMode("idle");
-    } catch (e) { setErr((e as Error).message); }
+    } catch (e) { setErr(errText(e)); }
     setBusy(false);
   }
 
@@ -112,7 +118,7 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
     setBusy(true); setErr("");
     const r = await verifyPickedDir(files, { name: skillId.split("/").pop() ?? "", contentHash });
     if (r.status === "rejected") {
-      setErr(r.reason ?? "校验未通过");
+      setErr(r.reason ?? tt("rev.rejected"));
       setBusy(false);
       return;
     }
@@ -124,55 +130,51 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
   return (
     <section className="rev">
       <div className="rev-h">
-        <h2>短评{reviews?.length ? ` · ${reviews.length}` : ""}</h2>
+        <h2>{tt("rev.title")}{reviews?.length ? ` · ${reviews.length}` : ""}</h2>
         {mode === "idle" && (
           <button className="cp" disabled={busy} onClick={() => (session ? void enterForm(session) : setMode("email"))}>
-            {mine ? "改我的短评" : "写短评"}
+            {mine ? tt("rev.edit") : tt("rev.write")}
           </button>
         )}
       </div>
       {/* 文案跟服务端 flag 走,两种状态各说各的实话;标签永远按行盖章不虚标 */}
-      <div className="rev-gate">
-        {gateOn
-          ? "发布需要「已验证安装」:装过(或验证过本机副本)的人才可评。"
-          : "登录即可发短评;带「已验证安装」标记的,发布者名下有本店的安装或持有记录。"}
-      </div>
+      <div className="rev-gate">{gateOn ? tt("rev.gateOn") : tt("rev.gateOff")}</div>
 
       {mode === "email" && (
         <div className="rev-form">
           <div className="rev-row">
-            <input type="email" placeholder="邮箱(仅用于验证码登录)" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <button className="cp" disabled={busy} onClick={() => void submitEmail()}>发验证码</button>
-            <button className="rev-x" onClick={() => setMode("idle")}>取消</button>
+            <input type="email" placeholder={tt("talk.emailPh")} value={email} onChange={(e) => setEmail(e.target.value)} />
+            <button className="cp" disabled={busy} onClick={() => void submitEmail()}>{tt("talk.sendCode")}</button>
+            <button className="rev-x" onClick={() => setMode("idle")}>{tt("talk.cancel")}</button>
           </div>
         </div>
       )}
 
       {mode === "code" && (
         <div className="rev-form">
-          <p className="rev-tip">邮件已发到 {email}(注意垃圾箱)——<b>收到链接直接点</b>,会自动回到本页登录;收到 6 位码就在下面输:</p>
+          <p className="rev-tip">{tt("talk.codeTip", { email })}</p>
           <div className="rev-row">
-            <input inputMode="numeric" placeholder="6 位验证码(如果邮件里有)" value={code} onChange={(e) => setCode(e.target.value)} />
-            <button className="cp" disabled={busy || code.trim().length < 4} onClick={() => void submitCode()}>登录</button>
-            <button className="rev-x" onClick={() => setMode("email")}>换邮箱</button>
+            <input inputMode="numeric" placeholder={tt("talk.codePh")} value={code} onChange={(e) => setCode(e.target.value)} />
+            <button className="cp" disabled={busy || code.trim().length < 4} onClick={() => void submitCode()}>{tt("talk.signIn")}</button>
+            <button className="rev-x" onClick={() => setMode("email")}>{tt("talk.changeEmail")}</button>
           </div>
         </div>
       )}
 
       {mode === "ineligible" && (
         <div className="rev-form">
-          <p className="rev-tip">你的账号名下还没有这个 skill 的记录。<b>装过?</b>把装好的文件夹、或 <code>.skill</code> / <code>.zip</code> 安装包拖进下面——校验在你电脑本地完成,<b>文件不会上传</b>,只核对内容指纹:</p>
+          <p className="rev-tip">{tt("rev.ineligible")}</p>
           {/* 系统限制:一个选择器选不了「文件夹和文件」两种——两个按钮并排放明处,拖拽两者通吃 */}
           <div
             className="rev-drop"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => { e.preventDefault(); void fromDataTransfer(e.dataTransfer).then((fs) => void handlePicked(fs)); }}
           >
-            <div>{busy ? "校验中…" : "把装好的文件夹,或 .skill / .zip 安装包,拖到这里"}</div>
+            <div>{busy ? tt("rev.checking") : tt("rev.dropHere")}</div>
             {!busy && (
               <div className="rev-drop-btns">
                 <label className="cp">
-                  选文件夹
+                  {tt("rev.pickDir")}
                   <input
                     type="file" hidden multiple
                     onChange={(e) => { if (e.target.files) void handlePicked(fromFileList(e.target.files)); }}
@@ -180,7 +182,7 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
                   />
                 </label>
                 <label className="cp">
-                  选 .skill / .zip 文件
+                  {tt("rev.pickFile")}
                   <input
                     type="file" hidden accept=".skill,.zip"
                     onChange={(e) => { const f = e.target.files?.[0]; if (f) void fromZipFile(f).then((fs) => void handlePicked(fs)); }}
@@ -190,13 +192,13 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
             )}
           </div>
           <details className="rev-cli">
-            <summary>习惯终端?一条命令也行</summary>
+            <summary>{tt("rev.cliAlt")}</summary>
             <div className="rev-row" style={{ marginTop: 8 }}><code className="cli">{vfy}</code></div>
             <div className="rev-row" style={{ marginTop: 8 }}>
-              <button className="cp" disabled={busy} onClick={() => session && void enterForm(session)}>验证完了,重新检查</button>
+              <button className="cp" disabled={busy} onClick={() => session && void enterForm(session)}>{tt("rev.recheck")}</button>
             </div>
           </details>
-          <div className="rev-row"><button className="rev-x" onClick={() => setMode("idle")}>先不评</button></div>
+          <div className="rev-row"><button className="rev-x" onClick={() => setMode("idle")}>{tt("rev.later")}</button></div>
         </div>
       )}
 
@@ -204,10 +206,10 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
         <div className="rev-form">
           <div className="rev-row">
             {(Object.keys(V) as Review["verdict"][]).map((k) => (
-              <button key={k} className={`rv-pick ${V[k].cls} ${verdict === k ? "on" : ""}`} onClick={() => setVerdict(k)}>{V[k].label}</button>
+              <button key={k} className={`rv-pick ${V[k].cls} ${verdict === k ? "on" : ""}`} onClick={() => setVerdict(k)}>{tt(V[k].k)}</button>
             ))}
           </div>
-          <textarea maxLength={500} placeholder="一句话(可选):它帮你做成了什么?哪里要注意?" value={text} onChange={(e) => setText(e.target.value)} />
+          <textarea maxLength={500} placeholder={tt("rev.textPh")} value={text} onChange={(e) => setText(e.target.value)} />
           {scene.length > 0 && (
             <div className="rev-row rev-scenes">
               {scene.slice(0, 8).map((w) => (
@@ -219,13 +221,13 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
             </div>
           )}
           <div className="rev-row">
-            <input placeholder="署名(可选,默认「用户」)" maxLength={24} value={nick} onChange={(e) => setNick(e.target.value)} style={{ maxWidth: 200 }} />
+            <input placeholder={tt("rev.nickPh")} maxLength={24} value={nick} onChange={(e) => setNick(e.target.value)} style={{ maxWidth: 200 }} />
             {/* 不因未选档而禁用:禁用按钮零反馈,点击报「先选一档」比死按钮诚实(选档必选,文字可选) */}
-            <button className="cp" disabled={busy} onClick={() => void submitReview()}>{mine ? "更新" : "发布"}</button>
-            <button className="rev-x" onClick={() => setMode("idle")}>取消</button>
+            <button className="cp" disabled={busy} onClick={() => void submitReview()}>{mine ? tt("rev.update") : tt("rev.publish")}</button>
+            <button className="rev-x" onClick={() => setMode("idle")}>{tt("talk.cancel")}</button>
           </div>
           <div className="rev-meta">
-            以 {session?.user.email} 登录 · <button className="rev-x" onClick={() => { signOut(); setSession(null); setMode("idle"); }}>退出</button>
+            {tt("talk.signedAs", { email: session?.user.email ?? "" })} · <button className="rev-x" onClick={() => { signOut(); setSession(null); setMode("idle"); }}>{tt("talk.signOut")}</button>
           </div>
         </div>
       )}
@@ -234,19 +236,19 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
       {reviews === null ? (
         <div className="rev-empty">…</div>
       ) : reviews.length === 0 ? (
-        <div className="rev-empty">还没有短评——装过的人都可以留一条。</div>
+        <div className="rev-empty">{tt("rev.empty")}</div>
       ) : (
         <div className="rev-list">
           {reviews.map((r) => (
             <div key={`${r.user_id}`} className="rev-item">
               <div className="rev-line1">
-                <span className={`rv-badge ${V[r.verdict].cls}`}>{V[r.verdict].label}</span>
-                <b>{r.author_label || "用户"}</b>
-                {r.verified && <span className="rev-tag" title="发布者名下有该 skill 的安装/持有记录">已验证安装</span>}
+                <span className={`rv-badge ${V[r.verdict].cls}`}>{tt(V[r.verdict].k)}</span>
+                <b>{r.author_label || tt("talk.user")}</b>
+                {r.verified && <span className="rev-tag" title={tt("rev.verifiedTip")}>{tt("rev.verified")}</span>}
                 {r.content_hash && contentHash && r.content_hash !== contentHash && (
-                  <span className="rev-tag old" title="发布后内容已更新">评于旧版本</span>
+                  <span className="rev-tag old" title={tt("rev.oldVerTip")}>{tt("rev.oldVer")}</span>
                 )}
-                <span className="rev-when">{rel(r.updated_at)}</span>
+                <span className="rev-when">{relTime(locale, r.updated_at)?.rel}</span>
               </div>
               {r.text && <p className="rev-text">{r.text}</p>}
               {r.scene_tags && r.scene_tags.length > 0 && (

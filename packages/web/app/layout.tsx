@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from "next/font/google";
+import { NavTabs, FooterLine } from "@/components/Chrome";
+import { HtmlLang } from "@/lib/i18n/client";
 import "./globals.css";
 
 const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--f-display", display: "swap" });
@@ -14,20 +16,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    // 静态导出单 layout,lang 由 HtmlLang 按 locale 客户端订正(/en/* 或用户偏好 → en)
     <html lang="zh-CN" className={`${display.variable} ${ui.variable} ${mono.variable}`}>
       <body>
+        <HtmlLang />
         <div className="nav"><div className="nav-in">
           <Link href="/" className="logo"><span className="mk">◆</span>oh-my<em>-skill</em></Link>
-          <nav className="tabs">
-            <Link href="/">首页</Link>
-            <Link href="/charts/">榜单</Link>
-            <Link href="/talk/">讨论</Link>
-            <Link href="/changelog/">动态</Link>
-            <Link href="/methodology/">收录</Link>
-          </nav>
+          <NavTabs />
         </div></div>
         <div className="wrap">{children}</div>
-        <footer>oh-my-skill · catalog 公开可验证 · <Link href="/methodology/">收录标准</Link> · Agent Skills 商店</footer>
+        <footer><FooterLine /></footer>
       </body>
     </html>
   );
