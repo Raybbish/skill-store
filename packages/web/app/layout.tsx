@@ -21,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <nav className="tabs">
             <Link href="/">首页</Link>
             <Link href="/charts/">榜单</Link>
+            <Link href="/talk/">讨论</Link>
             <Link href="/changelog/">动态</Link>
             <Link href="/methodology/">收录</Link>
           </nav>
