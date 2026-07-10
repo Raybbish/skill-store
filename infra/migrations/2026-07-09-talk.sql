@@ -15,14 +15,16 @@ create table if not exists public.posts (
 create index if not exists posts_top_idx on public.posts (created_at desc) where reply_to is null;
 create index if not exists posts_reply_idx on public.posts (reply_to, created_at);
 
--- 发帖闸:①一层回复(不许回复回复)②每用户 60 秒一条(防灌水;反刷=闸不是门,同 ADR 0017 哲学)
+-- 发帖闸:①一层回复(不许回复回复)②每用户 5 秒一条——副闸只挡失手连点与最蠢的单账号脚本;
+-- 真正的灌水成本卡在账号(邮箱 OTP),间隔不是主防线(闸不是门,同 ADR 0017 哲学)。
+-- 60s→5s(2026-07-09 用户裁决):公海是对话节奏,60s 误伤连续回复的真人;真灌水再调回,改此函数即生效。
 create or replace function public.tg_posts_guard() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
   if new.reply_to is not null and exists (select 1 from posts where id = new.reply_to and reply_to is not null) then
     raise exception 'reply_depth';
   end if;
-  if exists (select 1 from posts where user_id = new.user_id and created_at > now() - interval '60 seconds') then
+  if exists (select 1 from posts where user_id = new.user_id and created_at > now() - interval '5 seconds') then
     raise exception 'rate_limited';
   end if;
   return new;

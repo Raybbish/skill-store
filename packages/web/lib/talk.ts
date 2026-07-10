@@ -66,7 +66,7 @@ export async function postMessage(s: Session, body: string, replyTo?: number, au
   });
   if (!r.ok) {
     const err = await r.text().catch(() => "");
-    if (err.includes("rate_limited")) throw new Error("发得有点快——间隔 1 分钟再发");
+    if (err.includes("rate_limited")) throw new Error("发得有点快——稍等几秒再发");
     if (err.includes("reply_depth")) throw new Error("只支持一层回复");
     if (r.status === 404) throw new Error("讨论区后端未初始化(posts 表缺失,需执行 2026-07-09-talk.sql 迁移)");
     throw new Error(`发布失败(${r.status})`);
