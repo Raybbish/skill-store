@@ -20,7 +20,7 @@
  *   LLM_MOCK=1 npm run categorize:llm -- --limit 20       # 无 key 测管路
  *   npm run categorize:llm -- --scope uncategorized       # 只判未分类(省钱)
  *   npm run categorize:llm -- --scope all                 # 全量重判(默认,含已分类的以纠错)
- *   npm run categorize:llm -- --scope missing-copy        # 只补微文案缺失/锚过期的(批量采集后补跑)
+ *   npm run categorize:llm -- --scope missing-copy        # 只补微文案缺失/锚过期的(批量采集后补跑)\n *   npm run categorize:llm -- --scope missing-en          # 只补缺英文微文案的(ADR 0022 双语批跑)
  *   npm run categorize:llm -- --dry                       # 只判不写盘
  * 规则:category_locked 不动;隐藏条目(duplicate / frontmatter 不合规)跳过;
  *       单条 LLM 调用失败 → 保留原分类(fail-safe,绝不清空)。
@@ -146,6 +146,9 @@ interface LlmVerdict {
   tagline?: unknown;
   scene_tags?: unknown;
   fit_line?: unknown;
+  tagline_en?: unknown;
+  scene_tags_en?: unknown;
+  fit_line_en?: unknown;
 }
 
 async function classify(prompt: string): Promise<LlmVerdict> {
@@ -201,7 +204,11 @@ const MICROCOPY_RULES =
   `- scene_tags:${SCENE_TAG_MIN_COUNT}~${SCENE_TAG_MAX_COUNT} 个短词(至少 ${SCENE_TAG_MIN_COUNT} 个,每个 ≤${SCENE_TAG_MAX_LEN} 字),回答「用户在什么时候会需要它」——` +
   `写**使用场景**(如"周报"、"合同审阅"、"上线前检查"),不要写技术名词或框架名(那是上面 tags 的事,写进场景词会被丢弃)。\n` +
   `- fit_line:以「适合你,如果」开头的一句话,≤50 字,描述最典型那类用户的处境。\n` +
-  `信息不足时宁可保守:tagline 只转述 README 里确凿的能力,不脑补效果;但场景词仍尽量从不同角度凑够 ${SCENE_TAG_MIN_COUNT} 个。\n\n`;
+  `信息不足时宁可保守:tagline 只转述 README 里确凿的能力,不脑补效果;但场景词仍尽量从不同角度凑够 ${SCENE_TAG_MIN_COUNT} 个。\n` +
+  `同时输出这三个字段的英文版(ADR 0022 双语商店,面向全球用户;是自然转述不是逐字直译):\n` +
+  `- tagline_en:imperative verb first, <=80 chars;同样禁止 skill 名字与水词,禁以 "A/This/The skill" 开头。\n` +
+  `- scene_tags_en:与 scene_tags 数量对应的英文场景短语,each <=24 chars,写 when-you-need-it 场景(如 "weekly report"、"contract review"),不写技术名词。\n` +
+  `- fit_line_en:starts with "For you if ", <=100 chars。\n\n`;
 
 function buildPrompt(catList: string, tagSection: string, name: string, description: string): string {
   return (
@@ -226,7 +233,8 @@ function buildPrompt(catList: string, tagSection: string, name: string, descript
     MICROCOPY_RULES +
     `<SKILL>\nname: ${name}\ndescription: ${description}\n</SKILL>\n\n` +
     `只输出 JSON:{"category":"<slug 或 uncategorized>","tags":["..."],"confidence":0-1,` +
-    `"tagline":"...","scene_tags":["...","..."],"fit_line":"适合你,如果..."}`
+    `"tagline":"...","scene_tags":["...","..."],"fit_line":"适合你,如果...",` +
+    `"tagline_en":"...","scene_tags_en":["...","..."],"fit_line_en":"For you if ..."}`
   );
 }
 
@@ -238,6 +246,25 @@ function buildPrompt(catList: string, tagSection: string, name: string, descript
  * - lint 不过也照存(lint_pass=false,便于排查),前端据此回退。
  * - content_hash 锚 meta.content_hash:不一致=过期,下次重算。
  */
+/** 英文侧轻量 lint(ADR 0022):长度帽 + 禁 skill 名 + 禁冠词开头;不合格丢字段(前端回退 description),不拉低 zh 的 lint_pass */
+function lintEn(v: LlmVerdict, name: string): { tagline_en?: string; scene_tags_en?: string[]; fit_line_en?: string } {
+  const out: { tagline_en?: string; scene_tags_en?: string[]; fit_line_en?: string } = {};
+  const bad = (t: string) => t.toLowerCase().includes(name.toLowerCase()) || /^(a|an|the|this)\s/i.test(t);
+  if (typeof v.tagline_en === "string") {
+    const t = v.tagline_en.trim();
+    if (t && t.length <= 90 && !bad(t)) out.tagline_en = t;
+  }
+  if (Array.isArray(v.scene_tags_en)) {
+    const ws = v.scene_tags_en.filter((w): w is string => typeof w === "string").map((w) => w.trim()).filter((w) => w && w.length <= 28);
+    if (ws.length) out.scene_tags_en = ws.slice(0, SCENE_TAG_MAX_COUNT);
+  }
+  if (typeof v.fit_line_en === "string") {
+    const t = v.fit_line_en.trim();
+    if (t && t.length <= 120) out.fit_line_en = t;
+  }
+  return out;
+}
+
 function buildCopy(v: LlmVerdict, name: string, contentHash: string, model: string): SkillCopy | null {
   if (typeof v.tagline !== "string" || !v.tagline.trim()) return null;
   const r = lintCopy({ tagline: v.tagline, scene_tags: v.scene_tags, fit_line: v.fit_line }, name);
@@ -245,6 +272,7 @@ function buildCopy(v: LlmVerdict, name: string, contentHash: string, model: stri
     tagline: r.cleaned.tagline,
     scene_tags: r.cleaned.scene_tags,
     ...(r.cleaned.fit_line ? { fit_line: r.cleaned.fit_line } : {}),
+    ...lintEn(v, name),
     source: "llm",
     content_hash: contentHash,
     model,
@@ -262,6 +290,9 @@ function copyMateriallyEqual(a: SkillCopy | null | undefined, b: SkillCopy | nul
     a.lint_pass === b.lint_pass &&
     a.source === b.source &&
     a.content_hash === b.content_hash &&
+    a.tagline_en === b.tagline_en &&
+    a.fit_line_en === b.fit_line_en &&
+    JSON.stringify(a.scene_tags_en) === JSON.stringify(b.scene_tags_en) &&
     JSON.stringify(a.scene_tags) === JSON.stringify(b.scene_tags)
   );
 }
@@ -434,6 +465,8 @@ async function main() {
     // missing-copy:只补微文案缺失或锚过期(copy.content_hash ≠ 当前内容)的条目——
     // 大批量采集后补跑用,比 --scope all 省一半以上 LLM 花费;分类顺带重判(同一次调用,零额外成本)
     if (scope === "missing-copy" && e.report.copy && e.report.copy.content_hash === m.content_hash) return false;
+    // missing-en(ADR 0022):只补「zh 微文案新鲜但缺英文」的存量——双语批跑用,同一次调用重产中英两份
+    if (scope === "missing-en" && !(e.report.copy && e.report.copy.content_hash === m.content_hash && !e.report.copy.tagline_en)) return false;
     if (only && m.category !== only) return false;
     if (onlyTag && !(m.tags ?? []).includes(onlyTag)) return false;
     return true;

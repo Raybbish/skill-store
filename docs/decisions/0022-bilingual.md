@@ -16,7 +16,7 @@
 6. **连带定案**:文件数今天已 ~2.6 万(路由×2 文件 + dl 产物),CF Pages 2 万上限出局——**部署平台 = Vercel**。InstallBox 的 HOST 顺手落定 `https://oh-my-skill.com`。
 
 ## 后果 / 约束
-- 上线后第一批:微文案英文批跑(`tagline_en`/英文场景词,同 categorize:llm 管线)+ Typesense 英文召回字段;目前 en 卡片副标题回退上游英文 description(天然成立,零成本)。
+- **修订(同日,用户裁决「AI 描述和标签也要同步英文」)**:转述层双语进上线范围——`SkillCopy` 加 `tagline_en/scene_tags_en/fit_line_en`(同锚同批,**同一次 LLM 调用产出中英两份**,比分两批省一半);categorize-llm 新 scope `missing-en`(只补 zh 新鲜但缺英文的存量 ~9.4k);英文侧轻量 lint(长度帽/禁名/禁冠词开头),不合格丢字段回退 description、不拉低 zh lint_pass;en 场景词 launch 期不做词表治理(后补,同 zh renorm 路径)。批跑命令:`npm run categorize:llm -- --scope missing-en`。显示层接线(wire 字段/SkillRow/详情页/Typesense skw_en)随批跑数据就绪落地。
 - 已知残留(backlog):详情页 `contextMethodTip` 悬停提示(「静态估算」)zh-only;分类页 metadata zh-only(单路由 SEO 主中文);hreflang alternates 未做(上线后补)。
 - 用户内容(短评/公海帖)与包 title/tagline/编辑手记(人写署名的策展内容)不翻译,混排是全球社区常态。
 - 新增语言流程:dicts 加词表 + `/{lang}/` 薄路由一组;共享页自动获得该语言 chrome。

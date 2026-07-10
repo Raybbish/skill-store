@@ -157,6 +157,10 @@ export interface SkillCopy {
   scene_tags: string[];
   /** 「适合你,如果…」一行,仅详情页 */
   fit_line?: string;
+  /** 英文转述(ADR 0022 双语):与中文同一次 LLM 调用产出、同锚 content_hash;缺失时前端回退 description 原文 */
+  tagline_en?: string;
+  scene_tags_en?: string[];
+  fit_line_en?: string;
   /** 词的来源:llm | author(M1 认领)。author 稿同样过 lint */
   source: "llm" | "author";
   /** 生成时锚定的 meta.content_hash;不一致 = 过期,下次重算 */
