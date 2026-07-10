@@ -10,7 +10,8 @@ const KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 export interface Review {
   user_id: string;
   skill_id: string;
-  verdict: "good" | "ok" | "bad";
+  /** 1-5 星(2026-07-09 由三档改星;豆瓣同款) */
+  rating: number;
   text: string | null;
   scene_tags: string[] | null;
   author_label: string | null;
@@ -44,7 +45,7 @@ export async function listReviews(skillId: string): Promise<Review[]> {
   if (!URL || !KEY) return [];
   const q = new URLSearchParams({
     skill_id: `eq.${skillId}`,
-    select: "user_id,skill_id,verdict,text,scene_tags,author_label,content_hash,verified,created_at,updated_at",
+    select: "user_id,skill_id,rating,text,scene_tags,author_label,content_hash,verified,created_at,updated_at",
     order: "updated_at.desc",
     limit: "100",
   });
@@ -68,7 +69,7 @@ export async function eligibility(s: Session, skillId: string): Promise<{ eligib
 /** 提交/覆盖短评(UNIQUE(user,skill) 上的 upsert;RLS 复核双层门) */
 export async function postReview(
   s: Session,
-  review: { skill_id: string; verdict: Review["verdict"]; text?: string; scene_tags?: string[]; author_label?: string; content_hash?: string | null },
+  review: { skill_id: string; rating: number; text?: string; scene_tags?: string[]; author_label?: string; content_hash?: string | null },
 ): Promise<void> {
   const r = await fetch(`${URL}/rest/v1/reviews?on_conflict=user_id,skill_id`, {
     method: "POST",
@@ -81,7 +82,7 @@ export async function postReview(
     body: JSON.stringify({
       user_id: s.user.id,
       skill_id: review.skill_id,
-      verdict: review.verdict,
+      rating: review.rating,
       text: review.text?.trim() || null,
       scene_tags: review.scene_tags?.length ? review.scene_tags : null,
       author_label: review.author_label?.trim() || null,

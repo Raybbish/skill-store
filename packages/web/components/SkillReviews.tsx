@@ -10,11 +10,15 @@ import { eligibility, listReviews, postReview, reviewGateEnabled, reviewsConfigu
 import { postReceipt, ridToken } from "@/lib/receipts";
 import { fromDataTransfer, fromFileList, fromZipFile, verifyPickedDir, type PickedFile } from "@/lib/webverify";
 
-const V: Record<Review["verdict"], { label: string; cls: string }> = {
-  good: { label: "✓ 好用", cls: "rv-good" },
-  ok: { label: "− 一般", cls: "rv-ok" },
-  bad: { label: "✗ 不好用", cls: "rv-bad" },
-};
+/** 1-5 星显示(2026-07-09 由三档改星):实心金星 + 空星,只读 */
+function Stars({ n }: { n: number }) {
+  return (
+    <span className="rv-stars" title={`${n} 星`}>
+      <span className="on">{"★".repeat(n)}</span>
+      <span className="off">{"★".repeat(5 - n)}</span>
+    </span>
+  );
+}
 
 function rel(iso: string): string {
   const days = Math.floor((Date.now() - Date.parse(iso)) / 86_400_000);
@@ -31,7 +35,7 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [receiptHash, setReceiptHash] = useState<string | null>(null);
-  const [verdict, setVerdict] = useState<Review["verdict"] | null>(null);
+  const [rating, setRating] = useState<number>(0); // 0 = 未选
   const [text, setText] = useState("");
   const [nick, setNick] = useState("");
   const [selScenes, setSelScenes] = useState<string[]>([]);
@@ -67,7 +71,7 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
     setBusy(false);
     if (!e.eligible) return setMode("ineligible");
     setReceiptHash(e.receiptHash);
-    if (mine) { setVerdict(mine.verdict); setText(mine.text ?? ""); setSelScenes(mine.scene_tags ?? []); }
+    if (mine) { setRating(mine.rating); setText(mine.text ?? ""); setSelScenes(mine.scene_tags ?? []); }
     setMode("form");
   }
 
@@ -90,11 +94,11 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
   }
 
   async function submitReview() {
-    if (!session || !verdict) return setErr("先选一档:好用 / 一般 / 不好用");
+    if (!session || rating < 1) return setErr("先打个分:1-5 星");
     setBusy(true); setErr("");
     try {
       await postReview(session, {
-        skill_id: skillId, verdict, text, scene_tags: selScenes,
+        skill_id: skillId, rating, text, scene_tags: selScenes,
         author_label: nick, content_hash: receiptHash,
       });
       try { if (nick.trim()) localStorage.setItem("oms_nick", nick.trim()); } catch { /* 忽略 */ }
@@ -202,10 +206,16 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
 
       {mode === "form" && (
         <div className="rev-form">
-          <div className="rev-row">
-            {(Object.keys(V) as Review["verdict"][]).map((k) => (
-              <button key={k} className={`rv-pick ${V[k].cls} ${verdict === k ? "on" : ""}`} onClick={() => setVerdict(k)}>{V[k].label}</button>
+          <div className="rev-row rv-rate" role="radiogroup" aria-label="打分(1-5 星)">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button
+                key={n}
+                className={`rv-star ${rating >= n ? "on" : ""}`}
+                aria-label={`${n} 星`}
+                onClick={() => setRating(n)}
+              >★</button>
             ))}
+            {rating > 0 && <span className="rev-when" style={{ alignSelf: "center" }}>{rating} 星</span>}
           </div>
           <textarea maxLength={500} placeholder="一句话(可选):它帮你做成了什么?哪里要注意?" value={text} onChange={(e) => setText(e.target.value)} />
           {scene.length > 0 && (
@@ -240,7 +250,7 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
           {reviews.map((r) => (
             <div key={`${r.user_id}`} className="rev-item">
               <div className="rev-line1">
-                <span className={`rv-badge ${V[r.verdict].cls}`}>{V[r.verdict].label}</span>
+                <Stars n={r.rating} />
                 <b>{r.author_label || "用户"}</b>
                 {r.verified && <span className="rev-tag" title="发布者名下有该 skill 的安装/持有记录">已验证安装</span>}
                 {r.content_hash && contentHash && r.content_hash !== contentHash && (
