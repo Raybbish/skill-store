@@ -18,5 +18,5 @@
 ## 后果 / 约束
 - **修订(同日,用户裁决「AI 描述和标签也要同步英文」)**:转述层双语进上线范围——`SkillCopy` 加 `tagline_en/scene_tags_en/fit_line_en`(同锚同批,**同一次 LLM 调用产出中英两份**,比分两批省一半);categorize-llm 新 scope `missing-en`(只补 zh 新鲜但缺英文的存量 ~9.4k);英文侧轻量 lint(长度帽/禁名/禁冠词开头),不合格丢字段回退 description、不拉低 zh lint_pass;en 场景词 launch 期不做词表治理(后补,同 zh renorm 路径)。批跑命令:`npm run categorize:llm -- --scope missing-en`。显示层已接线(同日):瘦卡 taglineEn/sceneEn 透传 wire、SkillRow 按 locale 取英文副标题与场景词(回退 description 原文)、详情页 fit_line/场景词双语、本地打分器与 Typesense query_by 英文召回(taglineEn,sceneEn 权重 3,5);待 web:index + typesense:push 生效。
 - 已知残留(backlog):详情页 `contextMethodTip` 悬停提示(「静态估算」)zh-only;分类页 metadata zh-only(单路由 SEO 主中文);hreflang alternates 未做(上线后补)。
-- 用户内容(短评/公海帖)不翻译,混排是全球社区常态。**包文案口径修订(同日用户裁决)**:包 title/tagline 是货架文案,随语言走(catalog/packs 加 title_en/tagline_en,跑马灯/包页/en metadata 按 locale 取);编辑手记是署名内容,保持主理人原文。
+- 用户内容(短评/公海帖)不翻译,混排是全球社区常态。**包文案口径修订(同日用户裁决)**:包 title/tagline 是货架文案,随语言走(catalog/packs 加 title_en/tagline_en,跑马灯/包页/en metadata 按 locale 取);编辑手记再修订(同日用户裁决):**忠实译文不改变署名权**,editor_note 加 text_en 随 locale 渲染(红线管的是机器冒充人写,不是语言);⚠ 现译文基于机器草稿,主理人改写中文后需重翻。
 - 新增语言流程:dicts 加词表 + `/{lang}/` 薄路由一组;共享页自动获得该语言 chrome。
