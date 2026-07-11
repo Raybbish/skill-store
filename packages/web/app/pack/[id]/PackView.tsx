@@ -43,7 +43,8 @@ export default function PackView({ id, locale }: { id: string; locale: Locale })
       {p.editorNote && (
         <section className="editor-note">
           <div className="en-label">{t(locale, "pack.editorNote")}</div>
-          <p className="en-text">{p.editorNote.text}</p>
+          {/* 手记译文(ADR 0022 修订):忠实翻译不改署名;缺英文回退中文原文 */}
+          <p className="en-text">{locale === "en" ? p.editorNote.text_en ?? p.editorNote.text : p.editorNote.text}</p>
           <div className="en-sign">—— {p.editorNote.author} · {p.editorNote.date}</div>
         </section>
       )}
