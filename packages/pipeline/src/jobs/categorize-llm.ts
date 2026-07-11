@@ -205,7 +205,7 @@ const MICROCOPY_RULES =
   `写**使用场景**(如"周报"、"合同审阅"、"上线前检查"),不要写技术名词或框架名(那是上面 tags 的事,写进场景词会被丢弃)。\n` +
   `- fit_line:以「适合你,如果」开头的一句话,≤50 字,描述最典型那类用户的处境。\n` +
   `信息不足时宁可保守:tagline 只转述 README 里确凿的能力,不脑补效果;但场景词仍尽量从不同角度凑够 ${SCENE_TAG_MIN_COUNT} 个。\n` +
-  `同时输出这三个字段的英文版(ADR 0022 双语商店,面向全球用户;是自然转述不是逐字直译):\n` +
+  `最后输出这三个字段的英文版——**先保证中文三字段与上面分类/标签的质量,英文任务不得影响它们**(ADR 0022 双语商店;自然转述不是逐字直译):\n` +
   `- tagline_en:imperative verb first, <=80 chars;同样禁止 skill 名字与水词,禁以 "A/This/The skill" 开头。\n` +
   `- scene_tags_en:与 scene_tags 数量对应的英文场景短语,each <=24 chars,写 when-you-need-it 场景(如 "weekly report"、"contract review"),不写技术名词。\n` +
   `- fit_line_en:starts with "For you if ", <=100 chars。\n\n`;
@@ -229,7 +229,7 @@ function buildPrompt(catList: string, tagSection: string, name: string, descript
     `- 渗透/漏洞/exploit/恶意软件/取证/威胁检测/红队/逆向 → security\n` +
     `- 找供应商/外包/销售线索 → 无贴切分类就给 uncategorized\n` +
     `- 只有真正写代码/框架/测试/SDK/CLI/重构才归 dev;**例外**:造/管/找 skill、command、agent、MCP server 的元工具本身也归 dev\n` +
-    `- 元能力(meta)判据只看**工作对象**:对象是 skill/command/agent/MCP 系统本身(创建、导入、打包、审计、发布、发现它们)→ **必须**打对应 meta 标签;对象是业务任务 → 不打,即便它自己是个 skill\n\n` +
+    `- 依赖/包装某个 MCP server 的工具来完成业务任务(名字或描述含 mcp-xxx、from_mcp_tool 等)→ 即便 category 归业务,也要打 mcp 标签(见规则 7)\n- 元能力(meta)判据只看**工作对象**:对象是 skill/command/agent/MCP 系统本身(创建、导入、打包、审计、发布、发现它们)→ **必须**打对应 meta 标签;对象是业务任务 → 不打,即便它自己是个 skill\n\n` +
     MICROCOPY_RULES +
     `<SKILL>\nname: ${name}\ndescription: ${description}\n</SKILL>\n\n` +
     `只输出 JSON:{"category":"<slug 或 uncategorized>","tags":["..."],"confidence":0-1,` +
@@ -355,14 +355,18 @@ async function runCanary(catList: string, tagSection: string): Promise<never> {
         }
       }),
     );
+    let stale = 0; // fixture 腐烂:条目已退市/被手术删除 → 剔出分母,不算 prompt 的错(提示更新金标)
     for (let i = 0; i < items.length; i++) {
+      if (results[i].pred === "<条目不存在>") { stale++; continue; }
       if (results[i].pred === items[i].expect) correct++;
       else misses.push(`    ✗ ${items[i].id}  期望 ${items[i].expect} 实得 ${results[i].pred}  ⟨${results[i].diag}⟩`);
     }
-    const precision = correct / items.length;
+    if (stale) console.warn(`  ⚠ ${pair}: ${stale} 条金标条目已不在货架(退市/手术),已剔出分母——请换新代表更新 fixture`);
+    const denom = items.length - stale;
+    const precision = denom ? correct / denom : 1;
     const pass = precision >= gate;
     allPass &&= pass;
-    console.log(`\n${pass ? "✓" : "✗"} ${pair}: ${correct}/${items.length} = ${(precision * 100).toFixed(1)}%(门 ${gate * 100}%)`);
+    console.log(`\n${pass ? "✓" : "✗"} ${pair}: ${correct}/${denom} = ${(precision * 100).toFixed(1)}%(门 ${gate * 100}%)`);
     for (const line of misses) console.log(line);
   }
 
@@ -416,7 +420,10 @@ async function runCopyCanary(
           if (!c) { results[i] = `  ∅ [${bucket}] ${id}  ⟨无 tagline(MOCK?)⟩`; return; }
           const mark = c.lint_pass ? "✓" : "✗";
           const fit = c.fit_line ? ` · fit:${c.fit_line}` : "";
-          results[i] = `  ${mark} [${bucket}] ${id}\n      «${c.tagline}»  场景:[${c.scene_tags.join("、")}]${fit}`;
+          const en = c.tagline_en
+            ? `\n      EN «${c.tagline_en}»  [${(c.scene_tags_en ?? []).join(", ")}]${c.fit_line_en ? ` · ${c.fit_line_en}` : ""}`
+            : "\n      EN ⟨缺失,将回退 description⟩";
+          results[i] = `  ${mark} [${bucket}] ${id}\n      «${c.tagline}»  场景:[${c.scene_tags.join("、")}]${fit}${en}`;
         } catch (err) {
           results[i] = `  ✗ [${bucket}] ${id}  ⟨失败: ${(err as Error).message}⟩`;
         }
