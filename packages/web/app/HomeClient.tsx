@@ -26,8 +26,8 @@ function PackMarquee({ packs, locale }: { packs: Pack[]; locale: Locale }) {
     <Link href={localePath(locale, `/pack/${p.id}/`)} className="pk">
       <span className="tile" style={{ background: p.tile }}>{p.emoji}</span>
       <span>
-        <span className="pt">{p.title}</span>
-        <span className="pd">{p.tagline}</span>
+        <span className="pt">{locale === "en" ? p.titleEn ?? p.title : p.title}</span>
+        <span className="pd">{locale === "en" ? p.taglineEn ?? p.tagline : p.tagline}</span>
       </span>
       <span className="arr">›</span>
     </Link>

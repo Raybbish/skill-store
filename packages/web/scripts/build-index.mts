@@ -178,6 +178,7 @@ try {
     }
     packs.push({
       id: p.id, emoji: p.emoji, tile: p.tile, title: p.title, tagline: p.tagline, members,
+      ...(p.title_en ? { titleEn: p.title_en } : {}), ...(p.tagline_en ? { taglineEn: p.tagline_en } : {}),
       // 编辑手记透传(活人感 P0):catalog 侧 editor_note{text,author,date},缺省不带
       ...(p.editor_note ? { editorNote: p.editor_note } : {}),
     });

@@ -19,8 +19,8 @@ export default function PackView({ id, locale }: { id: string; locale: Locale })
       <BackHome />
 
       <section className="detail-hero">
-        <h1 className="d-name"><span style={{ fontSize: 26 }}>{p.emoji}</span> {p.title}</h1>
-        <p className="d-desc">{p.tagline}。{t(locale, "pack.suffix", { n: p.members.length })}</p>
+        <h1 className="d-name"><span style={{ fontSize: 26 }}>{p.emoji}</span> {locale === "en" ? p.titleEn ?? p.title : p.title}</h1>
+        <p className="d-desc">{locale === "en" ? `${p.taglineEn ?? p.tagline}. ` : `${p.tagline}。`}{t(locale, "pack.suffix", { n: p.members.length })}</p>
         <CopyCmd cmd={cmd} />
         <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 8 }}>{t(locale, "pack.hashNote")}</div>
         {p.members.some((m) => m.dl) && (

@@ -8,7 +8,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const p = readIdxPacks().find((x) => x.id === id);
-  return { title: `${p?.title ?? id} · oh-my-skill`, description: p?.tagline };
+  return { title: `${p?.titleEn ?? p?.title ?? id} · oh-my-skill`, description: p?.taglineEn ?? p?.tagline };
 }
 
 export default async function PackPageEn({ params }: { params: Promise<{ id: string }> }) {
