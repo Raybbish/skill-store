@@ -57,6 +57,10 @@ export interface Skill {
   /** 上游仓库 SKILL.md 总数(巨仓降权信号) */
   repoSkillCount?: number;
   /** 来自批量源仓库的折叠采样条目 */
+  /** 英文转述(ADR 0022):同锚同批;缺失时前端回退 description 原文 */
+  taglineEn?: string;
+  sceneTagsEn?: string[];
+  fitLineEn?: string;
   bulkSource?: boolean;
   curatedBy?: { list: string; category: string }[];
   eval?: EvalData | null;

@@ -31,8 +31,8 @@ export type TsDoc = WireCard & {
 
 export const TS_COLLECTION = "skills";
 /** 与 matchScore 的层级一致:name > id > scene > tags > tagline > description/publisher > skw */
-export const TS_QUERY_BY = "name,sid,scene,tags,tagline,description,publisher,skw";
-export const TS_QUERY_WEIGHTS = "10,6,5,4,3,2,2,1";
+export const TS_QUERY_BY = "name,sid,scene,tags,tagline,description,publisher,skw,taglineEn,sceneEn"; // 英文召回(ADR 0022)
+export const TS_QUERY_WEIGHTS = "10,6,5,4,3,2,2,1,3,5";
 
 function filterBy(f: SearchFilters): string {
   const parts: string[] = [];

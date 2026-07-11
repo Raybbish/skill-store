@@ -21,19 +21,21 @@ export default function SkillRow({ skill, rank, isNew }: { skill: SkillCard; ran
       {rank != null && <div className={`idx ${rank <= 3 ? "top" : ""}`}>{String(rank).padStart(2, "0")}</div>}
       <div className="main">
         <div className="nm"><Link href={href} onClick={onOpen}>{s.name}</Link><TrustBadge skill={s} />{isNew && <span className="new-tag">NEW</span>}</div>
-        {/* 副标题:优先机器微文案 tagline;缺失/未过 lint 时回退 description 截断(宁可平淡,不可说谎) */}
-        {(s.tagline || s.description) && (
-          <div className="ds">{s.tagline ?? (s.description!.length > 60 ? s.description!.slice(0, 60) + "…" : s.description)}</div>
-        )}
+        {/* 副标题:优先机器微文案 tagline(按 locale 取英文版);缺失/未过 lint 时回退 description 截断(宁可平淡,不可说谎) */}
+        {(() => {
+          const tg = locale === "en" ? s.taglineEn ?? null : s.tagline ?? null;
+          const sub = tg ?? (s.description ? (s.description.length > 60 ? s.description.slice(0, 60) + "…" : s.description) : null);
+          return sub ? <div className="ds">{sub}</div> : null;
+        })()}
         {/* 场景词 =「话题」层:行首微标签 + 话题样式与 facet #tag 分化;点击 = 搜索聚合,不进 facet(ADR 0013 补充) */}
-        {s.scene && s.scene.length > 0 && (
+        {(() => { const sc = locale === "en" ? (s.sceneEn ?? s.scene) : s.scene; return sc && sc.length > 0 && (
           <div className="scene">
             <span className="sc-k">{tt("row.scene")}</span>
-            {s.scene.slice(0, 3).map((w) => (
+            {sc.slice(0, 3).map((w) => (
               <Link key={w} href={`${localePath(locale, "/")}?q=${encodeURIComponent(w)}`} className="sc" prefetch={false}>{w}</Link>
             ))}
           </div>
-        )}
+        ); })()}
         <div className="au">@{s.publisher}</div>
       </div>
       <div className="rt">

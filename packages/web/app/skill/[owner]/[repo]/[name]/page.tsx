@@ -69,13 +69,20 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
         {s.sceneTags && s.sceneTags.length > 0 && (
           <div className="d-scene">
             <span className="sc-k"><L zh="场景" en="Scene" /></span>
-            {s.sceneTags.map((w) => (
-              <a key={w} href={`/?q=${encodeURIComponent(w)}`} className="sc">{w}</a>
-            ))}
+            <L
+              zh={s.sceneTags.map((w) => (
+                <a key={w} href={`/?q=${encodeURIComponent(w)}`} className="sc">{w}</a>
+              ))}
+              en={(s.sceneTagsEn ?? s.sceneTags).map((w) => (
+                <a key={w} href={`/en/?q=${encodeURIComponent(w)}`} className="sc">{w}</a>
+              ))}
+            />
           </div>
         )}
         {/* fit_line 放安装按钮上方(决策位):最典型那类用户的处境 */}
-        {s.fitLine && <p className="d-fit">{s.fitLine}</p>}
+        {(s.fitLine || s.fitLineEn) && (
+          <p className="d-fit"><L zh={s.fitLine ?? s.fitLineEn ?? ""} en={s.fitLineEn ?? s.fitLine ?? ""} /></p>
+        )}
         <InstallBox skill={s} />
         <div className="d-stats">
           {s.installs != null && <div><b>{fmtInstalls(s.installs)}</b><span><L zh="安装量" en="installs" /></span></div>}

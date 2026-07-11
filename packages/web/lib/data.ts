@@ -35,6 +35,7 @@ function scan(): Cache {
             license: r.meta.license, hosting: r.meta.hosting, publisher: r.meta.publisher,
             upstream: r.meta.upstream, category: r.meta.category ?? undefined, tags: r.meta.tags ?? [],
             tagline: copy?.tagline, sceneTags: copy?.scene_tags, fitLine: copy?.fit_line,
+            taglineEn: copy?.tagline_en, sceneTagsEn: copy?.scene_tags_en, fitLineEn: copy?.fit_line_en,
             hasMirror: existsSync(join(CATALOG, owner.name, repo.name, name.name, "mirror")),
             duplicateOf: r.meta.duplicate_of ?? null,
             delistedAt: r.meta.delisted_at ?? null,
