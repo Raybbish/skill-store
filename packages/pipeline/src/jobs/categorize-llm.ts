@@ -520,7 +520,16 @@ async function main() {
       if (verbose) vrows.push(`  ${category.padEnd(12)} ⟵ ${(oldCat ?? "uncategorized").padEnd(13)} ${m.id}  [${tags.join(",")}]  «${newCopy?.tagline ?? "—"}»`);
       const oldTags = JSON.stringify(m.tags ?? []);
       const copyChanged = !copyMateriallyEqual(e.report.copy, newCopy);
-      if (oldCat !== category || oldTags !== JSON.stringify(tags) || copyChanged) {
+      // missing-en(ADR 0022):只写 copy 块,分类/标签沿用既有权威判定——英文补跑不重写已收敛的分类
+      // (「采集不冲下游成果」同一哲学;mcp 等贴线判据的治理归分类线,不搭英文批跑的车)。
+      // 且只在拿到英文时才动 copy:模型这次没给英文 → 保留旧 copy(中文成果不因补英文的失败被刷新)。
+      if (scope === "missing-en") {
+        if (newCopy?.tagline_en && copyChanged) {
+          changed++;
+          e.report.copy = newCopy;
+          if (!dry) await writeFile(e.path, JSON.stringify(e.report, null, 2) + "\n");
+        }
+      } else if (oldCat !== category || oldTags !== JSON.stringify(tags) || copyChanged) {
         changed++;
         m.category = category;
         m.tags = tags;
