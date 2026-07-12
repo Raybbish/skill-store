@@ -1,6 +1,6 @@
 /**
  * 双语词典(ADR 0022):「商店的话跟语言走,商品保持原文」。
- * - 商店自有页(首页/榜单/动态/收录/talk/包页)双路由:/ = zh,/en/ = en,服务端以 locale 参数渲染;
+ * - 商店自有页(首页/榜单/动态/收录/包页)双路由:/ = zh,/en/ = en,服务端以 locale 参数渲染;
  * - 共享页(详情/分类/发布者)单路由:chrome 用客户端组件按偏好切换(见 client.tsx 的 L/useLocale);
  * - 商品字段(skill 名/描述/README/用户内容)不翻译——原语言是商品属性。
  * 加一种语言 = 在 dicts 加一份词表(键集用 zh 锚定,tsc 保证不漏)。
@@ -22,7 +22,7 @@ export function langAlternates(path: string, locale: Locale) {
 
 const zh = {
   // 导航 / 页脚
-  "nav.home": "首页", "nav.charts": "榜单", "nav.talk": "讨论", "nav.changelog": "动态", "nav.methodology": "收录",
+  "nav.home": "首页", "nav.charts": "榜单", "nav.changelog": "动态", "nav.methodology": "收录",
   "nav.back": "‹ 首页",
   "footer.privacy": "隐私", "footer.tail": "Agent Skills 商店",
   // 首页
@@ -53,23 +53,13 @@ const zh = {
   "cov.notItemized": "未逐条收录", "cov.listedN": "上架 {n}", "cov.listedLink": "已收录 ›", "cov.source": "源头 ↗",
   "cov.empty": "暂无",
   "cov.footnote": "单仓 ≥ 1,000 个 skill 的批量源:记录来源与规模,不逐条收录",
-  // 公海
-  "talk.title": "讨论 · oh-my-skill", "talk.desc": "公海:求推荐、提问、反馈。登录即可发言。",
-  "talk.eyebrow": "讨论", "talk.h1": "公海",
-  "talk.placeholder": "求推荐、提问、反馈,或任何想说的——纯文本",
-  "talk.nick": "署名(可选,默认「用户」)", "talk.post": "发布",
-  "talk.signHint": "发布时用邮箱验证码登录", "talk.signedAs": "以 {email} 登录", "talk.signOut": "退出",
+  // 邮箱 OTP 登录文案(键名沿革自 /talk;论坛已随 ADR 0024 下线,reviews / me / studio 登录流共用)
+  "talk.signedAs": "以 {email} 登录", "talk.signOut": "退出",
   "talk.emailPh": "邮箱(仅用于验证码登录)", "talk.sendCode": "发验证码", "talk.cancel": "取消",
   "talk.codeTip": "邮件已发到 {email}(注意垃圾箱)——收到链接直接点,会自动回到本页登录;收到 6 位码就在下面输:",
   "talk.codePh": "6 位验证码(如果邮件里有)", "talk.signIn": "登录", "talk.changeEmail": "换邮箱",
-  "talk.official": "官方", "talk.officialTip": "商店官方帖(服务端标记,不可自标)",
-  "talk.reply": "回复", "talk.replyPh": "回复…(纯文本)", "talk.delete": "删除",
-  "talk.expand": "展开全部 {n} 条回复", "talk.empty": "还没有帖子。", "talk.user": "用户",
-  "talk.notConfigured": "讨论区未启用(后端未配置)。",
-  "talk.errEmpty": "写点内容再发", "talk.errEmail": "邮箱格式不对", "talk.errCode": "验证码不对或已过期",
-  "talk.errFast": "发得有点快——稍等几秒再发", "talk.errDepth": "只支持一层回复",
-  "talk.errInit": "讨论区后端未初始化(posts 表缺失,需执行 2026-07-09-talk.sql 迁移)", "talk.errPost": "发布失败({s})", "talk.errDelete": "删除失败({s})",
-  "talk.confirmDel": "删除这条?", "talk.confirmDelN": "删除这条会连带删掉 {n} 条回复,确定?", "talk.confirmYes": "确定删除",
+  "talk.user": "用户",
+  "talk.errEmail": "邮箱格式不对", "talk.errCode": "验证码不对或已过期",
   // 短评
   "rev.title": "短评", "rev.write": "写短评", "rev.edit": "改我的短评",
   "rev.gateOn": "发布需要「已验证安装」:装过(或验证过本机副本)的人才可评。",
@@ -152,7 +142,7 @@ const zh = {
 export type MsgKey = keyof typeof zh;
 
 const en: Record<MsgKey, string> = {
-  "nav.home": "Home", "nav.charts": "Charts", "nav.talk": "Talk", "nav.changelog": "Updates", "nav.methodology": "Coverage",
+  "nav.home": "Home", "nav.charts": "Charts", "nav.changelog": "Updates", "nav.methodology": "Coverage",
   "nav.back": "‹ Home",
   "footer.privacy": "Privacy", "footer.tail": "The Agent Skills store",
   "home.searchPlaceholder": "Search {n} skills…",
@@ -178,22 +168,12 @@ const en: Record<MsgKey, string> = {
   "cov.notItemized": "not itemized", "cov.listedN": "{n} listed", "cov.listedLink": "Listed ›", "cov.source": "Source ↗",
   "cov.empty": "None yet",
   "cov.footnote": "Bulk sources with ≥ 1,000 skills in one repo: recorded (source and scale), not itemized",
-  "talk.title": "Talk · oh-my-skill", "talk.desc": "Open floor: requests, questions, feedback. Sign in to post.",
-  "talk.eyebrow": "Talk", "talk.h1": "Open floor",
-  "talk.placeholder": "Requests, questions, feedback — plain text",
-  "talk.nick": "Name (optional, defaults to “user”)", "talk.post": "Post",
-  "talk.signHint": "Sign in by email code when you post", "talk.signedAs": "Signed in as {email}", "talk.signOut": "sign out",
+  "talk.signedAs": "Signed in as {email}", "talk.signOut": "sign out",
   "talk.emailPh": "Email (used only for the sign-in code)", "talk.sendCode": "Send code", "talk.cancel": "Cancel",
   "talk.codeTip": "Email sent to {email} (check spam) — click the link to sign in and return here; if the email shows a 6-digit code, enter it below:",
   "talk.codePh": "6-digit code (if the email includes one)", "talk.signIn": "Sign in", "talk.changeEmail": "Change email",
-  "talk.official": "Official", "talk.officialTip": "Official store post (server-side flag, cannot be self-assigned)",
-  "talk.reply": "Reply", "talk.replyPh": "Reply… (plain text)", "talk.delete": "Delete",
-  "talk.expand": "Show all {n} replies", "talk.empty": "No posts yet.", "talk.user": "user",
-  "talk.notConfigured": "Talk is not enabled (backend not configured).",
-  "talk.errEmpty": "Write something first", "talk.errEmail": "That email doesn't look right", "talk.errCode": "Wrong or expired code",
-  "talk.errFast": "Too fast — wait a few seconds", "talk.errDepth": "Replies are one level deep",
-  "talk.errInit": "Talk backend not initialized (posts table missing; run the 2026-07-09-talk.sql migration)", "talk.errPost": "Post failed ({s})", "talk.errDelete": "Delete failed ({s})",
-  "talk.confirmDel": "Delete this post?", "talk.confirmDelN": "Deleting this also removes {n} replies. Continue?", "talk.confirmYes": "Delete",
+  "talk.user": "user",
+  "talk.errEmail": "That email doesn't look right", "talk.errCode": "Wrong or expired code",
   "rev.title": "Reviews", "rev.write": "Write a review", "rev.edit": "Edit my review",
   "rev.gateOn": "Posting requires a verified install: only people who installed (or verified a local copy) can review.",
   "rev.gateOff": "Sign in to review; the “verified install” tag means the store has an install or ownership record for the reviewer.",

@@ -23,4 +23,5 @@
 ## 硬约束(沿用 PRD)
 - ⛔ **安全扫描整套已下架**(2026-07-04,[ADR 0011](docs/decisions/0011-unlist-security-scan.md)):不得在产品面展示任何审计/认证/权限披露内容,不得重新接线 `audit`/`review`/`audit:l3`——重新上架需先完成 ADR 0011 列的研究与设计。content_hash 完整性校验、发布者认证、评测(eval)不在下架范围。
 - **措辞:全站禁「保证安全」**;涉及评测只说「已评测」。
+- ⛔ **论坛 /talk 已整体下线**(2026-07-12,[ADR 0024](docs/decisions/0024-remove-talk-board.md)):没有用户先不做。不得重新接线 posts 表 / TalkBoard / nav「讨论」;`talk.*` 词典键仅剩邮箱 OTP 登录文案(reviews/me/studio 共用)。重新上架先读 ADR 0024。
 - 品牌名:**oh-my-skill**。
