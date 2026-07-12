@@ -40,8 +40,8 @@ export function NavTabs() {
       <Link href={p("/charts/")} {...cur("/charts/")}>{tt("nav.charts")}</Link>
       <Link href={p("/changelog/")} {...cur("/changelog/")}>{tt("nav.changelog")}</Link>
       <Link href={p("/methodology/")} {...cur("/methodology/")}>{tt("nav.methodology")}</Link>
-      <NavMe />
       <LocaleSwitch />
+      <NavMe />
     </nav>
   );
 }
