@@ -44,3 +44,9 @@ identities,仅显示与预填用;服务端裁决仍只认 `auth.identities`)。
 `lib/submissions.ts` · `app/studio/`(page + StudioClient)· `SkillReviews`/`TalkBoard` 登录框
 GitHub 按钮 · `SkillClaim` 面板入口 · `infra/migrations/2026-07-12-submissions.sql`。
 上线序(在 2026-07-08-claims.sql 三步之上):执行 submissions 迁移 → 开 claims flag → 完。
+
+## 追记(2026-07-12 同日):/me 一页两态
+用户问「要不要正式登录页」。裁决:**不设独立登录页**(延迟注册是 ADR 0017 定案,登录是动作时刻
+不是目的地;OAuth/魔法链接回跳当前页的模式保持),但补「账号在场」的落点——新增 `/me`:
+未登录 = 登录页(邮箱 OTP + GitHub 双轨,注明两账号暂不互通);已登录 = 身份 + 退出 +
+作者工作台入口(claims flag 开着才显示)。页脚加「我的」。名下内容(短评/回执/认领/提交)留 M2。

@@ -134,6 +134,11 @@ const zh = {
   "sub.dup": "已提交过,无需重复",
   "sub.rate": "提交太频繁,明天再试",
   "sub.notYours": "只能提交 @{login} 名下的仓库",
+  // 我的(/me,一页两态)
+  "me.title": "我的", "me.eyebrow": "账号",
+  "me.twoAccounts": "邮箱与 GitHub 各是一个账号,暂不互通",
+  "me.studio": "作者工作台 ›", "me.studioNote": "认领已收录的作品,提交未收录的仓库",
+  "me.notConfigured": "账号功能未启用(后端未配置)。",
   // 卡片 / 包页 / 其他
   "row.scene": "场景", "row.new": "新", "row.get": "获取 ›",
   "pack.suffix": "{n} 件套,装一次就够。", "pack.hashNote": "安装时逐个校验内容哈希;每个成员也可以单独安装。",
@@ -247,6 +252,10 @@ const en: Record<MsgKey, string> = {
   "sub.dup": "Already submitted",
   "sub.rate": "Too many submissions — try again tomorrow",
   "sub.notYours": "You can only submit repos under @{login}",
+  "me.title": "Me", "me.eyebrow": "Account",
+  "me.twoAccounts": "Email and GitHub sign-ins are separate accounts for now",
+  "me.studio": "Author studio ›", "me.studioNote": "Claim your listed works, submit unlisted repos",
+  "me.notConfigured": "Accounts aren't enabled (backend not configured).",
   "row.scene": "Scene", "row.new": "New", "row.get": "Get ›",
   "pack.suffix": "{n} skills, one install.", "pack.hashNote": "Each member is hash-verified on install; members can also be installed individually.",
   "pack.noTerminal": "No terminal?", "pack.fullZip": "↓ Full pack .zip",
