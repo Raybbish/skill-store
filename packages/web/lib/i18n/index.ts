@@ -23,7 +23,7 @@ export function langAlternates(path: string, locale: Locale) {
 const zh = {
   // 导航 / 页脚
   "nav.home": "首页", "nav.charts": "榜单", "nav.changelog": "动态", "nav.methodology": "收录",
-  "nav.back": "‹ 首页",
+  "nav.back": "‹ 首页", "nav.signIn": "登录",
   "footer.privacy": "隐私", "footer.tail": "Agent Skills 商店",
   // 首页
   "home.searchPlaceholder": "搜索 {n} 个 skill…",
@@ -143,7 +143,7 @@ export type MsgKey = keyof typeof zh;
 
 const en: Record<MsgKey, string> = {
   "nav.home": "Home", "nav.charts": "Charts", "nav.changelog": "Updates", "nav.methodology": "Coverage",
-  "nav.back": "‹ Home",
+  "nav.back": "‹ Home", "nav.signIn": "Sign in",
   "footer.privacy": "Privacy", "footer.tail": "The Agent Skills store",
   "home.searchPlaceholder": "Search {n} skills…",
   "home.packsTitle": "Starter packs", "home.packsK": "Curated by scenario, one command",
