@@ -9,6 +9,13 @@ export function generateStaticParams() {
   return listPublishers().map((dev) => ({ dev }));
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ dev: string }> }) {
+  const { dev } = await params;
+  const v = getPublisherView(decodeURIComponent(dev));
+  if (!v) return {};
+  return { title: `@${v.pub} · oh-my-skill`, description: `@${v.pub} 的作品集:已上架 ${v.works.length} 个 skill。` };
+}
+
 export default async function PublisherPage({ params }: { params: Promise<{ dev: string }> }) {
   const { dev } = await params;
   const v = getPublisherView(decodeURIComponent(dev));

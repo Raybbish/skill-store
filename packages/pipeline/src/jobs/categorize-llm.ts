@@ -469,11 +469,12 @@ async function main() {
     if (m.category_locked) return false;
     if (m.duplicate_of || e.report.frontmatter_valid === false) return false;
     if (scope === "uncategorized" && m.category && m.category !== "uncategorized") return false;
-    // missing-copy:只补微文案缺失或锚过期(copy.content_hash ≠ 当前内容)的条目——
+    // missing-copy:只补「前端没有可用微文案」的条目 = 缺失 / 锚过期(copy.content_hash ≠ 当前内容)/ lint 未过——
+    // lint_pass=false 的 copy 前端一律不用(data.ts 同口径),不重试等于永久回退英文(2026-07-11 修:此前漏掉这档,362 条被卡)。
     // 大批量采集后补跑用,比 --scope all 省一半以上 LLM 花费;分类顺带重判(同一次调用,零额外成本)
-    if (scope === "missing-copy" && e.report.copy && e.report.copy.content_hash === m.content_hash) return false;
-    // missing-en(ADR 0022):只补「zh 微文案新鲜但缺英文」的存量——双语批跑用,同一次调用重产中英两份
-    if (scope === "missing-en" && !(e.report.copy && e.report.copy.content_hash === m.content_hash && !e.report.copy.tagline_en)) return false;
+    if (scope === "missing-copy" && e.report.copy && e.report.copy.content_hash === m.content_hash && e.report.copy.lint_pass === true) return false;
+    // missing-en(ADR 0022):只补「zh 微文案新鲜可用但缺英文」的存量——双语批跑用,同一次调用重产中英两份
+    if (scope === "missing-en" && !(e.report.copy && e.report.copy.content_hash === m.content_hash && e.report.copy.lint_pass === true && !e.report.copy.tagline_en)) return false;
     if (only && m.category !== only) return false;
     if (onlyTag && !(m.tags ?? []).includes(onlyTag)) return false;
     return true;

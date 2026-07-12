@@ -68,8 +68,12 @@ async function main() {
     for (const w of r.cleaned.scene_tags) after.add(w);
     const sceneMoved = JSON.stringify(c.scene_tags) !== JSON.stringify(r.cleaned.scene_tags);
     const lintMoved = c.lint_pass !== r.pass;
-    if (sceneMoved || lintMoved) {
+    // fit_line 同步(2026-07-11 字段级判罚):被 lint 判罚丢弃的 fit_line 必须一起清掉,
+    // 否则 lint_pass 翻 true 后存量的坏 fit_line(如含禁词)会漏上架
+    const fitMoved = (c.fit_line ?? undefined) !== r.cleaned.fit_line;
+    if (sceneMoved || lintMoved || fitMoved) {
       c.scene_tags = r.cleaned.scene_tags;
+      if (fitMoved) { if (r.cleaned.fit_line) c.fit_line = r.cleaned.fit_line; else delete c.fit_line; }
       if (lintMoved) { c.lint_pass = r.pass; flipped++; }
       changed++;
       if (!dry) await writeFile(e.path, JSON.stringify(e.report, null, 2) + "\n");

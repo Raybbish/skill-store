@@ -1,7 +1,7 @@
 <!-- 自动生成,勿手改。运行: npm run status -->
 # 项目状态(自动快照)
 
-_生成于 2026-07-09 11:07 UTC · 分支 `feat/s0-work-list-model` · 未提交改动 13 处_
+_生成于 2026-07-12 06:14 UTC · 分支 `feat/s0-work-list-model` · 未提交改动 498 处_
 
 ## Catalog
 - **skill 总数:10494**
@@ -11,12 +11,12 @@ _生成于 2026-07-09 11:07 UTC · 分支 `feat/s0-work-list-model` · 未提交
 
 ## 最近提交
 ```
-17ea34ecc docs:STATUS 收口 S0/S1 全线状态(验收/cron/清理迁移已执行),status 快照刷新 10,494
-0c9bc0d47 ingest.yml:cron 加 --code-search 30;PR 抽查清单同步 ADR 0019 口径
-97e825130 ingest:code-search 单源故障降级为跳过,不拖死整趟采集
-f0258d0b4 S1 Code Search 采集器(ADR 0019):filename:SKILL.md 全网扫描,好货不打标的仓从这条线进
-56e9bfd94 S0 收敛迁移:清 Supabase 中 catalog 已删的 692 条 skills 行
-3524faab2 收录页去执法语言:「已拦截」退场,只留事实陈述
-88226d70d 收录页补拦截规则注脚:已拦截=单仓≥1000 批量源,不逐条收录
-815688670 收录页大源补自述与拦截态(ADR 0019 随笔补丁)
+0ef996806 research 包重组:名实对齐为通用论文流水线(用户纠错:原四件偏生物)
+511cb9d1c ADR 0022:手记译文口径入档
+53ace4146 编辑手记英文译文(ADR 0022 修订,用户裁决):忠实翻译,署名不变
+c8f6307a0 场景包扩容:8→11,新开安全审计/社媒发布/科研论文三包(用户裁决)
+67b83615f 场景包货架文案双语(ADR 0022 补):title_en/tagline_en 随 locale
+05cf8a796 双语显示层四件(ADR 0022 收官):英文微文案上屏 + 英文搜索召回
+2d1a79b32 数据批:微文案英文全量补齐(missing-en,9316 条写盘,lint 96.4%)
+97e35f560 missing-en 批跑只写 copy 块,分类/标签沿用权威判定(ADR 0022)
 ```

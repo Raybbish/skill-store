@@ -42,7 +42,7 @@ export default function SkillRow({ skill, rank, isNew }: { skill: SkillCard; ran
         {s.stars != null
           ? <div className="score"><span className="gold">★</span> {fmt(s.stars)}</div>
           : s.installs != null
-            ? <div className="score">⬇ {fmt(s.installs)}</div>
+            ? <div className="score">↓ {fmt(s.installs)}</div>
             : <div className="dl">{tt("row.new")}</div>}
         <Link href={href} className="go" onClick={onOpen}>{tt("row.get")}</Link>
       </div>

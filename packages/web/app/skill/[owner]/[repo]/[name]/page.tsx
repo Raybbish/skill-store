@@ -22,6 +22,15 @@ function contextMethodTip(c: { id: string; method: string; description?: string;
   return c.description ? `${label} · ${c.description}` : label;
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ owner: string; repo: string; name: string }> }) {
+  const { owner, repo, name } = await params;
+  const s = getSkill(owner, repo, name);
+  if (!s) return {};
+  // 副题优先机器微文案 tagline,与列表行同口径;缺失回退 description 截断
+  const desc = s.tagline ?? (s.description ? (s.description.length > 140 ? s.description.slice(0, 140) + "…" : s.description) : undefined);
+  return { title: `${s.name} — @${s.publisher} · oh-my-skill`, description: desc };
+}
+
 export function generateStaticParams() {
   // 可见条目 + 退市墓碑页(ADR 0020:deep link 不 404,留事实行);拷贝/不合规仍不出页
   const tombs = allSkills({ includeHidden: true }).filter(

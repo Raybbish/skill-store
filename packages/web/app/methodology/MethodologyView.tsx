@@ -14,7 +14,7 @@ function Ratio({ sampled, total }: { sampled: number; total: number }) {
       <div style={{ flex: "0 0 120px", height: 3, borderRadius: 2, background: "var(--hair)", overflow: "hidden" }}>
         <div style={{ width: `${Math.max(1.5, pct)}%`, height: "100%", background: "var(--blue)" }} />
       </div>
-      <span style={{ fontSize: 11.5, color: "var(--faint)", fontFamily: "var(--mono)" }}>{label}</span>
+      <span style={{ fontSize: 12, color: "var(--faint)", fontFamily: "var(--mono)" }}>{label}</span>
     </div>
   );
 }
@@ -53,7 +53,7 @@ export default function MethodologyView({ locale }: { locale: Locale }) {
             <div className="rt">
               {c.stars != null && <div className="score"><span className="gold">★</span> {fmtInstalls(c.stars)}</div>}
               {!c.blocked && <Link href={`${localePath(locale, "/")}?repo=${encodeURIComponent(c.id)}`} className="go">{t(locale, "cov.listedLink")}</Link>}
-              <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600 }}>{t(locale, "cov.source")}</a>
+              <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "var(--faint)", fontWeight: 600 }}>{t(locale, "cov.source")}</a>
             </div>
           </div>
         ))}

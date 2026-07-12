@@ -1,9 +1,10 @@
 import TalkBoard from "@/components/TalkBoard";
-import { t } from "@/lib/i18n";
+import { langAlternates, t } from "@/lib/i18n";
 
 export const metadata = {
   title: "Talk · oh-my-skill",
   description: "Open floor: requests, questions, feedback. Sign in to post.",
+  alternates: langAlternates("/talk/", "en"),
 };
 
 export default function TalkPageEn() {

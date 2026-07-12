@@ -87,17 +87,20 @@ export default function TalkBoard() {
     setBusy(false);
   }
 
+  /** 待确认删除的帖 id:行内二次确认,不用 window.confirm(样式不可控且与站点语言断裂) */
+  const [confirmDel, setConfirmDel] = useState<Post["id"] | null>(null);
+
   async function remove(p: Post) {
     if (!session) return;
-    const n = p.reply_to == null ? (replies.get(p.id)?.length ?? 0) : 0;
-    if (!window.confirm(n ? tt("talk.confirmDelN", { n }) : tt("talk.confirmDel"))) return;
     setBusy(true); setErr("");
     try { await deletePost(session, p.id); await refresh(); } catch (e) { setErr(errText(e)); }
-    setBusy(false);
+    setBusy(false); setConfirmDel(null);
   }
 
-  /** 注脚行:署名 · 官方签 · 相对时间(悬停精确日)· 回复/删除 */
-  const foot = (p: Post, withReply: boolean) => (
+  /** 注脚行:署名 · 官方签 · 相对时间(悬停精确日)· 回复/删除(删除 = 行内二次确认) */
+  const foot = (p: Post, withReply: boolean) => {
+    const n = p.reply_to == null ? (replies.get(p.id)?.length ?? 0) : 0;
+    return (
     <div className="tk-foot">
       <span className="tk-nick">{p.author_label || tt("talk.user")}</span>
       {p.official && <span className="tk-official" title={tt("talk.officialTip")}>{tt("talk.official")}</span>}
@@ -105,11 +108,18 @@ export default function TalkBoard() {
       {withReply && (
         <button className="tk-act" onClick={() => { setReplyTo(replyTo === p.id ? null : p.id); setReplyDraft(""); }}>{tt("talk.reply")}</button>
       )}
-      {session?.user.id === p.user_id && (
-        <button className="tk-act" disabled={busy} onClick={() => void remove(p)}>{tt("talk.delete")}</button>
-      )}
+      {session?.user.id === p.user_id && (confirmDel === p.id ? (
+        <span className="tk-confirm">
+          {n ? tt("talk.confirmDelN", { n }) : tt("talk.confirmDel")}
+          <button className="tk-act tk-danger" disabled={busy} onClick={() => void remove(p)}>{tt("talk.confirmYes")}</button>
+          <button className="tk-act" onClick={() => setConfirmDel(null)}>{tt("talk.cancel")}</button>
+        </span>
+      ) : (
+        <button className="tk-act" disabled={busy} onClick={() => setConfirmDel(p.id)}>{tt("talk.delete")}</button>
+      ))}
     </div>
-  );
+    );
+  };
 
   return (
     <section className="tk">

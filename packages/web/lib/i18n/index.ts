@@ -9,11 +9,22 @@
 export type Locale = "zh" | "en";
 export const DEFAULT_LOCALE: Locale = "zh";
 
+/** 双路由页 hreflang 互指(SEO 收尾):path 传 zh 变体路径(如 "/charts/"),
+ *  产出 Metadata.alternates —— canonical 指本 locale 变体,languages 互指,x-default 归 zh。 */
+export function langAlternates(path: string, locale: Locale) {
+  const zh = path;
+  const en = `/en${path}`;
+  return {
+    canonical: locale === "en" ? en : zh,
+    languages: { "zh-CN": zh, en, "x-default": zh },
+  };
+}
+
 const zh = {
   // 导航 / 页脚
   "nav.home": "首页", "nav.charts": "榜单", "nav.talk": "讨论", "nav.changelog": "动态", "nav.methodology": "收录",
   "nav.back": "‹ 首页",
-  "footer.line": "catalog 公开可验证", "footer.policy": "收录标准", "footer.tail": "Agent Skills 商店",
+  "footer.line": "catalog 公开可验证", "footer.policy": "收录标准", "footer.privacy": "隐私", "footer.tail": "Agent Skills 商店",
   // 首页
   "home.searchPlaceholder": "搜索 {n} 个 skill…",
   "home.packsTitle": "一套装齐", "home.packsK": "按场景配好,一条命令",
@@ -23,6 +34,8 @@ const zh = {
   "home.all": "全部", "home.any": "不限",
   "home.noMatch": "无匹配结果", "home.loadFail": "索引加载失败,刷新重试", "home.loading": "加载中…",
   "home.prev": "‹ 上一页", "home.next": "下一页 ›", "home.pageOf": "第 {p} / {n} 页",
+  "home.sortLabel": "排序", "home.sortHot": "热门", "home.sortStars": "Star 数", "home.sortNew": "最新收录",
+  "home.searchLabel": "搜索 skill",
   // 分面名(labels.ts FACETS 只有中文名,英文在这里补)
   "facet.activity": "做什么", "facet.surface": "用在哪", "facet.language": "语言", "facet.tech": "技术", "facet.meta": "其他",
   // 榜单
@@ -56,7 +69,7 @@ const zh = {
   "talk.errEmpty": "写点内容再发", "talk.errEmail": "邮箱格式不对", "talk.errCode": "验证码不对或已过期",
   "talk.errFast": "发得有点快——稍等几秒再发", "talk.errDepth": "只支持一层回复",
   "talk.errInit": "讨论区后端未初始化(posts 表缺失,需执行 2026-07-09-talk.sql 迁移)", "talk.errPost": "发布失败({s})", "talk.errDelete": "删除失败({s})",
-  "talk.confirmDel": "删除这条?", "talk.confirmDelN": "删除这条会连带删掉 {n} 条回复,确定?",
+  "talk.confirmDel": "删除这条?", "talk.confirmDelN": "删除这条会连带删掉 {n} 条回复,确定?", "talk.confirmYes": "确定删除",
   // 短评
   "rev.title": "短评", "rev.write": "写短评", "rev.edit": "改我的短评",
   "rev.gateOn": "发布需要「已验证安装」:装过(或验证过本机副本)的人才可评。",
@@ -113,7 +126,7 @@ export type MsgKey = keyof typeof zh;
 const en: Record<MsgKey, string> = {
   "nav.home": "Home", "nav.charts": "Charts", "nav.talk": "Talk", "nav.changelog": "Updates", "nav.methodology": "Coverage",
   "nav.back": "‹ Home",
-  "footer.line": "catalog is public & verifiable", "footer.policy": "Coverage policy", "footer.tail": "The Agent Skills store",
+  "footer.line": "catalog is public & verifiable", "footer.policy": "Coverage policy", "footer.privacy": "Privacy", "footer.tail": "The Agent Skills store",
   "home.searchPlaceholder": "Search {n} skills…",
   "home.packsTitle": "Starter packs", "home.packsK": "Curated by scenario, one command",
   "home.allSkills": "All skills", "home.relevance": "by relevance",
@@ -122,6 +135,8 @@ const en: Record<MsgKey, string> = {
   "home.all": "All", "home.any": "Any",
   "home.noMatch": "No results", "home.loadFail": "Index failed to load — refresh to retry", "home.loading": "Loading…",
   "home.prev": "‹ Prev", "home.next": "Next ›", "home.pageOf": "Page {p} of {n}",
+  "home.sortLabel": "Sort", "home.sortHot": "Popular", "home.sortStars": "Stars", "home.sortNew": "Newest",
+  "home.searchLabel": "Search skills",
   "facet.activity": "Activity", "facet.surface": "Surface", "facet.language": "Language", "facet.tech": "Tech", "facet.meta": "Other",
   "charts.eyebrow": "Charts", "charts.title": "What's new today",
   "charts.tabNew": "🆕 New", "charts.tabHot": "🔥 Trending", "charts.tabEval": "🧪 Evals · in progress",
@@ -150,7 +165,7 @@ const en: Record<MsgKey, string> = {
   "talk.errEmpty": "Write something first", "talk.errEmail": "That email doesn't look right", "talk.errCode": "Wrong or expired code",
   "talk.errFast": "Too fast — wait a few seconds", "talk.errDepth": "Replies are one level deep",
   "talk.errInit": "Talk backend not initialized (posts table missing; run the 2026-07-09-talk.sql migration)", "talk.errPost": "Post failed ({s})", "talk.errDelete": "Delete failed ({s})",
-  "talk.confirmDel": "Delete this post?", "talk.confirmDelN": "Deleting this also removes {n} replies. Continue?",
+  "talk.confirmDel": "Delete this post?", "talk.confirmDelN": "Deleting this also removes {n} replies. Continue?", "talk.confirmYes": "Delete",
   "rev.title": "Reviews", "rev.write": "Write a review", "rev.edit": "Edit my review",
   "rev.gateOn": "Posting requires a verified install: only people who installed (or verified a local copy) can review.",
   "rev.gateOff": "Sign in to review; the “verified install” tag means the store has an install or ownership record for the reviewer.",

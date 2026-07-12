@@ -1,9 +1,10 @@
 import TalkBoard from "@/components/TalkBoard";
-import { t } from "@/lib/i18n";
+import { langAlternates, t } from "@/lib/i18n";
 
 export const metadata = {
   title: "讨论 · oh-my-skill",
   description: "公海:求推荐、提问、反馈。登录即可发言。",
+  alternates: langAlternates("/talk/", "zh"),
 };
 
 /** 公海讨论区(ADR 0021):静态壳 + 客户端板(列表匿名读,发言走邮箱 OTP)。 */

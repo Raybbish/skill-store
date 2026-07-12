@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { type Pack, type SearchResult, type SkillCard } from "@/lib/store";
+import { type Pack, type SearchResult, type SkillCard, type SortKey } from "@/lib/store";
 import { createStore } from "@/lib/store-typesense";
 import SkillRow from "@/components/SkillRow";
 import { trackSearch } from "@/lib/analytics";
@@ -69,6 +69,7 @@ export default function HomeClient({ locale, first, meta, cats, tags, facets, ca
   const [sel, setSel] = useState<Record<string, string | null>>({}); // 第二步:分面交叉筛(每面至多一个,AND)
   const [repo, setRepo] = useState<string | null>(null); // 深链:精确到仓(收录页「已收录 ›」)
   const [pub, setPub] = useState<string | null>(null);   // 深链:发布者
+  const [sort, setSort] = useState<SortKey>("hot");      // 排序:热门(默认)/ Star 数 / 最新收录
   const [page, setPage] = useState(1);
   const [res, setRes] = useState<SearchResult>({ items: first, total: meta.total, page: 1, pages: meta.pages });
   const [busy, setBusy] = useState(false);
@@ -92,6 +93,8 @@ export default function HomeClient({ locale, first, meta, cats, tags, facets, ca
     if (qq) setQ(qq);
     if (sp.get("repo")) setRepo(sp.get("repo"));
     else if (sp.get("pub")) setPub(sp.get("pub"));
+    const so = sp.get("sort");
+    if (so === "stars" || so === "new") setSort(so);
   }, [cats, tags]);
 
   const selTags = useMemo(() => Object.values(sel).filter((x): x is string => Boolean(x)), [sel]);
@@ -99,7 +102,7 @@ export default function HomeClient({ locale, first, meta, cats, tags, facets, ca
   // 取数:防抖 + 防竞态,全部走 store.search 一条缝
   useEffect(() => {
     const my = ++seq.current;
-    const plain = !q.trim() && !cat && !selTags.length && !repo && !pub;
+    const plain = !q.trim() && !cat && !selTags.length && !repo && !pub && sort === "hot";
     if (plain && page === 1) {
       setRes({ items: first, total: meta.total, page: 1, pages: meta.pages });
       setBusy(false); setErr(false);
@@ -108,14 +111,14 @@ export default function HomeClient({ locale, first, meta, cats, tags, facets, ca
     setBusy(true);
     const run = () => {
       if (q.trim() && page === 1) trackSearch(q); // 埋点:一次执行的搜索(防抖后),翻页不重复计
-      return store.search(q, { cat, tags: selTags, repo, publisher: pub }, page)
+      return store.search(q, { cat, tags: selTags, repo, publisher: pub, sort }, page)
         .then((r) => { if (seq.current === my) { setRes(r); setErr(false); } })
         .catch(() => { if (seq.current === my) setErr(true); })
         .finally(() => { if (seq.current === my) setBusy(false); });
     };
     const timer = setTimeout(run, q ? 280 : 0); // 防抖窗口:带词 280ms(收住逐字输入的中间态,省请求),清空/纯筛选即时响应
     return () => clearTimeout(timer);
-  }, [q, cat, selTags, repo, pub, page, first, meta]);
+  }, [q, cat, selTags, repo, pub, sort, page, first, meta]);
 
   const goto = (p: number) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const resetPage = () => setPage(1);
@@ -149,8 +152,9 @@ export default function HomeClient({ locale, first, meta, cats, tags, facets, ca
           ? <h1>Find the right <span className="hl">skills</span><br />for your agent</h1>
           : <h1>给你的 agent,<br />找对 <span className="hl">skill</span></h1>}
         <div className="searchbar" style={{ marginTop: 22 }}>
-          <span>🔍</span>
-          <input value={q} onChange={(e) => { setQ(e.target.value); resetPage(); }} placeholder={tt("home.searchPlaceholder", { n: nf(meta.total) })} />
+          {/* 单色描边镜(替代彩色 emoji 🔍:平台渲染一致,可继承颜色) */}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4.2-4.2" /></svg>
+          <input type="search" aria-label={tt("home.searchLabel")} value={q} onChange={(e) => { setQ(e.target.value); resetPage(); }} placeholder={tt("home.searchPlaceholder", { n: nf(meta.total) })} />
         </div>
       </section>
 
@@ -175,14 +179,14 @@ export default function HomeClient({ locale, first, meta, cats, tags, facets, ca
               </h2>
             )
             : <h2>{tt("home.allSkills")}</h2>}
-          {q.trim() && <span className="k">{tt("home.relevance")}</span>}
+          {q.trim() && sort === "hot" && <span className="k">{tt("home.relevance")}</span>}
         </div>
       </div>
 
       {/* 深链来源筛选(收录页「已收录 ›」/ 发布者):显式展示,可一键清除 */}
       {(repo || pub) && (
         <div className="filters">
-          <span style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600, alignSelf: "center" }}>{repo ? tt("home.filterRepo") : tt("home.filterPub")}</span>
+          <span style={{ fontSize: 13, color: "var(--faint)", fontWeight: 600, alignSelf: "center" }}>{repo ? tt("home.filterRepo") : tt("home.filterPub")}</span>
           <button className="chip on" onClick={() => { setRepo(null); setPub(null); resetPage(); }}>
             {repo ?? `@${pub}`} ✕
           </button>
@@ -215,6 +219,12 @@ export default function HomeClient({ locale, first, meta, cats, tags, facets, ca
       {/* 分类页不再有站内入口:IA 合并后首页筛选视图功能严格超集(同排序口径+交叉筛+全量分页),
           跳过去只会失去能力;分类页仅作 SEO 落地页与站外深链目标存在 */}
       <div className="filters">
+        {/* 排序(非筛选):显式选 Star 数/最新收录时压过相关度;无词浏览恒套 per-repo cap */}
+        <select value={sort} aria-label={tt("home.sortLabel")} onChange={(e) => { setSort(e.target.value as SortKey); resetPage(); }}>
+          <option value="hot">{tt("home.sortHot")}</option>
+          <option value="stars">{tt("home.sortStars")}</option>
+          <option value="new">{tt("home.sortNew")}</option>
+        </select>
         <span className="fcount">{nf(res.total)} / {nf(meta.total)}</span>
       </div>
 
@@ -228,7 +238,7 @@ export default function HomeClient({ locale, first, meta, cats, tags, facets, ca
       {res.pages > 1 && (
         <div className="filters" style={{ marginTop: 16, justifyContent: "center" }}>
           <button className="chip" disabled={res.page <= 1} style={res.page <= 1 ? { opacity: 0.4 } : undefined} onClick={() => goto(res.page - 1)}>{tt("home.prev")}</button>
-          <span style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600, alignSelf: "center" }}>{tt("home.pageOf", { p: res.page, n: nf(res.pages) })}</span>
+          <span style={{ fontSize: 13, color: "var(--faint)", fontWeight: 600, alignSelf: "center" }}>{tt("home.pageOf", { p: res.page, n: nf(res.pages) })}</span>
           <button className="chip" disabled={res.page >= res.pages} style={res.page >= res.pages ? { opacity: 0.4 } : undefined} onClick={() => goto(res.page + 1)}>{tt("home.next")}</button>
         </div>
       )}

@@ -68,6 +68,9 @@ export interface Pack {
   editorNote?: { text: string; author: string; date: string; text_en?: string };
 }
 
+/** 列表排序键:hot=货架热门序(默认,带词时=相关度);stars=仓 star 数;new=收录时间 */
+export type SortKey = "hot" | "stars" | "new";
+
 export interface SearchFilters {
   cat?: string | null;
   tag?: string | null;
@@ -78,6 +81,8 @@ export interface SearchFilters {
   publisher?: string | null;
   /** 精确到仓:"owner/repo"(合集页「已收录 ›」深链用) */
   repo?: string | null;
+  /** 排序(非筛选,不参与 matchFilters/计数);缺省 = hot */
+  sort?: SortKey | null;
 }
 
 export interface SearchResult {
@@ -260,8 +265,9 @@ export class StaticStore implements SkillStore {
 
   async search(query: string, filters: SearchFilters, page: number): Promise<SearchResult> {
     const q = query.trim();
-    // 快路径:默认视图走构建期分片
-    if (!q && !hasFilters(filters)) {
+    const sort = filters.sort ?? "hot";
+    // 快路径:默认视图(热门序)走构建期分片
+    if (!q && !hasFilters(filters) && sort === "hot") {
       const meta = await this.getMeta();
       const p = Math.min(Math.max(1, page), Math.max(1, meta.pages));
       let items = this.pageCache.get(p);
@@ -282,9 +288,12 @@ export class StaticStore implements SkillStore {
         .filter((x) => x.s > 0)
         .sort((a, b) => b.s - a.s || a.i - b.i) // 同分保持热门序(稳定)
         .map((x) => x.c);
-    } else {
-      list = applyRepoCap(list);
     }
+    // 显式排序(stars/new)= 纯排序,不套 per-repo cap(2026-07-11 裁决:所见即数据,
+    // 聚合仓同分连排是事实就照排);cap 仅保留在默认「热门」序(货架反刷屏机制,ADR 0005)
+    if (sort === "stars") list = [...list].sort((a, b) => (b.stars ?? -1) - (a.stars ?? -1));
+    else if (sort === "new") list = [...list].sort((a, b) => (b.addedAt ?? 0) - (a.addedAt ?? 0));
+    else if (!q) list = applyRepoCap(list);
     const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
     const p = Math.min(Math.max(1, page), pages);
     return { items: list.slice((p - 1) * PAGE_SIZE, p * PAGE_SIZE), total: list.length, page: p, pages };
