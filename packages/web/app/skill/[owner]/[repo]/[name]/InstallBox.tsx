@@ -4,11 +4,13 @@ import type { Skill } from "@/lib/skill-types";
 import { trackInstall } from "@/lib/analytics";
 import { ridToken } from "@/lib/receipts";
 import DlLink from "@/components/DlLink";
+import { useT } from "@/lib/i18n/client";
 
 // CLI / 下载 / 安装脚本的 base 域名 —— 正式域名替换处
-const HOST = "https://oh-my-skill.dev";
+const HOST = "https://oh-my-skill.com";
 
 function CopyBtn({ text, onCopied }: { text: string; onCopied?: () => void }) {
+  const tt = useT();
   const [ok, setOk] = useState(false);
   return (
     <button
@@ -24,18 +26,17 @@ function CopyBtn({ text, onCopied }: { text: string; onCopied?: () => void }) {
         }
       }}
     >
-      {ok ? "已复制 ✓" : "复制"}
+      {ok ? tt("inst.copied") : tt("inst.copy")}
     </button>
   );
 }
 
 /**
- * 安装区:对标 ModelScope 的多方式安装,但保留本店差异点——
- *   - 下载 zip 仅 mirrored(宽松 licence)可打包;indexed 回上游(licence 双轨 + DMCA)
- *   - npx / bash 装时校验 content_hash(别家盲装,这里不是)
- *   - 不做 ModelScope 的「SDK 安装」:本店 agent / 模型中立,无自家 SDK,照搬会错位
+ * 安装区:多方式安装 + 本店差异点(哈希校验;indexed 回上游)。
+ * chrome 双语(共享页,客户端切换);命令与路径是事实,不翻。
  */
 export default function InstallBox({ skill }: { skill: Skill }) {
+  const tt = useT();
   const { id, upstream, hasMirror, contentHash } = skill;
   const leaf = id.split("/").pop() ?? id;
   // 复制命令内嵌短 token(ADR 0017 路径②):CLI 装机回执带回,绑定 web 会话——藏在复制动作里。
@@ -51,23 +52,23 @@ export default function InstallBox({ skill }: { skill: Skill }) {
   return (
     <div className="inst">
       <div className="inst-m">
-        <div className="inst-h"><span>/</span> 下载安装</div>
+        <div className="inst-h"><span>/</span> {tt("inst.download")}</div>
         {hasMirror ? (
           <>
             <div className="inst-cmd">
               <code className="inst-file">{leaf}.skill</code>
-              <span className="inst-note">双击,或拖进 Claude 桌面版 / Cowork,即完成安装</span>
+              <span className="inst-note">{tt("inst.dragNote")}</span>
               {/* 同一份文件、两个下载名:.skill 给拖拽安装,.zip 给手动放置(download 属性同源改名) */}
               <DlLink id={id} href={`/dl/${id}.skill`} download={`${leaf}.skill`} contentHash={contentHash}>↓ .skill</DlLink>
               <DlLink id={id} href={`/dl/${id}.skill`} download={`${leaf}.zip`} contentHash={contentHash}>↓ .zip</DlLink>
             </div>
             <details className="inst-dirs">
-              <summary>用别的 agent?下载 .zip 解压,把文件夹放进它的技能目录</summary>
+              <summary>{tt("inst.otherAgent")}</summary>
               <div className="inst-dirs-t">
-                <div><b>Claude Code</b><code>~/.claude/skills/</code>(项目级 <code>.claude/skills/</code>)</div>
+                <div><b>Claude Code</b><code>~/.claude/skills/</code>({tt("inst.projLevel")} <code>.claude/skills/</code>)</div>
                 <div><b>Codex CLI</b><code>~/.codex/skills/</code></div>
-                <div><b>Cursor</b>自动读取上面两处目录</div>
-                <div><b>其他工具</b>见其文档的「skills」目录;两个下载是同一份文件,只是名字不同</div>
+                <div><b>Cursor</b>{tt("inst.cursorNote")}</div>
+                <div><b>{tt("inst.otherTools")}</b>{tt("inst.otherToolsNote")}</div>
               </div>
             </details>
           </>
@@ -79,23 +80,21 @@ export default function InstallBox({ skill }: { skill: Skill }) {
       </div>
 
       <div className="inst-m">
-        <div className="inst-h"><span>/</span> 通过 npx 安装 <em className="inst-tag">校验哈希</em></div>
+        <div className="inst-h"><span>/</span> {tt("inst.npx")} <em className="inst-tag">{tt("inst.hashTag")}</em></div>
         <div className="inst-cmd"><code className="cli">{npx}</code><CopyBtn text={npx} onCopied={() => trackInstall(id)} /></div>
       </div>
 
       <div className="inst-m">
-        <div className="inst-h"><span>/</span> 通过 bash 安装</div>
+        <div className="inst-h"><span>/</span> {tt("inst.bash")}</div>
         <div className="inst-cmd"><code className="cli">{curl}</code><CopyBtn text={curl} onCopied={() => trackInstall(id)} /></div>
       </div>
 
       <div className="inst-m">
-        <div className="inst-h"><span>/</span> 已经装过?验证本机副本,不用重装</div>
+        <div className="inst-h"><span>/</span> {tt("inst.verify")}</div>
         <div className="inst-cmd"><code className="cli">{vfy}</code><CopyBtn text={vfy} /></div>
       </div>
 
-      <div className="inst-foot">
-        安装器自动探测 agent 目录(.claude / .codex / .cursor …);落盘前逐文件复算 blob sha 校验 <code>content_hash</code>,与货架不一致即拒装 —— 别家 <code>npx</code> 是盲装,这里不是。
-      </div>
+      <div className="inst-foot">{tt("inst.foot")}</div>
     </div>
   );
 }

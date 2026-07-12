@@ -41,6 +41,8 @@ export interface Skill {
   hasMirror?: boolean;
   /** 采集去重:非 null 表示本条是另一条(canonical)的副本/搬运;默认列表隐藏 */
   duplicateOf?: string | null;
+  /** 退市墓碑(ADR 0020):上游连续缺席后停止收录;货架隐藏,详情页留事实行 */
+  delistedAt?: string | null;
   /** SKILL.md frontmatter 是否合规;false(不合规)默认列表隐藏 */
   frontmatterValid?: boolean;
   /** 内容哈希(verdict 锚点;build-index 查账本用,不进瘦卡) */
@@ -55,12 +57,16 @@ export interface Skill {
   /** 上游仓库 SKILL.md 总数(巨仓降权信号) */
   repoSkillCount?: number;
   /** 来自批量源仓库的折叠采样条目 */
+  /** 英文转述(ADR 0022):同锚同批;缺失时前端回退 description 原文 */
+  taglineEn?: string;
+  sceneTagsEn?: string[];
+  fitLineEn?: string;
   bulkSource?: boolean;
   curatedBy?: { list: string; category: string }[];
   eval?: EvalData | null;
 }
 
-/** 批量源仓库合集条目(catalog/collections) */
+/** 清单记录(catalog/lists,ADR 0019;原 catalog/collections 合集条目)。blocked = 拦截仓(零内容上架);description = 上游仓自述(采集事实) */
 export interface Collection {
-  id: string; url: string; skillCount: number; sampledCount: number; stars?: number | null;
+  id: string; url: string; skillCount: number; sampledCount: number; stars?: number | null; blocked?: boolean; description?: string;
 }

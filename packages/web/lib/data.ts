@@ -35,8 +35,10 @@ function scan(): Cache {
             license: r.meta.license, hosting: r.meta.hosting, publisher: r.meta.publisher,
             upstream: r.meta.upstream, category: r.meta.category ?? undefined, tags: r.meta.tags ?? [],
             tagline: copy?.tagline, sceneTags: copy?.scene_tags, fitLine: copy?.fit_line,
+            taglineEn: copy?.tagline_en, sceneTagsEn: copy?.scene_tags_en, fitLineEn: copy?.fit_line_en,
             hasMirror: existsSync(join(CATALOG, owner.name, repo.name, name.name, "mirror")),
             duplicateOf: r.meta.duplicate_of ?? null,
+            delistedAt: r.meta.delisted_at ?? null,
             frontmatterValid: r.frontmatter_valid !== false,
             contentHash: r.meta.content_hash,
             contextSize: r.context_size ?? null,
@@ -52,7 +54,8 @@ function scan(): Cache {
     }
   }
   all.sort((a, b) => a.id.localeCompare(b.id));
-  const visible = all.filter((s) => !s.duplicateOf && s.frontmatterValid !== false);
+  // 退市墓碑(ADR 0020)不进货架/索引;详情页仍可直达(byId 走 all),留事实行
+  const visible = all.filter((s) => !s.duplicateOf && s.frontmatterValid !== false && !s.delistedAt);
   const byId = new Map(all.map((s) => [s.id, s]));
   CACHE = { all, visible, byId };
   return CACHE;
@@ -78,22 +81,31 @@ export function skillsByLabel(slug: string): Skill[] {
   return allSkills().filter((s) => s.category === slug || (s.tags ?? []).includes(slug));
 }
 
-const COLLECTIONS = join(process.cwd(), "../../catalog/collections");
+const LISTS = join(process.cwd(), "../../catalog/lists");
 let COLL_CACHE: Collection[] | null = null;
 
-/** 批量源合集条目,按 skill 总数降序;目录不存在返回空 */
+/**
+ * 清单记录(catalog/lists,ADR 0019;原 catalog/collections 已升级迁移),按 skill 总数降序。
+ * blocked = 拦截仓(批量生成/搬运,零内容上架,收录页留痕)。
+ * 只列克隆看过全量的仓(file_count 已知);纯 appearance 来源的小记录不进收录页。
+ */
 export function allCollections(): Collection[] {
   if (COLL_CACHE) return COLL_CACHE;
   const out: Collection[] = [];
   let owners: string[] = [];
-  try { owners = readdirSync(COLLECTIONS); } catch { return out; }
+  try { owners = readdirSync(LISTS); } catch { return out; }
   for (const owner of owners) {
     try {
-      for (const f of readdirSync(join(COLLECTIONS, owner))) {
+      for (const f of readdirSync(join(LISTS, owner))) {
         if (!f.endsWith(".json")) continue;
         try {
-          const c = JSON.parse(readFileSync(join(COLLECTIONS, owner, f), "utf8"));
-          out.push({ id: c.id, url: c.url, skillCount: c.skill_count, sampledCount: c.sampled_count, stars: c.stars_github });
+          const c = JSON.parse(readFileSync(join(LISTS, owner, f), "utf8"));
+          if (typeof c.file_count !== "number") continue;
+          out.push({
+            id: c.id, url: c.url, skillCount: c.file_count, sampledCount: c.sampled_count ?? 0,
+            stars: c.stars_github, blocked: c.blocked === true,
+            ...(typeof c.description === "string" && c.description ? { description: c.description } : {}),
+          });
         } catch { /* skip */ }
       }
     } catch { /* skip */ }

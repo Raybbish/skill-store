@@ -67,8 +67,12 @@ const create = await api("/collections", {
   method: "POST",
   body: JSON.stringify({
     name: TS_COLLECTION,
-    // pop 显式声明为默认排序键;其余字段 auto(10k 级全索引无压力,P1 后半场再按需收窄)
-    fields: [{ name: "pop", type: "int32" }, { name: "cap_overflow", type: "int32" }, { name: ".*", type: "auto" }],
+    // pop 显式声明为默认排序键;stars/addedAt 显式 optional 数值(排序键,auto 推断对缺值字段不可靠);其余 auto
+    fields: [
+      { name: "pop", type: "int32" }, { name: "cap_overflow", type: "int32" },
+      { name: "stars", type: "int64", optional: true }, { name: "addedAt", type: "int64", optional: true },
+      { name: ".*", type: "auto" },
+    ],
     default_sorting_field: "pop",
   }),
 });

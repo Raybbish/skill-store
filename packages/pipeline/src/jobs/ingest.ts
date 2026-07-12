@@ -8,14 +8,16 @@ import { join } from "node:path";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
-import type { CollectionReport, SkillReport } from "@skill-store/schemas";
+import type { ListReport, SkillReport } from "@skill-store/schemas";
 import { discoverFromRepo, type SkillCandidate } from "../sources/official.ts";
+import type { ListDraft } from "../sources/github-search.ts";
 import { CATALOG, loadCatalogEntries, entryDir } from "../catalog.ts";
+import { loadLists, writeList, addItem, recomputeWorkSignals } from "../lists.ts";
+import { markMissing } from "../delist.ts";
 import { CONTEXT_SIZE_COUNTER_ID } from "../context-size.ts";
 import { categorize } from "../categorize.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
-const COLLECTIONS = join(ROOT, "catalog", "collections");
 
 /** 镜像单文件上限:超过则跳过不镜像(挡编译产物/大二进制进 git)。可用 MIRROR_MAX_FILE_MB 覆盖。 */
 const MIRROR_MAX_BYTES = (Number(process.env.MIRROR_MAX_FILE_MB) || 2) * 1024 * 1024;
@@ -109,12 +111,28 @@ async function main() {
 
   const all: SkillCandidate[] = [];
   const cleanups: (() => Promise<void>)[] = [];
+  // 退市观测(ADR 0020):enumerated = 本次成功枚举的仓 → 完整候选 id 集(在 --limit 截断前记录,
+  // 不会误杀);repoGone = clone not-found(仓删除/改私有)。漏访问的仓两边都不进 → 不判缺席。
+  const enumerated = new Map<string, Set<string>>();
+  const repoGone = new Set<string>();
   for (const repo of repos) {
     console.log(`\n▶ 采集 ${repo} …`);
-    const { candidates, cleanup } = await discoverFromRepo(repo);
-    cleanups.push(cleanup);
-    console.log(`  发现 ${candidates.length} 个 skill`);
-    all.push(...candidates);
+    try {
+      const { candidates, cleanup } = await discoverFromRepo(repo);
+      cleanups.push(cleanup);
+      console.log(`  发现 ${candidates.length} 个 skill`);
+      enumerated.set(repo.toLowerCase(), new Set(candidates.map((c) => c.report.meta.id)));
+      all.push(...candidates);
+    } catch (e) {
+      const msg = (e as Error).message ?? "";
+      // git clone 对不存在/私有仓的报错含 "not found" / "could not read";网络类错误不计缺席
+      if (/not found|could not read|does not exist/i.test(msg)) {
+        repoGone.add(repo.toLowerCase());
+        console.warn(`  ✗ 仓不可达(疑似删除/改私有),计缺席: ${repo}`);
+      } else {
+        console.warn(`  ✗ ${repo} 采集失败(不计缺席): ${msg.slice(0, 140)}`);
+      }
+    }
     if (all.length >= limit) break;
   }
 
@@ -130,17 +148,41 @@ async function main() {
   }
 
   // W3c:GitHub 全域(--github-search [N]);按 skill topic 搜头部仓库,需 api.github.com 可达
-  // 批量源仓库(skill 数 > MAX_PER_REPO)折叠采样,额外产出仓库级合集条目
-  const collections: CollectionReport[] = [];
+  // ADR 0019:已拦截仓跳克隆;新仓 ≥ BULK_SIGNAL_ONLY 拦截零候选;>cap 灰区折叠采样——均产出清单草稿
+  const listsMap = await loadLists();
+  const blockedIds = new Set([...listsMap.values()].filter((l) => l.blocked).map((l) => l.id.toLowerCase()));
+  const listDrafts: ListDraft[] = [];
   if (process.argv.includes("--github-search")) {
     const n = Number(arg("github-search")) || 100;
     console.log(`\n▶ 采集 GitHub 全域头部 ${n} 个仓库 …`);
     const { discoverFromGitHub } = await import("../sources/github-search.ts");
-    const { candidates, collections: cols, cleanup } = await discoverFromGitHub(n);
+    const { candidates, lists: drafts, cleanup } = await discoverFromGitHub(n, blockedIds);
     cleanups.push(cleanup);
-    collections.push(...cols);
-    console.log(`  发现 ${candidates.length} 个 skill,${cols.length} 个批量源合集`);
+    listDrafts.push(...drafts);
+    console.log(`  发现 ${candidates.length} 个 skill,${drafts.length} 条清单草稿`);
     all.push(...candidates);
+  }
+
+  // W3d:Code Search 全网扫描(--code-search [N] 新仓上限;ADR 0019 S1)。
+  // 「好货不打标」的仓从这条线进;已知仓(条目/清单/sources.yaml)与已拦截仓零克隆,配额只花在增量。
+  if (process.argv.includes("--code-search")) {
+    const n = Number(arg("code-search")) || 30;
+    console.log(`\n▶ Code Search 全网扫描(新仓上限 ${n})…`);
+    const { discoverFromCodeSearch } = await import("../sources/code-search.ts");
+    const known = new Set<string>();
+    for (const e of await loadCatalogEntries()) known.add(e.report.meta.id.split("/").slice(0, 2).join("/")); // id 已小写
+    for (const id of listsMap.keys()) known.add(id.toLowerCase());
+    for (const s of sourcesFile.sources) if (s.type === "github-repo") known.add(s.repo.toLowerCase());
+    // 单源故障不拖死整趟采集(缺 token/网络抖动/限流均降级为跳过,其余源照常入库)
+    try {
+      const { candidates, lists: drafts, cleanup } = await discoverFromCodeSearch(n, blockedIds, known);
+      cleanups.push(cleanup);
+      listDrafts.push(...drafts);
+      console.log(`  发现 ${candidates.length} 个 skill,${drafts.length} 条清单草稿`);
+      all.push(...candidates);
+    } catch (e) {
+      console.warn(`  ✗ Code Search 跳过: ${(e as Error).message}`);
+    }
   }
 
   // skills.sh 安装量榜(--skills-sh [N]);解析首页 SSR 榜单,内容回上游采集
@@ -175,6 +217,12 @@ async function main() {
     const h = c.report.meta.content_hash;
     (byHashGroups.get(h) ?? byHashGroups.set(h, []).get(h)!).push(c);
   }
+  // ADR 0019:hash 命中 canonical 的跨仓拷贝不再落条目(旧行为:写带 duplicate_of 的条目)。
+  // 改记 appearance——引用进来源仓的清单 items(幂等账本),canonical 的 appear_count/list_count 随后重算。
+  // 同仓同内容(改名/软链)也不落,但不算外部出现。
+  const dropIds = new Set<string>();
+  const appearanceQueue: { canonical: string; sourceRepo: string; name: string }[] = [];
+  let sameRepoDup = 0;
   for (const [h, group] of byHashGroups) {
     let canonical = byHash.get(h);
     if (!canonical) {
@@ -183,16 +231,29 @@ async function main() {
       canonical = best.report.meta.id;
       byHash.set(h, canonical);
     }
-    // 同 id 覆盖更新不算重复
-    for (const c of group) if (c.report.meta.id !== canonical) c.report.meta.duplicate_of = canonical;
+    for (const c of group) {
+      if (c.report.meta.id === canonical) continue; // 同 id 覆盖更新不算重复
+      dropIds.add(c.report.meta.id);
+      const srcRepo = c.report.meta.id.split("/").slice(0, 2).join("/");
+      const canonRepo = canonical.split("/").slice(0, 2).join("/");
+      if (srcRepo === canonRepo) { sameRepoDup++; continue; }
+      appearanceQueue.push({ canonical, sourceRepo: srcRepo, name: c.report.meta.name });
+    }
   }
 
-  // 同 id 去重:一次运行内同 id 只保留第一条(避免同一 skill 被多源重复写)
+  // 同 id 去重:一次运行内同 id 只保留第一条(避免同一 skill 被多源重复写);
+  // 跨仓拷贝(dropIds)与已拦截仓的候选(兜其他源漏进来的)在此出局
   const byId = new Map<string, SkillCandidate>();
-  for (const c of all.slice(0, limit)) if (!byId.has(c.report.meta.id)) byId.set(c.report.meta.id, c);
+  let blockedSkipped = 0;
+  for (const c of all.slice(0, limit)) {
+    const id = c.report.meta.id;
+    if (dropIds.has(id)) continue;
+    if (blockedIds.has(id.split("/").slice(0, 2).join("/"))) { blockedSkipped++; continue; }
+    if (!byId.has(id)) byId.set(id, c);
+  }
 
   let written = 0;
-  const stats = { added: 0, updated: 0, unchanged: 0, backfilled: 0, dup: 0, preserved: 0, fmInvalid: 0, uncategorized: 0, mirrorSkipped: 0, mirrorBackfilled: 0, licenseInjected: 0 };
+  const stats = { added: 0, updated: 0, unchanged: 0, backfilled: 0, preserved: 0, fmInvalid: 0, uncategorized: 0, mirrorSkipped: 0, mirrorBackfilled: 0, licenseInjected: 0 };
   const touched: { skill_id: string; content_hash: string }[] = [];
   for (const c of byId.values()) {
     const prev = existing.get(c.report.meta.id);
@@ -215,6 +276,13 @@ async function main() {
       // upstream_commit_at 缺失回填(ADR 0016 预留的上游时间信号):HEAD 未变 → 值稳定,写一次即定、不重复写
       if (prev.signals.upstream_commit_at == null && c.report.signals.upstream_commit_at != null) {
         prev.signals.upstream_commit_at = c.report.signals.upstream_commit_at;
+        patched = true;
+      }
+      // 重新观测到 → 复活(ADR 0020):清缺席计数、撤墓碑(上游改名回滚/误判自愈)
+      if (prev.signals.missing_streak != null || prev.signals.missing_at != null || prev.meta.delisted_at) {
+        delete prev.signals.missing_streak;
+        delete prev.signals.missing_at;
+        delete prev.meta.delisted_at;
         patched = true;
       }
       // 镜像补齐(--mirror 重跑,服务 .skill 下载通道):licence 允许(mirrorSrcDir 有值)而磁盘无副本的
@@ -328,11 +396,29 @@ async function main() {
     await writeFile(join(dir, "skill-report.json"), JSON.stringify(c.report, null, 2) + "\n");
 
     written++;
-    if (c.report.meta.duplicate_of) stats.dup++;
-    else if (prev) stats.updated++;
+    if (prev) stats.updated++;
     else stats.added++;
     if (!c.report.frontmatter_valid) stats.fmInvalid++;
     touched.push({ skill_id: c.report.meta.id, content_hash: c.report.meta.content_hash });
+  }
+
+  // 退市判定(ADR 0020):本次成功枚举的仓里,存量条目不在候选集 → 缺席 +1;仓级 not-found → 全仓缺席。
+  // 连续 ≥ DELIST_STREAK 个观测日 → 盖墓碑(货架隐藏、详情页留痕,镜像/回执/appearance 保留)。
+  // 同日多趟只计一次(missing_at 闸);已退市条目零 diff;长尾仓的死亡由 enrich-stars 的 API 404 兜(同一 helper)。
+  let missCount = 0, tombCount = 0;
+  for (const r of existing.values()) {
+    const repoL = r.meta.id.split("/").slice(0, 2).join("/");
+    const seen = enumerated.get(repoL);
+    if (!seen && !repoGone.has(repoL)) continue; // 本次没访问这个仓,不判
+    if (seen?.has(r.meta.id)) continue;          // 还在(复活走幂等闸/更新路径)
+    const res = markMissing(r);
+    if (res === "noop") continue;
+    await writeFile(join(entryDir(r.meta.id), "skill-report.json"), JSON.stringify(r, null, 2) + "\n");
+    missCount++;
+    if (res === "delisted") {
+      tombCount++;
+      console.warn(`  ⚠ 退市: ${r.meta.id}(连续缺席 ${r.signals.missing_streak} 个观测日,${repoGone.has(repoL) ? "仓不可达" : "上游移除/改名"})`);
+    }
   }
 
   // 插拔点①(ADR 0012 步骤④):收录完成后异步提交判定。默认 off——
@@ -347,31 +433,67 @@ async function main() {
     console.log(`verdict 提交(TRUST_SUBMIT=1): ${submitted}/${touched.length}`);
   }
 
-  // 批量源合集条目:catalog/collections/<owner>/<repo>.json;字段没变就不重写(幂等)
-  let colWritten = 0;
-  for (const col of collections) {
-    const [owner, repo] = col.id.split("/");
-    const file = join(COLLECTIONS, owner, `${repo}.json`);
-    try {
-      const prev = JSON.parse(await readFile(file, "utf8")) as CollectionReport;
-      if (prev.skill_count === col.skill_count && prev.sampled_count === col.sampled_count &&
-          prev.stars_github === col.stars_github) continue;
-    } catch { /* 不存在或损坏 → 写入 */ }
-    await mkdir(join(COLLECTIONS, owner), { recursive: true });
-    await writeFile(file, JSON.stringify(col, null, 2) + "\n");
-    colWritten++;
+  // 清单落盘(ADR 0019):采集草稿与既有记录合并——items/curator/note/blocked 是账本与人写字段,
+  // 采集只刷新观测值(stars/file_count/fetched_at),不冲掉。sampled_count 权威值由货架重算(见下)。
+  const changedLists = new Set<string>();
+  const now = new Date().toISOString();
+  for (const d of listDrafts) {
+    const prev = listsMap.get(d.id);
+    const next: ListReport = prev ?? {
+      schema_version: "1", id: d.id, kind: "imported", url: d.url, sampled_count: d.sampled_count ?? 0, fetched_at: now,
+    };
+    if (d.file_count != null) next.file_count = d.file_count;
+    if (d.stars_github != null) next.stars_github = d.stars_github;
+    if (d.description) next.description = d.description; // 上游自述,随采集刷新(观测值,非人写字段)
+    if (d.blocked) { next.blocked = true; next.block_reason ??= d.block_reason; }
+    next.fetched_at = now;
+    listsMap.set(d.id, next);
+    changedLists.add(d.id);
+  }
+  // appearance 记账:引用并入来源仓清单 items(按 work+name 去重 = 幂等闸,重复观测不重复记)
+  let appearNew = 0, appearKnown = 0;
+  for (const a of appearanceQueue) {
+    const l = listsMap.get(a.sourceRepo) ?? {
+      schema_version: "1" as const, id: a.sourceRepo, kind: "imported" as const,
+      url: `https://github.com/${a.sourceRepo}`, sampled_count: 0, fetched_at: now,
+    };
+    listsMap.set(a.sourceRepo, l);
+    if (addItem(l, a.canonical, a.name)) { appearNew++; changedLists.add(a.sourceRepo); }
+    else appearKnown++;
+  }
+  // sampled_count 对齐货架事实 + 派生信号重算(appear_count/list_count 是 items 的纯函数)
+  let signalsUpdated = 0;
+  if (changedLists.size) {
+    const postEntries = await loadCatalogEntries();
+    const liveByRepo = new Map<string, number>();
+    for (const e of postEntries) {
+      const r = e.report.meta.id.split("/").slice(0, 2).join("/");
+      liveByRepo.set(r, (liveByRepo.get(r) ?? 0) + 1);
+    }
+    for (const id of changedLists) {
+      const l = listsMap.get(id)!;
+      if (!l.blocked) l.sampled_count = liveByRepo.get(id) ?? 0;
+      await writeList(l);
+    }
+    const rc = await recomputeWorkSignals(listsMap, postEntries);
+    signalsUpdated = rc.updated;
+    for (const d of rc.dangling) console.warn(`  ⚠ 清单 ${d.list} 引用了不存在的作品 ${d.work}(悬空,待核)`);
   }
 
   console.log(`\n=== ingest 完成 ===`);
   console.log(`已有条目: ${existing.size} · 本次候选: ${byId.size}`);
-  if (collections.length) console.log(`批量源合集: ${collections.length}(写入/更新 ${colWritten})`);
+  if (changedLists.size) console.log(`清单(catalog/lists): 更新 ${changedLists.size} 份`);
   console.log(`  新增: ${stats.added}`);
   console.log(`  更新(内容变化): ${stats.updated}`);
   console.log(`  未变跳过: ${stats.unchanged}`);
   if (stats.backfilled) console.log(`  外科式回填(context_size / upstream_commit_at / 镜像补齐,其余字段未动): ${stats.backfilled}`);
   if (stats.mirrorBackfilled) console.log(`  其中镜像补齐(--mirror 对存量落副本): ${stats.mirrorBackfilled}`);
   if (stats.licenseInjected) console.log(`  仓级证注入(mirror/LICENSE.upstream,再分发合规): ${stats.licenseInjected}`);
-  console.log(`  重复(标记 duplicate_of): ${stats.dup}`);
+  if (appearNew || appearKnown) console.log(`  跨仓拷贝 → 出现记账(不落条目): 新增 ${appearNew} · 已知 ${appearKnown}`);
+  if (sameRepoDup) console.log(`  同仓同内容(改名/软链,不落条目): ${sameRepoDup}`);
+  if (blockedSkipped) console.log(`  已拦截仓候选出局: ${blockedSkipped}`);
+  if (missCount) console.log(`  上游缺席计数(ADR 0020): ${missCount} 条${tombCount ? `,其中退市 ${tombCount}` : ""}`);
+  if (signalsUpdated) console.log(`  作品派生信号重算(appear_count/list_count): ${signalsUpdated}`);
   console.log(`  保留了已有审计结果: ${stats.preserved}`);
   console.log(`  frontmatter 不合规: ${stats.fmInvalid}`);
   console.log(`  待归类(uncategorized,需人工补标): ${stats.uncategorized}`);

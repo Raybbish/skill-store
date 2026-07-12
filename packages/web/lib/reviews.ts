@@ -90,6 +90,7 @@ export async function postReview(
   });
   if (!r.ok) {
     const err = await r.text().catch(() => "");
-    throw new Error(err.includes("row-level security") ? "还差一步:短评需要「已验证安装」——先装过或跑一次 verify" : `提交失败(${r.status})`);
+    // 抛键值(E:词典键),组件层按 locale 翻译(ADR 0022:lib 保持语言无关)
+    throw new Error(err.includes("row-level security") ? "E:rev.rlsHint" : `E:rev.failed:${r.status}`);
   }
 }

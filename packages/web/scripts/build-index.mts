@@ -171,11 +171,14 @@ try {
     const p = JSON.parse(readFileSync(join(PACKS, f), "utf8"));
     const members = (p.skills as string[]).map((id) => byId.get(id)).filter((c): c is SkillCard => Boolean(c));
     if (members.length !== p.skills.length) {
-      console.warn(`[build-index] pack ${p.id} 成员缺失,跳过`);
+      // 成员不在瘦卡池 = 退市(ADR 0020)/ 不合规 / 改名——点名到 id,便于换新名或摘成员
+      const missing = (p.skills as string[]).filter((id) => !byId.get(id));
+      console.warn(`[build-index] pack ${p.id} 成员缺失,跳过: ${missing.join(", ")}(可能已退市/改名,查 catalog 对应条目)`);
       continue;
     }
     packs.push({
       id: p.id, emoji: p.emoji, tile: p.tile, title: p.title, tagline: p.tagline, members,
+      ...(p.title_en ? { titleEn: p.title_en } : {}), ...(p.tagline_en ? { taglineEn: p.tagline_en } : {}),
       // 编辑手记透传(活人感 P0):catalog 侧 editor_note{text,author,date},缺省不带
       ...(p.editor_note ? { editorNote: p.editor_note } : {}),
     });

@@ -31,8 +31,8 @@ export type TsDoc = WireCard & {
 
 export const TS_COLLECTION = "skills";
 /** 与 matchScore 的层级一致:name > id > scene > tags > tagline > description/publisher > skw */
-export const TS_QUERY_BY = "name,sid,scene,tags,tagline,description,publisher,skw";
-export const TS_QUERY_WEIGHTS = "10,6,5,4,3,2,2,1";
+export const TS_QUERY_BY = "name,sid,scene,tags,tagline,description,publisher,skw,taglineEn,sceneEn"; // 英文召回(ADR 0022)
+export const TS_QUERY_WEIGHTS = "10,6,5,4,3,2,2,1,3,5";
 
 function filterBy(f: SearchFilters): string {
   const parts: string[] = [];
@@ -70,12 +70,19 @@ export class TypesenseStore extends StaticStore implements SkillStore {
       page: String(Math.max(1, page)),
       per_page: String(PAGE_SIZE),
     });
+    // 显式排序(stars/new)= 纯排序,压过相关度且不带 cap_overflow 键(2026-07-11 裁决:所见即数据);
+    // missing_values: last 让缺值沉底(与本地实现一致);cap 仅保留在默认「热门」无词浏览
+    const sort = filters.sort ?? "hot";
     if (q) {
       params.set("query_by_weights", TS_QUERY_WEIGHTS);
-      params.set("sort_by", "_text_match:desc,pop:desc");
       params.set("drop_tokens_threshold", "0"); // AND 语义:所有词须命中
+      if (sort === "stars") params.set("sort_by", "stars(missing_values: last):desc,_text_match:desc,pop:desc");
+      else if (sort === "new") params.set("sort_by", "addedAt(missing_values: last):desc,_text_match:desc,pop:desc");
+      else params.set("sort_by", "_text_match:desc,pop:desc");
     } else {
-      params.set("sort_by", "cap_overflow:asc,pop:desc"); // per-repo cap 平价 + 热门序
+      if (sort === "stars") params.set("sort_by", "stars(missing_values: last):desc,pop:desc");
+      else if (sort === "new") params.set("sort_by", "addedAt(missing_values: last):desc,pop:desc");
+      else params.set("sort_by", "cap_overflow:asc,pop:desc"); // per-repo cap 平价 + 热门序
     }
     const fb = filterBy(filters);
     if (fb) params.set("filter_by", fb);

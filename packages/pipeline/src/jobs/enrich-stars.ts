@@ -16,6 +16,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { getRepo } from "../github.ts";
 import { loadCatalogEntries, ROOT } from "../catalog.ts";
+import { markMissing } from "../delist.ts";
 
 const STATE = join(ROOT, "catalog", "_meta", "stars-state.json");
 const CUTOFF_DAYS = 7;
@@ -57,6 +58,7 @@ async function main() {
 
   const cutoff = Date.now() - CUTOFF_DAYS * 864e5;
   const stars = new Map<string, number>(); // repo → 本次可用 stars
+  const goneRepos = new Set<string>();     // API 404 = 上游删除/改私有(ADR 0020 仓级缺席)
   let fetched = 0, cached = 0, failed = 0;
   for (const repo of repos) {
     const st = state[repo];
@@ -70,11 +72,31 @@ async function main() {
       fetched++;
       console.log(`  ★ ${repo}: ${info.stargazers_count}`);
     } catch (err) {
+      const msg = (err as Error).message;
       failed++;
       if (st) stars.set(repo, st.stars); // 退回旧值,不清空
-      console.warn(`  ⚠ ${repo}: ${(err as Error).message}`);
+      if (/API 404/.test(msg)) goneRepos.add(repo); // 仅明确 404 计缺席;限流/网络失败不计
+      console.warn(`  ⚠ ${repo}: ${msg}`);
     }
   }
+
+  // 仓级缺席(ADR 0020):404 仓的全部条目计缺席,与 ingest 共用 helper 与同日幂等闸,
+  // 连续 ≥ DELIST_STREAK 个观测日 → 退市墓碑。本 job 每日 cron 跑,
+  // 长尾仓(搜索采样源此后不再回访)的死亡由这条线兜住。
+  let missedN = 0, tombedN = 0;
+  for (const e of entries) {
+    const r = repoOf(e.report.meta.upstream);
+    if (!r || !goneRepos.has(r)) continue;
+    const res = markMissing(e.report);
+    if (res === "noop") continue;
+    await writeFile(e.path, JSON.stringify(e.report, null, 2) + "\n");
+    missedN++;
+    if (res === "delisted") {
+      tombedN++;
+      console.warn(`  ⚠ 退市: ${e.report.meta.id}(仓 404,连续缺席 ${e.report.signals.missing_streak} 个观测日)`);
+    }
+  }
+  if (missedN) console.log(`  上游 404 → 缺席计数 ${missedN} 条${tombedN ? `,其中退市 ${tombedN}` : ""}`);
 
   // 写回(仅值变化)
   let written = 0;

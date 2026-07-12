@@ -30,6 +30,12 @@ export function byPopularity(a: PopSignals, b: PopSignals): number {
  * 只用于「热门」语义的列表;搜索按相关度排序时不适用。
  */
 export function applyRepoCap<T extends { owner: string; repo: string }>(list: T[], cap = 3): T[] {
+  const { head, tail } = splitRepoCap(list, cap);
+  return tail.length ? head.concat(tail) : head;
+}
+
+/** applyRepoCap 的拆分版:调用方需要知道头/尾边界时用(如 UI 在断点处画说明线) */
+export function splitRepoCap<T extends { owner: string; repo: string }>(list: T[], cap = 3): { head: T[]; tail: T[] } {
   const seen = new Map<string, number>();
   const head: T[] = [];
   const tail: T[] = [];
@@ -39,5 +45,5 @@ export function applyRepoCap<T extends { owner: string; repo: string }>(list: T[
     seen.set(k, n);
     (n <= cap ? head : tail).push(it);
   }
-  return tail.length ? head.concat(tail) : head;
+  return { head, tail };
 }

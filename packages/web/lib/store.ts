@@ -30,6 +30,10 @@ export interface SkillCard {
   category?: string; tags?: string[];
   /** 微文案标题(回退 description);搜索字段之一 */
   tagline?: string;
+  /** 英文转述(ADR 0022):en locale 卡片副标题;缺失回退 description 原文 */
+  taglineEn?: string;
+  /** 英文场景词(launch 期不做词表治理,全量随卡) */
+  sceneEn?: string[];
   /** 可点场景 chip(build-index 裁到词频≥SCENE_VISIBLE_MIN 的可见词);点击=以该词搜索 */
   scene?: string[];
   /** 不达标场景词(词频<阈值)拼成的搜索召回串,UI 不显示;多为空,省字节时省略 */
@@ -56,10 +60,16 @@ export interface Pack {
   tile: string;
   title: string;
   tagline: string;
+  /** 包货架文案英文版(ADR 0022;catalog/packs 的 title_en/tagline_en;手记为署名内容不翻) */
+  titleEn?: string;
+  taglineEn?: string;
   members: SkillCard[];
   /** 编辑手记(活人感 P0):人写人签,机器只出草稿;缺省不渲染 */
-  editorNote?: { text: string; author: string; date: string };
+  editorNote?: { text: string; author: string; date: string; text_en?: string };
 }
+
+/** 列表排序键:hot=货架热门序(默认,带词时=相关度);stars=仓 star 数;new=收录时间 */
+export type SortKey = "hot" | "stars" | "new";
 
 export interface SearchFilters {
   cat?: string | null;
@@ -71,6 +81,8 @@ export interface SearchFilters {
   publisher?: string | null;
   /** 精确到仓:"owner/repo"(合集页「已收录 ›」深链用) */
   repo?: string | null;
+  /** 排序(非筛选,不参与 matchFilters/计数);缺省 = hot */
+  sort?: SortKey | null;
 }
 
 export interface SearchResult {
@@ -125,6 +137,8 @@ export function toCard(s: Skill): SkillCard {
     ...(s.category ? { category: s.category } : {}),
     ...(s.tags?.length ? { tags: s.tags } : {}),
     ...(s.tagline ? { tagline: s.tagline } : {}),
+    ...(s.taglineEn ? { taglineEn: s.taglineEn } : {}),
+    ...(s.sceneTagsEn?.length ? { sceneEn: s.sceneTagsEn } : {}),
     // scene 此处装全量归一场景词;build-index 按全局词频裁成可见 chip(scene)+ 召回串(skw)
     ...(s.sceneTags?.length ? { scene: s.sceneTags } : {}),
     upstream: s.upstream,
@@ -178,8 +192,8 @@ export function matchScore(c: SkillCard, terms: string[]): number {
   let total = 0;
   const name = c.name.toLowerCase();
   const id = c.id.toLowerCase();
-  const tagline = (c.tagline ?? "").toLowerCase();
-  const scene = (c.scene ?? []).map((x) => x.toLowerCase());
+  const tagline = `${c.tagline ?? ""} ${c.taglineEn ?? ""}`.toLowerCase(); // 中英同权重召回(ADR 0022)
+  const scene = [...(c.scene ?? []), ...(c.sceneEn ?? [])].map((x) => x.toLowerCase());
   const skw = (c.skw ?? "").toLowerCase(); // 不可见场景词的召回串
   const desc = (c.description ?? "").toLowerCase();
   const pub = c.publisher.toLowerCase();
@@ -251,8 +265,9 @@ export class StaticStore implements SkillStore {
 
   async search(query: string, filters: SearchFilters, page: number): Promise<SearchResult> {
     const q = query.trim();
-    // 快路径:默认视图走构建期分片
-    if (!q && !hasFilters(filters)) {
+    const sort = filters.sort ?? "hot";
+    // 快路径:默认视图(热门序)走构建期分片
+    if (!q && !hasFilters(filters) && sort === "hot") {
       const meta = await this.getMeta();
       const p = Math.min(Math.max(1, page), Math.max(1, meta.pages));
       let items = this.pageCache.get(p);
@@ -273,9 +288,12 @@ export class StaticStore implements SkillStore {
         .filter((x) => x.s > 0)
         .sort((a, b) => b.s - a.s || a.i - b.i) // 同分保持热门序(稳定)
         .map((x) => x.c);
-    } else {
-      list = applyRepoCap(list);
     }
+    // 显式排序(stars/new)= 纯排序,不套 per-repo cap(2026-07-11 裁决:所见即数据,
+    // 聚合仓同分连排是事实就照排);cap 仅保留在默认「热门」序(货架反刷屏机制,ADR 0005)
+    if (sort === "stars") list = [...list].sort((a, b) => (b.stars ?? -1) - (a.stars ?? -1));
+    else if (sort === "new") list = [...list].sort((a, b) => (b.addedAt ?? 0) - (a.addedAt ?? 0));
+    else if (!q) list = applyRepoCap(list);
     const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
     const p = Math.min(Math.max(1, page), pages);
     return { items: list.slice((p - 1) * PAGE_SIZE, p * PAGE_SIZE), total: list.length, page: p, pages };

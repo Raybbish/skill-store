@@ -2,21 +2,24 @@
 /**
  * 原作者一键认领(ADR 0006 M1 第①档):详情页作者行内联入口。
  * 流程:「是你的作品?」→ 用 GitHub 登录(回跳带 ?claim=1)→ 服务端 RPC 比对已验证 login 与 id 首段 → 即领。
- * 身份 ≠ 背书:徽章只说「作者已认领」。env 未配自隐藏。
+ * 身份 ≠ 背书:徽章只说「作者已认领」。env 未配自隐藏。chrome 双语(ADR 0022)。
  */
 import { useEffect, useState } from "react";
 import { getSession, githubAuthorizeUrl, sessionFromUrlHash, type Session } from "@/lib/auth";
 import { claimSkill, claimsConfigured, claimsEnabled, getClaim, type Claim } from "@/lib/claims";
+import type { MsgKey } from "@/lib/i18n";
+import { useT } from "@/lib/i18n/client";
 
-const REASON: Record<string, string> = {
-  "no-github-identity": "当前登录方式不含 GitHub——认领需要用 GitHub 登录(证明你控制这个仓)",
-  "aggregator-source": "这条来自多作者合集仓,自动认领不适用;其他验证方式在路上",
-  "already-claimed": "这条已被认领;如有争议请联系我们仲裁",
-  "skill-not-found": "没找到这条 skill(可能刚下架)",
-  "not-signed-in": "请先登录",
+const REASON: Record<string, MsgKey> = {
+  "no-github-identity": "claim.noGithub",
+  "aggregator-source": "claim.aggregator",
+  "already-claimed": "claim.claimed",
+  "skill-not-found": "claim.notFound",
+  "not-signed-in": "claim.signInFirst",
 };
 
 export default function SkillClaim({ skillId, publisher }: { skillId: string; publisher: string }) {
+  const tt = useT();
   const [claim, setClaim] = useState<Claim | null | undefined>(undefined);
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -51,9 +54,10 @@ export default function SkillClaim({ skillId, publisher }: { skillId: string; pu
       return;
     }
     if (r.reason.startsWith("owner-mismatch:")) {
-      setMsg(`你的 GitHub(@${r.reason.split(":")[1]})与 @${publisher} 不一致——换对应账号登录后再试`);
+      setMsg(tt("claim.mismatch", { got: r.reason.split(":")[1], want: publisher }));
     } else {
-      setMsg(REASON[r.reason] ?? `没成功(${r.reason})`);
+      const k = REASON[r.reason];
+      setMsg(k ? tt(k) : tt("claim.fail", { s: r.reason }));
     }
   }
 
@@ -71,8 +75,8 @@ export default function SkillClaim({ skillId, publisher }: { skillId: string; pu
   if (claim) {
     // 已认领徽章不受开关影响:归属是既成事实,下线入口不抹历史
     return (
-      <span className="d-tag claim-tag" title={`@${claim.github_login} 于 ${claim.created_at.slice(0, 10)} 认领;身份说明,非平台背书`}>
-        ✓ 作者已认领
+      <span className="d-tag claim-tag" title={tt("claim.doneTip", { login: claim.github_login, d: claim.created_at.slice(0, 10) })}>
+        {tt("claim.done")}
       </span>
     );
   }
@@ -81,14 +85,14 @@ export default function SkillClaim({ skillId, publisher }: { skillId: string; pu
 
   return (
     <span className="claim-wrap">
-      <button className="claim-link" onClick={() => setOpen((v) => !v)}>是你的作品?</button>
+      <button className="claim-link" onClick={() => setOpen((v) => !v)}>{tt("claim.q")}</button>
       {open && (
         <span className="claim-pane">
           {busy ? (
-            <span className="claim-msg">认领中…</span>
+            <span className="claim-msg">{tt("claim.busy")}</span>
           ) : (
             <>
-              <button className="cp" onClick={() => void start()}>用 GitHub 认领</button>
+              <button className="cp" onClick={() => void start()}>{tt("claim.btn")}</button>
               {msg && <span className="claim-msg">{msg}</span>}
             </>
           )}
