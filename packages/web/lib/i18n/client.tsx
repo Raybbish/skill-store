@@ -54,7 +54,7 @@ function counterpart(pathname: string, target: Locale): string {
   return target === "en" ? (bare === "/" ? "/en/" : `/en${bare}`) : bare;
 }
 /** 有 /en/ 变体的商店页(共享页原地切,不跳转) */
-const STORE_RE = /^(\/en)?\/((charts|changelog|methodology|talk|pack)(\/|$)|$)/;
+const STORE_RE = /^(\/en)?\/((charts|changelog|methodology|pack)(\/|$)|$)/;
 
 export function LocaleSwitch() {
   const pathname = usePathname() ?? "/";
