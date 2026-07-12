@@ -249,7 +249,13 @@ function buildPrompt(catList: string, tagSection: string, name: string, descript
 /** 英文侧轻量 lint(ADR 0022):长度帽 + 禁 skill 名 + 禁冠词开头;不合格丢字段(前端回退 description),不拉低 zh 的 lint_pass */
 function lintEn(v: LlmVerdict, name: string): { tagline_en?: string; scene_tags_en?: string[]; fit_line_en?: string } {
   const out: { tagline_en?: string; scene_tags_en?: string[]; fit_line_en?: string } = {};
-  const bad = (t: string) => t.toLowerCase().includes(name.toLowerCase()) || /^(a|an|the|this)\s/i.test(t);
+  // 名字判据(2026-07-11 修,原 includes):415 条顽固缺英文的根因——名字是常用英文词
+  // (fix/plan/pdf/shadcn…),自然英文句必然含名,includes 全灭且重试无解。收窄为只拦
+  // 「鹦鹉式起手」(名字开头后接 is/破折号/冒号/逗号,即 "X — a tool for…" 句式);
+  // 动词名(fix)按 prompt 要求动词开头是合法句,不拦。
+  const esc = name.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parrot = new RegExp(`^${esc}\\s*(is\\b|[-—–:,])`, "i");
+  const bad = (t: string) => parrot.test(t) || /^(a|an|the|this)\s/i.test(t);
   if (typeof v.tagline_en === "string") {
     const t = v.tagline_en.trim();
     if (t && t.length <= 90 && !bad(t)) out.tagline_en = t;
