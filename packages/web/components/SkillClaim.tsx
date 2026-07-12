@@ -93,6 +93,8 @@ export default function SkillClaim({ skillId, publisher }: { skillId: string; pu
           ) : (
             <>
               <button className="cp" onClick={() => void start()}>{tt("claim.btn")}</button>
+              {/* 工作台入口(ADR 0023):批量认领 + 提交未收录;开关同 claims flag,面板不渲染时入口自然消失 */}
+              <a className="claim-link" href="/studio/">{tt("claim.all")}</a>
               {msg && <span className="claim-msg">{msg}</span>}
             </>
           )}

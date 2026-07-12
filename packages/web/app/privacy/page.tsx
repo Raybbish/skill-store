@@ -48,8 +48,8 @@ export default function PrivacyPage() {
 
       <H zh="删除" en="Deletion" />
       <P
-        zh="要删除账号、邮箱或发布过的内容,联系我们:(联系方式待补)。清浏览器存储即可重置本机的匿名 id。"
-        en="To delete your account, email or posted content, contact us: (contact to be added). Clearing browser storage resets the anonymous ids on this device."
+        zh="要删除账号、邮箱或发布过的内容,发邮件到 contact@oh-my-skill.com。清浏览器存储即可重置本机的匿名 id。"
+        en="To delete your account, email or posted content, write to contact@oh-my-skill.com. Clearing browser storage resets the anonymous ids on this device."
       />
     </>
   );

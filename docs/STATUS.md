@@ -2,7 +2,7 @@
 
 > 手写现状。可派生的数字(catalog / 审计 / 提交)见 [`STATUS.generated.md`](./STATUS.generated.md),由 `npm run status` 自动生成——别在这里手抄数字。
 >
-> _上次人工更新:2026-07-12(论坛 /talk 整体下线,ADR 0024)_
+> _上次人工更新:2026-07-12(GitHub 全站登录 + 作者工作台 /studio + /me,ADR 0023;论坛 /talk 整体下线,ADR 0024)_
 
 ## 里程碑:M0 · 可信目录(进行中)
 目标:500+ 已收录 skill、可浏览 / 可搜 / 可一键装、catalog 公开可验证。
@@ -10,6 +10,7 @@
 > ⛔ **安全扫描已整套下架**(2026-07-04,[ADR 0011](decisions/0011-unlist-security-scan.md)):前端认证徽章/权限披露/审计文案全部摘除,`audit`/`review`/`audit:l3` scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。
 
 ### 已完成
+- **GitHub 全站登录 + 作者一键导入(工作台 /studio)**(2026-07-12,[ADR 0023](decisions/0023-github-login-and-author-import.md)):① **GitHub 升级为全站登录选项**(修订 ADR 0017 口径,用户裁决)——短评/公海登录框加「用 GitHub 登录」与邮箱 OTP 并列,走既有 authorize 端点 + `sessionFromUrlHash` 同管道零新基建;`Session.user` 增 `github_login`(仅显示/预填用,服务端裁决仍只认 `auth.identities`)。② **作者工作台 `/studio`**:批量认领 = ADR 0006「静默预填」落地(列 `owner==login` 的已收录作品,一键全认领循环 `claim_skill`,服务端逐条裁决);提交未收录 = 新 `submissions` 表 + `submit_repo` RPC(`2026-07-12-submissions.sql`:只收个人 owner==已验证 login 的仓、一仓一条、24h 30 条限流、RLS 只读自己的、写入只经 RPC),仓库发现用 OAuth 回跳 `provider_token`(仅 sessionStorage)调 code search `filename:SKILL.md`,失败给手填出路;消费近期人工入册 sources.yaml,后续 pipeline job。**开关与认领共用 claims flag,默认 off**(入口 = SkillClaim 面板「认领你的全部作品 ›」,随面板自隐藏);上线序:执行 submissions 迁移 → 开 claims flag。**待用户端:Supabase 配 GitHub OAuth App/provider + 执行迁移 + 回跳白名单含 /studio/ 与 /me/。** 同日追记:**不设独立登录页,新增 `/me` 一页两态**(未登录=邮箱 OTP+GitHub 双轨登录;已登录=身份+退出+作者入口;页脚加「我的」;名下内容留 M2)。
 - **论坛 /talk 整体下线(ADR 0024,用户裁决「现在没有用户,先不做」)**(2026-07-12):两路由(/talk、/en/talk)、TalkBoard、lib/talk.ts、nav「讨论」、sitemap 两条、STORE_RE、tk-* 样式、论坛专属词典键全部摘除;**`talk.*` 的邮箱 OTP 登录文案保留**(reviews/me/studio 共用,键名沿革不改,词典处已注释)。数据侧零动作:`2026-07-09-talk.sql` 从未执行,加 ⛔ 头留档,Supabase 无 posts 表可清;**连带松绑:自定义 SMTP 不再因公海升上线前置**(登录量只剩短评/认领/studio)。ADR 0021 标废弃;CLAUDE.md 加硬约束防重新接线;重新上架等真实用户再议(信笺流三版稿在 Desktop)。下面「已完成」里的 /talk 条目为历史记录。web `tsc` 绿。
 - **转述层双语收官(ADR 0022 修订至收官)**(2026-07-10/11):① **微文案双语管线**——`SkillCopy` 加 `tagline_en/scene_tags_en/fit_line_en`(同锚同批,**同一次 LLM 调用产出中英两份**,比分两批省一半);categorize-llm 新 scope `missing-en`(只补 zh 新鲜但缺英文的存量),**只写 copy 块,分类/标签沿用权威判定**;英文侧轻量 lint(长度帽/禁名/禁冠词开头),不合格丢英文字段回退 description、不拉低 zh lint_pass;en 场景词 launch 期不做词表治理(后补,同 zh renorm 路径)。② **金标三修**:fixture 腐烂剔分母 + mcp 口径强化 + canary 显示英文微文案;prompt 补「开发者技能场景词改写指引」(框架名→开发情境,治 lint 丢词后凑不够最小数)。③ **数据批(用户本机)**:07-10 `enrich:stars` 全量 + `categorize:llm missing-copy`(原「与 Typesense 同批」待办就此销账);07-11 `missing-en` 全量 **9,316 条写盘,lint 96.4%**。④ **双语显示层四件**:瘦卡 `taglineEn/sceneEn` 透传线格式、SkillRow 按 locale 取英文副标题与场景词(回退 description 原文)、详情页 fit_line/场景词双语、本地打分器 + Typesense `query_by` 英文召回(taglineEn,sceneEn 权重 3,5)。⑤ **场景包双语 + 扩容 8→11(用户裁决)**:packs 加 `title_en/tagline_en` 随 locale(货架文案归商店侧);新开**安全审计/社媒发布/科研论文**三包;`editor_note` 加 `text_en` 忠实译文、署名不变(红线管机器冒充人写,不管语言;⚠ 现译文基于机器草稿,主理人改写中文后需重翻);research 包重组为通用论文流水线(用户纠错:原四件偏生物)。**待 `web:index` + `typesense:push` 生效英文召回**;hreflang 已随工作区「上线打磨批」落地(见「进行中」,未提交)。
 - **/talk 收尾两补 + 短评三档定案**(2026-07-10):talk 404 报错自诊断(posts 表缺失时点名迁移文件,不再裸报状态码);短评「三档改 1-5 星」提交后 8 分钟整体回滚,**现状维持三档 verdict**(往返已入 git:`9c445f240` → revert `086d930a4`),`2026-07-09-reviews-stars.sql` 迁移勿执行。

@@ -49,6 +49,22 @@ export async function getClaim(skillId: string): Promise<Claim | null> {
   }
 }
 
+/** 某 GitHub login 名下的全部有效认领(工作台 /studio 预填用);匿名可读 */
+export async function listClaimsByLogin(login: string): Promise<Claim[]> {
+  if (!claimsConfigured()) return [];
+  try {
+    const q = new URLSearchParams({
+      github_login: `eq.${login}`,
+      status: "eq.approved",
+      select: "skill_id,github_login,created_at",
+    });
+    const r = await fetch(`${URL}/rest/v1/claims?${q}`, { headers: { apikey: KEY, authorization: `Bearer ${KEY}` } });
+    return r.ok ? ((await r.json()) as Claim[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 /** 认领(第①档):服务端裁决,返回 ok/reason;reason 见迁移文件枚举 */
 export async function claimSkill(s: Session, skillId: string): Promise<{ ok: boolean; reason: string }> {
   const r = await fetch(`${URL}/rest/v1/rpc/claim_skill`, {

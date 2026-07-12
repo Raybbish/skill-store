@@ -57,3 +57,6 @@ claims(id, skill_id, account_id, method, evidence, status, ts)  -- 审计流,争
 - **聚合防误绑落地**:`skills` 表补 `bulk_source`/`repo_skill_count` 列(sync 回填);RPC 对 `bulk_source=true` 拒绝第①档。sync 不再冲写 `publisher_verified`(否则每日采集会撤销认领)。
 - **消费场景比原设计多了三个**(这几天长出来的):作者自述微文案(ADR 0013 来源二的入口)、开发者说发帖身份(ADR 0017 M1 类型)、**补 LICENSE 点亮下载通道**(无证仓的现实动机)。
 - 落地件:`infra/migrations/2026-07-08-claims.sql`(claims 审计表+RPC,写入只经 RPC)、`lib/claims.ts`、`SkillClaim` 组件(详情页作者行:「是你的作品?」→ GitHub 登录 `?claim=1` 回跳自动续领 → 「✓ 作者已认领」徽章,tooltip 注明非背书)。静默预填(一键全认领)与撤销仲裁 UI 后置。
+
+## 追记(2026-07-12)
+静默预填已落地为作者工作台 `/studio`(批量认领 + 提交未收录仓),GitHub 同时升级为全站登录选项——见 [ADR 0023](0023-github-login-and-author-import.md)。撤销仲裁 UI 仍后置。

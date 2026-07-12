@@ -6,7 +6,7 @@
  * 双语(ADR 0022):chrome 词典化(共享页,客户端按偏好切);用户评价内容保持原文。
  */
 import { useEffect, useMemo, useState } from "react";
-import { getSession, requestOtp, sessionFromUrlHash, signOut, verifyOtp, type Session } from "@/lib/auth";
+import { getSession, githubAuthorizeUrl, requestOtp, sessionFromUrlHash, signOut, verifyOtp, type Session } from "@/lib/auth";
 import { eligibility, listReviews, postReview, reviewGateEnabled, reviewsConfigured, type Review } from "@/lib/reviews";
 import { postReceipt, ridToken } from "@/lib/receipts";
 import { fromDataTransfer, fromFileList, fromZipFile, verifyPickedDir, type PickedFile } from "@/lib/webverify";
@@ -81,7 +81,7 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
     if (!/^\S+@\S+\.\S+$/.test(email)) return setErr(tt("talk.errEmail"));
     setBusy(true); setErr("");
     // redirect_to = 当前详情页:点邮件里的链接直接回到这条 skill,hash 会话由 mount 时接住
-    try { await requestOtp(email, window.location.href); setMode("code"); } catch (e) { setErr(errText(e)); }
+    try { await requestOtp(email, window.location.href, locale); setMode("code"); } catch (e) { setErr(errText(e)); }
     setBusy(false);
   }
 
@@ -145,6 +145,8 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
           <div className="rev-row">
             <input type="email" placeholder={tt("talk.emailPh")} value={email} onChange={(e) => setEmail(e.target.value)} />
             <button className="cp" disabled={busy} onClick={() => void submitEmail()}>{tt("talk.sendCode")}</button>
+            {/* GitHub 全站登录选项(2026-07-12 裁决):回跳令牌在 hash,由 mount 时 sessionFromUrlHash 接住 */}
+            <button className="cp" disabled={busy} onClick={() => { window.location.href = githubAuthorizeUrl(window.location.href); }}>{tt("gh.signIn")}</button>
             <button className="rev-x" onClick={() => setMode("idle")}>{tt("talk.cancel")}</button>
           </div>
         </div>
@@ -227,7 +229,7 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
             <button className="rev-x" onClick={() => setMode("idle")}>{tt("talk.cancel")}</button>
           </div>
           <div className="rev-meta">
-            {tt("talk.signedAs", { email: session?.user.email ?? "" })} · <button className="rev-x" onClick={() => { signOut(); setSession(null); setMode("idle"); }}>{tt("talk.signOut")}</button>
+            {tt("talk.signedAs", { email: session?.user.email ?? (session?.user.github_login ? `@${session.user.github_login}` : "") })} · <button className="rev-x" onClick={() => { signOut(); setSession(null); setMode("idle"); }}>{tt("talk.signOut")}</button>
           </div>
         </div>
       )}

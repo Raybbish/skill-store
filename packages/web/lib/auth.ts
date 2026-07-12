@@ -16,7 +16,9 @@ export interface Session {
   refresh_token: string;
   /** Unix 秒 */
   expires_at: number;
-  user: { id: string; email?: string };
+  /** github_login:平台验证过的 GitHub 身份(auth.identities),GitHub 登录才有;
+   *  署名显示与工作台(/studio)预填用,服务端裁决仍只认 auth.identities,此字段伪造无效 */
+  user: { id: string; email?: string; github_login?: string };
 }
 
 export const authConfigured = (): boolean => Boolean(URL && KEY);
@@ -40,13 +42,27 @@ async function gotrue(path: string, body: unknown): Promise<Record<string, unkno
   return data;
 }
 
+/** 从 GoTrue user 对象提取 GitHub login(identities 优先,user_metadata 兜底);非 GitHub 登录返回 undefined */
+function ghLoginOf(u: Record<string, unknown> | undefined): string | undefined {
+  if (!u) return undefined;
+  const ids = (u.identities as { provider?: string; identity_data?: Record<string, unknown> }[] | undefined) ?? [];
+  const gh = ids.find((i) => i.provider === "github")?.identity_data;
+  const meta = (u.user_metadata as Record<string, unknown> | undefined) ?? {};
+  const fromMeta =
+    ((u.app_metadata as { provider?: string } | undefined)?.provider === "github"
+      ? (meta.user_name ?? meta.preferred_username)
+      : undefined);
+  const v = gh?.user_name ?? gh?.preferred_username ?? fromMeta;
+  return typeof v === "string" && v ? v : undefined;
+}
+
 function toSession(d: Record<string, unknown>): Session {
   const user = d.user as { id: string; email?: string };
   return {
     access_token: String(d.access_token),
     refresh_token: String(d.refresh_token),
     expires_at: Number(d.expires_at ?? Math.floor(Date.now() / 1000) + Number(d.expires_in ?? 3600)),
-    user: { id: user.id, email: user.email },
+    user: { id: user.id, email: user.email, github_login: ghLoginOf(d.user as Record<string, unknown>) },
   };
 }
 
@@ -55,9 +71,11 @@ function toSession(d: Record<string, unknown>): Session {
  * 令牌在 URL hash,由 sessionFromUrlHash 接住);接了自定义 SMTP 且模板含 {{ .Token }} 时
  * 同一封信会带 6 位码,走 verifyOtp 输码轨。两轨并存,用户哪个到手用哪个。
  */
-export async function requestOtp(email: string, redirectTo?: string): Promise<void> {
+export async function requestOtp(email: string, redirectTo?: string, locale?: string): Promise<void> {
   const q = redirectTo ? `?redirect_to=${encodeURIComponent(redirectTo)}` : "";
-  await gotrue(`otp${q}`, { email, create_user: true });
+  // data.locale → 新用户 user_metadata,邮件模板据此分支中英({{ if eq .Data.locale "zh" }});
+  // GoTrue 对已存在用户忽略 data(locale 定格在首登语言,可接受——上线时无存量用户)
+  await gotrue(`otp${q}`, { email, create_user: true, ...(locale ? { data: { locale } } : {}) });
 }
 
 /**
@@ -70,6 +88,10 @@ export async function sessionFromUrlHash(): Promise<Session | null> {
   const access_token = h.get("access_token");
   const refresh_token = h.get("refresh_token");
   if (!access_token || !refresh_token) return null;
+  // OAuth 回跳会多带 provider_token(GitHub access token):只进 sessionStorage(关标签页即弃),
+  // 仅 /studio 扫仓用(公开数据检索);服务端裁决从不信它
+  const pt = h.get("provider_token");
+  if (pt) { try { sessionStorage.setItem(GH_TOKEN_STORE, pt); } catch { /* 忽略 */ } }
   try {
     const r = await fetch(`${URL}/auth/v1/user`, { headers: { apikey: KEY, authorization: `Bearer ${access_token}` } });
     if (!r.ok) return null;
@@ -78,7 +100,7 @@ export async function sessionFromUrlHash(): Promise<Session | null> {
       access_token,
       refresh_token,
       expires_at: Number(h.get("expires_at") ?? Math.floor(Date.now() / 1000) + 3600),
-      user: { id: u.id, email: u.email },
+      user: { id: u.id, email: u.email, github_login: ghLoginOf(u as unknown as Record<string, unknown>) },
     };
     save(s);
     void claimReceipts(s);
@@ -114,16 +136,24 @@ export async function getSession(): Promise<Session | null> {
 
 export function signOut(): void {
   save(null);
+  try { sessionStorage.removeItem(GH_TOKEN_STORE); } catch { /* 忽略 */ }
 }
 
 /**
- * GitHub OAuth 登录跳转地址(认领用):Supabase authorize 端点,回跳后令牌在 hash,
- * 由 sessionFromUrlHash 接住——与魔法链接同一条回收管道。
+ * GitHub OAuth 登录跳转地址(全站登录选项,2026-07-12 裁决升级;此前仅认领用):
+ * Supabase authorize 端点,回跳后令牌在 hash,由 sessionFromUrlHash 接住——与魔法链接同一条回收管道。
  * 注意:这是「以 GitHub 登录」,不是往邮箱账号上链接身份(手动 linking 需额外配置,M1 不做);
  * 作者用 GitHub 登录产生的账号与其邮箱账号可能是两个,可接受,见 ADR 0006 补充。
  */
 export function githubAuthorizeUrl(redirectTo: string): string {
   return `${URL}/auth/v1/authorize?provider=github&redirect_to=${encodeURIComponent(redirectTo)}`;
+}
+
+/** OAuth 回跳捕获的 GitHub provider token(sessionStorage,关标签页即弃);没有 = 需重新 GitHub 登录 */
+const GH_TOKEN_STORE = "oms_ghtok";
+export function githubToken(): string | null {
+  if (typeof window === "undefined") return null;
+  try { return sessionStorage.getItem(GH_TOKEN_STORE); } catch { return null; }
 }
 
 /**
