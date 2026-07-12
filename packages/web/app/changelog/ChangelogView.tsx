@@ -20,7 +20,7 @@ export default function ChangelogView({ locale }: { locale: Locale }) {
         {cl.entries.map((e, i) => (
           <div className="row" key={i}>
             <div className="main">
-              <div className="nm">{e.text}</div>
+              <div className="nm">{locale === "en" ? e.text_en ?? e.text : e.text}</div>
               <div className="ds">{e.date}{e.kind ? ` · ${kind(e.kind)}` : ""}</div>
             </div>
           </div>

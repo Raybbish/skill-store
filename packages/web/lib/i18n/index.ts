@@ -23,7 +23,7 @@ export function langAlternates(path: string, locale: Locale) {
 const zh = {
   // 导航 / 页脚
   "nav.home": "首页", "nav.charts": "榜单", "nav.changelog": "动态", "nav.methodology": "收录",
-  "nav.back": "‹ 首页",
+  "nav.back": "‹ 首页", "nav.signIn": "登录",
   "footer.privacy": "隐私", "footer.tail": "Agent Skills 商店",
   // 首页
   "home.searchPlaceholder": "搜索 {n} 个 skill…",
@@ -126,6 +126,9 @@ const zh = {
   "sub.notYours": "只能提交 @{login} 名下的仓库",
   // 我的(/me,一页两态)
   "me.title": "我的", "me.eyebrow": "账号",
+  "me.uses": "登录用于:写短评、认领作品、提交收录。浏览和下载不需要账号。",
+  "me.ghNote": "作者功能(认领 / 提交收录)需要 GitHub 身份",
+  "me.or": "或",
   "me.twoAccounts": "邮箱与 GitHub 各是一个账号,暂不互通",
   "me.studio": "作者工作台 ›", "me.studioNote": "认领已收录的作品,提交未收录的仓库",
   "me.notConfigured": "账号功能未启用(后端未配置)。",
@@ -143,7 +146,7 @@ export type MsgKey = keyof typeof zh;
 
 const en: Record<MsgKey, string> = {
   "nav.home": "Home", "nav.charts": "Charts", "nav.changelog": "Updates", "nav.methodology": "Coverage",
-  "nav.back": "‹ Home",
+  "nav.back": "‹ Home", "nav.signIn": "Sign in",
   "footer.privacy": "Privacy", "footer.tail": "The Agent Skills store",
   "home.searchPlaceholder": "Search {n} skills…",
   "home.packsTitle": "Starter packs", "home.packsK": "Curated by scenario, one command",
@@ -233,6 +236,9 @@ const en: Record<MsgKey, string> = {
   "sub.rate": "Too many submissions — try again tomorrow",
   "sub.notYours": "You can only submit repos under @{login}",
   "me.title": "Me", "me.eyebrow": "Account",
+  "me.uses": "Sign in to review, claim your works, or submit repos. Browsing and downloads need no account.",
+  "me.ghNote": "Author features (claiming / submitting) require a GitHub identity",
+  "me.or": "or",
   "me.twoAccounts": "Email and GitHub sign-ins are separate accounts for now",
   "me.studio": "Author studio ›", "me.studioNote": "Claim your listed works, submit unlisted repos",
   "me.notConfigured": "Accounts aren't enabled (backend not configured).",

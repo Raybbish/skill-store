@@ -11,7 +11,7 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["500"], variable: "--f
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://oh-my-skill.com"),
-  title: "oh-my-skill — 可信的 Agent Skills 商店",
+  title: "oh-my-skill — Agent Skills 商店",
   description: "浏览、比较、一键安装 Agent Skills。安装时逐文件校验内容哈希,与上游一致才落盘。",
   openGraph: {
     siteName: "oh-my-skill",
