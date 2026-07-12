@@ -33,7 +33,7 @@ export function FooterLine() {
   const tt = useT();
   return (
     <>
-      oh-my-skill · {tt("footer.line")} · <Link href={localePath(locale, "/methodology/")}>{tt("footer.policy")}</Link> · <Link href="/privacy/">{tt("footer.privacy")}</Link> · {tt("footer.tail")}
+      oh-my-skill · <Link href="/privacy/">{tt("footer.privacy")}</Link> · <a href="mailto:contact@oh-my-skill.com">contact@oh-my-skill.com</a> · {tt("footer.tail")}
     </>
   );
 }

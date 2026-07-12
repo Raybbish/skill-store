@@ -6,7 +6,7 @@
  * 双语(ADR 0022):/talk = zh、/en/talk/ = en,词典经 useT;用户内容保持原文。
  */
 import { useEffect, useState } from "react";
-import { getSession, requestOtp, sessionFromUrlHash, signOut, verifyOtp, type Session } from "@/lib/auth";
+import { getSession, githubAuthorizeUrl, requestOtp, sessionFromUrlHash, signOut, verifyOtp, type Session } from "@/lib/auth";
 import { deletePost, listThreads, postMessage, talkConfigured, type Post } from "@/lib/talk";
 import { relTime } from "@/lib/i18n";
 import { useLocale, useT } from "@/lib/i18n/client";
@@ -60,7 +60,7 @@ export default function TalkBoard() {
   async function submitEmail() {
     if (!/^\S+@\S+\.\S+$/.test(email)) return setErr(tt("talk.errEmail"));
     setBusy(true); setErr("");
-    try { await requestOtp(email, window.location.href); setMode("code"); } catch (e) { setErr(errText(e)); }
+    try { await requestOtp(email, window.location.href, locale); setMode("code"); } catch (e) { setErr(errText(e)); }
     setBusy(false);
   }
 
@@ -136,7 +136,7 @@ export default function TalkBoard() {
           <button className="cp" disabled={busy} onClick={() => void send(draft)}>{tt("talk.post")}</button>
           {session ? (
             <span className="tk-when">
-              {tt("talk.signedAs", { email: session.user.email ?? "" })} · <button className="tk-act" onClick={() => { signOut(); setSession(null); }}>{tt("talk.signOut")}</button>
+              {tt("talk.signedAs", { email: session.user.email ?? (session.user.github_login ? `@${session.user.github_login}` : "") })} · <button className="tk-act" onClick={() => { signOut(); setSession(null); }}>{tt("talk.signOut")}</button>
             </span>
           ) : (
             <span className="tk-when">{tt("talk.signHint")}</span>
@@ -149,6 +149,8 @@ export default function TalkBoard() {
           <div className="rev-row">
             <input type="email" placeholder={tt("talk.emailPh")} value={email} onChange={(e) => setEmail(e.target.value)} />
             <button className="cp" disabled={busy} onClick={() => void submitEmail()}>{tt("talk.sendCode")}</button>
+            {/* GitHub 全站登录选项(2026-07-12 裁决):回跳令牌在 hash,由 mount 时 sessionFromUrlHash 接住 */}
+            <button className="cp" disabled={busy} onClick={() => { window.location.href = githubAuthorizeUrl(window.location.href); }}>{tt("gh.signIn")}</button>
             <button className="rev-x" onClick={() => setMode("idle")}>{tt("talk.cancel")}</button>
           </div>
         </div>
