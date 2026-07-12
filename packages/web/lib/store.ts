@@ -120,6 +120,8 @@ export interface ChangelogEntry {
   /** release=上线 / change=变更 / notice=公告;缺省不标签 */
   kind?: "release" | "change" | "notice";
   text: string;
+  /** 英文版(ADR 0022:商店的话跟语言走);缺省回退 text 原文 */
+  text_en?: string;
 }
 export interface Changelog {
   generatedAt: string;

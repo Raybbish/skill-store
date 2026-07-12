@@ -2,8 +2,26 @@
 /** 全局导航与页脚(ADR 0022):标签与链接前缀跟 locale 走——商店页链到对应语言变体,共享页保持单路由。 */
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getSession } from "@/lib/auth";
 import { localePath } from "@/lib/i18n";
 import { LocaleSwitch, useLocale, useT } from "@/lib/i18n/client";
+
+/** 导航右侧账号位(ADR 0023 追记二):未登录「登录」,已登录显示身份;点击都进 /me。
+ *  SSR/首帧恒「登录」(与静态输出一致),挂载后按会话订正——与 useLocale 同款防水合错配。
+ *  延迟注册不破:这是状态展示,不是登录门。 */
+function NavMe() {
+  const tt = useT();
+  const [who, setWho] = useState<string | null>(null);
+  useEffect(() => {
+    void getSession().then((s) => {
+      if (!s) return;
+      setWho(s.user.github_login ? `@${s.user.github_login}` : (s.user.email ?? "").split("@")[0] || null);
+    });
+  }, []);
+  // /me 是单路由共享页,不加 locale 前缀
+  return <Link href="/me/" className="nav-me" title={tt("me.title")}>{who ?? tt("nav.signIn")}</Link>;
+}
 
 export function NavTabs() {
   const locale = useLocale();
@@ -23,6 +41,7 @@ export function NavTabs() {
       <Link href={p("/changelog/")} {...cur("/changelog/")}>{tt("nav.changelog")}</Link>
       <Link href={p("/methodology/")} {...cur("/methodology/")}>{tt("nav.methodology")}</Link>
       <LocaleSwitch />
+      <NavMe />
     </nav>
   );
 }
@@ -32,7 +51,7 @@ export function FooterLine() {
   const tt = useT();
   return (
     <>
-      oh-my-skill · <Link href="/me/">{tt("me.title")}</Link> · <Link href="/privacy/">{tt("footer.privacy")}</Link> · <a href="mailto:contact@oh-my-skill.com">contact@oh-my-skill.com</a> · {tt("footer.tail")}
+      oh-my-skill · <Link href="/privacy/">{tt("footer.privacy")}</Link> · <a href="mailto:contact@oh-my-skill.com">contact@oh-my-skill.com</a> · {tt("footer.tail")}
     </>
   );
 }
