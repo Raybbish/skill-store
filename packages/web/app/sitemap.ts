@@ -14,7 +14,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const statics = [
     "", "en/",
     "charts/", "en/charts/",
-    "talk/", "en/talk/",
     "changelog/", "en/changelog/",
     "methodology/", "en/methodology/",
     "privacy/",

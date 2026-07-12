@@ -2,7 +2,7 @@
 
 > 手写现状。可派生的数字(catalog / 审计 / 提交)见 [`STATUS.generated.md`](./STATUS.generated.md),由 `npm run status` 自动生成——别在这里手抄数字。
 >
-> _上次人工更新:2026-07-11(ADR 0022 双语全弧收官入账:微文案双语管线 + missing-en 全量 9,316 条 + 显示层四件 + 场景包 8→11 双语;/talk 收尾补记;ADR 索引补 0019-0022)_
+> _上次人工更新:2026-07-12(论坛 /talk 整体下线,ADR 0024)_
 
 ## 里程碑:M0 · 可信目录(进行中)
 目标:500+ 已收录 skill、可浏览 / 可搜 / 可一键装、catalog 公开可验证。
@@ -10,6 +10,7 @@
 > ⛔ **安全扫描已整套下架**(2026-07-04,[ADR 0011](decisions/0011-unlist-security-scan.md)):前端认证徽章/权限披露/审计文案全部摘除,`audit`/`review`/`audit:l3` scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。
 
 ### 已完成
+- **论坛 /talk 整体下线(ADR 0024,用户裁决「现在没有用户,先不做」)**(2026-07-12):两路由(/talk、/en/talk)、TalkBoard、lib/talk.ts、nav「讨论」、sitemap 两条、STORE_RE、tk-* 样式、论坛专属词典键全部摘除;**`talk.*` 的邮箱 OTP 登录文案保留**(reviews/me/studio 共用,键名沿革不改,词典处已注释)。数据侧零动作:`2026-07-09-talk.sql` 从未执行,加 ⛔ 头留档,Supabase 无 posts 表可清;**连带松绑:自定义 SMTP 不再因公海升上线前置**(登录量只剩短评/认领/studio)。ADR 0021 标废弃;CLAUDE.md 加硬约束防重新接线;重新上架等真实用户再议(信笺流三版稿在 Desktop)。下面「已完成」里的 /talk 条目为历史记录。web `tsc` 绿。
 - **转述层双语收官(ADR 0022 修订至收官)**(2026-07-10/11):① **微文案双语管线**——`SkillCopy` 加 `tagline_en/scene_tags_en/fit_line_en`(同锚同批,**同一次 LLM 调用产出中英两份**,比分两批省一半);categorize-llm 新 scope `missing-en`(只补 zh 新鲜但缺英文的存量),**只写 copy 块,分类/标签沿用权威判定**;英文侧轻量 lint(长度帽/禁名/禁冠词开头),不合格丢英文字段回退 description、不拉低 zh lint_pass;en 场景词 launch 期不做词表治理(后补,同 zh renorm 路径)。② **金标三修**:fixture 腐烂剔分母 + mcp 口径强化 + canary 显示英文微文案;prompt 补「开发者技能场景词改写指引」(框架名→开发情境,治 lint 丢词后凑不够最小数)。③ **数据批(用户本机)**:07-10 `enrich:stars` 全量 + `categorize:llm missing-copy`(原「与 Typesense 同批」待办就此销账);07-11 `missing-en` 全量 **9,316 条写盘,lint 96.4%**。④ **双语显示层四件**:瘦卡 `taglineEn/sceneEn` 透传线格式、SkillRow 按 locale 取英文副标题与场景词(回退 description 原文)、详情页 fit_line/场景词双语、本地打分器 + Typesense `query_by` 英文召回(taglineEn,sceneEn 权重 3,5)。⑤ **场景包双语 + 扩容 8→11(用户裁决)**:packs 加 `title_en/tagline_en` 随 locale(货架文案归商店侧);新开**安全审计/社媒发布/科研论文**三包;`editor_note` 加 `text_en` 忠实译文、署名不变(红线管机器冒充人写,不管语言;⚠ 现译文基于机器草稿,主理人改写中文后需重翻);research 包重组为通用论文流水线(用户纠错:原四件偏生物)。**待 `web:index` + `typesense:push` 生效英文召回**;hreflang 已随工作区「上线打磨批」落地(见「进行中」,未提交)。
 - **/talk 收尾两补 + 短评三档定案**(2026-07-10):talk 404 报错自诊断(posts 表缺失时点名迁移文件,不再裸报状态码);短评「三档改 1-5 星」提交后 8 分钟整体回滚,**现状维持三档 verdict**(往返已入 git:`9c445f240` → revert `086d930a4`),`2026-07-09-reviews-stars.sql` 迁移勿执行。
 - **双语架构落地:商店的话跟语言走,商品保持原文**(2026-07-09,[ADR 0022](decisions/0022-bilingual.md),用户裁决「面向全球是宗旨」):①商店页瘦身双路由(首页/榜单/动态/收录/talk/包页 = `/` zh + `/en/` en,正文抽 locale 参数共享组件,SSR 纯英文;路由仅 +20,文件数不变);②共享页(详情/分类/发布者)单路由,chrome 用 `<L zh en/>`/`useLocale` 客户端切换(偏好 localStorage 事件广播即时生效),商品字段原文;③词典 `lib/i18n`(zh 锚键集 en 缺键不过 tsc;{var} 插值;分类/标签/分面名直用 labels.ts 自带 label_zh/label_en 单一来源);④lib 层错误抛 `E:词典键` 组件层翻译;⑤nav「中/EN」切换器 + html lang 客户端订正;⑥InstallBox HOST 落定 oh-my-skill.com。**连带定案:CF Pages 2 万文件上限今天就爆(实际 ~2.6 万)→ 部署平台 = Vercel。**双侧 `tsc` 绿;残留中文全量扫描过(仅注释/L 参数/zh metadata/一处 tooltip backlog)。**待本机 `npm run web` 目检双语两态 + 全量 build**;~~上线后第一批:微文案英文批跑~~ **英文批跑已提前完成**(2026-07-11,见「转述层双语收官」条),hreflang 已随工作区打磨批落地(未提交)。
@@ -92,6 +93,7 @@
 - [0020 · 退市机制:缺席计数 → 墓碑 → 自动复活](decisions/0020-delisting.md)
 - [0021 · 公海讨论区 /talk:自由讨论升一等,自建不租](decisions/0021-talk-open-board.md)
 - [0022 · 双语架构:商店的话跟语言走,商品保持原文](decisions/0022-bilingual.md)
+- [0024 · 论坛 /talk 整体下线:没有用户先不做](decisions/0024-remove-talk-board.md)
 
 ## 文档地图(唯一入口)
 所有规划 / 架构 / 设计文档已收进 `docs/`,点开即看。
