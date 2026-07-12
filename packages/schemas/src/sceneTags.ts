@@ -42,8 +42,10 @@ export const SCENE_ALIASES: Record<string, string> = {
 /**
  * 卡片上可点(= 发起搜索)的最低覆盖数:某场景词覆盖 skill 数 ≥ 此值才在卡片渲染为 chip。
  * 不达标的词只进搜索索引做召回,UI 不显示(build-index 统计词频后据此裁 chip)。
+ * 2026-07-11 15→5(用户裁决:覆盖优先):47%→~74% 条目有可见 chip;5-14 词频档抽样质量过关
+ * (任务交接/依赖审计/舆情监控级),点开最少 5 条结果聚合仍成立;上线后按 chip 点击埋点回调。
  */
-export const SCENE_VISIBLE_MIN = 15;
+export const SCENE_VISIBLE_MIN = 5;
 
 /** 场景词长度上限(字符);L4 lint 与 prompt 共用此常量 */
 export const SCENE_TAG_MAX_LEN = 8;
