@@ -1,7 +1,7 @@
 <!-- 自动生成,勿手改。运行: npm run status -->
 # 项目状态(自动快照)
 
-_生成于 2026-07-13 04:51 UTC · 分支 `main` · 工作区干净_
+_生成于 2026-07-13 06:50 UTC · 分支 `feat/howto-section` · 未提交改动 2 处_
 
 ## Catalog
 - **skill 总数:10494**
@@ -11,5 +11,12 @@ _生成于 2026-07-13 04:51 UTC · 分支 `main` · 工作区干净_
 
 ## 最近提交
 ```
-3bf69654 合并 origin/main
+5114a7d23 howto 热门数据批:1,005 条转述 + ~219 条正文快照(ADR 0025 S0/S1)
+6103b9631 howto:llm 第三批收口:zh 帽统一 prompt+25%(what 150 / when 125)+ 枚举正反例
+1cd896361 howto:llm 第二批抽读三修:say≥1 / when 帽 120 / zh 字段 CJK 闸
+853ff4895 howto:llm 首批抽读四修(ADR 0025 附注)
+45eca5c53 「怎么用」板块:双语转述 + 原文折叠(ADR 0025)
+03e6dcfb8 全站登录界面统一为 /me 同款(用户裁决):抽 SignInBox 共享组件
+3bf696543 合并 origin/main
+584788381 Merge pull request #30 from Raybbish/feat/github-login-author-studio
 ```

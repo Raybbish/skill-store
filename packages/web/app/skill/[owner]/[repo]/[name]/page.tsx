@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { allSkills, getSkill, fmtInstalls } from "@/lib/data";
+import { allSkills, getSkill, getSkillBody, fmtInstalls } from "@/lib/data";
 import InstallBox from "./InstallBox";
+import HowTo from "@/components/HowTo";
 import SkillReviews from "@/components/SkillReviews";
 import SkillClaim from "@/components/SkillClaim";
 import { BackHome } from "@/components/Chrome";
@@ -110,6 +111,9 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
           <div><b>{s.hosting === "mirrored" ? <L zh="镜像" en="Mirrored" /> : <L zh="索引" en="Indexed" />}</b><span><L zh="托管" en="hosting" /></span></div>
         </div>
       </section>
+
+      {/* 怎么用(ADR 0025):双语转述段 + 原文折叠;先懂再装,装完再评 */}
+      <HowTo skill={s} body={getSkillBody(s.id)} />
 
       {/* 短评(砖二):env 未配时组件自隐藏;评价挂对象页,不是社区板块(ADR 0017) */}
       <SkillReviews skillId={s.id} contentHash={s.contentHash} scene={s.sceneTags ?? []} />

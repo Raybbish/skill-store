@@ -117,6 +117,12 @@ export interface SkillReport {
    * 锚 meta.content_hash(与 verdict 账本同构):不一致 = 过期,下次重算。
    */
   copy?: SkillCopy | null;
+  /**
+   * 「怎么用」板块(ADR 0025):由 SKILL.md 正文转述的双语上手指引,与 copy 同哲学——
+   * 商店的话跟语言走(ADR 0022),锚 meta.content_hash,不一致 = 过期下次重算;
+   * 生成侧 howto:llm 写入;认领后可被 author 稿替换(来源三层同微文案,ADR 0013)。
+   */
+  howto?: SkillHowto | null;
 }
 
 export type ContextSizeScopeId =
@@ -168,6 +174,35 @@ export interface SkillCopy {
   model: string;
   generated_at: string;
   /** 代码层 lint 结果;false → 前端回退 description 截断,不展示 chips */
+  lint_pass: boolean;
+}
+
+/** 示例话术:用户装好后可以直接对 Claude 说的一句话;note 可选,说明说了之后会发生什么 */
+export interface HowtoSay {
+  text: string;
+  note?: string;
+}
+
+/**
+ * 「怎么用」板块内容(ADR 0025)。三段全为事实性转述(文案克制红线):
+ * what = 装上后 Claude 的行为怎么变;when = 什么时候触发/接管;say = 示例话术 2~3 条。
+ * zh 为主字段(与 SkillCopy 同构),en 可缺——缺失时前端整段回退英文侧不显示、只出原文。
+ * 界面署名口径:source=llm 标「商店整理 · 表述以原文为准」,author 标「作者撰写」。
+ */
+export interface SkillHowto {
+  what: string;
+  when: string;
+  say: HowtoSay[];
+  what_en?: string;
+  when_en?: string;
+  say_en?: HowtoSay[];
+  /** 词的来源:llm | author(认领后作者改写;同微文案三来源,行为回填后置) */
+  source: "llm" | "author";
+  /** 生成时锚定的 meta.content_hash;不一致 = 过期,下次重算(与 copy/verdict 同锚) */
+  content_hash: string;
+  model?: string;
+  generated_at: string;
+  /** 代码层 lint 结果;false → 前端整个板块不展示转述段(原文折叠不受影响) */
   lint_pass: boolean;
 }
 

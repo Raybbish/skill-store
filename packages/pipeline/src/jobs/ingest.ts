@@ -9,6 +9,7 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
 import type { ListReport, SkillReport } from "@skill-store/schemas";
+import { PERMISSIVE_LICENSES } from "@skill-store/schemas";
 import { discoverFromRepo, type SkillCandidate } from "../sources/official.ts";
 import type { ListDraft } from "../sources/github-search.ts";
 import { CATALOG, loadCatalogEntries, entryDir } from "../catalog.ts";
@@ -70,6 +71,36 @@ async function injectLicense(c: SkillCandidate, mirrorDir: string): Promise<bool
   } catch {
     return false;
   }
+}
+
+/**
+ * 正文快照对齐(ADR 0025):skill.md = 宽松证且未镜像时的 SKILL.md 落盘副本(条目根,
+ * 与 skill-report.json 同级——**不在 mirror/ 内**,不参与内容哈希与 .skill 打包)。
+ * 镜像在 → 不重复落(mirror/SKILL.md 是事实源,残留快照清掉);证不宽松 → 不转载,清掉。
+ * force=false(存量未变路径)时只补缺,不重写——省 IO,也不产生无意义 mtime 变化。
+ */
+async function alignSkillMdSnapshot(
+  dir: string,
+  license: string,
+  srcPath: string | null | undefined,
+  force: boolean,
+): Promise<"written" | "removed" | null> {
+  const snap = join(dir, "skill.md");
+  const hasMirror = existsSync(join(dir, "mirror", "SKILL.md"));
+  const eligible = PERMISSIVE_LICENSES.has(license) && !hasMirror;
+  if (eligible && srcPath && (force || !existsSync(snap))) {
+    try {
+      await copyFile(srcPath, snap);
+      return "written";
+    } catch {
+      return null;
+    }
+  }
+  if (!eligible && existsSync(snap)) {
+    await rm(snap, { force: true }).catch(() => {});
+    return "removed";
+  }
+  return null;
 }
 
 /** 加载 catalog 已有条目:id → 报告(用于跨运行去重 + 保留审计/评测/人工结果) */
@@ -253,7 +284,7 @@ async function main() {
   }
 
   let written = 0;
-  const stats = { added: 0, updated: 0, unchanged: 0, backfilled: 0, preserved: 0, fmInvalid: 0, uncategorized: 0, mirrorSkipped: 0, mirrorBackfilled: 0, licenseInjected: 0 };
+  const stats = { added: 0, updated: 0, unchanged: 0, backfilled: 0, preserved: 0, fmInvalid: 0, uncategorized: 0, mirrorSkipped: 0, mirrorBackfilled: 0, licenseInjected: 0, skillMdWritten: 0, skillMdRemoved: 0 };
   const touched: { skill_id: string; content_hash: string }[] = [];
   for (const c of byId.values()) {
     const prev = existing.get(c.report.meta.id);
@@ -309,6 +340,12 @@ async function main() {
       {
         const mDir = join(entryDir(prev.meta.id), "mirror");
         if (existsSync(mDir) && (await injectLicense(c, mDir))) stats.licenseInjected++;
+      }
+      // 正文快照补缺(ADR 0025,纯文件补充不动报告):内容没变 → 快照内容也没变,只补缺不重写
+      {
+        const snapRes = await alignSkillMdSnapshot(entryDir(prev.meta.id), prev.meta.license, c.skillMdSrcPath, false);
+        if (snapRes === "written") stats.skillMdWritten++;
+        else if (snapRes === "removed") stats.skillMdRemoved++;
       }
       if (patched) {
         await writeFile(join(entryDir(prev.meta.id), "skill-report.json"), JSON.stringify(prev, null, 2) + "\n");
@@ -391,6 +428,13 @@ async function main() {
         c.report.meta.hosting = "indexed";
         delete c.report.meta.mirror_complete;
       }
+    }
+    // 正文快照对齐(ADR 0025):mirror 状态定妥后判——宽松证且未镜像 → 落/刷新 skill.md;
+    // 镜像已落 / 证不宽松 → 清残留快照。新增与内容变更路径强制重写(内容可能已变)。
+    {
+      const snapRes = await alignSkillMdSnapshot(dir, c.report.meta.license, c.skillMdSrcPath, true);
+      if (snapRes === "written") stats.skillMdWritten++;
+      else if (snapRes === "removed") stats.skillMdRemoved++;
     }
     // mirror 状态定妥再落 skill-report.json,确保 hosting / mirror_complete 一次写对
     await writeFile(join(dir, "skill-report.json"), JSON.stringify(c.report, null, 2) + "\n");
@@ -489,6 +533,7 @@ async function main() {
   if (stats.backfilled) console.log(`  外科式回填(context_size / upstream_commit_at / 镜像补齐,其余字段未动): ${stats.backfilled}`);
   if (stats.mirrorBackfilled) console.log(`  其中镜像补齐(--mirror 对存量落副本): ${stats.mirrorBackfilled}`);
   if (stats.licenseInjected) console.log(`  仓级证注入(mirror/LICENSE.upstream,再分发合规): ${stats.licenseInjected}`);
+  if (stats.skillMdWritten || stats.skillMdRemoved) console.log(`  正文快照 skill.md(ADR 0025): 写入 ${stats.skillMdWritten} · 清理 ${stats.skillMdRemoved}`);
   if (appearNew || appearKnown) console.log(`  跨仓拷贝 → 出现记账(不落条目): 新增 ${appearNew} · 已知 ${appearKnown}`);
   if (sameRepoDup) console.log(`  同仓同内容(改名/软链,不落条目): ${sameRepoDup}`);
   if (blockedSkipped) console.log(`  已拦截仓候选出局: ${blockedSkipped}`);
