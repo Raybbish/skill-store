@@ -1,0 +1,102 @@
+# 货架自动同步(2026-07-13):catalog / web 侧进 main → 重建 → Vercel 生产部署。
+#
+# 闭环:cron(ingest / enrich-stars / promote)→ PR → 人合并 → 本 workflow 触发。
+# 数据线全走 PR、合并人是真实账号,不踩「GITHUB_TOKEN 的 push 不触发 workflow」的坑;
+# 唯一直推 main 的 status.yml 只动 docs/ 且带 [skip ci],天然不在 paths 内。
+#
+# 与本机 runbook 同一条命令(vercel deploy packages/web/out --prod --archive=tgz),
+# CI 只是把「人肉跑」换成「合并即跑」;本机命令保留为兜底通道。
+#
+# ⚠ NEXT_PUBLIC_* 是**构建期烘进静态产物**的:CI 里缺了不报错,但线上会静默丢
+#   登录/短评/搜索功能——所以 Supabase 两个是必填 secrets,缺了直接 fail 不部署。
+#
+# 需要的 secrets(Settings → Secrets and variables → Actions):
+#   VERCEL_TOKEN                     vercel.com/account/tokens 生成
+#   VERCEL_ORG_ID / VERCEL_PROJECT_ID  本机仓里 .vercel/project.json 的 orgId / projectId
+#   NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY   与本机 .env.local 一致
+#   (可选)TYPESENSE_URL / TYPESENSE_ADMIN_KEY                 配了才推搜索索引
+#   (可选)NEXT_PUBLIC_TYPESENSE_URL / NEXT_PUBLIC_TYPESENSE_SEARCH_KEY  浏览器侧只配 search-only key
+#   (可选)NEXT_PUBLIC_ANALYTICS_URL                            埋点 beacon
+name: Deploy Web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "catalog/**"
+      - "packages/web/**"
+      - "packages/schemas/**"
+      - "packages/verdicts/**"
+  workflow_dispatch: # 手动重部署(改 secrets / 排查线上问题用)
+
+# 排队的旧部署被新提交取代:永远只部署最新 main
+concurrency:
+  group: deploy-web
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60 # 全量 SSG ~1.1 万页,本机 compile 38s + 出页,CI 留足余量
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Preflight(缺必填 secrets 响亮失败,不部署残缺产物)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          SB_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SB_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          missing=""
+          [ -z "$VERCEL_TOKEN" ] && missing="$missing VERCEL_TOKEN"
+          [ -z "$VERCEL_ORG_ID" ] && missing="$missing VERCEL_ORG_ID"
+          [ -z "$VERCEL_PROJECT_ID" ] && missing="$missing VERCEL_PROJECT_ID"
+          [ -z "$SB_URL" ] && missing="$missing NEXT_PUBLIC_SUPABASE_URL"
+          [ -z "$SB_KEY" ] && missing="$missing NEXT_PUBLIC_SUPABASE_ANON_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error::缺 secrets:$missing —— NEXT_PUBLIC_* 缺失会静默丢登录/短评功能,拒绝部署。见本文件头注。"
+            exit 1
+          fi
+
+      - run: npm ci
+
+      - name: Build index + site
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_TYPESENSE_URL: ${{ secrets.NEXT_PUBLIC_TYPESENSE_URL }}
+          NEXT_PUBLIC_TYPESENSE_SEARCH_KEY: ${{ secrets.NEXT_PUBLIC_TYPESENSE_SEARCH_KEY }}
+          NEXT_PUBLIC_ANALYTICS_URL: ${{ secrets.NEXT_PUBLIC_ANALYTICS_URL }}
+        run: |
+          npm run web:index
+          npm run web:build
+
+      # 硬约束(ADR 0018):web:index 后必须 typesense:push,否则线上浏览/搜索滞后 catalog。
+      # 未配 Typesense(纯静态降级档)时跳过——StaticStore 兜底,不算破约。
+      - name: Push search index to Typesense
+        env:
+          TYPESENSE_URL: ${{ secrets.TYPESENSE_URL }}
+          TYPESENSE_ADMIN_KEY: ${{ secrets.TYPESENSE_ADMIN_KEY }}
+        run: |
+          if [ -z "$TYPESENSE_URL" ] || [ -z "$TYPESENSE_ADMIN_KEY" ]; then
+            echo "TYPESENSE_URL/ADMIN_KEY 未配,跳过推送(StaticStore 降级档)"
+          else
+            npm run typesense:push
+          fi
+
+      - name: Deploy to Vercel(与本机 runbook 同命令)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          url=$(npx vercel@latest deploy packages/web/out --prod --archive=tgz --yes --token "$VERCEL_TOKEN")
+          echo "部署完成:$url"
+          echo "### 🚀 已部署:$url" >> "$GITHUB_STEP_SUMMARY"
