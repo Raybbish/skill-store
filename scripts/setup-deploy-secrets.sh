@@ -77,7 +77,9 @@ read -r -s VERCEL_TOKEN
 
 # ---------- 6) 写 secrets ----------
 say "⑥ 写入 GitHub Actions secrets → $REPO"
-setsec() { [ -n "$2" ] && printf %s "$2" | gh secret set "$1" --repo "$REPO" --body - && echo "  ✓ $1" || echo "  – 跳过 $1(无值)"; }
+# ⚠ 不要用 --body -:gh 会把 "-" 当字面值存进去(2026-07-13 全场事故根因——九个 secret 全被写成减号,
+#   排障两小时;fingerprint sha256("-")=3973e022e932 定案)。不带 --body 时 gh 默认读 stdin,这才是管道写法。
+setsec() { [ -n "$2" ] && printf %s "$2" | gh secret set "$1" --repo "$REPO" && echo "  ✓ $1" || echo "  – 跳过 $1(无值)"; }
 setsec VERCEL_TOKEN "$VERCEL_TOKEN"
 setsec VERCEL_ORG_ID "$ORG_ID"
 setsec VERCEL_PROJECT_ID "$PROJECT_ID"
