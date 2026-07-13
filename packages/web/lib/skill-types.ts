@@ -64,6 +64,22 @@ export interface Skill {
   bulkSource?: boolean;
   curatedBy?: { list: string; category: string }[];
   eval?: EvalData | null;
+  /** 「怎么用」转述段(ADR 0025;仅 lint_pass 且锚新鲜时填充,否则 null → 板块只出原文) */
+  howto?: SkillHowtoView | null;
+  /** 采集时的上游 commit(原文折叠的「版本」标注;与 content_hash 同代) */
+  upstreamCommit?: string | null;
+}
+
+/** 「怎么用」板块的展示形态(catalog howto 块过回退闸后的映射,ADR 0025) */
+export interface SkillHowtoView {
+  what: string;
+  when: string;
+  say: { text: string; note?: string }[];
+  whatEn?: string;
+  whenEn?: string;
+  sayEn?: { text: string; note?: string }[];
+  /** llm = 商店整理;author = 认领作者改写(界面署名随之切换) */
+  source: "llm" | "author";
 }
 
 /** 清单记录(catalog/lists,ADR 0019;原 catalog/collections 合集条目)。blocked = 拦截仓(零内容上架);description = 上游仓自述(采集事实) */

@@ -1,7 +1,7 @@
 <!-- 自动生成,勿手改。运行: npm run status -->
 # 项目状态(自动快照)
 
-_生成于 2026-07-12 09:30 UTC · 分支 `feat/s0-work-list-model` · 未提交改动 2 处_
+_生成于 2026-07-13 03:27 UTC · 分支 `feat/howto-section` · 未提交改动 22 处_
 
 ## Catalog
 - **skill 总数:10494**
@@ -11,12 +11,12 @@ _生成于 2026-07-12 09:30 UTC · 分支 `feat/s0-work-list-model` · 未提交
 
 ## 最近提交
 ```
-ba6ed1926 taste 审计 P0-P2 修复 + 首页排序 + 微文案 lint 字段级放宽(missing-copy 补 lint 判据)
-0ef996806 research 包重组:名实对齐为通用论文流水线(用户纠错:原四件偏生物)
-511cb9d1c ADR 0022:手记译文口径入档
-53ace4146 编辑手记英文译文(ADR 0022 修订,用户裁决):忠实翻译,署名不变
-c8f6307a0 场景包扩容:8→11,新开安全审计/社媒发布/科研论文三包(用户裁决)
-67b83615f 场景包货架文案双语(ADR 0022 补):title_en/tagline_en 随 locale
-05cf8a796 双语显示层四件(ADR 0022 收官):英文微文案上屏 + 英文搜索召回
-2d1a79b32 数据批:微文案英文全量补齐(missing-en,9316 条写盘,lint 96.4%)
+03e6dcfb8 全站登录界面统一为 /me 同款(用户裁决):抽 SignInBox 共享组件
+3bf696543 合并 origin/main
+584788381 Merge pull request #30 from Raybbish/feat/github-login-author-studio
+f38088f91 补合 feat/github-login-author-studio 收尾 6 commit(账号位/me 重排/changelog 归零+双语/title 去可信的)——PR #29 合并早于这批推送
+213511855 站点 title 去「可信的」:背书式形容撞文案红线,只留事实(Agent Skills 商店)
+a2091137e changelog 条目双语:ChangelogEntry 加 text_en(缺省回退原文),/en/changelog 按 locale 取;上线两条补英文
+adbd5f1b9 changelog 对外归零:清两条上线前的内部工程条目(Typesense 条已不符生产事实,fail-open 已下线),换正式上线 + 作者功能开放两条
+e8769d3ff /me 登录版式重排:窄列 + GitHub 整行按钮(带标) + 或分隔 + 邮箱轨 + 用途一行事实
 ```
