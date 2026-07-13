@@ -49,13 +49,23 @@ const docs: TsDoc[] = wire.map((w, i) => {
   };
 });
 
-// 等就绪:容器冷启动/raft 选主要几秒,/health ok 才动手(30s 超时)——否则 503 "Not Ready or Lagging"
+// 等就绪:容器冷启动/raft 选主要几秒,/health ok 才动手(30s 超时)——否则 503 "Not Ready or Lagging"。
+// /health 不带 api key(本就无需鉴权):排除坏 key 干扰健康判断;每次尝试 5s 超时防挂死;
+// 失败时吐出最后一次真实响应——旧版只报「未就绪」,CI 里 401/DNS/超时全被吞成同一句(2026-07-13 排障教训)。
+let lastErr = "(尚未尝试)";
 for (let i = 0; ; i++) {
   try {
-    const h = await api("/health");
-    if (h.ok && ((await h.json()) as { ok: boolean }).ok) break;
-  } catch { /* 还没监听 */ }
-  if (i >= 30) throw new Error(`typesense ${URL} 30s 未就绪——容器起了吗?docker compose -f infra/typesense/docker-compose.yml ps`);
+    const h = await fetch(`${URL}/health`, { signal: AbortSignal.timeout(5000) });
+    const body = await h.text();
+    if (h.ok && body.includes("true")) break;
+    lastErr = `HTTP ${h.status} ${body.slice(0, 160)}`;
+  } catch (e) {
+    lastErr = (e as Error).message + ((e as Error & { cause?: Error }).cause ? ` (${(e as Error & { cause?: Error }).cause!.message})` : "");
+  }
+  if (i >= 30) throw new Error(
+    `typesense ${URL} 30s 未就绪,最后一次:${lastErr}\n` +
+    `  本地容器:docker compose -f infra/typesense/docker-compose.yml ps;云端:核对 TYPESENSE_URL 与集群状态`,
+  );
   await new Promise((r) => setTimeout(r, 1000));
 }
 
