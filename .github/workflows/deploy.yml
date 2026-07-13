@@ -88,6 +88,10 @@ jobs:
           if [ -z "$TYPESENSE_URL" ] || [ -z "$TYPESENSE_ADMIN_KEY" ]; then
             echo "TYPESENSE_URL/ADMIN_KEY 未配,跳过推送(StaticStore 降级档)"
           else
+            # 指纹诊断(2026-07-13 排障):长度 + sha256 前 12 位,不可逆不泄密;
+            # 本地 printf %s '<期望值>' | shasum -a 256 | cut -c1-12 对照,定位 env 实际拿到的值
+            echo "指纹 URL: len=${#TYPESENSE_URL} sha12=$(printf %s "$TYPESENSE_URL" | sha256sum | cut -c1-12)"
+            echo "指纹 KEY: len=${#TYPESENSE_ADMIN_KEY} sha12=$(printf %s "$TYPESENSE_ADMIN_KEY" | sha256sum | cut -c1-12)"
             npm run typesense:push
           fi
 
