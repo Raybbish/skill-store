@@ -52,7 +52,7 @@ function buildPrompt(name: string, description: string, body: string): string {
     `据此输出六个字段,全部**事实性**描述——只转述原文里确凿的行为,禁止营销语气与这些水词:${BANNED_WORDS.join("、")}(「最佳实践」是技术名词可以用;其他场合换词,如「最佳结果」→「头部结果」)。\n` +
     `**语言规则:what/when/say 三个字段必须用中文写**(触发词、模型名、专有名词可保留英文);英文只写进 *_en 字段。\n` +
     `- what:装上后 Claude 的行为会怎么变(它做什么、产出什么)。1~3 句,**≤120 字硬上限**——超了就砍举例,不砍主句。写给完全不懂技术的人。\n` +
-    `- when:什么时候会触发/接管。原文写明触发条件(如 description 的 use when、硬性门槛)就如实转述;没写就按正文流程推断最典型的进入时机。1~2 句,**≤100 字**;触发词只举最典型 2~3 个,其余用「等」收——**列出超过 3 个触发词直接判废**,写法参考「当你提到 X、Y 等关键词时」。\n` +
+    `- when:什么时候会触发/接管。原文写明触发条件(如 description 的 use when、硬性门槛)就如实转述;没写就按正文流程推断最典型的进入时机。1~2 句,**≤100 字**。**任何列举(触发词、功能、平台)最多 3 项,其余用「等」收,超过直接判废**。反例(判废):「当你说出“A”、“B”、“C”、“D”、“E”、“F”时触发」;正例:「当你提到 “A”、“B” 等关键词,或要求做 X 时触发」。\n` +
     `- say:**必须给满 2~3 条**用户装好后可以**直接对 Claude 说的话**(中文示例话术),每条 ≤40 字,必须贴合该技能的真实入口(它管什么就说什么,不要通用寒暄);想不出第二种用法就换参数/换对象再造一条。note 可选,一短句(≤30 字)说明这么说之后会发生什么。\n` +
     `- 英文同构(自然转述不是逐字直译,**宁短勿超**):what_en ≤240 chars,when_en ≤200 chars,say_en 与 say 数量对应(each text ≤80 chars,note ≤60 chars)。英文字段是必填项,不要省略。\n` +
     `信息不足宁可短,不编造。\n\n` +
@@ -155,9 +155,12 @@ function buildHowto(v: LlmHowto, contentHash: string): SkillHowto | null {
   const when = typeof v.when === "string" ? v.when.trim() : "";
   if (!what && !when) return null; // 模型整体没产出:不写空壳
   const say = cleanSay(v.say, 40, 30);
+  // zh 帽 = prompt 要求 +25%(what 120→150,when 100→125),与英文侧同哲学:
+  // 帽贴着 prompt 设会把贴线小超(第三批:kling when 123、seo-google what 136)整条判废,
+  // 帽管的是「离谱」,措辞纪律交给 prompt。
   const pass =
-    what.length > 0 && what.length <= 130 && !hasBanned(what) && hasCjk(what) &&
-    when.length > 0 && when.length <= 120 && !hasBanned(when) && hasCjk(when) &&
+    what.length > 0 && what.length <= 150 && !hasBanned(what) && hasCjk(what) &&
+    when.length > 0 && when.length <= 125 && !hasBanned(when) && hasCjk(when) &&
     say.length >= 1;
 
   const out: SkillHowto = {
