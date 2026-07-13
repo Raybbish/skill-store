@@ -15,6 +15,7 @@
  * 用法:
  *   npm run howto:llm -- --scope hot            # 场景包成员 ∪ 人气 top(默认 1000)(S1)
  *   npm run howto:llm -- --scope all            # 全量补齐(S2,分批跑)
+ *   npm run howto:llm -- --scope missing-en     # 只补「zh 新鲜可用但缺英文」的存量(没拿到英文不动旧块)
  *   npm run howto:llm -- --top 500              # 调热门集大小
  *   npm run howto:llm -- --limit 20 --dry       # 试跑不写盘
  *   npm run howto:llm -- --verbose              # 逐条打印产出
@@ -48,11 +49,11 @@ function buildPrompt(name: string, description: string, body: string): string {
   const truncated = body.length > BODY_MAX_CHARS;
   return (
     `下面是技能「${name}」的 SKILL.md 原文${truncated ? "(超长已截断,按已见部分写)" : ""}。` +
-    `据此输出六个字段,全部**事实性**描述——只转述原文里确凿的行为,禁止营销语气与这些水词:${BANNED_WORDS.join("、")}。\n` +
-    `- what:装上后 Claude 的行为会怎么变(它做什么、产出什么)。1~3 句,≤120 字,写给完全不懂技术的人。\n` +
-    `- when:什么时候会触发/接管。原文写明触发条件(如 description 的 use when、硬性门槛)就如实转述;没写就按正文流程推断最典型的进入时机。1~2 句,≤100 字。\n` +
-    `- say:2~3 条用户装好后可以**直接对 Claude 说的话**(中文示例话术),每条 ≤40 字,必须贴合该技能的真实入口(它管什么就说什么,不要通用寒暄);note 可选,一短句(≤30 字)说明这么说之后会发生什么。\n` +
-    `- 英文同构(自然转述不是逐字直译):what_en ≤240 chars,when_en ≤200 chars,say_en 与 say 数量对应(each text ≤80 chars,note ≤60 chars)。\n` +
+    `据此输出六个字段,全部**事实性**描述——只转述原文里确凿的行为,禁止营销语气与这些水词:${BANNED_WORDS.join("、")}(「最佳实践」是技术名词,可以用)。\n` +
+    `- what:装上后 Claude 的行为会怎么变(它做什么、产出什么)。1~3 句,**≤120 字硬上限**——超了就砍举例,不砍主句。写给完全不懂技术的人。\n` +
+    `- when:什么时候会触发/接管。原文写明触发条件(如 description 的 use when、硬性门槛)就如实转述;没写就按正文流程推断最典型的进入时机。1~2 句,**≤100 字**;触发词只举最典型 2~3 个,其余用「等」收,**不要全量枚举**。\n` +
+    `- say:**必须给满 2~3 条**用户装好后可以**直接对 Claude 说的话**(中文示例话术),每条 ≤40 字,必须贴合该技能的真实入口(它管什么就说什么,不要通用寒暄);想不出第二种用法就换参数/换对象再造一条。note 可选,一短句(≤30 字)说明这么说之后会发生什么。\n` +
+    `- 英文同构(自然转述不是逐字直译,**宁短勿超**):what_en ≤240 chars,when_en ≤200 chars,say_en 与 say 数量对应(each text ≤80 chars,note ≤60 chars)。英文字段是必填项,不要省略。\n` +
     `信息不足宁可短,不编造。\n\n` +
     `<SKILL name="${name}" description=${JSON.stringify(description)}>\n${body.slice(0, BODY_MAX_CHARS)}\n</SKILL>\n\n` +
     `只输出 JSON:{"what":"...","when":"...","say":[{"text":"...","note":"..."}],` +
@@ -110,7 +111,17 @@ async function callLlm(prompt: string): Promise<LlmHowto | null> {
 
 // ---------- lint(代码层强制,不指望模型自觉;判据与 schemas 注释同口径) ----------
 
-const hasBanned = (s: string): boolean => BANNED_WORDS.some((w) => s.includes(w));
+/**
+ * 禁用词白名单:技术名词整体豁免,先剥再查(2026-07-13 首批抽读发现
+ * 「最佳实践/best practices」撞禁用词「最佳/best-in-class」误伤两条)。
+ * 只在 howto 侧豁免——tagline 是营销位,微文案 lint 的严口径不动。
+ */
+const ALLOW_PHRASES = ["最佳实践", "best practices", "best practice"];
+const hasBanned = (s: string): boolean => {
+  let t = s.toLowerCase();
+  for (const p of ALLOW_PHRASES) t = t.split(p.toLowerCase()).join("");
+  return BANNED_WORDS.some((w) => t.includes(w.toLowerCase()));
+};
 
 function cleanSay(raw: unknown, textMax: number, noteMax: number): HowtoSay[] {
   if (!Array.isArray(raw)) return [];
@@ -153,9 +164,10 @@ function buildHowto(v: LlmHowto, contentHash: string): SkillHowto | null {
   };
   const whatEn = typeof v.what_en === "string" ? v.what_en.trim() : "";
   const whenEn = typeof v.when_en === "string" ? v.when_en.trim() : "";
-  const sayEn = cleanSay(v.say_en, 90, 70);
-  // 英文三件齐才挂(半套英文比没有更糟:界面会出现中英夹杂的板块)
-  if (whatEn && whatEn.length <= 260 && whenEn && whenEn.length <= 220 && sayEn.length >= 2) {
+  const sayEn = cleanSay(v.say_en, 100, 80);
+  // 英文三件齐才挂(半套英文比没有更糟:界面会出现中英夹杂的板块)。
+  // 帽比 prompt 要求宽 ~25%(2026-07-13 首批抽读:帽贴着要求设,模型小幅超限即整组丢,4/20 缺英文)
+  if (whatEn && whatEn.length <= 300 && whenEn && whenEn.length <= 240 && sayEn.length >= 2) {
     out.what_en = whatEn;
     out.when_en = whenEn;
     out.say_en = sayEn;
@@ -201,8 +213,14 @@ async function main() {
     if (h.source === "author") return false;
     return h.lint_pass !== true;
   });
+  // missing-en(同 categorize:llm 的 missing-en 哲学):只补「zh 新鲜可用但缺英文」的存量,
+  // 同一次调用重产中英两份;写盘闸在 handle 里——这次没拿到英文就保留旧块,zh 成果不因补英文失败被刷新
+  const missingEn = shelf.filter((e) => {
+    const h = e.report.howto;
+    return !!h && h.content_hash === e.report.meta.content_hash && h.lint_pass === true && h.source === "llm" && !h.what_en;
+  });
 
-  let pool = stale;
+  let pool = scope === "missing-en" ? missingEn : stale;
   if (scope === "hot") {
     const hot = await hotIds(shelf, top);
     pool = stale.filter((e) => hot.has(e.report.meta.id));
@@ -237,6 +255,11 @@ async function main() {
       }
       const next = buildHowto(v, m.content_hash);
       if (next == null) {
+        nullOut++;
+        return;
+      }
+      // missing-en 写盘闸:这次没拿到英文 → 保留旧块(中文成果不因补英文的失败被刷新)
+      if (scope === "missing-en" && !next.what_en) {
         nullOut++;
         return;
       }
