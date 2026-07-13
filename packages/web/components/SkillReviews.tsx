@@ -6,7 +6,8 @@
  * 双语(ADR 0022):chrome 词典化(共享页,客户端按偏好切);用户评价内容保持原文。
  */
 import { useEffect, useMemo, useState } from "react";
-import { getSession, githubAuthorizeUrl, requestOtp, sessionFromUrlHash, signOut, verifyOtp, type Session } from "@/lib/auth";
+import { getSession, sessionFromUrlHash, signOut, type Session } from "@/lib/auth";
+import SignInBox from "@/components/SignInBox";
 import { eligibility, listReviews, postReview, reviewGateEnabled, reviewsConfigured, type Review } from "@/lib/reviews";
 import { postReceipt, ridToken } from "@/lib/receipts";
 import { fromDataTransfer, fromFileList, fromZipFile, verifyPickedDir, type PickedFile } from "@/lib/webverify";
@@ -31,11 +32,9 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
   };
   const [reviews, setReviews] = useState<Review[] | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [mode, setMode] = useState<"idle" | "email" | "code" | "form" | "ineligible">("idle");
+  const [mode, setMode] = useState<"idle" | "signin" | "form" | "ineligible">("idle");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
   const [receiptHash, setReceiptHash] = useState<string | null>(null);
   const [verdict, setVerdict] = useState<Review["verdict"] | null>(null);
   const [text, setText] = useState("");
@@ -77,24 +76,6 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
     setMode("form");
   }
 
-  async function submitEmail() {
-    if (!/^\S+@\S+\.\S+$/.test(email)) return setErr(tt("talk.errEmail"));
-    setBusy(true); setErr("");
-    // redirect_to = 当前详情页:点邮件里的链接直接回到这条 skill,hash 会话由 mount 时接住
-    try { await requestOtp(email, window.location.href, locale); setMode("code"); } catch (e) { setErr(errText(e)); }
-    setBusy(false);
-  }
-
-  async function submitCode() {
-    setBusy(true); setErr("");
-    try {
-      const s = await verifyOtp(email, code);
-      setSession(s);
-      await enterForm(s);
-    } catch (e) { setErr((e as Error).message || tt("talk.errCode")); }
-    setBusy(false);
-  }
-
   async function submitReview() {
     if (!session || !verdict) return setErr(tt("rev.pickOne"));
     setBusy(true); setErr("");
@@ -132,7 +113,7 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
       <div className="rev-h">
         <h2>{tt("rev.title")}{reviews?.length ? ` · ${reviews.length}` : ""}</h2>
         {mode === "idle" && (
-          <button className="cp" disabled={busy} onClick={() => (session ? void enterForm(session) : setMode("email"))}>
+          <button className="cp" disabled={busy} onClick={() => (session ? void enterForm(session) : setMode("signin"))}>
             {mine ? tt("rev.edit") : tt("rev.write")}
           </button>
         )}
@@ -140,26 +121,13 @@ export default function SkillReviews({ skillId, contentHash, scene }: { skillId:
       {/* 文案跟服务端 flag 走,两种状态各说各的实话;标签永远按行盖章不虚标 */}
       <div className="rev-gate">{gateOn ? tt("rev.gateOn") : tt("rev.gateOff")}</div>
 
-      {mode === "email" && (
+      {/* 统一登录组件(与 /me 同款,用户裁决 2026-07-13):原地展开,登录完直接进资格检查 */}
+      {mode === "signin" && (
         <div className="rev-form">
-          <div className="rev-row">
-            <input type="email" placeholder={tt("talk.emailPh")} value={email} onChange={(e) => setEmail(e.target.value)} />
-            <button className="cp" disabled={busy} onClick={() => void submitEmail()}>{tt("talk.sendCode")}</button>
-            {/* GitHub 全站登录选项(2026-07-12 裁决):回跳令牌在 hash,由 mount 时 sessionFromUrlHash 接住 */}
-            <button className="cp" disabled={busy} onClick={() => { window.location.href = githubAuthorizeUrl(window.location.href); }}>{tt("gh.signIn")}</button>
-            <button className="rev-x" onClick={() => setMode("idle")}>{tt("talk.cancel")}</button>
-          </div>
-        </div>
-      )}
-
-      {mode === "code" && (
-        <div className="rev-form">
-          <p className="rev-tip">{tt("talk.codeTip", { email })}</p>
-          <div className="rev-row">
-            <input inputMode="numeric" placeholder={tt("talk.codePh")} value={code} onChange={(e) => setCode(e.target.value)} />
-            <button className="cp" disabled={busy || code.trim().length < 4} onClick={() => void submitCode()}>{tt("talk.signIn")}</button>
-            <button className="rev-x" onClick={() => setMode("email")}>{tt("talk.changeEmail")}</button>
-          </div>
+          <SignInBox
+            onSession={(s) => { setSession(s); void enterForm(s); }}
+            onCancel={() => setMode("idle")}
+          />
         </div>
       )}
 
