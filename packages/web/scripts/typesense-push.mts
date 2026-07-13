@@ -13,7 +13,14 @@ import { join } from "node:path";
 import { hydrateCard, type WireCard } from "../lib/store";
 import { TS_COLLECTION, type TsDoc } from "../lib/store-typesense";
 
-const URL = (process.env.TYPESENSE_URL ?? "http://localhost:8108").replace(/\/$/, "");
+// 归一 TYPESENSE_URL:去空白/引号/尾斜杠;裸主机名按 https:// 处理——Typesense Cloud 控制台
+// 复制出来的就是不带协议的域名,直接喂 fetch 会 Invalid URL(2026-07-13 CI 首跑踩坑)。
+let RAW_URL = (process.env.TYPESENSE_URL ?? "http://localhost:8108").trim().replace(/^['"]|['"]$/g, "").replace(/\/$/, "");
+if (RAW_URL && !/^https?:\/\//.test(RAW_URL)) {
+  console.warn(`[typesense-push] TYPESENSE_URL 无协议头,按 https:// 处理:${RAW_URL}`);
+  RAW_URL = `https://${RAW_URL}`;
+}
+const URL = RAW_URL;
 const KEY = process.env.TYPESENSE_ADMIN_KEY ?? "oms-dev-key";
 const H = { "x-typesense-api-key": KEY, "content-type": "application/json" };
 
