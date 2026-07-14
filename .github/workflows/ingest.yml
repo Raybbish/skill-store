@@ -21,6 +21,9 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    env:
+      # 有配 LLM_API_KEY 才跑下面的富化步骤;缺 key 则整段跳过,退化为「只采集不富化」(加本 workflow 前的行为)
+      HAS_LLM: ${{ secrets.LLM_API_KEY != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -42,6 +45,28 @@ jobs:
             # + Code Search 全网扫描(ADR 0019 S1:filename:SKILL.md 切片续扫,游标在 catalog/_meta/code-search-state.json)
             npm run ingest -- --github-search 100 --hub-signals 300 --skills-sh 200 --code-search 30
           fi
+
+      # ---- LLM 富化(ADR 0022/0025):采集完成后补中英文微文案 + 怎么用,随同一条 ingest/daily PR 落库 ----
+      # Secret:LLM_API_KEY(必填)。LLM_BASE_URL / LLM_MODEL 可选,缺省 deepseek;非 deepseek 服务再加对应 Secret。
+      # 两步都 continue-on-error:LLM 故障(限流/超时/欠费)不阻断 catalog PR,退化为「本轮只采集不富化」,下轮续补。
+      - name: 补微文案(中英)+ 分类  # categorize:llm(输入 name+description,便宜;按 content_hash 增量,只补新/过期)
+        if: env.HAS_LLM == 'true'
+        continue-on-error: true
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.LLM_BASE_URL || 'https://api.deepseek.com' }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
+        run: npm run categorize:llm -- --scope missing-copy
+
+      - name: 补怎么用(中英,热门集)  # howto:llm(输入整篇 SKILL.md,单条重;--scope hot 限热门集控成本)
+        if: env.HAS_LLM == 'true'
+        continue-on-error: true
+        timeout-minutes: 30 # howto 单条吃 ~4k tokens;限时保证不拖垮整趟,本轮没跑完的下轮续补(增量锚 content_hash)
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.LLM_BASE_URL || 'https://api.deepseek.com' }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
+        run: npm run howto:llm -- --scope hot
 
       - name: Create PR with catalog changes
         uses: peter-evans/create-pull-request@v7
