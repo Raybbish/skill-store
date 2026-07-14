@@ -69,6 +69,10 @@ export class TypesenseStore extends StaticStore implements SkillStore {
       query_by: TS_QUERY_BY,
       page: String(Math.max(1, page)),
       per_page: String(PAGE_SIZE),
+      // 结果缓存:默认视图 / 翻页 / 重复词命中 Typesense 内置缓存,免重算。
+      // 数据只经 typesense:push 更新(非实时),60s 陈旧无碍;不同 q/filter/sort 各自成键。
+      use_cache: "true",
+      cache_ttl: "60",
     });
     // 显式排序(stars/new)= 纯排序,压过相关度且不带 cap_overflow 键(2026-07-11 裁决:所见即数据);
     // missing_values: last 让缺值沉底(与本地实现一致);cap 仅保留在默认「热门」无词浏览
@@ -87,9 +91,10 @@ export class TypesenseStore extends StaticStore implements SkillStore {
     const fb = filterBy(filters);
     if (fb) params.set("filter_by", fb);
 
-    const r = await fetch(`${this.url}/collections/${TS_COLLECTION}/documents/search?${params}`, {
-      headers: { "x-typesense-api-key": this.key },
-    });
+    // key 走 query 参数而非自定义头:请求降为「简单 GET」,消掉每次搜索前的 CORS 预检 OPTIONS
+    // （往返减半,跨区尤其明显）。search-only scoped key 本就随前端包公开,query 传递不增暴露面。
+    params.set("x-typesense-api-key", this.key);
+    const r = await fetch(`${this.url}/collections/${TS_COLLECTION}/documents/search?${params}`);
     if (!r.ok) throw new Error(`typesense search ${r.status}: ${await r.text()}`);
     const data = (await r.json()) as { found: number; hits?: { document: TsDoc }[] };
     const items = (data.hits ?? []).map((h) => tsDocToCard(h.document));
@@ -102,10 +107,9 @@ export class TypesenseStore extends StaticStore implements SkillStore {
    *  走 search + filter_by sid(而非文档直取端点):search-only scoped key 只授
    *  documents:search,直取需要 documents:get——生产 key 打不通。sid 含 "/",值加反引号。 */
   override async getSkill(id: string): Promise<SkillCard | null> {
-    const params = new URLSearchParams({ q: "*", filter_by: `sid:=\`${id}\``, per_page: "1" });
-    const r = await fetch(`${this.url}/collections/${TS_COLLECTION}/documents/search?${params}`, {
-      headers: { "x-typesense-api-key": this.key },
-    });
+    const params = new URLSearchParams({ q: "*", filter_by: `sid:=\`${id}\``, per_page: "1", use_cache: "true", cache_ttl: "60" });
+    params.set("x-typesense-api-key", this.key); // 同 search:key 走 query 参数,免 CORS 预检
+    const r = await fetch(`${this.url}/collections/${TS_COLLECTION}/documents/search?${params}`);
     if (!r.ok) throw new Error(`typesense get ${r.status}: ${await r.text()}`);
     const data = (await r.json()) as { hits?: { document: TsDoc }[] };
     const d = data.hits?.[0]?.document;
