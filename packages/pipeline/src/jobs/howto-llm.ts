@@ -16,6 +16,7 @@
  *   npm run howto:llm -- --scope hot            # 场景包成员 ∪ 人气 top(默认 1000)(S1)
  *   npm run howto:llm -- --scope all            # 全量补齐(S2,分批跑)
  *   npm run howto:llm -- --scope missing-en     # 只补「zh 新鲜可用但缺英文」的存量(没拿到英文不动旧块)
+ *   npm run howto:llm -- --scope all --min-stars 1000   # 全量里按 GitHub star 阈值圈定(≥1000;仓库级 star)
  *   npm run howto:llm -- --top 500              # 调热门集大小
  *   npm run howto:llm -- --limit 20 --dry       # 试跑不写盘
  *   npm run howto:llm -- --verbose              # 逐条打印产出
@@ -207,6 +208,7 @@ function materiallyEqual(a: SkillHowto | null | undefined, b: SkillHowto | null)
 async function main() {
   const scope = argVal("scope") ?? "hot";
   const top = argVal("top") ? Number(argVal("top")) : 1000;
+  const minStars = argVal("min-stars") ? Number(argVal("min-stars")) : undefined;
   const limit = argVal("limit") ? Number(argVal("limit")) : Infinity;
   const dry = hasFlag("dry");
   const verbose = hasFlag("verbose");
@@ -236,10 +238,15 @@ async function main() {
     const hot = await hotIds(shelf, top);
     pool = stale.filter((e) => hot.has(e.report.meta.id));
   }
+  // --min-stars N:任意 scope 之上再按 GitHub star 阈值圈定(仓库级 star,同仓 skill 共享;
+  // 与 hot 的「人气排名 top N」不同口径,规范用法 --scope all --min-stars 1000)
+  if (minStars != null) {
+    pool = pool.filter((e) => (e.report.signals.stars_github ?? 0) >= minStars);
+  }
   const targets = pool.slice(0, limit);
 
   console.log(
-    `howto:llm  scope=${scope}${scope === "hot" ? `(top=${top})` : ""}  待生成 ${stale.length} · 本次目标 ${targets.length}` +
+    `howto:llm  scope=${scope}${scope === "hot" ? `(top=${top})` : ""}${minStars != null ? `  ★≥${minStars}` : ""}  待生成 ${stale.length} · 本次目标 ${targets.length}` +
       `  并发=${CONCURRENCY}${dry ? "  (dry)" : ""}${process.env.LLM_MOCK === "1" ? "  [MOCK]" : ""}`,
   );
 

@@ -12,6 +12,7 @@
  * 用法:
  *   npm run backfill:skillmd -- --scope hot          # 场景包成员 ∪ 人气 top(默认 1000),热门先行
  *   npm run backfill:skillmd -- --scope all          # 全量(约 1 万次 raw 拉取,分批跑)
+ *   npm run backfill:skillmd -- --scope all --min-stars 1000   # 全量里按 GitHub star 阈值圈定(≥1000)
  *   npm run backfill:skillmd -- --top 500            # 调热门集大小
  *   npm run backfill:skillmd -- --limit 50 --dry     # 试跑不写盘
  * 并发 SKILLMD_CONCURRENCY(默认 8);raw.githubusercontent 无需 token。
@@ -34,6 +35,7 @@ const CONCURRENCY = Number(process.env.SKILLMD_CONCURRENCY) || 8;
 async function main() {
   const scope = argVal("scope") ?? "hot";
   const top = argVal("top") ? Number(argVal("top")) : 1000;
+  const minStars = argVal("min-stars") ? Number(argVal("min-stars")) : undefined;
   const limit = argVal("limit") ? Number(argVal("limit")) : Infinity;
   const dry = hasFlag("dry");
 
@@ -50,10 +52,14 @@ async function main() {
     const hot = await hotIds(entries.filter((e) => !e.report.meta.duplicate_of && !e.report.meta.delisted_at), top);
     pool = eligible.filter((e) => hot.has(e.report.meta.id));
   }
+  // --min-stars N:任意 scope 之上再按 GitHub star 阈值圈定(仓库级 star,同仓 skill 共享)
+  if (minStars != null) {
+    pool = pool.filter((e) => (e.report.signals.stars_github ?? 0) >= minStars);
+  }
   const targets = pool.slice(0, limit);
 
   console.log(
-    `backfill:skillmd  scope=${scope}${scope === "hot" ? `(top=${top})` : ""}  ` +
+    `backfill:skillmd  scope=${scope}${scope === "hot" ? `(top=${top})` : ""}${minStars != null ? `  ★≥${minStars}` : ""}  ` +
       `缺快照 ${eligible.length} · 本次目标 ${targets.length} · 并发 ${CONCURRENCY}${dry ? "  (dry)" : ""}`,
   );
 
