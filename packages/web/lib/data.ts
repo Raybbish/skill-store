@@ -30,6 +30,15 @@ function scan(): Cache {
           // 微文案回退闸:缺失 / lint 未过 / content_hash 过期 → 视作无文案(前端回退 description)
           const copy =
             r.copy && r.copy.lint_pass === true && r.copy.content_hash === r.meta.content_hash ? r.copy : null;
+          // 「怎么用」同款回退闸(ADR 0025):不新鲜/未过 lint → 板块只出原文折叠,不出转述段
+          const howto =
+            r.howto && r.howto.lint_pass === true && r.howto.content_hash === r.meta.content_hash
+              ? {
+                  what: r.howto.what, when: r.howto.when, say: r.howto.say ?? [],
+                  whatEn: r.howto.what_en, whenEn: r.howto.when_en, sayEn: r.howto.say_en,
+                  source: r.howto.source === "author" ? ("author" as const) : ("llm" as const),
+                }
+              : null;
           all.push({
             id: r.meta.id, owner: owner.name, repo: repo.name, name: r.meta.name, description: r.meta.description,
             license: r.meta.license, hosting: r.meta.hosting, publisher: r.meta.publisher,
@@ -48,6 +57,8 @@ function scan(): Cache {
             bulkSource: r.signals?.bulk_source === true,
             curatedBy: r.signals?.curated_by ?? [],
             eval: r.eval ?? null,
+            howto,
+            upstreamCommit: r.meta.upstream_commit ?? null,
           });
         } catch { /* skip */ }
       }
@@ -74,6 +85,28 @@ export function allSkills({ includeHidden = false }: { includeHidden?: boolean }
 
 export function getSkill(owner: string, repo: string, name: string): Skill | undefined {
   return scan().byId.get(`${owner}/${repo}/${name}`);
+}
+
+/**
+ * SKILL.md 原文(ADR 0025 原文折叠):mirror/SKILL.md(托管副本)优先,
+ * 其次 skill.md 快照(宽松证但未镜像;ingest / backfill:skillmd 落盘)。
+ * 磁盘缺席 = 证不宽松或快照未回填 → 返回 null,板块给「在 GitHub 查看」出口。
+ * 磁盘在场即是转载资格(快照只为宽松证条目落盘,与 hosting「字段=磁盘事实」同口径)。
+ * 逐详情页构建期懒读,不进 scan() 缓存(1 万条正文没必要常驻内存)。
+ */
+export function getSkillBody(id: string): { text: string; source: "mirror" | "snapshot" } | null {
+  const dir = join(CATALOG, ...id.split("/"));
+  for (const [p, source] of [
+    [join(dir, "mirror", "SKILL.md"), "mirror"],
+    [join(dir, "skill.md"), "snapshot"],
+  ] as const) {
+    if (!existsSync(p)) continue;
+    try {
+      const text = readFileSync(p, "utf8");
+      if (text.trim()) return { text, source };
+    } catch { /* 读失败按缺席处理 */ }
+  }
+  return null;
 }
 
 /** 按标签 slug 取 skill:主分类命中或标签命中(分类页与标签页共用同一取数) */

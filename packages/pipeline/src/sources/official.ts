@@ -12,6 +12,12 @@ export interface SkillCandidate {
   /** mirrored 时:本地克隆中该 skill 目录的绝对路径,ingest 负责整体拷贝 */
   mirrorSrcDir: string | null;
   /**
+   * 本地克隆中 SKILL.md 的绝对路径(采集时已在手)。ingest 用它落正文快照 skill.md
+   * (ADR 0025:宽松证且未镜像时;镜像条目正文以 mirror/SKILL.md 为准,不重复落)。
+   * 克隆的 cleanup 统一推迟到 ingest 收尾,此路径在写盘循环内始终有效。
+   */
+  skillMdSrcPath?: string | null;
+  /**
    * 托管资格来自「仓级」LICENSE 时,该文件在克隆中的绝对路径——
    * ingest 镜像时注入为 mirror/LICENSE.upstream(宽松证再分发要求附带许可文本;
    * 目录级证天然随目录拷贝,无需注入,此字段为 null)。
@@ -103,6 +109,7 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
         report,
         // 索引阶段不镜像(海量、近零成本);仅 INGEST_MIRROR=1 且 licence 允许时下载副本
         mirrorSrcDir: process.env.INGEST_MIRROR === "1" && hosting === "mirrored" ? join(clone.dir, dir) : null,
+        skillMdSrcPath: join(clone.dir, skillMdPath),
         // 仓级证入的白名单 → 记证文件位置供镜像注入;不受 INGEST_MIRROR 门控(存量镜像补证也用它)
         licenseSrcPath:
           hosting === "mirrored" && !localLicenseEntry && repoLicenseEntry
