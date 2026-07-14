@@ -1,22 +1,32 @@
 /**
- * 短评取数(ADR 0017 砖二):列表匿名可读;写入走双层门(登录 + 名下回执,由 RLS 强制)。
- * 静态站直连 Supabase REST;未配置 env 时 no-op(组件整块隐藏,货架外观与今天一致)。
+ * 评论区取数(ADR 0026,就地改造自「短评」砖二):
+ * - 列表匿名可读(含顶/踩计数);写(发/回复/删/投票)只需登录,由 RLS 强制(去回执门)。
+ * - 一人一 skill 可多发;一层回复(reply_to);顶/踩一人一票可反悔(review_votes upsert / delete)。
+ * - 静态站直连 Supabase REST;未配 env 时 no-op(组件整块隐藏,货架与今天一致)。
  */
-import { authConfigured, claimReceipts, type Session } from "./auth";
+import { authConfigured, type Session } from "./auth";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
+export type Verdict = "good" | "ok" | "bad";
+
 export interface Review {
+  id: number;
   user_id: string;
   skill_id: string;
-  verdict: "good" | "ok" | "bad";
+  /** 非空 = 这是对某条主楼的回复;主楼此值为 null */
+  reply_to: number | null;
+  /** 可选(评论可纯文本);回复行恒为 null(DB 约束) */
+  verdict: Verdict | null;
   text: string | null;
   scene_tags: string[] | null;
   author_label: string | null;
   content_hash: string | null;
-  /** 发布时名下确有回执(服务端触发器盖章,不可伪造);资格门开关不影响其真实性 */
+  /** 发布时作者名下确有回执(服务端盖章,不可伪造);去门后它是徽章不是资格 */
   verified: boolean;
+  up: number;
+  down: number;
   created_at: string;
   updated_at: string;
 }
@@ -24,73 +34,110 @@ export interface Review {
 export const reviewsConfigured = authConfigured;
 
 const anonHeaders = { apikey: KEY, authorization: `Bearer ${KEY}` };
+const REVIEW_COLS =
+  "id,user_id,skill_id,reply_to,verdict,text,scene_tags,author_label,content_hash,verified,up,down,created_at,updated_at";
 
-/** 资格门当前开关(匿名可查):前端文案与拦截行为跟着服务端 flag 走,不写死 */
-export async function reviewGateEnabled(): Promise<boolean> {
-  if (!URL || !KEY) return false;
-  try {
-    const r = await fetch(`${URL}/rest/v1/rpc/review_gate_enabled`, {
-      method: "POST",
-      headers: { ...anonHeaders, "content-type": "application/json" },
-      body: "{}",
-    });
-    return r.ok ? Boolean(await r.json()) : false;
-  } catch {
-    return false;
-  }
-}
-
+/** 一个 skill 下的全部评论(主楼+回复),按时间升序;树由组件层拼 */
 export async function listReviews(skillId: string): Promise<Review[]> {
   if (!URL || !KEY) return [];
   const q = new URLSearchParams({
     skill_id: `eq.${skillId}`,
-    select: "user_id,skill_id,verdict,text,scene_tags,author_label,content_hash,verified,created_at,updated_at",
-    order: "updated_at.desc",
-    limit: "100",
+    select: REVIEW_COLS,
+    order: "created_at.asc",
+    limit: "500",
   });
   const r = await fetch(`${URL}/rest/v1/reviews?${q}`, { headers: anonHeaders });
   return r.ok ? ((await r.json()) as Review[]) : [];
 }
 
-/** 资格 + 评于版本(先并入匿名回执再查——覆盖「登录后才产生回执」的时序) */
-export async function eligibility(s: Session, skillId: string): Promise<{ eligible: boolean; receiptHash: string | null }> {
-  await claimReceipts(s);
-  const r = await fetch(`${URL}/rest/v1/rpc/review_eligibility`, {
-    method: "POST",
-    headers: { apikey: KEY, authorization: `Bearer ${s.access_token}`, "content-type": "application/json" },
-    body: JSON.stringify({ p_skill_id: skillId }),
+/** 当前登录用户在这些评论上投过的票:review_id → 1(顶) / -1(踩)。select 公开,匿名 key 即可查。 */
+export async function listMyVotes(session: Session, reviewIds: number[]): Promise<Record<number, 1 | -1>> {
+  if (!URL || !KEY || reviewIds.length === 0) return {};
+  const q = new URLSearchParams({
+    review_id: `in.(${reviewIds.join(",")})`,
+    user_id: `eq.${session.user.id}`,
+    select: "review_id,value",
   });
-  if (!r.ok) return { eligible: false, receiptHash: null };
-  const rows = (await r.json()) as { eligible: boolean; receipt_hash: string | null }[];
-  return { eligible: Boolean(rows[0]?.eligible), receiptHash: rows[0]?.receipt_hash ?? null };
+  const r = await fetch(`${URL}/rest/v1/review_votes?${q}`, { headers: anonHeaders });
+  if (!r.ok) return {};
+  const rows = (await r.json()) as { review_id: number; value: 1 | -1 }[];
+  return Object.fromEntries(rows.map((v) => [v.review_id, v.value]));
 }
 
-/** 提交/覆盖短评(UNIQUE(user,skill) 上的 upsert;RLS 复核双层门) */
-export async function postReview(
-  s: Session,
-  review: { skill_id: string; verdict: Review["verdict"]; text?: string; scene_tags?: string[]; author_label?: string; content_hash?: string | null },
+/** lib 抛 E:键值,组件层按 locale 翻译(ADR 0022:lib 语言无关) */
+function throwPg(body: string, status: number): never {
+  const b = body.toLowerCase();
+  if (b.includes("rate_limited")) throw new Error("E:rev.rate");
+  if (b.includes("reply_target")) throw new Error("E:rev.replyErr");
+  if (b.includes("row-level security")) throw new Error("E:rev.loginHint");
+  throw new Error(`E:rev.failed:${status}`);
+}
+
+/** 发一条评论;reply_to 非空 = 回复(不带 verdict/scene_tags,由调用方与 DB 约束共同保证)。插入,非 upsert。 */
+export async function postComment(
+  session: Session,
+  c: {
+    skill_id: string;
+    reply_to?: number | null;
+    verdict?: Verdict | null;
+    text?: string;
+    scene_tags?: string[];
+    author_label?: string;
+    content_hash?: string | null;
+  },
 ): Promise<void> {
-  const r = await fetch(`${URL}/rest/v1/reviews?on_conflict=user_id,skill_id`, {
+  const isReply = c.reply_to != null;
+  const r = await fetch(`${URL}/rest/v1/reviews`, {
     method: "POST",
     headers: {
       apikey: KEY,
-      authorization: `Bearer ${s.access_token}`,
+      authorization: `Bearer ${session.access_token}`,
+      "content-type": "application/json",
+      prefer: "return=minimal",
+    },
+    body: JSON.stringify({
+      user_id: session.user.id,
+      skill_id: c.skill_id,
+      reply_to: c.reply_to ?? null,
+      verdict: isReply ? null : c.verdict ?? null,
+      text: c.text?.trim() || null,
+      scene_tags: isReply ? null : c.scene_tags?.length ? c.scene_tags : null,
+      author_label: c.author_label?.trim() || null,
+      content_hash: isReply ? null : c.content_hash ?? null,
+    }),
+  });
+  if (!r.ok) throwPg(await r.text().catch(() => ""), r.status);
+}
+
+/** 删自己的评论(物理删,级联删其回复) */
+export async function deleteComment(session: Session, id: number): Promise<void> {
+  const r = await fetch(`${URL}/rest/v1/reviews?id=eq.${id}`, {
+    method: "DELETE",
+    headers: { ...anonHeaders, authorization: `Bearer ${session.access_token}`, prefer: "return=minimal" },
+  });
+  if (!r.ok) throwPg(await r.text().catch(() => ""), r.status);
+}
+
+/** 顶/踩:一人一票,切换走 upsert(同一评论改票即覆盖)。value:1=顶,-1=踩。 */
+export async function castVote(session: Session, reviewId: number, value: 1 | -1): Promise<void> {
+  const r = await fetch(`${URL}/rest/v1/review_votes?on_conflict=review_id,user_id`, {
+    method: "POST",
+    headers: {
+      apikey: KEY,
+      authorization: `Bearer ${session.access_token}`,
       "content-type": "application/json",
       prefer: "resolution=merge-duplicates,return=minimal",
     },
-    body: JSON.stringify({
-      user_id: s.user.id,
-      skill_id: review.skill_id,
-      verdict: review.verdict,
-      text: review.text?.trim() || null,
-      scene_tags: review.scene_tags?.length ? review.scene_tags : null,
-      author_label: review.author_label?.trim() || null,
-      content_hash: review.content_hash ?? null,
-    }),
+    body: JSON.stringify({ review_id: reviewId, user_id: session.user.id, value }),
   });
-  if (!r.ok) {
-    const err = await r.text().catch(() => "");
-    // 抛键值(E:词典键),组件层按 locale 翻译(ADR 0022:lib 保持语言无关)
-    throw new Error(err.includes("row-level security") ? "E:rev.rlsHint" : `E:rev.failed:${r.status}`);
-  }
+  if (!r.ok) throwPg(await r.text().catch(() => ""), r.status);
+}
+
+/** 取消我的票(再点同一档 = 取消) */
+export async function clearVote(session: Session, reviewId: number): Promise<void> {
+  const r = await fetch(`${URL}/rest/v1/review_votes?review_id=eq.${reviewId}&user_id=eq.${session.user.id}`, {
+    method: "DELETE",
+    headers: { ...anonHeaders, authorization: `Bearer ${session.access_token}`, prefer: "return=minimal" },
+  });
+  if (!r.ok) throwPg(await r.text().catch(() => ""), r.status);
 }
