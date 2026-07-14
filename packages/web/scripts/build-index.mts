@@ -141,8 +141,15 @@ const meta: IdxMeta = {
 writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta));
 writeFileSync(join(OUT, "docs.json"), JSON.stringify(docs.map(toWire)));
 
-// 新上架(榜单「今日」):按收录时间降序,取前 100
-const fresh = docs.filter((c) => c.addedAt).sort((a, b) => b.addedAt! - a.addedAt!).slice(0, 100);
+// 新上架(榜单「今日」):按收录「日」降序(与 ChartsView 的 Asia/Shanghai 日界对齐)。
+// docs 已按 byPopularity(归一 stars 主键)排好;JS 稳定排序下,只按「日」分桶即保住同日内的
+// 人气序 —— 与热门/浏览同一口径,不依赖第三方 installs。同天条目 first_seen_at 只差几秒,
+// 若按秒级降序会退化成管线处理顺序(看着随机),故按日分桶。取前 100。
+const cstDay = (sec: number) => Math.floor((sec + 8 * 3600) / 86400); // addedAt 是 unix 秒,+8h 对齐东八区日界
+const fresh = docs
+  .filter((c) => c.addedAt)
+  .sort((a, b) => cstDay(b.addedAt!) - cstDay(a.addedAt!))
+  .slice(0, 100);
 writeFileSync(join(OUT, "new.json"), JSON.stringify(fresh.map(toWire)));
 
 // 商店周报(/changelog):自动统计行「本周 +N 条」(自最近周一 00:00 的收录数)+ 手写条目(catalog/changelog.json 事实源)
