@@ -51,11 +51,7 @@ export interface CopyLintResult {
   cleaned: { tagline: string; scene_tags: string[]; fit_line?: string };
 }
 
-const containsBanned = (text: string): string | null => {
-  const low = text.toLowerCase();
-  for (const w of BANNED_WORDS) if (low.includes(w.toLowerCase())) return w;
-  return null;
-};
+// containsBanned 已随 L3 取消移除(2026-07-14);BANNED_WORDS 仍导出、由 prompt 劝导模型,只是不再代码强制拦截。
 
 /**
  * 跑 L1-L6。raw = 模型原始三字段;skillName 用于 L2 禁用开头比对。
@@ -67,32 +63,22 @@ const containsBanned = (text: string): string | null => {
  * fit_line / 场景词是附属字段,不合格只丢该字段,failures 照记但不拉低 pass。
  * 展示口径不变:凡是最终展示的字,仍然全部过检——宁可平淡,不可吹。
  */
-export function lintCopy(raw: RawCopy, skillName: string): CopyLintResult {
+export function lintCopy(raw: RawCopy, _skillName: string): CopyLintResult {
   const failures: string[] = [];
   const tagline = typeof raw.tagline === "string" ? raw.tagline.trim() : "";
   const fitRaw = typeof raw.fit_line === "string" ? raw.fit_line.trim() : "";
 
-  // ---- 主字段 tagline:不合格 = 整份不可用 ----
-  // L1 长度
+  // ---- 主字段 tagline:唯一的整份判罚 = L1 长度 ----
+  // L1 长度(2026-07-14 放宽:8–40 → 6–60,容纳堆英文技术名的 tagline)
   const tl = charLen(tagline);
-  if (tl < 8 || tl > 40) failures.push("L1");
-  // L2 禁用开头(skill 名 + 冠词式起手,大小写不敏感)
-  const low = tagline.toLowerCase();
-  const nameLow = skillName.trim().toLowerCase();
-  const badOpener =
-    (nameLow.length > 0 && low.startsWith(nameLow)) ||
-    BANNED_OPENERS.some((o) => low.startsWith(o));
-  if (badOpener) failures.push("L2");
-  // L3 禁用词(仅 tagline 命中才整份失败)
-  const tagHit = containsBanned(tagline);
-  if (tagHit) failures.push(`L3:${tagHit}`);
+  if (tl < 6 || tl > 60) failures.push("L1");
+  // L2(禁用开头)/ L3(禁用词)已取消(2026-07-14 裁决:覆盖率优先,水词/鹦鹉式起手不再阻断整份)。
+  // BANNED_WORDS/BANNED_OPENERS 仍在 prompt 里劝导模型,只是不再代码强制拦 tagline。
   const pass = failures.length === 0;
 
-  // ---- 附属字段:不合格只丢字段 ----
-  // 场景词:归一查重(L5,cleanSceneTags)→ 剔含禁词(L3)/超长(L4)的单词 → 超出上限裁齐;不足下限清空该轴
+  // ---- 附属字段:不合格只丢字段(不影响 pass)----
+  // 场景词:归一查重(cleanSceneTags)→ 超长(L4)剔除 → 超上限裁齐;不足下限清空该轴
   let sceneTags = cleanSceneTags(raw.scene_tags).filter((s) => {
-    const hit = containsBanned(s);
-    if (hit) { failures.push(`L3:${hit}`); return false; }
     if (charLen(s) > SCENE_TAG_MAX_LEN) { failures.push("L4"); return false; }
     return true;
   });
@@ -102,13 +88,11 @@ export function lintCopy(raw: RawCopy, skillName: string): CopyLintResult {
     sceneTags = [];
   }
 
-  // fit_line:句式(L6)与禁词(L3)不合规即丢字段
+  // fit_line:句式(L6)不合规即丢字段
   let fitOut: string | undefined;
   if (fitRaw) {
     const okPrefix = fitRaw.startsWith(FIT_PREFIX) || fitRaw.startsWith(FIT_PREFIX_ALT);
-    const fitHit = containsBanned(fitRaw);
     if (!okPrefix || charLen(fitRaw) > 50) failures.push("L6");
-    else if (fitHit) failures.push(`L3:${fitHit}`);
     else fitOut = fitRaw;
   }
 
