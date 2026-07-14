@@ -36,12 +36,14 @@ export async function cloneShallow(repoSlug: string): Promise<ClonedRepo> {
   // 上游仓库最近一次提交时间(--depth 1 → HEAD 即唯一 commit;仓库级,非单 skill 路径级)
   const headCommitAt = (await exec("git", ["-C", dir, "log", "-1", "--format=%cI"])).stdout.trim();
   const branch = (await exec("git", ["-C", dir, "rev-parse", "--abbrev-ref", "HEAD"])).stdout.trim();
+  // -z:NUL 分隔且路径不做引号转义。默认 core.quotePath 会把非 ASCII 路径转成 "\346\226\207..." 带引号形态,
+  // 中文目录下的 SKILL.md 会因此匹配不上、静默漏抓——正打在中文创作者源上(ADR 0027)
   const lsOut = (
-    await exec("git", ["-C", dir, "ls-tree", "-r", "HEAD"], { maxBuffer: 256 * 1024 * 1024 })
+    await exec("git", ["-C", dir, "ls-tree", "-r", "-z", "HEAD"], { maxBuffer: 256 * 1024 * 1024 })
   ).stdout;
 
   const entries: TreeEntry[] = [];
-  for (const line of lsOut.split("\n")) {
+  for (const line of lsOut.split("\0")) {
     if (!line) continue;
     // 格式:<mode> <type> <sha>\t<path>
     const tab = line.indexOf("\t");

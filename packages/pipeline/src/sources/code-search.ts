@@ -67,7 +67,7 @@ async function saveState(s: SweepState): Promise<void> {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function ghJson<T>(url: string): Promise<{ status: number; data: T | null }> {
+async function ghJson<T>(url: string): Promise<{ status: number; data: T | null; headers: Headers | null; body: string }> {
   const res = await fetch(url, {
     headers: {
       accept: "application/vnd.github+json",
@@ -75,8 +75,9 @@ async function ghJson<T>(url: string): Promise<{ status: number; data: T | null 
       authorization: `Bearer ${TOKEN}`,
     },
   });
-  if (!res.ok) return { status: res.status, data: null };
-  return { status: res.status, data: (await res.json()) as T };
+  if (!res.ok)
+    return { status: res.status, data: null, headers: res.headers, body: (await res.text().catch(() => "")).slice(0, 300) };
+  return { status: res.status, data: (await res.json()) as T, headers: res.headers, body: "" };
 }
 
 interface CodeSearchPage {
@@ -94,7 +95,7 @@ export async function discoverFromCodeSearch(
   maxNewRepos: number,
   blockedIds: Set<string>,
   knownRepos: Set<string>,
-): Promise<{ candidates: SkillCandidate[]; lists: ListDraft[]; cleanup: () => Promise<void> }> {
+): Promise<{ candidates: SkillCandidate[]; lists: ListDraft[]; cleanup: () => Promise<void>; degraded: boolean }> {
   if (!TOKEN) throw new Error("Code Search 需要 GITHUB_TOKEN(code search API 匿名 401)");
   const state = await loadState();
   const maxPerRepo = Number(process.env.MAX_PER_REPO) || 50;
@@ -103,20 +104,38 @@ export async function discoverFromCodeSearch(
 
   // ── 第一段:花搜索配额,攒新仓 slug ──
   const fresh = new Map<string, true>(); // 本次发现的新仓(保持发现顺序)
-  let calls = 0, seenHits = 0, skippedKnown = 0;
+  let calls = 0, okCalls = 0, seenHits = 0, skippedKnown = 0, retried = false;
   while (calls < MAX_CALLS && fresh.size < maxNewRepos) {
     const slice = SLICES[state.slice];
     const q = encodeURIComponent(`${QUERY_BASE} ${sliceQualifier(slice)}`);
     if (calls > 0) await sleep(SEARCH_INTERVAL_MS);
-    const { status, data } = await ghJson<CodeSearchPage>(
+    const { status, data, headers, body } = await ghJson<CodeSearchPage>(
       `https://api.github.com/search/code?q=${q}&per_page=100&page=${state.page}`,
     );
     calls++;
-    if (status === 403 || status === 429) { // 二级限流:退避后本轮直接收工,游标原地保留
-      console.warn(`  ⚠ 限流(${status}),本轮收工(游标保留在 切片${state.slice} 页${state.page})`);
+    if (status === 403 || status === 429) {
+      // 403 不一定是限流:token 权限/类别问题同样走这条(code search 匿名 401、受限 token 403)。
+      // 头和体记全,让日志能区分「配额耗尽 / 二级限流 / 权限不足」三种病因(ADR 0027)。
+      const retryAfter = Number(headers?.get("retry-after"));
+      console.warn(
+        `  ⚠ code search ${status} @ 切片${state.slice} 页${state.page}:` +
+          ` retry-after=${headers?.get("retry-after") ?? "-"}` +
+          ` remaining=${headers?.get("x-ratelimit-remaining") ?? "-"}` +
+          ` reset=${headers?.get("x-ratelimit-reset") ?? "-"}` +
+          ` resource=${headers?.get("x-ratelimit-resource") ?? "-"}`,
+      );
+      if (body) console.warn(`    响应体:${body}`);
+      if (!retried && retryAfter > 0 && retryAfter <= 180) { // 二级限流:按官方指示退避一次,重试同一页
+        retried = true;
+        console.warn(`    按 retry-after 退避 ${retryAfter}s 后重试一次`);
+        await sleep(retryAfter * 1000);
+        continue;
+      }
+      console.warn(`    本轮收工(游标保留在 切片${state.slice} 页${state.page})`);
       break;
     }
-    if (!data) { console.warn(`  ✗ code search ${status} @ 切片${state.slice} 页${state.page},跳到下一片`); state.slice = (state.slice + 1) % SLICES.length; state.page = 1; if (state.slice === 0) state.sweeps_completed++; continue; }
+    if (!data) { console.warn(`  ✗ code search ${status} @ 切片${state.slice} 页${state.page},跳到下一片${body ? `(响应体:${body})` : ""}`); state.slice = (state.slice + 1) % SLICES.length; state.page = 1; if (state.slice === 0) state.sweeps_completed++; continue; }
+    okCalls++;
     state.totals[sliceKey(slice)] = data.total_count;
     seenHits += data.items.length;
     for (const it of data.items) {
@@ -131,7 +150,10 @@ export async function discoverFromCodeSearch(
     else state.page++;
   }
   const universe = Object.values(state.totals).reduce((a, b) => a + b, 0);
-  console.log(`  搜索 ${calls} 次 · 命中 ${seenHits} 条 · 已知/重复跳过 ${skippedKnown} · 新仓 ${fresh.size} · 全网观测累计 ${universe.toLocaleString()}`);
+  // degraded:发过请求却一次成功响应都没有 = 长尾发现线实际停摆,必须让上层把 job 置红,不能继续全绿(ADR 0027)
+  const degraded = calls > 0 && okCalls === 0;
+  console.log(`  搜索 ${calls} 次(成功 ${okCalls})· 命中 ${seenHits} 条 · 已知/重复跳过 ${skippedKnown} · 新仓 ${fresh.size} · 全网观测累计 ${universe.toLocaleString()}`);
+  if (degraded) console.warn(`  ⚠ 本轮 0 次成功响应:Code Search 停摆,游标未前进(切片${state.slice} 页${state.page})`);
   await saveState(state); // 游标先落盘:后续克隆再慢再挂,扫描进度不回退
 
   // ── 第二段:新仓逐个走三档处置(与 github-search 同款) ──
@@ -169,5 +191,5 @@ export async function discoverFromCodeSearch(
       console.warn(`  ✗ ${slug} 采集失败: ${(e as Error).message}`);
     }
   }
-  return { candidates: out, lists, cleanup: async () => { await Promise.all(cleanups.map((f) => f().catch(() => {}))); } };
+  return { candidates: out, lists, cleanup: async () => { await Promise.all(cleanups.map((f) => f().catch(() => {}))); }, degraded };
 }

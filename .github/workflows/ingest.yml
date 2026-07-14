@@ -27,6 +27,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ADR 0027:接续上一轮未合并的 ingest/daily,候选跨运行累积,不再互相覆盖
+      # (旧行为:每轮从 main 重算 + force-update 同一 PR,前一轮未合并的新增被整体抹掉,见 07-14 28→27)。
+      # 浅克隆下 merge base 可能不可达 → deepen;冲突(如 main 上退市/改档)则放弃接续,本轮从 main 重算。
+      - name: Resume unmerged ingest/daily
+        if: ${{ !inputs.source }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch --no-tags --deepen=50 origin main ingest/daily || { echo "ingest/daily 不存在,跳过接续"; exit 0; }
+          git merge --no-edit origin/ingest/daily \
+            || { echo "::warning::ingest/daily 接续合并失败(冲突或浅克隆无 merge base),本轮从 main 重算"; git merge --abort || true; }
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -34,7 +46,11 @@ jobs:
 
       - run: npm ci
 
+      # continue-on-error:ingest 以非零码收尾时(Code Search degraded,ADR 0027)不中断后续步骤,
+      # catalog PR 与游标照常产出;末端 gate 再把整个 job 置红,保证「停摆可见」。
       - name: Run ingest
+        id: ingest
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -68,12 +84,31 @@ jobs:
           LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
         run: npm run howto:llm -- --scope hot
 
+      # ADR 0027:游标是运行状态不是待审数据,直推 main,不寄生在审核 PR 里
+      # (旧行为:游标随 catalog PR 走 ingest/daily,PR 不合并下一轮就从 main 的旧游标重来,
+      # 这是游标卡在 slice=0/page=2 的直接原因)。用临时 worktree 保证只有游标这一个文件进 main。
+      - name: Persist code-search cursor
+        run: |
+          git fetch --no-tags origin main
+          git diff --quiet origin/main -- catalog/_meta/code-search-state.json && { echo "游标无变化,跳过"; exit 0; }
+          git worktree add --detach /tmp/cursor origin/main
+          mkdir -p /tmp/cursor/catalog/_meta
+          cp catalog/_meta/code-search-state.json /tmp/cursor/catalog/_meta/code-search-state.json
+          cd /tmp/cursor
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add catalog/_meta/code-search-state.json
+          git diff --cached --quiet && { echo "与 main 一致,跳过"; exit 0; }
+          git commit -m "chore(code-search): advance sweep cursor [skip ci]"
+          git push origin HEAD:main
+
       - name: Create PR with catalog changes
         uses: peter-evans/create-pull-request@v7
         with:
           add-paths: catalog/
           # 固定分支:滚动更新同一条 PR。原先用 ${{ github.run_id }} 每次 run 都是新分支→新 PR,导致每天堆一条(见 #24/#25/#26/#31)
-          branch: ingest/daily
+          # 手动单源任务走独立分支 ingest/manual,不覆盖每日累积的 ingest/daily(ADR 0027)
+          branch: ${{ !inputs.source && 'ingest/daily' || 'ingest/manual' }}
           commit-message: "chore(ingest): daily catalog update"
           title: "Ingest: daily catalog update"
           body: |
@@ -83,3 +118,11 @@ jobs:
             - catalog/lists/ 清单记录(ADR 0019:跨仓拷贝记 appearance 不落条目;拦截仓 blocked 零内容)
             - Code Search 新仓质量与游标推进(catalog/_meta/code-search-state.json)
             - skills.sh 榜单解析条数(页面结构变化会解析失败,见日志)
+
+      # ADR 0027:ingest 非零退出(Code Search 停摆等)时,PR/游标已照常产出,但整个 job 必须置红——
+      # 「每天 Actions 成功」曾长期掩盖「长尾发现线三次运行零成功响应」。
+      - name: Fail if ingest degraded
+        if: steps.ingest.outcome == 'failure'
+        run: |
+          echo "::error::ingest 以非零码退出(Code Search degraded 或单源故障),catalog PR 已照常产出,请查 Run ingest 日志"
+          exit 1
