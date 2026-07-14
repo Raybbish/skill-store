@@ -204,15 +204,21 @@ async function main() {
     for (const e of await loadCatalogEntries()) known.add(e.report.meta.id.split("/").slice(0, 2).join("/")); // id 已小写
     for (const id of listsMap.keys()) known.add(id.toLowerCase());
     for (const s of sourcesFile.sources) if (s.type === "github-repo") known.add(s.repo.toLowerCase());
-    // 单源故障不拖死整趟采集(缺 token/网络抖动/限流均降级为跳过,其余源照常入库)
+    // 单源故障不拖死整趟采集(缺 token/网络抖动/限流均降级为跳过,其余源照常入库);
+    // 但不能全绿:长尾唯一供给线停摆时以非零码收尾,workflow 末端置红(ADR 0027)
     try {
-      const { candidates, lists: drafts, cleanup } = await discoverFromCodeSearch(n, blockedIds, known);
+      const { candidates, lists: drafts, cleanup, degraded } = await discoverFromCodeSearch(n, blockedIds, known);
       cleanups.push(cleanup);
       listDrafts.push(...drafts);
       console.log(`  发现 ${candidates.length} 个 skill,${drafts.length} 条清单草稿`);
       all.push(...candidates);
+      if (degraded) {
+        console.warn(`  ⚠ Code Search degraded(0 次成功响应),ingest 将以非零码退出;其余源结果照常落盘`);
+        process.exitCode = 1;
+      }
     } catch (e) {
       console.warn(`  ✗ Code Search 跳过: ${(e as Error).message}`);
+      process.exitCode = 1;
     }
   }
 
@@ -275,13 +281,20 @@ async function main() {
   // 同 id 去重:一次运行内同 id 只保留第一条(避免同一 skill 被多源重复写);
   // 跨仓拷贝(dropIds)与已拦截仓的候选(兜其他源漏进来的)在此出局
   const byId = new Map<string, SkillCandidate>();
-  let blockedSkipped = 0;
+  let blockedSkipped = 0, idCollisions = 0;
   for (const c of all.slice(0, limit)) {
     const id = c.report.meta.id;
     if (dropIds.has(id)) continue;
     if (blockedIds.has(id.split("/").slice(0, 2).join("/"))) { blockedSkipped++; continue; }
     if (!byId.has(id)) byId.set(id, c);
+    else if (byId.get(id)!.report.meta.content_hash !== c.report.meta.content_hash) {
+      // 同 id 不同内容 = 同仓两个同名 skill 被 frontmatter name 归一化撞在一起(ID 不含路径),
+      // 原先静默丢弃后到者、无告警;先留痕,ID 方案改路径锚见 ADR 0027
+      idCollisions++;
+      console.warn(`  ⚠ 同 id 不同内容,丢弃后到者:${id}(SKILL.md: ${c.skillMdSrcPath ?? "?"})`);
+    }
   }
+  if (idCollisions) console.warn(`  ⚠ 本轮共 ${idCollisions} 处同 id 内容冲突(同仓同名 skill 会静默漏收,见上方日志)`);
 
   let written = 0;
   const stats = { added: 0, updated: 0, unchanged: 0, backfilled: 0, preserved: 0, fmInvalid: 0, uncategorized: 0, mirrorSkipped: 0, mirrorBackfilled: 0, licenseInjected: 0, skillMdWritten: 0, skillMdRemoved: 0 };
