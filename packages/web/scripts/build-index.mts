@@ -15,7 +15,7 @@ import { join } from "node:path";
 import { allSkills } from "../lib/data";
 import { PAGE_SIZE, toCard, toWire, type CardVerdict, type IdxMeta, type Pack, type SkillCard } from "../lib/store";
 import { batchGetVerdicts, displayReady } from "@skill-store/verdicts";
-import { applyRepoCap, byPopularity } from "../lib/skill-utils";
+import { applyRepoCap, byPopularity, normStars } from "../lib/skill-utils";
 import { featuredLabels, tagLabels, SCENE_VISIBLE_MIN } from "@skill-store/schemas";
 
 const t0 = Date.now();
@@ -141,8 +141,19 @@ const meta: IdxMeta = {
 writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta));
 writeFileSync(join(OUT, "docs.json"), JSON.stringify(docs.map(toWire)));
 
-// 新上架(榜单「今日」):按收录时间降序,取前 100
-const fresh = docs.filter((c) => c.addedAt).sort((a, b) => b.addedAt! - a.addedAt!).slice(0, 100);
+// 新上架(榜单「今日」):先按收录「日」降序(与 ChartsView 的 Asia/Shanghai 日界对齐),
+// 同一天内按人气降序(installs 实装为主键、归一 stars 为次键)。
+// 为何要次级键:同天新条目全是一次 ingest 采进来的,first_seen_at 只差几秒,纯秒级降序
+// 等于管线处理顺序(看着随机);按人气排把值得看的顶上来。取前 100。
+const cstDay = (sec: number) => Math.floor((sec + 8 * 3600) / 86400); // addedAt 是 unix 秒,+8h 对齐东八区日界
+const fresh = docs
+  .filter((c) => c.addedAt)
+  .sort((a, b) =>
+    cstDay(b.addedAt!) - cstDay(a.addedAt!) ||
+    (b.installs ?? 0) - (a.installs ?? 0) ||
+    normStars(b) - normStars(a),
+  )
+  .slice(0, 100);
 writeFileSync(join(OUT, "new.json"), JSON.stringify(fresh.map(toWire)));
 
 // 商店周报(/changelog):自动统计行「本周 +N 条」(自最近周一 00:00 的收录数)+ 手写条目(catalog/changelog.json 事实源)
