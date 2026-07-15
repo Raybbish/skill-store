@@ -85,9 +85,14 @@ const create = await api("/collections", {
   body: JSON.stringify({
     name: TS_COLLECTION,
     // pop 显式声明为默认排序键;stars/addedAt 显式 optional 数值(排序键,auto 推断对缺值字段不可靠);其余 auto
+    // 中文分词(ADR 0028):中文检索字段显式 locale:"zh"(ICU 词分词);tags/name/sid/*En 英文留默认。
     fields: [
       { name: "pop", type: "int32" }, { name: "cap_overflow", type: "int32" },
       { name: "stars", type: "int64", optional: true }, { name: "addedAt", type: "int64", optional: true },
+      { name: "tagline", type: "string", optional: true, locale: "zh" },
+      { name: "description", type: "string", optional: true, locale: "zh" },
+      { name: "scene", type: "string[]", optional: true, locale: "zh" },
+      { name: "skw", type: "string", optional: true, locale: "zh" },
       { name: ".*", type: "auto" },
     ],
     default_sorting_field: "pop",

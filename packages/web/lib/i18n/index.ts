@@ -34,6 +34,7 @@ const zh = {
   "home.all": "全部", "home.any": "不限",
   "home.noMatch": "无匹配结果", "home.loadFail": "索引加载失败,刷新重试", "home.loading": "加载中…",
   "home.prev": "‹ 上一页", "home.next": "下一页 ›", "home.pageOf": "第 {p} / {n} 页",
+  "home.pagerLabel": "分页", "home.jumpTo": "跳至", "home.pageUnit": "页", "home.jumpGo": "跳转", "home.jumpAria": "跳至第几页,共 {n} 页",
   "home.sortLabel": "排序", "home.sortHot": "热门", "home.sortStars": "Star 数", "home.sortNew": "最新收录",
   "home.searchLabel": "搜索 skill",
   // 分面名(labels.ts FACETS 只有中文名,英文在这里补)
@@ -161,6 +162,7 @@ const en: Record<MsgKey, string> = {
   "home.all": "All", "home.any": "Any",
   "home.noMatch": "No results", "home.loadFail": "Index failed to load — refresh to retry", "home.loading": "Loading…",
   "home.prev": "‹ Prev", "home.next": "Next ›", "home.pageOf": "Page {p} of {n}",
+  "home.pagerLabel": "Pagination", "home.jumpTo": "Go to page", "home.pageUnit": "", "home.jumpGo": "Go", "home.jumpAria": "Jump to page (1–{n})",
   "home.sortLabel": "Sort", "home.sortHot": "Popular", "home.sortStars": "Stars", "home.sortNew": "Newest",
   "home.searchLabel": "Search skills",
   "facet.activity": "Activity", "facet.surface": "Surface", "facet.language": "Language", "facet.tech": "Tech", "facet.meta": "Other",

@@ -51,6 +51,22 @@ function tsDocToCard(d: TsDoc): SkillCard {
   return hydrateCard({ ...rest, id: sid });
 }
 
+/** CJK 查询预分词:按词切开、空格分隔后再发给 Typesense(ADR 0028)。
+ *  Typesense 的 drop_tokens 只作用于「空格分隔的查询词」——连写中文「读论文」对查询解析器是一个词,
+ *  无从丢词,只能全词命中(实测 found=1)。切成「读 论文」后 drop_tokens 才能丢「读」回退到「论文」(158)。
+ *  纯英文/无中文查询原样返回(本就空格分词);老环境无 Intl.Segmenter 时回退原样(退回旧行为,不炸)。 */
+function segmentCJK(q: string): string {
+  if (!q || !/[\u3400-\u9fff]/.test(q)) return q;
+  const S = (Intl as unknown as { Segmenter?: new (l: string, o: { granularity: string }) => { segment(s: string): Iterable<{ segment: string; isWordLike: boolean }> } }).Segmenter;
+  if (!S) return q;
+  try {
+    const parts = [...new S("zh", { granularity: "word" }).segment(q)].filter((x) => x.isWordLike).map((x) => x.segment);
+    return parts.length ? parts.join(" ") : q;
+  } catch {
+    return q;
+  }
+}
+
 export class TypesenseStore extends StaticStore implements SkillStore {
   constructor(private url: string, private key: string, base = "/idx") {
     super(base);
@@ -63,7 +79,7 @@ export class TypesenseStore extends StaticStore implements SkillStore {
    * B 决策:不再 fail-open 回落本地 docs——Typesense 挂即抛错,前端进「索引加载失败,刷新重试」态。
    */
   override async search(query: string, filters: SearchFilters, page: number): Promise<SearchResult> {
-    const q = query.trim();
+    const q = segmentCJK(query.trim()); // CJK 连写预分词成空格分隔,drop_tokens 才能丢词回退(ADR 0028)
     const params = new URLSearchParams({
       q: q || "*", // 无词 → 通配全量
       query_by: TS_QUERY_BY,
@@ -79,7 +95,10 @@ export class TypesenseStore extends StaticStore implements SkillStore {
     const sort = filters.sort ?? "hot";
     if (q) {
       params.set("query_by_weights", TS_QUERY_WEIGHTS);
-      params.set("drop_tokens_threshold", "0"); // AND 语义:所有词须命中
+      // 模糊回退(ADR 0028):不再强制全词命中。全词命中 <10 条时逐个丢词扩召回;
+      // both_sides:3 让 ≤3 词的短查询从两端各丢一次取并集。_text_match 仍主序,头部精度不塌。
+      params.set("drop_tokens_threshold", "10");
+      params.set("drop_tokens_mode", "both_sides:3");
       if (sort === "stars") params.set("sort_by", "stars(missing_values: last):desc,_text_match:desc,pop:desc");
       else if (sort === "new") params.set("sort_by", "addedAt(missing_values: last):desc,_text_match:desc,pop:desc");
       else params.set("sort_by", "_text_match:desc,pop:desc");
