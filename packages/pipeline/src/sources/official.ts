@@ -125,11 +125,10 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
     }
   }
 
-  // 同仓内 name 撞车消歧(ADR 0027 P2):ID = owner/repo/name 不含路径,同仓两个不同 skill 若
-  // name 归一化后相同就撞同一 id,去重阶段静默丢弃后到者。这里在源头按目录路径给相撞者补路径段,
-  // 让每个 SKILL.md 都有独立 id(content_hash 按内容锚,不受影响)。
-  disambiguateIds(built, owner, repoSeg, repoSlug);
-  return { candidates: built.map((b) => b.cand), cleanup: clone.cleanup };
+  // 同仓内 name 撞车消歧(ADR 0027 P2):同名不同路径的 skill 各补路径段拿独立 id;
+  // 同时折叠"打包镜像"(名+描述全同、内容仅细微差)——只留一个,避免前台重复卡片。
+  const kept = disambiguateIds(built, owner, repoSeg, repoSlug);
+  return { candidates: kept.map((b) => b.cand), cleanup: clone.cleanup };
 }
 
 /** 目录相对路径 → 可读 slug;根目录回落 "root"。分段各自 normalize 再连字符。 */
@@ -138,18 +137,18 @@ export function pathSlug(relDir: string): string {
   return s || "root";
 }
 
+type Built = { cand: SkillCandidate; relDir: string; name: string };
+
 /**
- * 同仓内按 name 分组消歧:size==1 保留裸 name(存量 id 不变);size>1 组里目录字典序最小者保留裸
- * name(不制造孤儿、存量 winner id 不变),其余各自补 `__<路径slug>`。全仓 leaf 二次去重兜底
- * (normalizeName 允许下划线,补段理论上可能与它者裸 name 相撞),必要时追加 -N。只改 meta.id。
+ * 同仓内按 name 分组消歧(ADR 0027 P2 + 镜像折叠):
+ *  - size==1 保留裸 name(存量 id 不变);
+ *  - size>1:先折叠"打包镜像"——名+描述**全同**的多份(如 openclaw/skills/do 与 plugin/skills/do,
+ *    内容仅细微差、content_hash 不同、byHash 合不掉)判为同一 skill,只留目录字典序最小的一个、余丢弃;
+ *  - 折叠后仍 >1(真不同的同名 skill,描述不同)才补 `__<路径slug>`,winner(字典序最小)留裸 name。
+ * 全仓 leaf 二次去重兜底(-N)。只改 meta.id;返回保留的 built 子集(镜像件已剔除)。
  */
-export function disambiguateIds(
-  built: { cand: SkillCandidate; relDir: string; name: string }[],
-  owner: string,
-  repoSeg: string,
-  repoSlug: string,
-): void {
-  const byName = new Map<string, { cand: SkillCandidate; relDir: string; name: string }[]>();
+export function disambiguateIds(built: Built[], owner: string, repoSeg: string, repoSlug: string): Built[] {
+  const byName = new Map<string, Built[]>();
   for (const b of built) {
     const g = byName.get(b.name);
     if (g) g.push(b);
@@ -158,23 +157,38 @@ export function disambiguateIds(
   const used = new Set<string>();
   for (const [name, group] of byName) if (group.length === 1) used.add(name);
 
-  let groups = 0, suffixed = 0;
+  const dropped = new Set<Built>();
+  let groups = 0, suffixed = 0, mirrored = 0;
   for (const [name, group] of byName) {
-    if (group.length === 1) continue;
-    groups++;
+    if (group.length === 1) continue; // 单条:裸 name,id 不变
     group.sort((a, b) => a.relDir.localeCompare(b.relDir));
-    for (let i = 0; i < group.length; i++) {
+
+    // 镜像折叠:name 已相同,再看描述——描述非空且已见过 = 打包镜像,丢后到者(留字典序最小)
+    const seenDesc = new Set<string>();
+    const distinct: Built[] = [];
+    for (const b of group) {
+      const desc = (b.cand.report.meta.description ?? "").trim();
+      if (desc && seenDesc.has(desc)) { dropped.add(b); mirrored++; continue; }
+      if (desc) seenDesc.add(desc);
+      distinct.push(b);
+    }
+    if (distinct.length === 1) { used.add(name); continue; } // 折叠后仅剩一个 → 保留裸 name
+
+    groups++;
+    for (let i = 0; i < distinct.length; i++) {
       let leaf: string;
       if (i === 0) leaf = name; // winner:目录字典序最小者保留裸 name
       else {
-        const base = `${name}__${pathSlug(group[i].relDir)}`;
+        const base = `${name}__${pathSlug(distinct[i].relDir)}`;
         leaf = base;
         for (let n = 1; used.has(leaf); n++) leaf = `${base}-${n}`;
         suffixed++;
       }
       used.add(leaf);
-      group[i].cand.report.meta.id = `${owner}/${repoSeg}/${leaf}`;
+      distinct[i].cand.report.meta.id = `${owner}/${repoSeg}/${leaf}`;
     }
   }
-  if (groups) console.log(`    ↔ 同名消歧 ${repoSlug}:${groups} 组撞名 → 补路径段 ${suffixed} 条(原会静默漏收)`);
+  if (groups || mirrored)
+    console.log(`    ↔ 同名消歧 ${repoSlug}:真撞名 ${groups} 组补路径段 ${suffixed} · 打包镜像折叠丢 ${mirrored}`);
+  return dropped.size ? built.filter((b) => !dropped.has(b)) : built;
 }
