@@ -17,6 +17,10 @@
 #   (可选)TYPESENSE_URL / TYPESENSE_ADMIN_KEY                 配了才推搜索索引
 #   (可选)NEXT_PUBLIC_TYPESENSE_URL / NEXT_PUBLIC_TYPESENSE_SEARCH_KEY  浏览器侧只配 search-only key
 #   (可选)NEXT_PUBLIC_ANALYTICS_URL                            埋点 beacon
+#   (可选灰度)vars.ARTIFACT_STORE_ENABLED=1 后对象存储成为制品事实源,并需要:
+#     vars.ARTIFACT_URL_PREFIX       公开 CDN 前缀,例如 https://cdn.example/artifacts/sha256
+#     secrets.ARTIFACT_STORE_BUCKET / ARTIFACT_STORE_ACCESS_KEY_ID / ARTIFACT_STORE_SECRET_ACCESS_KEY
+#     (S3 兼容服务)secrets.ARTIFACT_STORE_ENDPOINT;vars.ARTIFACT_STORE_REGION 默认 auto
 name: Deploy Web
 
 on:
@@ -27,6 +31,12 @@ on:
       - "packages/web/**"
       - "packages/schemas/**"
       - "packages/verdicts/**"
+      - "scripts/pack-zips.mjs"
+      - "scripts/artifact-store.mjs"
+      - "scripts/lib/artifact-store-core.mjs"
+      - "infra/artifacts/**"
+      - "package.json"
+      - "package-lock.json"
   workflow_dispatch: # 手动重部署(改 secrets / 排查线上问题用)
 
 # 排队的旧部署被新提交取代:永远只部署最新 main
@@ -53,6 +63,11 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           SB_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SB_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          ARTIFACT_STORE_ENABLED: ${{ vars.ARTIFACT_STORE_ENABLED }}
+          ARTIFACT_URL_PREFIX: ${{ vars.ARTIFACT_URL_PREFIX }}
+          ARTIFACT_STORE_BUCKET: ${{ secrets.ARTIFACT_STORE_BUCKET }}
+          ARTIFACT_STORE_ACCESS_KEY_ID: ${{ secrets.ARTIFACT_STORE_ACCESS_KEY_ID }}
+          ARTIFACT_STORE_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACT_STORE_SECRET_ACCESS_KEY }}
         run: |
           missing=""
           [ -z "$VERCEL_TOKEN" ] && missing="$missing VERCEL_TOKEN"
@@ -60,6 +75,12 @@ jobs:
           [ -z "$VERCEL_PROJECT_ID" ] && missing="$missing VERCEL_PROJECT_ID"
           [ -z "$SB_URL" ] && missing="$missing NEXT_PUBLIC_SUPABASE_URL"
           [ -z "$SB_KEY" ] && missing="$missing NEXT_PUBLIC_SUPABASE_ANON_KEY"
+          if [ "$ARTIFACT_STORE_ENABLED" = "1" ]; then
+            [ -z "$ARTIFACT_URL_PREFIX" ] && missing="$missing ARTIFACT_URL_PREFIX"
+            [ -z "$ARTIFACT_STORE_BUCKET" ] && missing="$missing ARTIFACT_STORE_BUCKET"
+            [ -z "$ARTIFACT_STORE_ACCESS_KEY_ID" ] && missing="$missing ARTIFACT_STORE_ACCESS_KEY_ID"
+            [ -z "$ARTIFACT_STORE_SECRET_ACCESS_KEY" ] && missing="$missing ARTIFACT_STORE_SECRET_ACCESS_KEY"
+          fi
           if [ -n "$missing" ]; then
             echo "::error::缺 secrets:$missing —— NEXT_PUBLIC_* 缺失会静默丢登录/短评功能,拒绝部署。见本文件头注。"
             exit 1
@@ -74,9 +95,29 @@ jobs:
           NEXT_PUBLIC_TYPESENSE_URL: ${{ secrets.NEXT_PUBLIC_TYPESENSE_URL }}
           NEXT_PUBLIC_TYPESENSE_SEARCH_KEY: ${{ secrets.NEXT_PUBLIC_TYPESENSE_SEARCH_KEY }}
           NEXT_PUBLIC_ANALYTICS_URL: ${{ secrets.NEXT_PUBLIC_ANALYTICS_URL }}
+          ARTIFACT_STORE_ENABLED: ${{ vars.ARTIFACT_STORE_ENABLED }}
+          ARTIFACT_URL_PREFIX: ${{ vars.ARTIFACT_URL_PREFIX }}
         run: |
+          if [ "$ARTIFACT_STORE_ENABLED" = "1" ]; then
+            export PACK_ARTIFACT_OUT="$RUNNER_TEMP/oms-artifacts"
+            export PACK_ARTIFACT_INDEX_OUT="$GITHUB_WORKSPACE/packages/web/public/artifacts/index.json"
+          fi
           npm run web:index
           npm run web:build
+
+      - name: Publish immutable skill artifacts
+        if: ${{ vars.ARTIFACT_STORE_ENABLED == '1' }}
+        env:
+          ARTIFACT_BUILD_DIR: ${{ runner.temp }}/oms-artifacts
+          ARTIFACT_INDEX_FILE: ${{ github.workspace }}/packages/web/public/artifacts/index.json
+          ARTIFACT_RELEASE_ID: ${{ github.sha }}
+          ARTIFACT_URL_PREFIX: ${{ vars.ARTIFACT_URL_PREFIX }}
+          ARTIFACT_STORE_BUCKET: ${{ secrets.ARTIFACT_STORE_BUCKET }}
+          ARTIFACT_STORE_ENDPOINT: ${{ secrets.ARTIFACT_STORE_ENDPOINT }}
+          ARTIFACT_STORE_REGION: ${{ vars.ARTIFACT_STORE_REGION }}
+          ARTIFACT_STORE_ACCESS_KEY_ID: ${{ secrets.ARTIFACT_STORE_ACCESS_KEY_ID }}
+          ARTIFACT_STORE_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACT_STORE_SECRET_ACCESS_KEY }}
+        run: node scripts/artifact-store.mjs publish
 
       # 硬约束(ADR 0018):web:index 后必须 typesense:push,否则线上浏览/搜索滞后 catalog。
       # 未配 Typesense(纯静态降级档)时跳过——StaticStore 兜底,不算破约。

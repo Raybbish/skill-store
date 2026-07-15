@@ -119,7 +119,8 @@ test("pack-zips emits the same content-addressed artifact and manifest on repeat
   assert.equal(artifactSha256(artifactA), entry.artifact_sha256);
   const manifest = JSON.parse(await readFile(join(first.artifactOut, "sha256", `${hex}.json`), "utf8"));
   assert.equal(manifest.artifact_sha256, entry.artifact_sha256);
-  assert.deepEqual(manifest.subjects, [{ skill_id: "owner/repo/demo", source_content_hash: hash }]);
+  assert.equal(manifest.source_content_hash, hash);
+  assert.equal("subjects" in manifest, false);
 });
 
 test("pack-zips fails loudly when a complete mirror drifts from the catalog hash", async (t) => {

@@ -582,7 +582,6 @@ delisted_at</code></pre>
 <p>manifest 示例:</p>
 <pre><code class="language-json">{
   &quot;schema_version&quot;: &quot;1&quot;,
-  &quot;skill_id&quot;: &quot;owner/repo/name&quot;,
   &quot;source_content_hash&quot;: &quot;sha256:...&quot;,
   &quot;artifact_sha256&quot;: &quot;sha256:...&quot;,
   &quot;size&quot;: 12345,
@@ -593,6 +592,7 @@ delisted_at</code></pre>
     &quot;artifact_covers&quot;: &quot;complete .skill bytes&quot;
   }
 }</code></pre>
+<p>按 artifact hash 寻址的 manifest 只记录由制品字节可推导的稳定事实,不得写入会随收录关系变化的 <code>skill_id</code> 或 <code>subjects[]</code>。Skill 与制品的多对一映射只属于可更新的 <code>artifacts/index.json</code>,否则同一 artifact 被新 subject 复用时会让“不可变” manifest 发生漂移。</p>
 <p>覆盖范围必须明确:<code>source_content_hash</code> 与 <code>projection_hash</code> 对规范化后的 Skill 文件集合计算,排除 <code>LICENSE.upstream</code>;<code>artifact_sha256</code> 对最终 <code>.skill</code> 的每一个字节计算,因此覆盖包内的 <code>LICENSE.upstream</code>、文件顺序与 ZIP 元数据。前者回答“作品内容是否相同”,后者回答“下载到的制品是否逐字相同”。</p>
 <p>保留策略在 P0 同步冻结:当前 catalog 或灰度版本引用的制品无限期保留;不再被任何发布版本引用的制品保留 180 天,由对象存储生命周期任务清理;下架不等于立即删除,但法律下架、许可证撤回或恶意内容处置可立即 tombstone 并删除。GC 只删除“无引用且超过 180 天”的对象,每次输出删除清单与可审计日志,绝不在 Web build 中顺手清理。监控至少记录对象数、总字节、月新增字节、孤儿对象和 GC 删除量。</p>
 <h3>10.3 安装回执</h3>
