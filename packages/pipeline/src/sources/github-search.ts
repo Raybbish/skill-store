@@ -8,9 +8,9 @@
  */
 import type { SkillReport } from "@skill-store/schemas";
 import { discoverFromRepo, type SkillCandidate } from "./official.ts";
+import { searchApiFetch } from "./gh-search-client.ts";
 
 const QUERY = process.env.GH_SEARCH_QUERY ?? "topic:claude-skills";
-const TOKEN = process.env.GITHUB_TOKEN;
 
 /**
  * 批量源阈值(ADR 0019):仓内 skill 数达到此值即判「非单作者原创」(生成或搬运),
@@ -41,15 +41,9 @@ async function searchRepos(limit: number): Promise<RepoHit[]> {
   const perPage = Math.min(100, limit);
   for (let page = 1; hits.length < limit; page++) {
     const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(QUERY)}&sort=stars&order=desc&per_page=${perPage}&page=${page}`;
-    const res = await fetch(url, {
-      headers: {
-        accept: "application/vnd.github+json",
-        "user-agent": "oh-my-skill-ingest",
-        ...(TOKEN ? { authorization: `Bearer ${TOKEN}` } : {}),
-      },
-    });
-    if (!res.ok) throw new Error(`GitHub search ${res.status}(需 api.github.com 可达,建议本机/CI + GITHUB_TOKEN)`);
-    const data = (await res.json()) as { items: { full_name: string; stargazers_count: number; archived: boolean; fork: boolean; description: string | null }[] };
+    // 走共享客户端:全局节流 + 二级限流退避重试,别再零间隔连发烧穿 per-token 二级预算(ADR 0027 P1)
+    const { data, ok, status, body } = await searchApiFetch<{ items: { full_name: string; stargazers_count: number; archived: boolean; fork: boolean; description: string | null }[] }>(url, "repo-search");
+    if (!ok || !data) throw new Error(`GitHub search ${status}(需 api.github.com 可达,建议本机/CI + GITHUB_TOKEN)${body ? `:${body}` : ""}`);
     if (!data.items?.length) break;
     for (const it of data.items) {
       hits.push({ repoSlug: it.full_name, stars: it.stargazers_count, archived: it.archived, fork: it.fork, description: it.description ?? null });
