@@ -11,8 +11,9 @@
  *   public/artifacts/index.json
  *   public/dl/packs/<pack>.zip (deterministic convenience bundle)
  *
- * Tests may redirect inputs/outputs with PACK_CATALOG, PACK_PACKS, PACK_OUT and
- * PACK_ARTIFACT_OUT. The optional first argument limits artifact subjects.
+ * Tests/deploys may redirect inputs/outputs with PACK_CATALOG, PACK_PACKS,
+ * PACK_OUT, PACK_ARTIFACT_OUT and PACK_ARTIFACT_INDEX_OUT. The optional first
+ * argument limits artifact subjects.
  */
 import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -37,6 +38,7 @@ const CATALOG = resolve(process.env.PACK_CATALOG || join(ROOT, "catalog", "skill
 const PACKS = resolve(process.env.PACK_PACKS || join(ROOT, "catalog", "packs"));
 const DL_OUT = resolve(process.env.PACK_OUT || join(ROOT, "packages", "web", "public", "dl"));
 const ARTIFACT_OUT = resolve(process.env.PACK_ARTIFACT_OUT || join(dirname(DL_OUT), "artifacts"));
+const ARTIFACT_INDEX_OUT = resolve(process.env.PACK_ARTIFACT_INDEX_OUT || join(ARTIFACT_OUT, "index.json"));
 const ARTIFACT_URL_PREFIX = (process.env.ARTIFACT_URL_PREFIX || "/artifacts/sha256").replace(/\/$/, "");
 const LIMIT = Number(process.argv[2]) > 0 ? Number(process.argv[2]) : Infinity;
 
@@ -119,9 +121,10 @@ for (const { id, mirror, actualSourceHash } of candidates) {
   const hex = hash.slice("sha256:".length);
   if (!objects.has(hash)) {
     await atomicWrite(join(ARTIFACT_OUT, "sha256", `${hex}.skill`), body);
-    objects.set(hash, { artifact_sha256: hash, size: body.length, subjects: [] });
+    objects.set(hash, { artifact_sha256: hash, source_content_hash: actualSourceHash, size: body.length });
+  } else if (objects.get(hash).source_content_hash !== actualSourceHash) {
+    throw new Error(`同一 artifact 映射到不同 source hash:${hash}`);
   }
-  objects.get(hash).subjects.push({ skill_id: id, source_content_hash: actualSourceHash });
   const entry = {
     skill_id: id,
     source_content_hash: actualSourceHash,
@@ -136,12 +139,11 @@ for (const { id, mirror, actualSourceHash } of candidates) {
 
 indexEntries.sort((a, b) => compareText(`${a.skill_id}\0${a.source_content_hash}`, `${b.skill_id}\0${b.source_content_hash}`));
 for (const object of [...objects.values()].sort((a, b) => compareText(a.artifact_sha256, b.artifact_sha256))) {
-  object.subjects.sort((a, b) => compareText(`${a.skill_id}\0${a.source_content_hash}`, `${b.skill_id}\0${b.source_content_hash}`));
   const manifest = {
     schema_version: "1",
     artifact_sha256: object.artifact_sha256,
+    source_content_hash: object.source_content_hash,
     size: object.size,
-    subjects: object.subjects,
     created_from: "catalog mirror",
     deterministic_zip: true,
     artifact_writer: ARTIFACT_WRITER,
@@ -167,7 +169,7 @@ const index = {
   },
   artifacts: indexEntries,
 };
-await atomicWrite(join(ARTIFACT_OUT, "index.json"), `${JSON.stringify(index, null, 2)}\n`);
+await atomicWrite(ARTIFACT_INDEX_OUT, `${JSON.stringify(index, null, 2)}\n`);
 
 let packsMade = 0;
 if (existsSync(PACKS)) {
