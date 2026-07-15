@@ -47,6 +47,53 @@ function PackMarquee({ packs, locale }: { packs: Pack[]; locale: Locale }) {
   );
 }
 
+/** 页码窗口:首尾 + 当前邻域,中间空档收成省略号。331 页也只渲染 ~7 个页码。 */
+function pageWindow(cur: number, total: number): (number | "…")[] {
+  const uniq = [...new Set([1, cur - 1, cur, cur + 1, total].filter((n) => n >= 1 && n <= total))].sort((a, b) => a - b);
+  const out: (number | "…")[] = [];
+  let prev = 0;
+  for (const n of uniq) {
+    if (prev && n - prev > 1) out.push("…");
+    out.push(n);
+    prev = n;
+  }
+  return out;
+}
+
+/** 分页条:页码窗口(可点跳转)+ 跳页输入框。DOM 恒小 —— 永远只渲染当前页数据,页码是纯导航。 */
+function Pager({ page, pages, goto, locale }: { page: number; pages: number; goto: (p: number) => void; locale: Locale }) {
+  const [jump, setJump] = useState("");
+  const tt = (k: MsgKey, vars?: Record<string, string | number>) => t(locale, k, vars);
+  const submitJump = () => {
+    const n = parseInt(jump, 10);
+    if (Number.isFinite(n)) goto(Math.min(Math.max(1, n), pages));
+    setJump("");
+  };
+  if (pages <= 1) return null;
+  return (
+    <nav className="pager" aria-label={tt("home.pagerLabel")}>
+      <button className="chip" disabled={page <= 1} onClick={() => goto(page - 1)} aria-label={tt("home.prev")}>‹</button>
+      {pageWindow(page, pages).map((p, i) =>
+        p === "…"
+          ? <span key={`gap${i}`} className="pager-gap" aria-hidden="true">…</span>
+          : <button key={p} className={`chip pager-n ${p === page ? "on" : ""}`} aria-current={p === page ? "page" : undefined} onClick={() => goto(p)}>{p}</button>,
+      )}
+      <button className="chip" disabled={page >= pages} onClick={() => goto(page + 1)} aria-label={tt("home.next")}>›</button>
+      <span className="pager-jump">
+        <label htmlFor="pgj">{tt("home.jumpTo")}</label>
+        <input
+          id="pgj" type="text" inputMode="numeric" pattern="[0-9]*" value={jump}
+          onChange={(e) => setJump(e.target.value.replace(/[^0-9]/g, ""))}
+          onKeyDown={(e) => { if (e.key === "Enter") submitJump(); }}
+          placeholder={String(page)} aria-label={tt("home.jumpAria", { n: pages })}
+        />
+        {tt("home.pageUnit") && <span>{tt("home.pageUnit")}</span>}
+        <button className="chip pager-go" disabled={!jump} onClick={submitJump}>{tt("home.jumpGo")}</button>
+      </span>
+    </nav>
+  );
+}
+
 /**
  * 首页 = 搜索 + 场景包 + 完整货架(原 /browse 整体并入,ADR 0007 的缝不变)。
  * - 默认视图走构建期分片(首屏 30 条服务端直出);筛选/搜索懒加载 docs 本地过滤;
@@ -234,14 +281,8 @@ export default function HomeClient({ locale, first, meta, cats, tags, facets, ca
         {!res.items.length && busy && <div className="empty">{tt("home.loading")}</div>}
       </div>
 
-      {/* 分页:DOM 恒小的关键 —— 永远只渲染当前页 */}
-      {res.pages > 1 && (
-        <div className="filters" style={{ marginTop: 16, justifyContent: "center" }}>
-          <button className="chip" disabled={res.page <= 1} style={res.page <= 1 ? { opacity: 0.4 } : undefined} onClick={() => goto(res.page - 1)}>{tt("home.prev")}</button>
-          <span style={{ fontSize: 13, color: "var(--faint)", fontWeight: 600, alignSelf: "center" }}>{tt("home.pageOf", { p: res.page, n: nf(res.pages) })}</span>
-          <button className="chip" disabled={res.page >= res.pages} style={res.page >= res.pages ? { opacity: 0.4 } : undefined} onClick={() => goto(res.page + 1)}>{tt("home.next")}</button>
-        </div>
-      )}
+      {/* 分页:DOM 恒小的关键 —— 永远只渲染当前页;页码窗口 + 跳页输入,331 页也不用逐页点 */}
+      <Pager page={res.page} pages={res.pages} goto={goto} locale={locale} />
     </>
   );
 }
