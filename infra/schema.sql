@@ -7,6 +7,7 @@ create table if not exists public.skills (
   description text,
   license text,
   hosting text check (hosting in ('mirrored','indexed')),
+  mirror_complete boolean,                -- mirrored 制品完整性闸;false/null 不得当作可复现镜像安装
   category text,
   publisher text,
   publisher_verified boolean default false,

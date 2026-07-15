@@ -5,14 +5,14 @@
  *   2. 校验失败 → 拒装,绝不落盘
  *
  * 用法:
- *   oh-my-skill add <owner/repo/name> [--yes] [--to <dir>]
+ *   oh-my-skill add <owner/repo/name> [--agent <id>] [--scope user|project] [--yes] [--to <dir>]
  *   oh-my-skill list / remove <owner/repo/name>
  * 数据源:默认 Supabase(OMS_API/OMS_KEY 可覆盖);
  *   --from-dir <catalog路径> 用本地 catalog(开发/测试)。
  */
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile, readdir, rm, stat, cp } from "node:fs/promises";
-import { join, dirname, relative } from "node:path";
+import { mkdir, readFile, writeFile, readdir, rm, stat, cp, rename } from "node:fs/promises";
+import { join, dirname, relative, resolve } from "node:path";
 import { homedir, tmpdir } from "node:os";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -28,7 +28,37 @@ const target = args[1];
 const flag = (n) => args.includes(`--${n}`);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : undefined; };
 /** 取值型 flag(其后跟一个值),解析多目标位置参数时要跳过它们的值 */
-const VALUE_FLAGS = new Set(["--to", "--from-dir", "--t"]);
+const VALUE_FLAGS = new Set(["--to", "--from-dir", "--t", "--agent", "--scope", "--project-root"]);
+
+class CliError extends Error {
+  constructor(exitCode, message) {
+    super(message);
+    this.exitCode = exitCode;
+  }
+}
+
+const AGENT_SPECS = {
+  claude: { dir: ".claude" },
+  codex: { dir: ".codex" },
+  cursor: { dir: ".cursor" },
+  qwen: { dir: ".qwen" },
+  kimi: { dir: ".kimi-code", envHome: "KIMI_CODE_HOME" },
+  comate: { dir: ".comate" },
+  codebuddy: { dir: ".codebuddy" },
+  iflow: { dir: ".iflow" },
+};
+
+async function pathExists(path) {
+  try { await stat(path); return true; } catch { return false; }
+}
+
+function requireSourceHash(meta) {
+  const hash = meta?.content_hash;
+  if (typeof hash !== "string" || !/^sha256:[0-9a-f]{64}$/i.test(hash)) {
+    throw new CliError(4, "✗ 货架 content_hash 缺失或格式非法,已在下载和写盘前拒绝安装。请等待货架重新同步;不能用 --force 绕过。");
+  }
+  return hash;
+}
 
 /**
  * 匿名装机回执(ADR 0017 砖一)——「从本店安装」的获取渠道留痕,不是使用追踪:
@@ -97,19 +127,39 @@ async function dirContentHash(dir) {
 async function fetchReport(id) {
   const local = opt("from-dir");
   if (local) {
-    return JSON.parse(await readFile(join(local, ...id.split("/"), "skill-report.json"), "utf8"));
+    try {
+      return JSON.parse(await readFile(join(local, ...id.split("/"), "skill-report.json"), "utf8"));
+    } catch (error) {
+      throw new CliError(3, `读取本地货架失败:${error.message}`);
+    }
   }
-  const res = await fetch(`${API}/rest/v1/skills?id=eq.${encodeURIComponent(id)}`, {
-    headers: { apikey: KEY, authorization: `Bearer ${KEY}` },
-  });
-  if (!res.ok) throw new Error(`API ${res.status}`);
-  const rows = await res.json();
-  if (!rows.length) throw new Error(`未找到 ${id}`);
-  const r = rows[0];
-  // Supabase 行 → 报告形状归一
-  return {
-    meta: { id: r.id, hosting: r.hosting, license: r.license, upstream: r.upstream, content_hash: r.content_hash },
-  };
+  try {
+    const fields = "id,name,hosting,mirror_complete,license,upstream,upstream_commit,content_hash,delisted_at";
+    const res = await fetch(`${API}/rest/v1/skills?id=eq.${encodeURIComponent(id)}&select=${fields}`, {
+      headers: { apikey: KEY, authorization: `Bearer ${KEY}` },
+    });
+    if (!res.ok) throw new Error(`API ${res.status}`);
+    const rows = await res.json();
+    if (!rows.length) throw new Error(`未找到 ${id}`);
+    const r = rows[0];
+    // Supabase 行 → 报告形状归一;安装所需字段不得在这一层丢失。
+    return {
+      meta: {
+        id: r.id,
+        name: r.name,
+        hosting: r.hosting,
+        mirror_complete: r.mirror_complete,
+        license: r.license,
+        upstream: r.upstream,
+        upstream_commit: r.upstream_commit,
+        content_hash: r.content_hash,
+        delisted_at: r.delisted_at,
+      },
+    };
+  } catch (error) {
+    if (error instanceof CliError) throw error;
+    throw new CliError(3, `货架查询失败:${error.message}`);
+  }
 }
 
 /**
@@ -129,13 +179,62 @@ async function loadVerdict(id, contentHash) {
   } catch { return null; }
 }
 
-function detectAgentDir() {
-  const to = opt("to");
-  if (to) return to;
-  for (const d of [".claude/skills", ".codex/skills", ".cursor/skills"]) {
-    // 项目级优先(同步检测简化:直接选 claude 用户级兜底)
+async function projectRoot() {
+  const explicit = opt("project-root");
+  if (explicit) return resolve(explicit);
+  let current = resolve(process.cwd());
+  while (true) {
+    if (await pathExists(join(current, ".git"))) return current;
+    const parent = dirname(current);
+    if (parent === current) return resolve(process.cwd());
+    current = parent;
   }
-  return join(homedir(), ".claude", "skills");
+}
+
+async function agentDir(agentId, scope) {
+  const spec = AGENT_SPECS[agentId];
+  if (!spec) {
+    throw new CliError(2, `未知 Agent: ${agentId}。可选:${Object.keys(AGENT_SPECS).join(", ")}`);
+  }
+  if (scope === "project") return join(await projectRoot(), spec.dir, "skills");
+  const userBase = spec.envHome && process.env[spec.envHome]
+    ? resolve(process.env[spec.envHome])
+    : join(homedir(), spec.dir);
+  return join(userBase, "skills");
+}
+
+async function detectAgentDir() {
+  const to = opt("to");
+  if (to) return resolve(to);
+
+  const requestedAgent = opt("agent");
+  const requestedScope = opt("scope");
+  if (requestedScope && !["user", "project"].includes(requestedScope)) {
+    throw new CliError(2, `未知 scope: ${requestedScope}。可选:user, project`);
+  }
+  if (requestedAgent === "all") {
+    throw new CliError(2, "--agent all 将在多目标事务阶段开放;当前请逐个指定 --agent。");
+  }
+  if (requestedAgent) {
+    if (requestedScope) return agentDir(requestedAgent, requestedScope);
+    const project = await agentDir(requestedAgent, "project");
+    return (await pathExists(project)) ? project : agentDir(requestedAgent, "user");
+  }
+
+  const scopes = requestedScope ? [requestedScope] : ["project", "user"];
+  const matches = [];
+  for (const agentId of Object.keys(AGENT_SPECS)) {
+    for (const scope of scopes) {
+      const dir = await agentDir(agentId, scope);
+      if (await pathExists(dir)) matches.push({ agentId, scope, dir });
+    }
+  }
+  const unique = [...new Map(matches.map((m) => [m.dir, m])).values()];
+  if (unique.length === 1) return unique[0].dir;
+  if (unique.length === 0) {
+    throw new CliError(2, "未探测到唯一 Agent 目录。请显式传 --agent <id> [--scope user|project],或用 --to <dir>。");
+  }
+  throw new CliError(2, `探测到多个 Agent 目录:${unique.map((m) => `${m.agentId}/${m.scope}`).join(", ")}。请显式传 --agent 和 --scope。`);
 }
 
 async function confirm(msg) {
@@ -146,11 +245,43 @@ async function confirm(msg) {
   return a === "y" || a === "yes";
 }
 
+function pinnedGitHubSource(meta) {
+  if (typeof meta?.upstream_commit !== "string" || !/^[0-9a-f]{40}$/i.test(meta.upstream_commit)) {
+    throw new CliError(3, "✗ 货架 upstream_commit 缺失或格式非法,拒绝回退上游 HEAD。");
+  }
+  const match = String(meta.upstream ?? "").match(/github\.com\/([^/]+\/[^/]+?)(?:\.git)?\/tree\/[^/]+\/?(.*)$/);
+  if (!match) throw new CliError(3, "无法解析货架上游地址,拒绝猜测仓库或路径。");
+  return { repo: match[1], subpath: match[2] ?? "", commit: meta.upstream_commit };
+}
+
+async function checkoutPinnedUpstream(meta, work) {
+  const source = pinnedGitHubSource(meta);
+  try {
+    await exec("git", ["init", "--quiet", work]);
+    await exec("git", ["-C", work, "remote", "add", "origin", `https://github.com/${source.repo}.git`]);
+    await exec("git", ["-C", work, "fetch", "--depth", "1", "--quiet", "origin", source.commit]);
+    await exec("git", ["-C", work, "checkout", "--detach", "--quiet", "FETCH_HEAD"]);
+  } catch (error) {
+    throw new CliError(3, `获取 pinned commit ${source.commit.slice(0, 12)}… 失败,未回退 HEAD:${error.message}`);
+  }
+  return join(work, source.subpath);
+}
+
 async function add(id) {
   const report = await fetchReport(id);
   const m = report.meta;
+  if (!m || m.id !== id) throw new CliError(3, `货架返回的 Skill 身份与请求不一致:${m?.id ?? "<missing>"}`);
+  const expected = requireSourceHash(m);
+  if (m.delisted_at) throw new CliError(3, `✗ ${m.id} 已停止收录,拒绝新安装。`);
+
+  const destRoot = await detectAgentDir();
+  const dest = join(destRoot, m.id.split("/").at(-1));
+  if (await pathExists(dest)) {
+    throw new CliError(6, `✗ 目标已存在:${dest}\n  当前版本不覆盖既有目录;请先 verify/remove,或选择其他明确目标。`);
+  }
+
   console.log(`\n■ ${m.id}  (${m.license} / ${m.hosting})`);
-  const v = await loadVerdict(id, m.content_hash);
+  const v = await loadVerdict(id, expected);
   if (v) {
     console.log(`  判定: ${v.status}(policy ${v.scanner?.policy})—— 披露非背书`);
     for (const [k, f] of Object.entries(v.factors ?? {})) {
@@ -159,35 +290,40 @@ async function add(id) {
   }
   if (!(await confirm("确认安装?"))) return console.log("已取消");
 
-  // 获取文件:本地 catalog 的 mirror/,或 clone 上游
-  const work = join(tmpdir(), `oh-my-skill-${Date.now()}`);
+  // 获取文件:本地完整 mirror,或精确 fetch 货架记录的 upstream_commit。
+  const work = join(tmpdir(), `oh-my-skill-${randomUUID()}`);
   await mkdir(work, { recursive: true });
-  let srcDir;
-  const local = opt("from-dir");
-  if (local && m.hosting === "mirrored") {
-    srcDir = join(local, ...m.id.split("/"), "mirror");
-  } else {
-    const mm = m.upstream.match(/github\.com\/([^/]+\/[^/]+)\/tree\/[^/]+\/?(.*)$/);
-    if (!mm) throw new Error("无法解析上游地址");
-    await exec("git", ["clone", "--depth", "1", "--quiet", `https://github.com/${mm[1]}.git`, work]);
-    srcDir = join(work, mm[2] ?? "");
-  }
+  const staging = join(destRoot, `.${m.id.split("/").at(-1)}.oms-staging-${randomUUID()}`);
+  try {
+    const local = opt("from-dir");
+    const srcDir = local && m.hosting === "mirrored" && m.mirror_complete === true
+      ? join(local, ...m.id.split("/"), "mirror")
+      : await checkoutPinnedUpstream(m, work);
 
-  // 哈希校验(灵魂步骤)
-  const actual = await dirContentHash(srcDir);
-  if (m.content_hash && actual !== m.content_hash) {
-    await rm(work, { recursive: true, force: true });
-    throw new Error(`✗ 内容哈希不匹配!货架 ${m.content_hash.slice(0, 20)}… vs 实际 ${actual.slice(0, 20)}…\n  内容可能在收录后被修改,已拒绝安装。`);
-  }
-  console.log(`  ✓ 内容哈希校验通过 ${actual.slice(0, 27)}…`);
+    let actual;
+    try { actual = await dirContentHash(srcDir); }
+    catch (error) { throw new CliError(3, `读取待安装内容失败:${error.message}`); }
+    if (actual !== expected) {
+      throw new CliError(4, `✗ 内容哈希不匹配!货架 ${expected.slice(0, 20)}… vs 实际 ${actual.slice(0, 20)}…\n  内容可能在收录后被修改,已拒绝安装。`);
+    }
+    console.log(`  ✓ 内容哈希校验通过 ${actual.slice(0, 27)}…`);
 
-  const dest = join(detectAgentDir(), m.id.split("/").at(-1)); // 落盘目录名 = id 最后一段(skill 名)
-  await mkdir(dirname(dest), { recursive: true });
-  await cp(srcDir, dest, { recursive: true });
-  await rm(work, { recursive: true, force: true });
+    await mkdir(destRoot, { recursive: true });
+    await cp(srcDir, staging, { recursive: true, force: false, errorOnExist: true });
+    const stagedHash = await dirContentHash(staging);
+    if (stagedHash !== expected) throw new CliError(4, "✗ staging 复算哈希不一致,已拒绝落盘。");
+    if (await pathExists(dest)) throw new CliError(6, `✗ 安装期间目标被创建:${dest};未覆盖。`);
+    await rename(staging, dest);
+  } catch (error) {
+    if (error instanceof CliError) throw error;
+    throw new CliError(7, `本地写入失败:${error.message}`);
+  } finally {
+    await rm(staging, { recursive: true, force: true }).catch(() => {});
+    await rm(work, { recursive: true, force: true }).catch(() => {});
+  }
   console.log(`✓ 已安装到 ${dest}\n`);
   if (opt("to")) await rememberDir(opt("to")); // 一次教会:自定义安装路径记住,verify 默认搜得到
-  await postReceipt(m.id, "cli", m.content_hash); // 装成才留痕;3s 超时,失败静默
+  await postReceipt(m.id, "cli", expected); // 装成才留痕;3s 超时,失败静默
 }
 
 /**
@@ -218,16 +354,19 @@ async function rememberDir(dir) {
 }
 async function agentDirs() {
   const to = opt("to");
-  if (to) return [to]; // 显式指定 = 只看这里(用户意图明确)
-  const home = homedir();
-  const dirs = [
-    // 用户级约定
-    join(home, ".claude", "skills"), join(home, ".codex", "skills"),
-    join(home, ".cursor", "skills"), join(home, ".agents", "skills"),
-    // 项目级约定(当前目录)
-    join(process.cwd(), ".claude", "skills"), join(process.cwd(), ".codex", "skills"),
-    join(process.cwd(), ".agents", "skills"),
-  ];
+  if (to) return [resolve(to)]; // 显式指定 = 只看这里(用户意图明确)
+  const requestedAgent = opt("agent");
+  if (requestedAgent && requestedAgent !== "all") return [await detectAgentDir()];
+  const requestedScope = opt("scope");
+  if (requestedScope && !["user", "project"].includes(requestedScope)) {
+    throw new CliError(2, `未知 scope: ${requestedScope}。可选:user, project`);
+  }
+  const scopes = requestedScope ? [requestedScope] : ["user", "project"];
+  const dirs = [];
+  for (const agentId of Object.keys(AGENT_SPECS)) {
+    for (const scope of scopes) dirs.push(await agentDir(agentId, scope));
+  }
+  dirs.push(join(homedir(), ".agents", "skills"), join(await projectRoot(), ".agents", "skills"));
   try { dirs.push(...JSON.parse(await readFile(DIRS_FILE, "utf8"))); } catch { /* 无记忆 */ }
   return [...new Set(dirs)];
 }
@@ -240,6 +379,7 @@ async function findLocal(leaf) {
 async function verifyOne(id, { quiet = false } = {}) {
   const report = await fetchReport(id);
   const m = report.meta;
+  const expected = requireSourceHash(m);
   const leaf = m.id.split("/").at(-1);
   const local = await findLocal(leaf);
   if (!local) {
@@ -251,7 +391,7 @@ async function verifyOne(id, { quiet = false } = {}) {
     return false;
   }
   const actual = await dirContentHash(local);
-  const match = m.content_hash && actual === m.content_hash;
+  const match = actual === expected;
   console.log(match
     ? `✓ ${m.id} — 本机副本与货架一致 ${actual.slice(0, 27)}…`
     : `△ ${m.id} — 本机副本与货架不同(旧版本或已自行修改);按实际内容留痕`);
@@ -283,22 +423,23 @@ async function verifyAll() {
 }
 
 async function list() {
-  const dir = detectAgentDir();
+  const dir = await detectAgentDir();
   try {
     for (const name of await readdir(dir)) console.log(name);
   } catch { console.log(`(空:${dir})`); }
 }
 
 async function remove(id) {
-  const dest = join(detectAgentDir(), id.includes("/") ? id.split("/").at(-1) : id);
+  const dest = join(await detectAgentDir(), id.includes("/") ? id.split("/").at(-1) : id);
   if (await confirm(`删除 ${dest}?`)) { await rm(dest, { recursive: true, force: true }); console.log("✓ 已删除"); }
 }
 
 const run = { add, list, remove, verify: verifyOne }[cmd];
 if (!run || (cmd !== "list" && !target && !(cmd === "verify" && flag("all")))) {
-  console.log("用法: oh-my-skill add <owner/repo/name>… [--yes] [--to <dir>] [--from-dir <catalog>]");
+  console.log("用法: oh-my-skill add <owner/repo/name>… [--agent <id>] [--scope user|project] [--yes]");
   console.log("      oh-my-skill verify <owner/repo/name> | verify --all   已装过?验证本机副本,不重装");
-  console.log("      oh-my-skill list | remove <name>");
+  console.log("      oh-my-skill list | remove <name> [--agent <id>] [--scope user|project]");
+  console.log("      通用覆盖:--to <dir> --from-dir <catalog> --project-root <dir>");
   process.exit(1);
 }
 (async () => {
@@ -313,4 +454,4 @@ if (!run || (cmd !== "list" && !target && !(cmd === "verify" && flag("all")))) {
   } else {
     await run(target);
   }
-})().catch((e) => { console.error(e.message); process.exit(1); });
+})().catch((e) => { console.error(e.message); process.exit(e instanceof CliError ? e.exitCode : 1); });

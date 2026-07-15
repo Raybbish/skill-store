@@ -97,7 +97,7 @@ const zh = {
   "inst.npx": "通过 npx 安装", "inst.hashTag": "校验哈希", "inst.bash": "通过 bash 安装",
   "inst.verify": "已经装过?验证本机副本,不用重装",
   "inst.copy": "复制", "inst.copied": "已复制 ✓",
-  "inst.foot": "安装器自动探测 agent 目录(.claude / .codex / .cursor …);落盘前逐文件复算 blob sha 校验 content_hash,与货架不一致即拒装 —— 别家 npx 是盲装,这里不是。",
+  "inst.foot": "安装目标可用 --agent / --scope 或 --to 明确指定;省略时只会在唯一已存在的 agent 目录上自动选择,零命中或多命中会停止并提示。content_hash 缺失或不一致均拒装。",
   // 认领
   "claim.q": "是你的作品?", "claim.btn": "用 GitHub 认领", "claim.busy": "认领中…", "claim.done": "✓ 作者已认领",
   "claim.doneTip": "@{login} 于 {d} 认领;身份说明,非平台背书",
@@ -215,7 +215,7 @@ const en: Record<MsgKey, string> = {
   "inst.npx": "Install via npx", "inst.hashTag": "hash-verified", "inst.bash": "Install via bash",
   "inst.verify": "Already installed? Verify your local copy — no reinstall",
   "inst.copy": "Copy", "inst.copied": "Copied ✓",
-  "inst.foot": "The installer auto-detects agent directories (.claude / .codex / .cursor …); before writing, it recomputes blob shas per file against content_hash and refuses on mismatch — unlike blind npx installs elsewhere.",
+  "inst.foot": "Choose the destination with --agent / --scope or --to. If omitted, auto-selection only proceeds when exactly one existing agent directory is found; zero or multiple matches stop with guidance. A missing or mismatched content_hash blocks installation.",
   "claim.q": "Your work?", "claim.btn": "Claim with GitHub", "claim.busy": "Claiming…", "claim.done": "✓ Claimed by author",
   "claim.doneTip": "Claimed by @{login} on {d}; identity statement, not an endorsement",
   "claim.noGithub": "Your current sign-in has no GitHub identity — claiming requires GitHub sign-in (to prove you control the repo)",

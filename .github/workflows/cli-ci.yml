@@ -1,0 +1,41 @@
+name: CLI CI
+
+on:
+  pull_request:
+    paths:
+      - "packages/cli/**"
+      - "packages/web/lib/i18n/index.ts"
+      - "packages/web/public/install.sh"
+      - "packages/pipeline/src/jobs/sync.ts"
+      - "infra/schema.sql"
+      - "infra/migrations/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/cli-ci.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: cli-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node-version: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - name: CLI syntax and end-to-end tests
+        run: |
+          node --check packages/cli/bin/oh-my-skill.mjs
+          npm test -w oh-my-skill
+          bash -n packages/web/public/install.sh
+      - name: Typecheck
+        run: npm run typecheck
