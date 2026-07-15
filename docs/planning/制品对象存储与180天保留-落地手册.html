@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Skill Store · 制品对象存储与 180 天保留落地手册</title>
+  <style>
+    :root{color-scheme:light;--ink:#172033;--muted:#687287;--line:#dfe5ee;--paper:#fff;--wash:#f5f7fb;--blue:#2457d6;--green:#16784b;--amber:#9a5a00}
+    *{box-sizing:border-box}body{margin:0;background:var(--wash);color:var(--ink);font:15px/1.72 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}
+    main{width:min(980px,calc(100% - 32px));margin:36px auto 72px}.hero,.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 30px rgba(33,48,78,.05)}
+    .hero{padding:34px}.card{padding:26px;margin-top:18px}h1{font-size:32px;line-height:1.2;margin:0 0 10px}h2{font-size:21px;margin:0 0 14px}h3{font-size:16px;margin:22px 0 8px}p{margin:8px 0;color:#344057}.lead{font-size:17px;max-width:760px}.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.tag{padding:5px 10px;border-radius:999px;background:#edf3ff;color:var(--blue);font-size:13px}.ok{color:var(--green)}.warn{color:var(--amber)}code{font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:#f1f4f9;padding:2px 5px;border-radius:5px}pre{overflow:auto;background:#101827;color:#e8eefc;border-radius:12px;padding:16px}pre code{background:none;padding:0;color:inherit}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{text-align:left;vertical-align:top;border-bottom:1px solid var(--line);padding:10px 8px}th{font-size:13px;color:var(--muted)}ul,ol{padding-left:22px}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0}.flow div{padding:12px 8px;text-align:center;background:#f3f6fb;border:1px solid var(--line);border-radius:10px;font-size:13px}.note{border-left:3px solid var(--blue);padding:8px 14px;background:#f5f8ff}.danger{border-left-color:#d64545;background:#fff7f7}@media(max-width:720px){.flow{grid-template-columns:1fr}.hero,.card{padding:22px}h1{font-size:26px}}
+  </style>
+</head>
+<body><main>
+  <section class="hero">
+    <h1>制品对象存储与 180 天保留</h1>
+    <p class="lead">ADR 0029 的运维落地手册：把内容寻址的 <code>.skill</code> 从 Vercel 静态构建中解耦，发布到 S3 兼容对象存储，并以“首次发现无引用”而非上传时间计算 180 天保留期。</p>
+    <div class="meta"><span class="tag">实现状态：代码完成，待配置灰度</span><span class="tag">存储边界：S3 compatible</span><span class="tag">默认保留：180 天</span><span class="tag">删除默认：dry-run</span></div>
+  </section>
+
+  <section class="card">
+    <h2>1. 冻结结论</h2>
+    <ul>
+      <li>对象 key 使用最终制品字节的 <code>artifact_sha256</code>，不是 source hash。</li>
+      <li><code>sha256/&lt;hex&gt;.skill</code> 与 <code>sha256/&lt;hex&gt;.json</code> 只允许条件创建；同 key 不同字节必须失败。</li>
+      <li><code>index.json</code> 是可更新指针；每次发布另存 <code>releases/&lt;git sha&gt;.json</code> 作为不可变发布快照。</li>
+      <li>当前 index 与 <code>ARTIFACT_PINNED_RELEASES</code> 共同构成引用根；被引用对象不进入 GC。</li>
+      <li>普通退市不会立即删除。只有明确 tombstone 且已从所有引用根移除的制品才可立即删除。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>2. 发布链路</h2>
+    <div class="flow"><div>catalog mirror</div><div>确定性打包</div><div>本地双哈希校验</div><div>条件写入对象存储</div><div>Vercel 只携带 index</div></div>
+    <p>灰度开关关闭时，部署保持原行为，制品继续进入静态输出。设置仓库变量 <code>ARTIFACT_STORE_ENABLED=1</code> 后，构建把大对象写入 runner 临时目录，仅把 <code>artifacts/index.json</code> 放入站点；对象发布成功后才继续 Vercel 部署。</p>
+    <p class="note">这允许先合并代码、完成 bucket/CDN 配置和 dry-run，再开启事实源切换，不会因未配置 secret 破坏现有生产部署。</p>
+  </section>
+
+  <section class="card">
+    <h2>3. GitHub 配置</h2>
+    <table><thead><tr><th>类型</th><th>名称</th><th>要求</th></tr></thead><tbody>
+      <tr><td>Variable</td><td><code>ARTIFACT_STORE_ENABLED</code></td><td>灰度前留空；验收完成后设为 <code>1</code></td></tr>
+      <tr><td>Variable</td><td><code>ARTIFACT_URL_PREFIX</code></td><td>公开 HTTPS 前缀，必须以 <code>/artifacts/sha256</code> 结尾</td></tr>
+      <tr><td>Variable</td><td><code>ARTIFACT_STORE_REGION</code></td><td>R2 使用 <code>auto</code>；AWS 使用实际 region</td></tr>
+      <tr><td>Variable</td><td><code>ARTIFACT_PINNED_RELEASES</code></td><td>可选，逗号分隔的 Git SHA；灰度版本在此固定</td></tr>
+      <tr><td>Secret</td><td><code>ARTIFACT_STORE_BUCKET</code></td><td>bucket 名</td></tr>
+      <tr><td>Secret</td><td><code>ARTIFACT_STORE_ENDPOINT</code></td><td>S3 兼容服务 endpoint；原生 AWS S3 可留空</td></tr>
+      <tr><td>Secret</td><td><code>ARTIFACT_STORE_ACCESS_KEY_ID</code></td><td>仅授予目标 bucket 的 list/get/put/delete</td></tr>
+      <tr><td>Secret</td><td><code>ARTIFACT_STORE_SECRET_ACCESS_KEY</code></td><td>与 access key 成对配置</td></tr>
+    </tbody></table>
+    <h3>R2 endpoint 示例</h3>
+    <pre><code>https://&lt;ACCOUNT_ID&gt;.r2.cloudflarestorage.com</code></pre>
+    <p>bucket 的公开自定义域名或 CDN path 必须把 <code>ARTIFACT_URL_PREFIX</code> 映射到对象前缀 <code>artifacts/sha256/</code>。</p>
+  </section>
+
+  <section class="card">
+    <h2>4. 启用顺序</h2>
+    <ol>
+      <li>创建私有写入 bucket，并配置公开只读 CDN/域名。</li>
+      <li>写入上表 variables/secrets，但暂不设置 <code>ARTIFACT_STORE_ENABLED</code>。</li>
+      <li>本地或临时环境运行 <code>npm run artifacts:publish -- --dry-run</code>，验证构建目录、manifest、index 和 URL。</li>
+      <li>设置 <code>ARTIFACT_STORE_ENABLED=1</code>，手动触发 <code>Deploy Web</code>。</li>
+      <li>抽查任意 index URL：HTTP 200、字节 SHA-256 与 index 一致、缓存头为 immutable。</li>
+      <li>手动运行一次 <code>Artifact Retention</code>，保持 <code>apply=false</code>，确认 inventory 无异常。</li>
+    </ol>
+    <pre><code>rtk gh workflow run deploy.yml
+rtk gh workflow run artifact-gc.yml -f apply=false
+rtk gh run list --workflow "Artifact Retention" --limit 3</code></pre>
+  </section>
+
+  <section class="card">
+    <h2>5. 180 天 GC 语义</h2>
+    <p>每周任务列举 <code>artifacts/sha256/</code>，读取当前 index、pinned release 和 <code>gc/state.json</code>：</p>
+    <ol>
+      <li>仍被任一引用根使用：永久保留，并从 orphan state 移除。</li>
+      <li>首次发现无引用：只写入 <code>unreferenced_since</code>，不删除。</li>
+      <li>连续无引用满 180 天：进入删除清单；<code>--apply</code> 才真正删除。</li>
+      <li>tombstone：不等待 180 天，但如果仍被引用则任务失败，不制造线上断链。</li>
+    </ol>
+    <p>每次 apply 会写入不可变审计记录 <code>gc/runs/&lt;timestamp&gt;-&lt;uuid&gt;.json</code>，包含对象数、总字节、近 30 天新增字节、孤儿数和删除清单。</p>
+    <p>发布快照采用独立规则：<code>ARTIFACT_PINNED_RELEASES</code> 永久保留；未 pinned 的 <code>releases/*.json</code> 保留 30 天后清理。快照过期不会改变制品自身的 180 天 orphan 时钟。</p>
+    <p class="note danger"><strong>不要</strong>给整个 <code>artifacts/</code> 前缀配置“上传满 180 天自动删除”的粗粒度生命周期规则；它会误删仍被当前 catalog 引用的老制品。</p>
+  </section>
+
+  <section class="card">
+    <h2>6. Tombstone 操作</h2>
+    <p>仅在法律下架、许可证撤回或恶意内容处置时，把 hash 写入 <code>infra/artifacts/tombstones.txt</code>。先从 catalog 和所有 pinned release 移除引用，再合并并手动执行：</p>
+    <pre><code>rtk npm run artifacts:inventory
+rtk npm run artifacts:gc -- --apply</code></pre>
+    <p>普通上游退市、仓库改名或临时不可访问不属于 tombstone。</p>
+  </section>
+
+  <section class="card">
+    <h2>7. 回滚</h2>
+    <p>若对象存储或 CDN 灰度异常，将仓库变量 <code>ARTIFACT_STORE_ENABLED</code> 改回 <code>0</code> 并重新部署。构建会恢复相对 URL 与 Vercel 静态制品。对象存储中的不可变对象和 GC state 保留，不需要删除；修复后可再次开启。</p>
+  </section>
+
+  <section class="card">
+    <h2>8. 验收清单</h2>
+    <ul>
+      <li class="ok">同一构建重复 publish：全部对象报告 existing，字节不重写。</li>
+      <li class="ok">同 key 不同 manifest：条件写入失败。</li>
+      <li class="ok">current/pinned 引用对象：即使 state 很老也不删除。</li>
+      <li class="ok">无引用对象：首次只登记，满 180 天后才进入删除清单。</li>
+      <li class="ok">tombstone 仍被引用：fail closed。</li>
+      <li>生产灰度后：Vercel 输出不再包含全部 <code>.skill</code>，公开下载 URL 指向 CDN。</li>
+    </ul>
+  </section>
+</main></body></html>

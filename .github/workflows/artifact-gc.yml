@@ -1,0 +1,50 @@
+name: Artifact Retention
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "真正删除已超过保留期的无引用对象"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: artifact-retention
+  cancel-in-progress: false
+
+jobs:
+  retention:
+    if: ${{ vars.ARTIFACT_STORE_ENABLED == '1' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Inventory and retain unreferenced artifacts
+        env:
+          ARTIFACT_STORE_BUCKET: ${{ secrets.ARTIFACT_STORE_BUCKET }}
+          ARTIFACT_STORE_ENDPOINT: ${{ secrets.ARTIFACT_STORE_ENDPOINT }}
+          ARTIFACT_STORE_REGION: ${{ vars.ARTIFACT_STORE_REGION }}
+          ARTIFACT_STORE_ACCESS_KEY_ID: ${{ secrets.ARTIFACT_STORE_ACCESS_KEY_ID }}
+          ARTIFACT_STORE_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACT_STORE_SECRET_ACCESS_KEY }}
+          ARTIFACT_PINNED_RELEASES: ${{ vars.ARTIFACT_PINNED_RELEASES }}
+          ARTIFACT_RETENTION_DAYS: "180"
+          ARTIFACT_RELEASE_RETENTION_DAYS: "30"
+          ARTIFACT_TOMBSTONES_FILE: infra/artifacts/tombstones.txt
+          MANUAL_APPLY: ${{ inputs.apply }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = "schedule" ] || [ "$MANUAL_APPLY" = "true" ]; then
+            node scripts/artifact-store.mjs gc --apply
+          else
+            node scripts/artifact-store.mjs inventory
+          fi
