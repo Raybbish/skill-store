@@ -37,8 +37,11 @@ export interface Skill {
   sceneTags?: string[];
   /** 「适合你,如果…」一行,仅详情页决策位 */
   fitLine?: string;
-  /** 是否已下载 mirror/ 副本(决定能否提供 zip 下载;否则回上游) */
+  /** 当前 catalog hash 是否已有通过双哈希闸的不可变制品。 */
   hasMirror?: boolean;
+  /** artifact index 给出的内容寻址 URL;不得从 source hash 自行拼接。 */
+  artifactUrl?: string;
+  artifactSha256?: string;
   /** 采集去重:非 null 表示本条是另一条(canonical)的副本/搬运;默认列表隐藏 */
   duplicateOf?: string | null;
   /** 退市墓碑(ADR 0020):上游连续缺席后停止收录;货架隐藏,详情页留事实行 */

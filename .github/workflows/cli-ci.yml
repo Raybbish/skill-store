@@ -4,6 +4,13 @@ on:
   pull_request:
     paths:
       - "packages/cli/**"
+      - "scripts/pack-zips.mjs"
+      - "packages/pipeline/src/hash.ts"
+      - "packages/web/lib/artifacts-server.ts"
+      - "packages/web/lib/data.ts"
+      - "packages/web/lib/skill-types.ts"
+      - "packages/web/app/skill/**/InstallBox.tsx"
+      - "packages/web/app/pack/**/PackView.tsx"
       - "packages/web/lib/i18n/index.ts"
       - "packages/web/public/install.sh"
       - "packages/pipeline/src/jobs/sync.ts"
@@ -35,7 +42,16 @@ jobs:
       - name: CLI syntax and end-to-end tests
         run: |
           node --check packages/cli/bin/oh-my-skill.mjs
+          node --check packages/cli/lib/content-hash.mjs
+          node --check packages/cli/lib/artifact.mjs
+          node --check scripts/pack-zips.mjs
           npm test -w oh-my-skill
           bash -n packages/web/public/install.sh
+      - name: Full catalog artifact preflight
+        env:
+          PACK_PREFLIGHT_ONLY: "1"
+          PACK_OUT: /tmp/oms-artifact-preflight/dl
+          PACK_ARTIFACT_OUT: /tmp/oms-artifact-preflight/artifacts
+        run: node scripts/pack-zips.mjs
       - name: Typecheck
         run: npm run typecheck

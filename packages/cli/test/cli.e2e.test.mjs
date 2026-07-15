@@ -1,25 +1,42 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createHash } from "node:crypto";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawn, spawnSync } from "node:child_process";
+import { gitBlobSha1, sourceContentHashFromRecords } from "../lib/content-hash.mjs";
+import { artifactSha256, createDeterministicSkillArtifact } from "../lib/artifact.mjs";
 
 const CLI = fileURLToPath(new URL("../bin/oh-my-skill.mjs", import.meta.url));
 const SKILL_ID = "owner/repo/demo";
 const SKILL_BODY = "---\nname: demo\ndescription: fixture\n---\n\n# Demo\n";
 const LICENSE_EVIDENCE = "Store-injected upstream license evidence\n";
 
-function blobSha(content) {
-  const body = Buffer.from(content);
-  return createHash("sha1").update(`blob ${body.length}\0`).update(body).digest("hex");
+function contentHash(content) {
+  return sourceContentHashFromRecords([{ path: "SKILL.md", blobSha: gitBlobSha1(content) }]);
 }
 
-function contentHash(content) {
-  const line = `SKILL.md:${blobSha(content)}`;
-  return `sha256:${createHash("sha256").update(line).digest("hex")}`;
+async function refreshArtifact(ctx, report) {
+  const artifacts = [];
+  let artifactPath = null;
+  if (report.meta.hosting === "mirrored" && report.meta.mirror_complete === true && /^sha256:[0-9a-f]{64}$/.test(report.meta.content_hash ?? "")) {
+    const body = await createDeterministicSkillArtifact(join(ctx.skillRoot, "mirror"), "demo");
+    const hash = artifactSha256(body);
+    artifactPath = join(ctx.root, "artifacts", "sha256", `${hash.slice(7)}.skill`);
+    await mkdir(dirname(artifactPath), { recursive: true });
+    await writeFile(artifactPath, body);
+    artifacts.push({
+      skill_id: SKILL_ID,
+      source_content_hash: report.meta.content_hash,
+      artifact_sha256: hash,
+      artifact_url: pathToFileURL(artifactPath).href,
+      artifact_size: body.length,
+    });
+  }
+  await mkdir(dirname(ctx.artifactIndexPath), { recursive: true });
+  await writeFile(ctx.artifactIndexPath, `${JSON.stringify({ schema_version: "1", artifacts }, null, 2)}\n`);
+  ctx.artifactPath = artifactPath;
 }
 
 async function fixture(t, meta = {}) {
@@ -48,7 +65,9 @@ async function fixture(t, meta = {}) {
   };
   const reportPath = join(skillRoot, "skill-report.json");
   await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`);
-  return { root, home, catalog, skillRoot, reportPath };
+  const ctx = { root, home, catalog, skillRoot, reportPath, artifactIndexPath: join(root, "artifacts", "index.json"), artifactPath: null };
+  await refreshArtifact(ctx, report);
+  return ctx;
 }
 
 async function updateFixture(ctx, body) {
@@ -56,6 +75,7 @@ async function updateFixture(ctx, body) {
   report.meta.content_hash = contentHash(body);
   await writeFile(join(ctx.skillRoot, "mirror", "SKILL.md"), body);
   await writeFile(ctx.reportPath, `${JSON.stringify(report, null, 2)}\n`);
+  await refreshArtifact(ctx, report);
   return report.meta.content_hash;
 }
 
@@ -63,7 +83,7 @@ function runWithEnv(ctx, extraEnv, ...args) {
   return spawnSync(process.execPath, [CLI, ...args, "--from-dir", ctx.catalog], {
     cwd: ctx.root,
     encoding: "utf8",
-    env: { ...process.env, HOME: ctx.home, KIMI_CODE_HOME: "", OMS_TELEMETRY: "0", ...extraEnv },
+    env: { ...process.env, HOME: ctx.home, KIMI_CODE_HOME: "", OMS_TELEMETRY: "0", OMS_ARTIFACT_INDEX: ctx.artifactIndexPath, ...extraEnv },
   });
 }
 
@@ -75,7 +95,7 @@ function runAsync(ctx, ...args) {
   return new Promise((done) => {
     const child = spawn(process.execPath, [CLI, ...args, "--from-dir", ctx.catalog], {
       cwd: ctx.root,
-      env: { ...process.env, HOME: ctx.home, KIMI_CODE_HOME: "", OMS_TELEMETRY: "0" },
+      env: { ...process.env, HOME: ctx.home, KIMI_CODE_HOME: "", OMS_TELEMETRY: "0", OMS_ARTIFACT_INDEX: ctx.artifactIndexPath },
     });
     let stdout = "";
     let stderr = "";
@@ -89,6 +109,7 @@ test("explicit agent and user scope install into that agent only", async (t) => 
   const ctx = await fixture(t);
   const result = run(ctx, "add", SKILL_ID, "--agent", "codex", "--scope", "user", "--yes");
   assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /制品哈希校验通过/);
   assert.equal(await readFile(join(ctx.home, ".codex", "skills", "demo", "SKILL.md"), "utf8"), SKILL_BODY);
   assert.equal(await readFile(join(ctx.home, ".codex", "skills", "demo", "LICENSE.upstream"), "utf8"), LICENSE_EVIDENCE);
   await assert.rejects(readFile(join(ctx.home, ".claude", "skills", "demo", "SKILL.md"), "utf8"));
@@ -210,6 +231,28 @@ test("an incomplete mirror cannot bypass a missing pinned commit", async (t) => 
   const result = run(ctx, "add", SKILL_ID, "--to", destination, "--yes");
   assert.equal(result.status, 3, result.stderr);
   assert.match(result.stderr, /upstream_commit/);
+  await assert.rejects(readFile(join(destination, "demo", "SKILL.md"), "utf8"));
+});
+
+test("a complete mirror cannot fall back when its artifact descriptor is missing", async (t) => {
+  const ctx = await fixture(t);
+  await writeFile(ctx.artifactIndexPath, `${JSON.stringify({ schema_version: "1", artifacts: [] })}\n`);
+  const destination = join(ctx.root, "install");
+  const result = run(ctx, "add", SKILL_ID, "--to", destination, "--yes");
+  assert.equal(result.status, 3, result.stderr);
+  assert.match(result.stderr, /artifact index 缺少/);
+  await assert.rejects(readFile(join(destination, "demo", "SKILL.md"), "utf8"));
+});
+
+test("artifact byte drift fails with exit 4 before extraction", async (t) => {
+  const ctx = await fixture(t);
+  const body = await readFile(ctx.artifactPath);
+  body[Math.floor(body.length / 2)] ^= 0xff;
+  await writeFile(ctx.artifactPath, body);
+  const destination = join(ctx.root, "install");
+  const result = run(ctx, "add", SKILL_ID, "--to", destination, "--yes");
+  assert.equal(result.status, 4, result.stderr);
+  assert.match(result.stderr, /artifact_sha256/);
   await assert.rejects(readFile(join(destination, "demo", "SKILL.md"), "utf8"));
 });
 

@@ -10,22 +10,26 @@
  * 数据源:默认 Supabase(OMS_API/OMS_KEY 可覆盖);
  *   --from-dir <catalog路径> 用本地 catalog(开发/测试)。
  */
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile, readdir, rm, stat, cp, rename } from "node:fs/promises";
-import { join, dirname, relative, resolve } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { homedir, tmpdir } from "node:os";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { createInterface } from "node:readline/promises";
+import { pathToFileURL } from "node:url";
 import {
   ADAPTER_VERSION,
   findInstall,
   removeInstall,
   upsertInstall,
 } from "../lib/install-state.mjs";
+import { isSha256, sourceContentHashDirectory } from "../lib/content-hash.mjs";
+import { artifactSha256, extractSkillArtifact } from "../lib/artifact.mjs";
 
 const exec = promisify(execFile);
 const API = process.env.OMS_API ?? "https://xlrvinquhuyobewenrlo.supabase.co";
+const STORE_ORIGIN = process.env.OMS_STORE_ORIGIN ?? "https://oh-my-skill.com";
 // anon key 是公开设计的密钥(前端 bundle 同款):只读货架 + 只插回执,RLS 把门。默认内置,OMS_KEY 可覆盖。
 const KEY = process.env.OMS_KEY ?? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhscnZpbnF1aHV5b2Jld2VucmxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NjAyNDEsImV4cCI6MjA5ODUzNjI0MX0.hGZ9NznFZ0Roi2RyIJ-1PVtqr3EVFMfN_9Lovu-SDR8";
 const args = process.argv.slice(2);
@@ -62,7 +66,7 @@ async function pathExists(path) {
 
 function requireSourceHash(meta) {
   const hash = meta?.content_hash;
-  if (typeof hash !== "string" || !/^sha256:[0-9a-f]{64}$/i.test(hash)) {
+  if (!isSha256(hash)) {
     throw new CliError(4, "✗ 货架 content_hash 缺失或格式非法,已在下载和写盘前拒绝安装。请等待货架重新同步;不能用 --force 绕过。");
   }
   return hash;
@@ -122,25 +126,7 @@ function targets() {
   return out;
 }
 
-function blobSha(buf) {
-  return createHash("sha1").update(`blob ${buf.length}\0`).update(buf).digest("hex");
-}
-async function walkFiles(dir, base = dir, out = []) {
-  for (const name of await readdir(dir)) {
-    if (name === ".git") continue;
-    if (name === "LICENSE.upstream") continue; // 本店注入的仓级证(保留名),不属上游内容,不参与哈希
-    const p = join(dir, name);
-    if ((await stat(p)).isDirectory()) await walkFiles(p, base, out);
-    else out.push(relative(base, p));
-  }
-  return out.sort();
-}
-async function dirContentHash(dir) {
-  const files = await walkFiles(dir);
-  const lines = [];
-  for (const f of files) lines.push(`${f}:${blobSha(await readFile(join(dir, f)))}`);
-  return "sha256:" + createHash("sha256").update(lines.join("\n")).digest("hex");
-}
+const dirContentHash = sourceContentHashDirectory;
 
 async function fetchReport(id) {
   const local = opt("from-dir");
@@ -316,6 +302,107 @@ async function checkoutPinnedUpstream(meta, work) {
   return join(work, source.subpath);
 }
 
+const ARTIFACT_INDEX_CACHE = new Map();
+const ARTIFACT_BYTES_CACHE = new Map();
+
+function artifactIndexEndpoint() {
+  const configured = process.env.OMS_ARTIFACT_INDEX;
+  if (!configured) return `${STORE_ORIGIN.replace(/\/$/, "")}/artifacts/index.json`;
+  try { return new URL(configured).href; }
+  catch { return pathToFileURL(resolve(configured)).href; }
+}
+
+async function readUrlBytes(url, maxBytes, label) {
+  const endpoint = new URL(url);
+  if (endpoint.protocol === "file:") {
+    const body = await readFile(endpoint).catch((error) => {
+      throw new CliError(3, `${label} 读取失败:${error.message}`);
+    });
+    if (body.length > maxBytes) throw new CliError(3, `${label} 超过大小上限:${body.length}`);
+    return body;
+  }
+  if (!["https:", "http:"].includes(endpoint.protocol)) throw new CliError(3, `${label} URL 协议不支持:${endpoint.protocol}`);
+  let response;
+  try { response = await fetch(endpoint, { signal: AbortSignal.timeout(30_000) }); }
+  catch (error) { throw new CliError(3, `${label} 下载失败:${error.message}`); }
+  if (!response.ok || !response.body) throw new CliError(3, `${label} 下载失败:HTTP ${response.status}`);
+  const declared = Number(response.headers.get("content-length"));
+  if (Number.isFinite(declared) && declared > maxBytes) throw new CliError(3, `${label} 超过大小上限:${declared}`);
+  const chunks = [];
+  let total = 0;
+  const reader = response.body.getReader();
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.length;
+    if (total > maxBytes) {
+      await reader.cancel().catch(() => {});
+      throw new CliError(3, `${label} 超过大小上限:${total}`);
+    }
+    chunks.push(Buffer.from(value));
+  }
+  return Buffer.concat(chunks, total);
+}
+
+async function artifactDescriptor(meta) {
+  if (isSha256(meta?.artifact_sha256) && typeof meta?.artifact_url === "string" && Number.isInteger(meta?.artifact_size)) {
+    return {
+      artifact_sha256: meta.artifact_sha256,
+      artifact_url: new URL(meta.artifact_url, artifactIndexEndpoint()).href,
+      artifact_size: meta.artifact_size,
+    };
+  }
+  const endpoint = artifactIndexEndpoint();
+  let index = ARTIFACT_INDEX_CACHE.get(endpoint);
+  if (!index) {
+    try { index = JSON.parse((await readUrlBytes(endpoint, 32 * 1024 * 1024, "artifact index")).toString("utf8")); }
+    catch (error) {
+      if (error instanceof CliError) throw error;
+      throw new CliError(3, `artifact index 格式非法:${error.message}`);
+    }
+    if (index?.schema_version !== "1" || !Array.isArray(index.artifacts)) {
+      throw new CliError(3, "artifact index schema 不受支持");
+    }
+    ARTIFACT_INDEX_CACHE.set(endpoint, index);
+  }
+  const found = index.artifacts.find((entry) =>
+    entry?.skill_id === meta.id && entry?.source_content_hash === meta.content_hash);
+  if (!found) throw new CliError(3, `artifact index 缺少 ${meta.id}@${meta.content_hash}`);
+  if (!isSha256(found.artifact_sha256)) throw new CliError(4, `artifact_sha256 缺失或格式非法:${meta.id}`);
+  if (typeof found.artifact_url !== "string" || !Number.isInteger(found.artifact_size) || found.artifact_size < 1) {
+    throw new CliError(3, `artifact descriptor 不完整:${meta.id}`);
+  }
+  return {
+    artifact_sha256: found.artifact_sha256,
+    artifact_url: new URL(found.artifact_url, endpoint).href,
+    artifact_size: found.artifact_size,
+  };
+}
+
+async function checkoutMirroredArtifact(meta, work) {
+  const descriptor = await artifactDescriptor(meta);
+  if (descriptor.artifact_size > 128 * 1024 * 1024) throw new CliError(3, `artifact 过大:${descriptor.artifact_size}`);
+  const cacheKey = `${descriptor.artifact_sha256}|${descriptor.artifact_url}`;
+  let body = ARTIFACT_BYTES_CACHE.get(cacheKey);
+  if (!body) {
+    body = await readUrlBytes(descriptor.artifact_url, 128 * 1024 * 1024, "artifact");
+    ARTIFACT_BYTES_CACHE.set(cacheKey, body);
+  }
+  if (body.length !== descriptor.artifact_size) {
+    throw new CliError(4, `✗ artifact 大小不一致!index ${descriptor.artifact_size} vs 实际 ${body.length}`);
+  }
+  const actualArtifactHash = artifactSha256(body);
+  if (actualArtifactHash !== descriptor.artifact_sha256) {
+    throw new CliError(4, `✗ artifact_sha256 不匹配!index ${descriptor.artifact_sha256.slice(0, 20)}… vs 实际 ${actualArtifactHash.slice(0, 20)}…`);
+  }
+  const leaf = meta.id.split("/").at(-1);
+  const extracted = join(work, "artifact");
+  try { await extractSkillArtifact(body, extracted, leaf); }
+  catch (error) { throw new CliError(4, `✗ artifact 解包校验失败:${error.message}`); }
+  log(`  ✓ 制品哈希校验通过 ${actualArtifactHash.slice(0, 27)}…`);
+  return join(extracted, leaf);
+}
+
 async function add(id, targetOverride = null) {
   const report = await fetchReport(id);
   const m = report.meta;
@@ -376,7 +463,7 @@ async function add(id, targetOverride = null) {
     };
   }
 
-  // 获取文件:本地完整 mirror,或精确 fetch 货架记录的 upstream_commit。
+  // 获取文件:完整镜像只走不可变 artifact;其余只取货架记录的 upstream_commit。
   const work = join(tmpdir(), `oh-my-skill-${randomUUID()}`);
   await mkdir(work, { recursive: true });
   const staging = join(destRoot, `.${m.id.split("/").at(-1)}.oms-staging-${randomUUID()}`);
@@ -384,9 +471,8 @@ async function add(id, targetOverride = null) {
   let filesystemCommitted = false;
   let stateCommitted = false;
   try {
-    const local = opt("from-dir");
-    const srcDir = local && m.hosting === "mirrored" && m.mirror_complete === true
-      ? join(local, ...m.id.split("/"), "mirror")
+    const srcDir = m.hosting === "mirrored" && m.mirror_complete === true
+      ? await checkoutMirroredArtifact(m, work)
       : await checkoutPinnedUpstream(m, work);
 
     let actual;
