@@ -38,7 +38,7 @@ test("shared source hash excludes LICENSE.upstream while artifact hash covers it
   assert.equal(await sourceContentHashDirectory(ctx.mirror), expected);
 
   const first = await createDeterministicSkillArtifact(ctx.mirror, "demo");
-  assert.equal(artifactSha256(first), "sha256:292746c7b3ae6027d69b34de3fc314a91827972c66fb572d475e77a9de55863f");
+  assert.equal(artifactSha256(first), "sha256:4f670127c3cbc4cd6c4c60a6125c6cf5798bb1731556186bc14f05e5db088760");
   await writeFile(join(ctx.mirror, "LICENSE.upstream"), LICENSE_B);
   assert.equal(await sourceContentHashDirectory(ctx.mirror), expected);
   const second = await createDeterministicSkillArtifact(ctx.mirror, "demo");

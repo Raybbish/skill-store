@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
-import { constants as zlibConstants, deflateRawSync, inflateRawSync } from "node:zlib";
+import { inflateRawSync } from "node:zlib";
 import { chmod, lstat, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { deflateSync } from "fflate";
 
 export const ARTIFACT_WRITER = "oms-deterministic-zip-v1";
 const UTF8_FLAG = 0x0800;
@@ -123,7 +124,10 @@ export async function createDeterministicZip(directories) {
   let offset = 0;
   for (const file of files) {
     const nameBytes = Buffer.from(file.name, "utf8");
-    const compressed = deflateRawSync(file.body, { level: 9, strategy: zlibConstants.Z_FIXED });
+    // Node delegates deflate to the platform zlib build, whose byte stream may vary
+    // between supported Node/OS combinations. Keep artifact bytes content-addressable
+    // by using one lockfile-pinned, pure JavaScript writer everywhere.
+    const compressed = Buffer.from(deflateSync(file.body, { level: 9 }));
     if (file.body.length > 0xffffffff || compressed.length > 0xffffffff) {
       throw new ArtifactError(`ZIP64 暂不支持:${file.name}`);
     }
