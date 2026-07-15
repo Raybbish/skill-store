@@ -1,32 +1,67 @@
 /**
- * pack-zips.mjs —— 构建期预生成安装包到 web/public/dl/<owner>/<repo>/<name>.skill。
+ * Build reproducible, content-addressed .skill artifacts (ADR 0029).
  *
- * 产物 = 纯净 skill 目录压缩包:顶层单文件夹 <name>/,内含 SKILL.md 与全部资产。
- *  - 以 .skill 名提供:Claude / Cowork 拖入即装的封装(zip archive of a skill directory);
- *  - 前端用 <a download="<name>.zip"> 把同一文件改名成 .zip 提供:任何 agent 解压即得
- *    可直接放进技能目录的文件夹(~/.claude/skills/、~/.codex/skills/ 等)。
- * 旧结构(skill-report.json + mirror/)已废弃——拖入装不了、手动装还得改名;
- * 完整性校验职责归 CLI 通道(npx 装时逐文件复算 content_hash)。
+ * Eligible input is deliberately strict: hosting=mirrored, mirror_complete=true,
+ * a complete mirror directory, and a mirror source hash equal to catalog content_hash.
+ * Any eligible artifact failure aborts the build; deployment must never silently omit it.
  *
- * 只打「已下载 mirror/ 副本」的条目(宽松 licence);indexed 前端回上游。
- * web 的 prebuild 触发;测试可 `node scripts/pack-zips.mjs 20` 只打前 20 个。
+ * Outputs:
+ *   public/artifacts/sha256/<artifact_sha256 hex>.skill
+ *   public/artifacts/sha256/<artifact_sha256 hex>.json
+ *   public/artifacts/index.json
+ *   public/dl/packs/<pack>.zip (deterministic convenience bundle)
+ *
+ * Tests may redirect inputs/outputs with PACK_CATALOG, PACK_PACKS, PACK_OUT and
+ * PACK_ARTIFACT_OUT. The optional first argument limits artifact subjects.
  */
-import { readdirSync, readFileSync, statSync, existsSync, mkdirSync, rmSync, copyFileSync, cpSync } from "node:fs";
-import { join, resolve, dirname } from "node:path";
-import { tmpdir } from "node:os";
+import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { execFileSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
+import {
+  SOURCE_HASH_ALGORITHM,
+  SOURCE_HASH_EXCLUDES,
+  isSha256,
+  sourceContentHashDirectory,
+} from "../packages/cli/lib/content-hash.mjs";
+import {
+  ARTIFACT_WRITER,
+  artifactSha256,
+  createDeterministicSkillArtifact,
+  createDeterministicZip,
+} from "../packages/cli/lib/artifact.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const CATALOG = join(ROOT, "catalog", "skills");
-const OUT = process.env.PACK_OUT || join(ROOT, "packages", "web", "public", "dl"); // PACK_OUT:测试改道,不动真产物
-const LIMIT = Number(process.argv[2]) || Infinity;
+const CATALOG = resolve(process.env.PACK_CATALOG || join(ROOT, "catalog", "skills"));
+const PACKS = resolve(process.env.PACK_PACKS || join(ROOT, "catalog", "packs"));
+const DL_OUT = resolve(process.env.PACK_OUT || join(ROOT, "packages", "web", "public", "dl"));
+const ARTIFACT_OUT = resolve(process.env.PACK_ARTIFACT_OUT || join(dirname(DL_OUT), "artifacts"));
+const ARTIFACT_URL_PREFIX = (process.env.ARTIFACT_URL_PREFIX || "/artifacts/sha256").replace(/\/$/, "");
+const LIMIT = Number(process.argv[2]) > 0 ? Number(process.argv[2]) : Infinity;
 
-/** 收集含 skill-report.json 的 skill 目录 */
-function skillDirs(dir) {
-  const entries = readdirSync(dir, { withFileTypes: true });
-  const out = entries.some((e) => e.isFile() && e.name === "skill-report.json") ? [dir] : [];
-  for (const e of entries) if (e.isDirectory()) out.push(...skillDirs(join(dir, e.name)));
+const compareText = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+const posixRelative = (from, to) => relative(from, to).split("\\").join("/");
+
+async function atomicWrite(path, body) {
+  await mkdir(dirname(path), { recursive: true });
+  const temp = join(dirname(path), `.${randomUUID()}.tmp`);
+  try {
+    await writeFile(temp, body);
+    await rename(temp, path);
+  } finally {
+    await rm(temp, { force: true }).catch(() => {});
+  }
+}
+
+async function skillDirs(dir) {
+  const entries = await readdir(dir, { withFileTypes: true });
+  if (entries.some((entry) => entry.isFile() && entry.name === "skill-report.json")) return [dir];
+  const out = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory() || entry.name === "mirror") continue;
+    out.push(...await skillDirs(join(dir, entry.name)));
+  }
   return out;
 }
 
@@ -34,58 +69,121 @@ if (!existsSync(CATALOG)) {
   console.log("pack-zips: 无 catalog,跳过");
   process.exit(0);
 }
-try { if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true }); } catch { /* 受限 fs 不让删:逐个覆盖 / 跳过 */ }
 
-let made = 0, skipped = 0;
-for (const dir of skillDirs(CATALOG)) {
-  if (made >= LIMIT) break;
-  if (!existsSync(join(dir, "mirror")) || !statSync(join(dir, "mirror")).isDirectory()) continue;
-  const id = dir.slice(CATALOG.length + 1); // owner/repo/name
-  const leaf = id.split("/").pop();
-  const outPath = join(OUT, `${id}.skill`);
-  const stage = join(tmpdir(), `omsk-stage-${process.pid}-${made}`);
+await rm(ARTIFACT_OUT, { recursive: true, force: true });
+await rm(DL_OUT, { recursive: true, force: true });
+await mkdir(join(ARTIFACT_OUT, "sha256"), { recursive: true });
+
+const indexEntries = [];
+const objects = new Map();
+const bySkill = new Map();
+let made = 0;
+let ineligible = 0;
+const candidates = [];
+const preflightErrors = [];
+
+for (const dir of await skillDirs(CATALOG)) {
+  if (candidates.length >= LIMIT) break;
+  const id = posixRelative(CATALOG, dir);
   try {
-    mkdirSync(dirname(outPath), { recursive: true });
-    // 暂存区把 mirror/ 内容改名为 <leaf>/(zip 无法内联改路径),得到「目录的压缩包」
-    mkdirSync(join(stage, leaf), { recursive: true });
-    cpSync(join(dir, "mirror"), join(stage, leaf), { recursive: true });
-    // 先 zip 到 tmp 再 copy:有些文件系统(受限挂载/容器)不让 zip 直接建输出文件
-    const tmp = join(tmpdir(), `omsk-${process.pid}-${made}.skill`);
-    execFileSync("zip", ["-rq", tmp, leaf], { cwd: stage });
-    copyFileSync(tmp, outPath);
-    rmSync(tmp, { force: true });
-    made++;
-  } catch {
-    skipped++; // 受限 fs / zip 失败:跳过,不阻断构建
-  } finally {
-    rmSync(stage, { recursive: true, force: true });
+    const report = JSON.parse(await readFile(join(dir, "skill-report.json"), "utf8"));
+    if (report.meta.hosting !== "mirrored" || report.meta.mirror_complete !== true) {
+      ineligible++;
+      continue;
+    }
+    if (report?.meta?.id !== id) throw new Error(`artifact identity mismatch:${id} vs ${report?.meta?.id ?? "<missing>"}`);
+    if (!isSha256(report.meta.content_hash)) throw new Error(`artifact source hash 缺失或非法:${id}`);
+    const mirror = join(dir, "mirror");
+    if (!existsSync(mirror) || !(await stat(mirror)).isDirectory()) throw new Error(`完整镜像缺失:${id}`);
+    const actualSourceHash = await sourceContentHashDirectory(mirror);
+    if (actualSourceHash !== report.meta.content_hash) {
+      throw new Error(`mirror/source hash 不一致:${id}:${report.meta.content_hash} vs ${actualSourceHash}`);
+    }
+    candidates.push({ id, mirror, actualSourceHash });
+  } catch (error) {
+    preflightErrors.push(error.message);
   }
 }
-// 场景包整包 zip:catalog/packs/*.json → dl/packs/<id>.zip,内含每个成员的 <name>/ 目录——
-// 解压即得 N 个可直接放进技能目录的文件夹(其他 agent 的手动通道;Claude 党用逐成员 .skill)。
-// 仅当全部成员都有 mirror/ 时生成,与「包=放心一键装」的承诺一致;缺任一成员则跳过该包。
-const PACKS = join(ROOT, "catalog", "packs");
+if (preflightErrors.length) {
+  throw new Error(`artifact preflight 失败 ${preflightErrors.length} 项:\n${preflightErrors.join("\n")}`);
+}
+if (process.env.PACK_PREFLIGHT_ONLY === "1") {
+  console.log(`pack-zips preflight: ${candidates.length} 个完整镜像通过;${ineligible} 个非完整镜像跳过`);
+  process.exit(0);
+}
+
+for (const { id, mirror, actualSourceHash } of candidates) {
+  const leaf = id.split("/").at(-1);
+  const body = await createDeterministicSkillArtifact(mirror, leaf);
+  const hash = artifactSha256(body);
+  const hex = hash.slice("sha256:".length);
+  if (!objects.has(hash)) {
+    await atomicWrite(join(ARTIFACT_OUT, "sha256", `${hex}.skill`), body);
+    objects.set(hash, { artifact_sha256: hash, size: body.length, subjects: [] });
+  }
+  objects.get(hash).subjects.push({ skill_id: id, source_content_hash: actualSourceHash });
+  const entry = {
+    skill_id: id,
+    source_content_hash: actualSourceHash,
+    artifact_sha256: hash,
+    artifact_url: `${ARTIFACT_URL_PREFIX}/${hex}.skill`,
+    artifact_size: body.length,
+  };
+  indexEntries.push(entry);
+  bySkill.set(id, entry);
+  made++;
+}
+
+indexEntries.sort((a, b) => compareText(`${a.skill_id}\0${a.source_content_hash}`, `${b.skill_id}\0${b.source_content_hash}`));
+for (const object of [...objects.values()].sort((a, b) => compareText(a.artifact_sha256, b.artifact_sha256))) {
+  object.subjects.sort((a, b) => compareText(`${a.skill_id}\0${a.source_content_hash}`, `${b.skill_id}\0${b.source_content_hash}`));
+  const manifest = {
+    schema_version: "1",
+    artifact_sha256: object.artifact_sha256,
+    size: object.size,
+    subjects: object.subjects,
+    created_from: "catalog mirror",
+    deterministic_zip: true,
+    artifact_writer: ARTIFACT_WRITER,
+    hash_policy: {
+      source_algorithm: SOURCE_HASH_ALGORITHM,
+      source_projection_excludes: SOURCE_HASH_EXCLUDES,
+      artifact_covers: "complete .skill bytes including LICENSE.upstream and ZIP metadata",
+    },
+  };
+  await atomicWrite(
+    join(ARTIFACT_OUT, "sha256", `${object.artifact_sha256.slice("sha256:".length)}.json`),
+    `${JSON.stringify(manifest, null, 2)}\n`,
+  );
+}
+
+const index = {
+  schema_version: "1",
+  artifact_writer: ARTIFACT_WRITER,
+  hash_policy: {
+    source_algorithm: SOURCE_HASH_ALGORITHM,
+    source_projection_excludes: SOURCE_HASH_EXCLUDES,
+    artifact_covers: "complete .skill bytes including LICENSE.upstream and ZIP metadata",
+  },
+  artifacts: indexEntries,
+};
+await atomicWrite(join(ARTIFACT_OUT, "index.json"), `${JSON.stringify(index, null, 2)}\n`);
+
 let packsMade = 0;
 if (existsSync(PACKS)) {
-  for (const f of readdirSync(PACKS).filter((x) => x.endsWith(".json"))) {
-    const stage = join(tmpdir(), `omsk-pack-${process.pid}-${f}`);
-    try {
-      const p = JSON.parse(readFileSync(join(PACKS, f), "utf8"));
-      const members = (p.skills ?? []).map((id) => ({ leaf: id.split("/").pop(), mirror: join(CATALOG, id, "mirror") }));
-      if (!members.length || !members.every((m) => existsSync(m.mirror))) continue;
-      for (const m of members) {
-        mkdirSync(join(stage, m.leaf), { recursive: true });
-        cpSync(m.mirror, join(stage, m.leaf), { recursive: true });
-      }
-      const tmp = join(tmpdir(), `omsk-pack-${process.pid}-${f}.zip`);
-      execFileSync("zip", ["-rq", tmp, "."], { cwd: stage });
-      mkdirSync(join(OUT, "packs"), { recursive: true });
-      copyFileSync(tmp, join(OUT, "packs", `${p.id}.zip`));
-      rmSync(tmp, { force: true });
-      packsMade++;
-    } catch { /* 单包失败不阻断 */ } finally {
-      rmSync(stage, { recursive: true, force: true });
-    }
+  const packFiles = (await readdir(PACKS)).filter((name) => name.endsWith(".json")).sort(compareText);
+  for (const file of packFiles) {
+    const pack = JSON.parse(await readFile(join(PACKS, file), "utf8"));
+    const ids = Array.isArray(pack.skills) ? pack.skills : [];
+    if (!ids.length || !ids.every((id) => bySkill.has(id))) continue;
+    const directories = ids.map((id) => ({ root: join(CATALOG, ...id.split("/"), "mirror"), name: id.split("/").at(-1) }));
+    const body = await createDeterministicZip(directories);
+    await atomicWrite(join(DL_OUT, "packs", `${pack.id}.zip`), body);
+    packsMade++;
   }
 }
-console.log(`pack-zips: 生成 ${made} 个 .skill + ${packsMade} 个整包 zip${skipped ? `,跳过 ${skipped}(fs 受限或失败)` : ""} → ${OUT}`);
+
+console.log(
+  `pack-zips: ${made} 个 subject → ${objects.size} 个不可变 .skill + ${packsMade} 个确定性整包;`
+  + ` ${ineligible} 个非完整镜像跳过 → ${ARTIFACT_OUT}`,
+);

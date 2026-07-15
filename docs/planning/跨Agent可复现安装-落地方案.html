@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>跨 Agent 可复现安装与 Adapter 落地方案 · oh-my-skill</title>
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--sub:#5f636b;--faint:#86868b;--line:#e3e5e9;--accent:#3b6cf0;--accent-soft:#edf2fe;--ok:#2e9e5b;--warn:#b56d0b;}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.72}.wrap{max-width:1040px;margin:0 auto;padding:44px 22px 72px}.kicker{font-size:12px;letter-spacing:.13em;color:var(--accent);font-weight:800;text-transform:uppercase}.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.16;letter-spacing:-.035em;margin:8px 0 10px}.meta{font-size:13px;color:var(--faint);margin-bottom:22px}.meta a,a{color:var(--accent);text-decoration:none}.meta a:hover,a:hover{text-decoration:underline}.toc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0}.toc a{display:flex;gap:8px;align-items:baseline;background:#fff;padding:10px 12px;font-size:12px;color:var(--sub)}.toc a:hover{background:var(--accent-soft);text-decoration:none}.toc span{color:var(--accent);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:800}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px;margin-top:20px;box-shadow:0 1px 0 rgba(20,24,31,.02)}h2{font-size:21px;line-height:1.3;margin:0 0 16px;scroll-margin-top:16px}.no{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;margin-right:10px;border-radius:9px;background:var(--accent-soft);color:var(--accent);font:800 13px ui-monospace,SFMono-Regular,Menlo,monospace}h3{font-size:15px;margin:25px 0 9px}p{font-size:14px;margin:10px 0;color:var(--sub)}strong{color:var(--ink)}ul,ol{margin:10px 0 14px;padding-left:24px;color:var(--sub);font-size:14px}li{margin:5px 0}.check{color:var(--accent);font-weight:800;margin-right:3px}blockquote{margin:14px 0;padding:13px 16px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 12px 12px 0;color:var(--sub);font-size:13px}.table-wrap{overflow:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px}table{width:100%;min-width:680px;border-collapse:collapse;font-size:12px}th{text-align:left;color:var(--faint);font-weight:700;background:#fafafd;padding:9px 11px;border-bottom:1px solid var(--line);white-space:nowrap}td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--sub)}tr:last-child td{border-bottom:0}td:first-child{color:var(--ink);font-weight:600}code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:#f0f1f4;color:#374151;border-radius:5px;padding:2px 5px}pre{margin:13px 0;padding:17px 18px;border-radius:13px;background:#14181f;color:#d7dee8;overflow:auto;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace}pre code{padding:0;background:transparent;color:inherit}.diagram{white-space:pre-wrap;background:#eef3ff;color:#26365a;border:1px solid #d8e3ff}.footer{margin-top:28px;text-align:center;color:var(--faint);font-size:12px}.backtop{position:fixed;right:18px;bottom:18px;width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;box-shadow:0 5px 20px rgba(20,24,31,.08);color:var(--accent)}
+@media(max-width:800px){.toc{grid-template-columns:repeat(2,minmax(0,1fr))}.wrap{padding:28px 14px 60px}.card{padding:21px 17px;border-radius:15px}}
+@media(max-width:480px){.toc{grid-template-columns:1fr}.hero h1{font-size:30px}.backtop{display:none}}
+@media print{body{background:#fff}.wrap{max-width:none;padding:0}.toc,.backtop{display:none}.card{box-shadow:none;border:0;border-top:1px solid #ddd;border-radius:0;padding:18px 0;break-inside:auto}a{color:inherit}pre,.table-wrap{break-inside:avoid}}
+</style>
+</head>
+<body id="top">
+<div class="wrap">
+  <header class="hero">
+    <div class="kicker">Implementation Plan · Cross-Agent Installation</div>
+    <h1>跨 Agent 可复现安装与 Adapter 落地方案</h1>
+    <div class="meta">状态:已冻结(ADR 0029)<br>日期:2026-07-15<br>范围:<code>oh-my-skill</code> CLI、安装制品、Agent Adapter、安装回执与详情页安装文案<br>关联:<a href="../decisions/0011-unlist-security-scan.md">ADR 0011</a> · <a href="../decisions/0012-verdict-service.md">ADR 0012</a> · <a href="../decisions/0017-object-anchored-community-and-invisible-verify.md">ADR 0017</a> · <a href="../decisions/0029-cross-agent-reproducible-install.md">ADR 0029</a></div>
+  </header>
+  <nav class="toc" aria-label="文档目录"><a href="#s0"><span>0</span>执行摘要</a>
+<a href="#s1"><span>1</span>背景与当前问题</a>
+<a href="#s2"><span>2</span>目标与非目标</a>
+<a href="#s3"><span>3</span>平台范围与接入顺序</a>
+<a href="#s4"><span>4</span>总体架构</a>
+<a href="#s5"><span>5</span>不可变制品与双哈希模型</a>
+<a href="#s6"><span>6</span>Agent Adapter 契约</a>
+<a href="#s7"><span>7</span>Agent 与作用域探测</a>
+<a href="#s8"><span>8</span>CLI 用户契约</a>
+<a href="#s9"><span>9</span>安装事务、冲突与回滚</a>
+<a href="#s10"><span>10</span>数据与 API 变更</a>
+<a href="#s11"><span>11</span>兼容性原因码</a>
+<a href="#s12"><span>12</span>代码改动面</a>
+<a href="#s13"><span>13</span>分阶段实施</a>
+<a href="#s14"><span>14</span>测试计划</a>
+<a href="#s15"><span>15</span>可观测性与成功指标</a>
+<a href="#s16"><span>16</span>灰度、回滚与发布</a>
+<a href="#s17"><span>17</span>风险与对策</a>
+<a href="#s18"><span>18</span>P0 验收清单</a>
+<a href="#s19"><span>19</span>ADR 0029 冻结裁决</a></nav>
+  <main><section class="card" id="s0">
+<h2><span class="no">0</span>执行摘要</h2>
+<p>当前 CLI 已有逐文件复算 <code>content_hash</code> 的完整性校验,但尚未形成真正的跨 Agent、可复现安装:</p>
+<ul>
+<li>网页承诺自动探测 <code>.claude / .codex / .cursor</code>,CLI 的探测循环实际为空,默认始终写入 <code>~/.claude/skills</code>;</li>
+<li>在线安装重新浅克隆上游最新 HEAD,没有按 catalog 记录的 <code>upstream_commit</code> 获取内容;</li>
+<li>落盘目录只取 skill 名,同名不同来源可能碰撞;</li>
+<li>复制到目标目录不是事务操作,既有目录、部分失败和回滚没有明确语义;</li>
+<li>平台差异目前只被当成目录差异,尚未表达 frontmatter、调用方式、工具权限和版本差异。</li>
+</ul>
+<p>本方案将安装链拆成四层:</p>
+<pre class="diagram" aria-label="Architecture diagram">flowchart LR
+  A[&quot;Catalog 元数据\nsource content_hash + upstream_commit&quot;] --&gt; B[&quot;Artifact Resolver\n镜像制品或 pinned upstream&quot;]
+  B --&gt; C[&quot;Adapter\n探测 + 校验 + 目标投影&quot;]
+  C --&gt; D[&quot;Install Transaction\n暂存 + 复算 + 原子替换 + 回滚&quot;]
+  D --&gt; E[&quot;Claude / Codex / Cursor\nQwen / Kimi / Comate / CodeBuddy / iFlow&quot;]
+  D --&gt; F[&quot;本机安装账本\nagent + scope + hashes + adapter version&quot;]</pre>
+<p>P0 的交付不是“把更多目录写进数组”,而是:</p>
+<ol>
+<li>每次安装明确知道目标 Agent 与作用域;</li>
+<li>获取的内容严格锚定 <code>upstream_commit</code> / <code>content_hash</code>;</li>
+<li>不静默选平台、不静默覆盖、不用最新 HEAD 兜底;</li>
+<li>国内外平台通过同一 Adapter 契约接入;</li>
+<li>原始包与平台投影分别记账,跨平台适配不破坏原始哈希语义。</li>
+</ol>
+</section>
+<section class="card" id="s1">
+<h2><span class="no">1</span>背景与当前问题</h2>
+<h3>1.1 承诺与实现不一致</h3>
+<p>当前网页文案称安装器会自动探测 <code>.claude / .codex / .cursor</code>,见 <a href="../../packages/web/lib/i18n/index.ts"><code>packages/web/lib/i18n/index.ts</code></a>;但 <a href="../../packages/cli/bin/oh-my-skill.mjs"><code>detectAgentDir()</code></a> 的循环没有检测逻辑,最后固定回落 <code>~/.claude/skills</code>。</p>
+<p>这会产生两类直接问题:</p>
+<ul>
+<li>Codex、Cursor 以及国内 Agent 用户看到“安装成功”,实际文件落在 Claude 目录;</li>
+<li>产品最核心的“诚实、可验证”口径被安装入口自身破坏。</li>
+</ul>
+<h3>1.2 哈希是漂移报警器,还不是可复现安装器</h3>
+<p>在线 <code>fetchReport()</code> 没有把数据库已有的 <code>upstream_commit</code> 带回 CLI;获取内容时执行 <code>git clone --depth 1</code> 拉取当前 HEAD。上游在收录后只要更新,CLI 就会因哈希不同拒装。</p>
+<p>拒装比盲装好,但它只能证明“今天的上游已不是货架版本”,不能让用户安装货架记录的版本。目标应升级为:</p>
+<blockquote>给定 <code>skill_id + source_content_hash</code>,任何时刻都获取同一份内容;无法获取时明确失败,绝不悄悄退回最新版本。</blockquote>
+<h3>1.3 安装身份、目录名与内容身份混在一起</h3>
+<p>当前目标目录是 <code>id</code> 最后一段。<code>owner-a/repo-a/review</code> 与 <code>owner-b/repo-b/review</code> 会争用同一目录。现有 <code>cp(..., {recursive:true})</code> 对既有目录也缺少“升级、覆盖、冲突”的区分。</p>
+<p>需要把以下身份拆开:</p>
+<ul>
+<li><code>skill_id</code>:catalog 三段式作品身份;</li>
+<li><code>source_content_hash</code>:上游原始 Skill 内容身份;</li>
+<li><code>agent_id</code>:目标宿主身份;</li>
+<li><code>scope</code>:用户级或项目级;</li>
+<li><code>destination</code>:本次真实落盘路径;</li>
+<li><code>projection_hash</code>:Adapter 变换后的安装内容身份;</li>
+<li><code>adapter_version</code>:产生该投影的规则版本。</li>
+</ul>
+</section>
+<section class="card" id="s2">
+<h2><span class="no">2</span>目标与非目标</h2>
+<h3>2.1 P0 目标</h3>
+<ul>
+<li>支持 <code>--agent</code>、<code>--scope</code>、<code>--to</code> 三种明确选址方式;</li>
+<li>提供可解释的 <code>auto</code> 探测,覆盖多个已安装 Agent 时要求选择;</li>
+<li>第一批覆盖 Claude、Codex、Cursor、Qwen Code、Kimi Code、百度 Comate;</li>
+<li>紧随批覆盖腾讯 CodeBuddy、iFlow CLI;</li>
+<li>mirrored 条目优先安装以内容哈希寻址的不可变制品;</li>
+<li>indexed / 镜像不完整条目按 <code>upstream_commit</code> 从上游获取;</li>
+<li>安装前后复算 <code>source_content_hash</code> 或 <code>projection_hash</code>;</li>
+<li>目录冲突默认失败,更新和替换有显式语义;</li>
+<li>写入目标目录采用暂存、校验、原子替换、失败回滚;</li>
+<li><code>add / list / remove / verify</code> 都理解 Agent 与 scope;</li>
+<li>网页文案、CLI <code>--help</code>、安装脚本与真实行为一致;</li>
+<li>为所有关键路径补单元、集成和 CLI 端到端测试。</li>
+</ul>
+<h3>2.2 P0 非目标</h3>
+<ul>
+<li>不构建在线可视化编排器;</li>
+<li>不承诺“所有 Skill 在所有 Agent 上效果一致”;</li>
+<li>不在安装阶段执行 Skill 自带脚本或依赖安装脚本;</li>
+<li>不恢复已下架的安全扫描徽章或“权限营养标签”;</li>
+<li>不开放第三方动态 Adapter 代码执行;P0 Adapter 全部随 CLI 发布并接受仓库审查;</li>
+<li>不为没有公开稳定安装契约的平台猜测隐藏目录;</li>
+<li>不在 P0 修改上游 <code>SKILL.md</code>;目标投影机制先定义,实际变换后置。</li>
+</ul>
+</section>
+<section class="card" id="s3">
+<h2><span class="no">3</span>平台范围与接入顺序</h2>
+<p>平台路径与能力会变化。Adapter manifest 必须保存 <code>docs_url</code>、<code>last_verified_at</code> 和 <code>adapter_version</code>,不能把下表当成永恒常量。</p>
+<div class="table-wrap"><table><thead><tr>
+<th>波次</th>
+<th>Agent</th>
+<th>用户级目录</th>
+<th>项目级目录</th>
+<th>P0 接入方式</th>
+<th>官方依据</th>
+</tr></thead><tbody>
+<tr>
+<td>A</td>
+<td>Claude</td>
+<td><code>~/.claude/skills/</code></td>
+<td><code>.claude/skills/</code></td>
+<td>路径 Adapter</td>
+<td>当前产品既有约定</td>
+</tr>
+<tr>
+<td>A</td>
+<td>Codex</td>
+<td><code>~/.codex/skills/</code></td>
+<td><code>.codex/skills/</code></td>
+<td>路径 Adapter</td>
+<td>当前产品既有约定</td>
+</tr>
+<tr>
+<td>A</td>
+<td>Cursor</td>
+<td><code>~/.cursor/skills/</code></td>
+<td><code>.cursor/skills/</code></td>
+<td>路径 Adapter</td>
+<td>当前产品既有约定</td>
+</tr>
+<tr>
+<td>A</td>
+<td>Qwen Code</td>
+<td><code>~/.qwen/skills/</code></td>
+<td><code>.qwen/skills/</code></td>
+<td>路径 + frontmatter 校验</td>
+<td><a href="https://qwenlm.github.io/qwen-code-docs/en/users/features/skills/" target="_blank" rel="noreferrer">Qwen Code Agent Skills</a></td>
+</tr>
+<tr>
+<td>A</td>
+<td>Kimi Code</td>
+<td><code>~/.kimi-code/skills/</code>、<code>~/.agents/skills/</code></td>
+<td><code>.kimi-code/skills/</code>、<code>.agents/skills/</code></td>
+<td>版本族 + 通用目录 Adapter</td>
+<td><a href="https://www.kimi.com/code/docs/en/kimi-code-cli/customization/skills.html" target="_blank" rel="noreferrer">Kimi Code Agent Skills</a></td>
+</tr>
+<tr>
+<td>A</td>
+<td>百度 Comate</td>
+<td><code>~/.comate/skills/</code></td>
+<td><code>.comate/skills/</code>、<code>.agents/skills/</code></td>
+<td>路径 + 严格命名校验</td>
+<td><a href="https://cloud.baidu.com/doc/COMATE/s/Nmma28iqe" target="_blank" rel="noreferrer">Comate Skills</a></td>
+</tr>
+<tr>
+<td>B</td>
+<td>腾讯 CodeBuddy</td>
+<td><code>~/.codebuddy/skills/</code></td>
+<td><code>.codebuddy/skills/</code></td>
+<td>路径 + 扩展字段能力描述</td>
+<td><a href="https://www.codebuddy.cn/docs/cli/skills" target="_blank" rel="noreferrer">CodeBuddy Skills</a></td>
+</tr>
+<tr>
+<td>B</td>
+<td>iFlow CLI</td>
+<td><code>~/.iflow/skills/</code></td>
+<td><code>.iflow/skills/</code></td>
+<td>路径 + registry 刷新提示</td>
+<td><a href="https://platform.iflow.cn/cli/examples/skill" target="_blank" rel="noreferrer">iFlow Skill</a></td>
+</tr>
+</tbody></table></div>
+<p>补充约束:</p>
+<ul>
+<li>Kimi 新旧 CLI 的品牌目录不同,用户目录还跟随 <code>$KIMI_CODE_HOME</code>,且 <code>config.toml</code> 可通过 <code>extra_skill_dirs</code> 增加目录;必须按环境变量、配置与版本族探测,不能只保留一个 <code>kimi</code> 路径常量;</li>
+<li>Comate 可直接读取包括 <code>.claude/skills/</code> 在内的多家兼容目录。探测时必须区分“已有副本可被 Comate 读取”和“应写入 Comate 自有目录”,默认不为同一 Skill 重复复制;这也使 Comate 自有 Adapter 的实施优先级低于不兼容共享目录的平台;</li>
+<li><code>.agents/skills/</code> 只用于官方明确支持它的平台,不能把它当成所有 Agent 的万能目录;</li>
+<li>TRAE、WorkBuddy、Qoder 等进入“研究队列”;拿到稳定的目录、ZIP 导入或 API 契约后再接入;</li>
+<li>不支持文件目录的产品使用 <code>package-import</code> 或 <code>api</code> 类型 Adapter,不伪装成本地目录安装。</li>
+</ul>
+</section>
+<section class="card" id="s4">
+<h2><span class="no">4</span>总体架构</h2>
+<h3>4.1 模块边界</h3>
+<p>建议把当前单文件 CLI 迁到可测试模块,保持 Node.js 20+、零运行时依赖优先:</p>
+<pre><code class="language-text">packages/cli/
+├─ bin/
+│  └─ oh-my-skill.mjs            # 极薄入口,只调用 dist/main.mjs
+├─ src/
+│  ├─ main.ts                    # node:util.parseArgs + 命令路由
+│  ├─ commands/
+│  │  ├─ add.ts
+│  │  ├─ agents.ts
+│  │  ├─ list.ts
+│  │  ├─ remove.ts
+│  │  └─ verify.ts
+│  ├─ core/
+│  │  ├─ catalog-client.ts       # 拉货架元数据
+│  │  ├─ artifact-resolver.ts    # mirrored / pinned upstream
+│  │  ├─ content-hash.ts
+│  │  ├─ install-transaction.ts
+│  │  ├─ install-state.ts
+│  │  ├─ project-root.ts
+│  │  └─ receipts.ts
+│  └─ adapters/
+│     ├─ types.ts
+│     ├─ registry.ts
+│     ├─ manifests/
+│     │  ├─ claude.json
+│     │  ├─ codex.json
+│     │  ├─ cursor.json
+│     │  ├─ qwen.json
+│     │  ├─ kimi-code.json
+│     │  ├─ comate.json
+│     │  ├─ codebuddy.json
+│     │  └─ iflow.json
+│     └─ special/                 # 只有不能声明式表达时才写代码
+└─ test/
+   ├─ fixtures/
+   ├─ adapters.test.ts
+   ├─ artifact-resolver.test.ts
+   ├─ install-transaction.test.ts
+   └─ cli.e2e.test.ts</code></pre>
+<p>编译产物放 <code>dist/</code>,npm 包只发布 <code>bin/ + dist/ + adapter manifests</code>。入口文件不再承载业务逻辑。</p>
+<h3>4.2 职责红线</h3>
+<ul>
+<li>Catalog Client 只负责拿事实,不决定安装路径;</li>
+<li>Artifact Resolver 只负责拿到指定内容,不决定目标 Agent;</li>
+<li>Adapter 只负责探测、校验和确定目标投影,不直接执行安装事务;</li>
+<li>Install Transaction 只操作本地文件和账本,不解释平台规则;</li>
+<li>回执失败永远不能让安装失败;</li>
+<li>Adapter 不得执行 Skill 自带代码。</li>
+</ul>
+</section>
+<section class="card" id="s5">
+<h2><span class="no">5</span>不可变制品与双哈希模型</h2>
+<h3>5.1 原始内容哈希</h3>
+<p>现有 <code>meta.content_hash</code> 保持不变,在新代码里明确命名为 <code>source_content_hash</code>。它继续表示上游 Skill 目录内排序后的 <code>(relative path, git blob sha)</code> 集合。</p>
+<p>哈希输入规则必须收敛到唯一的 <code>core/content-hash.ts</code>,采集端、CLI、制品构建和 Adapter 投影共同调用或用同一组跨语言 fixture 验证。遍历时沿用现有语义:路径规范化并排序,忽略 <code>.git/</code>,并无条件排除本店注入的保留文件 <code>LICENSE.upstream</code>。该排除规则同样适用于 <code>projection_hash</code>,避免许可证证据文件影响作品身份。</p>
+<p><code>LICENSE.upstream</code> 可以进入分发制品,但不属于 source/projection 内容哈希的覆盖范围;它属于 <code>artifact_sha256</code> 的覆盖范围。三处实现若对这条规则不一致,构建必须失败。</p>
+<p>这仍是 catalog 的作品锚,不能因目标 Agent 不同而变化。catalog 返回的 <code>content_hash</code> 缺失、空值或格式非法时,CLI 必须在下载和写盘前以退出码 4 拒绝安装;不得沿用现有 <code>if (content_hash &amp;&amp; ...)</code> 的条件校验,也不提供 <code>--force</code> 或隐式降级绕过。<code>--from-dir</code> 等本地入口必须由 fixture manifest 或显式 <code>--expected-hash</code> 提供期望值,不能把“现场算出的值”同时当期望值和校验结果。</p>
+<h3>5.2 平台投影哈希</h3>
+<p>如果未来某个 Adapter 必须修改 frontmatter、生成 wrapper 或调整目录结构,安装结果不再等于原始包。此时新增:</p>
+<pre><code class="language-text">projection_hash = hash(project(source_package, agent_id, adapter_version))</code></pre>
+<p>规则:</p>
+<ul>
+<li><code>source_content_hash</code> 永远指原始包;</li>
+<li><code>projection_hash</code> 指真实安装内容;</li>
+<li>未发生变换时两者相等;</li>
+<li>回执和本机账本同时保存两者;</li>
+<li><code>verify</code> 对原样安装校验 source hash,对投影安装校验 projection hash;</li>
+<li>UI 不得把投影包写成“与上游逐字一致”。</li>
+</ul>
+<p>P0 Adapter 只做路径选择和兼容性校验,不修改 Skill 内容。因此 P0 大多数安装的两个哈希相同。</p>
+<h3>5.3 mirrored 条目</h3>
+<p>当 <code>hosting=mirrored</code> 且 <code>mirror_complete=true</code> 时:</p>
+<ol>
+<li>构建期从 <code>mirror/</code> 生成确定性 <code>.skill</code>;</li>
+<li>zip 条目排序,固定时间戳、权限和压缩参数;</li>
+<li>URL 使用制品字节哈希寻址:<code>/artifacts/sha256/&lt;artifact_sha256 hex&gt;.skill</code>,不得以 <code>source_content_hash</code> 猜 URL;</li>
+<li>CDN 设置 <code>Cache-Control: public, max-age=31536000, immutable</code>;</li>
+<li>CLI 解包后复算 <code>source_content_hash</code>,不能只信 zip 文件名;</li>
+<li>CLI 下载后先校验整个 <code>.skill</code> 的 <code>artifact_sha256</code>,解包后再校验排除 <code>LICENSE.upstream</code> 的 <code>source_content_hash</code>;</li>
+<li>构建清单列出 <code>skill_id / source_content_hash / artifact_sha256 / size / hash_policy</code>,并由制品索引建立 source hash 到 artifact hash 的映射;</li>
+<li>预期制品缺失时构建响亮失败,不能静默跳过。</li>
+</ol>
+<p><code>mirror_complete=false</code> 时不得把残缺镜像作为可复现制品,应走 pinned upstream。</p>
+<h3>5.4 indexed 或镜像不完整条目</h3>
+<p>因 licence 不能由本店托管完整内容时,CLI 直接从上游获取 pinned commit:</p>
+<pre><code class="language-text">git init &lt;temp&gt;
+git remote add origin &lt;catalog upstream repo&gt;
+git fetch --depth 1 origin &lt;upstream_commit&gt;
+git checkout --detach FETCH_HEAD
+取 catalog upstream 对应 subpath
+复算 source_content_hash</code></pre>
+<p>严禁:</p>
+<ul>
+<li>回退到默认分支 HEAD;</li>
+<li>commit 获取失败后安装“最接近的新版本”;</li>
+<li>使用未经 catalog 约束的用户 URL;</li>
+<li>把 indexed 内容经本店 CDN 二次分发。</li>
+</ul>
+<p>未来支持非 GitHub 源时,新增 <code>UpstreamResolver</code>,不把 GitHub URL 正则散落到命令逻辑里。</p>
+</section>
+<section class="card" id="s6">
+<h2><span class="no">6</span>Agent Adapter 契约</h2>
+<h3>6.1 类型</h3>
+<pre><code class="language-ts">type AgentScope = &quot;user&quot; | &quot;project&quot;;
+type CompatibilityStatus =
+  | &quot;native&quot;
+  | &quot;compatible&quot;
+  | &quot;adapted&quot;
+  | &quot;warning&quot;
+  | &quot;incompatible&quot;
+  | &quot;unknown&quot;;
+
+interface PathResolverSpec {
+  kind: &quot;literal&quot; | &quot;env-home&quot; | &quot;config-array&quot; | &quot;git-root&quot;;
+  scope: AgentScope | &quot;both&quot;;
+  value?: string;            // 支持 ${home} / ${projectRoot}
+  env?: string;              // 例如 KIMI_CODE_HOME
+  fallback?: string;
+  configFile?: string;       // 支持环境变量展开
+  key?: string;              // 例如 extra_skill_dirs
+}
+
+interface AgentAdapterManifest {
+  id: string;
+  displayName: string;
+  aliases: string[];
+  adapterVersion: string;
+  maturity: &quot;stable&quot; | &quot;beta&quot; | &quot;experimental&quot;;
+  docsUrl: string;
+  lastVerifiedAt: string;
+  pathResolvers: PathResolverSpec[];
+  markers: {
+    commands?: string[];
+    configPaths?: string[];
+    projectPaths?: string[];
+  };
+  formatProfile: string;
+}
+
+interface AgentAdapter {
+  manifest: AgentAdapterManifest;
+  detect(ctx: DetectContext): Promise&lt;AgentDetection[]&gt;;
+  resolveDestination(ctx: DestinationContext): Promise&lt;string&gt;;
+  validate(pkg: SkillPackage): Promise&lt;CompatibilityReport&gt;;
+  project?(pkg: SkillPackage): Promise&lt;ProjectedPackage&gt;;
+}</code></pre>
+<p>安装、删除、回滚不放进 Adapter。这样新增平台不会复制一套危险的文件操作代码。</p>
+<h3>6.2 声明式优先</h3>
+<p>路径、环境变量展开、配置数组、Git 项目根、命令 marker 和基础格式规则优先用 JSON manifest 表达。Kimi 先解析 <code>$KIMI_CODE_HOME</code>(缺失时回退 <code>~/.kimi-code</code>),再读取 <code>config.toml</code> 的 <code>extra_skill_dirs</code>;配置中的相对路径以配置文件约定的基准解析,所有候选路径先规范化、去重再进入探测。只有以下情况才允许 <code>special/*.ts</code>:</p>
+<ul>
+<li>目录由配置文件动态决定;</li>
+<li>同一平台存在需要迁移的版本族;</li>
+<li>平台要求导入包或调用本地 API;</li>
+<li>需要确定性生成目标投影。</li>
+</ul>
+<p>P0 不加载仓外 Adapter,避免安装器自身成为新的供应链入口。</p>
+<h3>6.3 兼容性不是“目录存在”</h3>
+<p>Adapter 的 <code>validate()</code> 至少检查:</p>
+<ul>
+<li><code>SKILL.md</code> 是否存在且可解析;</li>
+<li><code>name</code>、<code>description</code> 是否满足目标平台约束;</li>
+<li>文件夹名是否必须等于 frontmatter name;</li>
+<li>平台是否理解 Skill 使用的扩展字段;</li>
+<li><code>scripts / references / assets</code> 是否保持相对路径可达;</li>
+<li>Skill 声明的命令、运行时、MCP 是否在目标环境可用;</li>
+<li>是否存在平台明确不支持的调用模式。</li>
+</ul>
+<p>P0 对无法确认的能力返回 <code>warning</code> 或 <code>unknown</code>,不得伪造绿色“兼容”。<code>incompatible</code> 必须阻断安装;<code>warning</code> 可由用户确认继续。</p>
+</section>
+<section class="card" id="s7">
+<h2><span class="no">7</span>Agent 与作用域探测</h2>
+<h3>7.1 参数优先级</h3>
+<pre><code class="language-text">--to
+  &gt; --agent + --scope
+  &gt; 已保存的同项目偏好
+  &gt; auto 探测
+  &gt; 明确失败并列出可选命令</code></pre>
+<p><code>--to</code> 保留为最高优先级兼容出口,但仍执行内容哈希和冲突检查。若同时给 <code>--agent</code>,还要执行该 Adapter 的兼容性校验。</p>
+<h3>7.2 auto 规则</h3>
+<p>探测信号按可信度排序:</p>
+<ol>
+<li>当前项目已经存在平台目录;</li>
+<li>用户目录已有平台配置或 skill 目录;</li>
+<li>对应 CLI 命令位于 <code>PATH</code>;</li>
+<li>本机安装账本曾成功安装到该平台。</li>
+</ol>
+<p>行为:</p>
+<ul>
+<li>只命中一个 Agent:选择它;</li>
+<li>命中多个 Agent且 TTY 可交互:展示选择器;</li>
+<li>命中多个 Agent且非交互:退出并要求 <code>--agent</code>;</li>
+<li>一个也未命中:不再默认 Claude,输出支持列表和示例;</li>
+<li><code>--yes</code> 只能跳过确认,不能替用户解决平台歧义;</li>
+<li><code>--agent all</code> 是显式多装,逐目标独立事务并给汇总结果。</li>
+</ul>
+<h3>7.3 scope 规则</h3>
+<ul>
+<li>显式 <code>--scope</code> 永远优先;</li>
+<li>当前项目已经存在该 Agent 的项目目录时,<code>auto</code> 可选择 project;</li>
+<li>否则默认 user,避免安装命令意外修改 Git 仓库;</li>
+<li><code>--scope project</code> 的项目根默认取最近的 <code>.git</code> 祖先,没有 <code>.git</code> 时取 <code>cwd</code>;</li>
+<li>提供 <code>--project-root &lt;dir&gt;</code> 覆盖 monorepo / 非 Git 项目边界。</li>
+</ul>
+</section>
+<section class="card" id="s8">
+<h2><span class="no">8</span>CLI 用户契约</h2>
+<h3>8.1 命令面</h3>
+<pre><code class="language-bash"># 查看支持情况和本机探测结果
+oh-my-skill agents
+oh-my-skill agents --json
+
+# 明确安装
+oh-my-skill add owner/repo/skill --agent qwen --scope project
+oh-my-skill add owner/repo/skill --agent kimi --scope user
+
+# 自动探测;歧义时要求选择
+oh-my-skill add owner/repo/skill --agent auto
+
+# 显式安装到所有已探测 Agent
+oh-my-skill add owner/repo/skill --agent all --scope user
+
+# 自定义目录仍保留
+oh-my-skill add owner/repo/skill --to /absolute/path
+
+# 查询、验证、移除必须知道目标
+oh-my-skill list --agent qwen --scope project
+oh-my-skill verify owner/repo/skill --agent qwen --scope project
+oh-my-skill remove owner/repo/skill --agent qwen --scope project</code></pre>
+<h3>8.2 退出码与机器可读输出</h3>
+<div class="table-wrap"><table><thead><tr>
+<th>退出码</th>
+<th>含义</th>
+</tr></thead><tbody>
+<tr>
+<td>0</td>
+<td>全部成功</td>
+</tr>
+<tr>
+<td>1</td>
+<td>一般错误</td>
+</tr>
+<tr>
+<td>2</td>
+<td>参数或 Agent/scope 歧义</td>
+</tr>
+<tr>
+<td>3</td>
+<td>catalog / 网络 / pinned commit 获取失败</td>
+</tr>
+<tr>
+<td>4</td>
+<td>期望哈希缺失/非法,或 source/projection/artifact 哈希不一致</td>
+</tr>
+<tr>
+<td>5</td>
+<td>目标不兼容</td>
+</tr>
+<tr>
+<td>6</td>
+<td>目录冲突或已有内容不可安全替换</td>
+</tr>
+<tr>
+<td>7</td>
+<td>本地写入或回滚失败</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>--agent all</code> 多目标安装部分成功</td>
+</tr>
+</tbody></table></div>
+<p><code>--agent all</code> 将每个目标视为独立事务:某个目标失败不回滚已经成功的其他目标,继续执行剩余目标,最后以退出码 8 返回。<code>--json</code> 固定返回 <code>status: &quot;partial&quot;</code>、<code>succeeded[]</code> 与 <code>failed[]</code>,每项都包含 <code>agent_id / scope / destination / code / reason</code>。全部成功仍返回 0;全部失败且错误码一致时返回该码,错误码不一致时返回一般错误 1,详细原因仍逐目标保留。P0 不提供跨 Agent 全局原子事务。</p>
+<p>所有主要命令支持 <code>--json</code>,返回稳定的 <code>code / message / details</code>,方便模型宿主直接调用 CLI,不必解析人类文案。</p>
+<h3>8.3 兼容现有用户</h3>
+<ul>
+<li>现有 <code>--to</code> 不变;</li>
+<li>现有 <code>add/list/remove/verify</code> 名称不变;</li>
+<li>旧 <code>~/.oh-my-skill/dirs.json</code> 首次运行迁入新版 state,原文件保留一版周期;</li>
+<li>默认 Claude fallback 被视为纠错型 breaking change,在 <code>0.2.0</code> 发布说明中明确;</li>
+<li>旧版已安装目录可由 <code>verify --all</code> 发现;只有哈希匹配且身份唯一时才允许“收养”进本机账本。</li>
+</ul>
+</section>
+<section class="card" id="s9">
+<h2><span class="no">9</span>安装事务、冲突与回滚</h2>
+<h3>9.1 本机安装账本</h3>
+<p>账本放在 <code>~/.oh-my-skill/state.json</code>,不能向 Skill 目录注入平台私有文件,否则会改变内容哈希。</p>
+<pre><code class="language-json">{
+  &quot;schema_version&quot;: &quot;1&quot;,
+  &quot;preferences&quot;: {},
+  &quot;installs&quot;: [
+    {
+      &quot;skill_id&quot;: &quot;owner/repo/name&quot;,
+      &quot;agent_id&quot;: &quot;qwen&quot;,
+      &quot;scope&quot;: &quot;project&quot;,
+      &quot;project_root&quot;: &quot;/work/project&quot;,
+      &quot;destination&quot;: &quot;/work/project/.qwen/skills/name&quot;,
+      &quot;source_content_hash&quot;: &quot;sha256:...&quot;,
+      &quot;projection_hash&quot;: &quot;sha256:...&quot;,
+      &quot;adapter_version&quot;: &quot;1.0.0&quot;,
+      &quot;installed_at&quot;: &quot;2026-07-15T00:00:00Z&quot;
+    }
+  ]
+}</code></pre>
+<p>账本采用临时文件 + rename 原子更新,并加短时文件锁防止并发 <code>npx</code> 相互覆盖。</p>
+<h3>9.2 目标目录状态机</h3>
+<div class="table-wrap"><table><thead><tr>
+<th>状态</th>
+<th>默认行为</th>
+</tr></thead><tbody>
+<tr>
+<td>不存在</td>
+<td>正常安装</td>
+</tr>
+<tr>
+<td>已由本店管理,同 skill、同 hash</td>
+<td>报“已是当前版本”,不写盘</td>
+</tr>
+<tr>
+<td>已由本店管理,同 skill、不同 hash</td>
+<td>视为更新,确认后事务替换</td>
+</tr>
+<tr>
+<td>已由本店管理,不同 skill</td>
+<td>同名冲突,失败</td>
+</tr>
+<tr>
+<td>目录存在但不在账本</td>
+<td>unmanaged,失败;只有显式 <code>--replace</code> 才可替换</td>
+</tr>
+</tbody></table></div>
+<p>P0 不自动给同名 Skill 改名,因为部分平台要求目录名与 frontmatter name 一致。需要同时安装两个同名来源时,先输出冲突说明;P1 再通过确定性目标投影解决命名空间问题。</p>
+<h3>9.3 文件事务</h3>
+<pre><code class="language-text">获取内容到系统临时目录
+→ source hash 校验
+→ Adapter validate / project
+→ projection hash 校验
+→ 在目标父目录创建 .&lt;name&gt;.oms-staging-&lt;id&gt;
+→ 完整复制并再次复算
+→ 既有受管目录 rename 为 backup
+→ staging rename 为 destination
+→ 原子更新 state
+→ 删除 backup</code></pre>
+<p>任一步失败:</p>
+<ul>
+<li>删除 staging;</li>
+<li>destination 已换出但新目录未就位时恢复 backup;</li>
+<li>state 未提交前不发成功回执;</li>
+<li>回滚失败使用退出码 7,保留 backup 路径并给出人工恢复命令;</li>
+<li>不使用 <code>rm -rf</code> 清理用户未知目录。</li>
+</ul>
+</section>
+<section class="card" id="s10">
+<h2><span class="no">10</span>数据与 API 变更</h2>
+<h3>10.1 CLI 所需 catalog 字段</h3>
+<p>在线查询改为显式 select,至少返回:</p>
+<pre><code class="language-text">id
+name
+hosting
+mirror_complete
+license
+upstream
+upstream_commit
+content_hash
+delisted_at</code></pre>
+<p>现有 <code>skills</code> 表已有 <code>upstream_commit</code>,CLI 只需停止丢弃它。<code>mirror_complete</code> 需要加入 Supabase 投影与 sync preflight。</p>
+<p>mirrored 条目的安装查询还必须合并构建产出的 <code>artifact_sha256 / artifact_url / artifact_size</code>。这些是制品构建事实,可来自独立 artifact index 或物化表,不要求伪装成采集元数据;但 CLI 不得用 <code>source_content_hash</code> 自行拼出下载 URL。</p>
+<p>退市条目默认拒绝新安装;若本机已有相同 hash,仍允许 <code>verify</code>。</p>
+<h3>10.2 安装制品清单</h3>
+<p>构建期先在 <code>packages/web/out/artifacts/</code> 暂存并验证,再上传到支持不可变对象和生命周期策略的制品存储/CDN:</p>
+<pre><code class="language-text">/artifacts/sha256/&lt;artifact_sha256 hex&gt;.skill
+/artifacts/sha256/&lt;artifact_sha256 hex&gt;.json
+/artifacts/index.json</code></pre>
+<p><code>&lt;hex&gt;</code> 写死为 <code>artifact_sha256</code> 去掉 <code>sha256:</code> 前缀后的 64 位十六进制值。<code>artifacts/index.json</code> 以 <code>skill_id + source_content_hash</code> 映射到 <code>artifact_sha256 + artifact_url + size</code>;静态站点输出只是 CI 暂存物,不得作为跨版本保留的唯一事实源。</p>
+<p>manifest 示例:</p>
+<pre><code class="language-json">{
+  &quot;schema_version&quot;: &quot;1&quot;,
+  &quot;skill_id&quot;: &quot;owner/repo/name&quot;,
+  &quot;source_content_hash&quot;: &quot;sha256:...&quot;,
+  &quot;artifact_sha256&quot;: &quot;sha256:...&quot;,
+  &quot;size&quot;: 12345,
+  &quot;created_from&quot;: &quot;catalog mirror&quot;,
+  &quot;deterministic_zip&quot;: true,
+  &quot;hash_policy&quot;: {
+    &quot;source_projection_excludes&quot;: [&quot;.git/**&quot;, &quot;LICENSE.upstream&quot;],
+    &quot;artifact_covers&quot;: &quot;complete .skill bytes&quot;
+  }
+}</code></pre>
+<p>覆盖范围必须明确:<code>source_content_hash</code> 与 <code>projection_hash</code> 对规范化后的 Skill 文件集合计算,排除 <code>LICENSE.upstream</code>;<code>artifact_sha256</code> 对最终 <code>.skill</code> 的每一个字节计算,因此覆盖包内的 <code>LICENSE.upstream</code>、文件顺序与 ZIP 元数据。前者回答“作品内容是否相同”,后者回答“下载到的制品是否逐字相同”。</p>
+<p>保留策略在 P0 同步冻结:当前 catalog 或灰度版本引用的制品无限期保留;不再被任何发布版本引用的制品保留 180 天,由对象存储生命周期任务清理;下架不等于立即删除,但法律下架、许可证撤回或恶意内容处置可立即 tombstone 并删除。GC 只删除“无引用且超过 180 天”的对象,每次输出删除清单与可审计日志,绝不在 Web build 中顺手清理。监控至少记录对象数、总字节、月新增字节、孤儿对象和 GC 删除量。</p>
+<h3>10.3 安装回执</h3>
+<p>保持 ADR 0017 的语义:回执只证明获取渠道或本机持有,不证明使用深度与安全。建议给 <code>install_receipts</code> 增加可空字段:</p>
+<pre><code class="language-text">agent_id
+scope
+adapter_version
+projection_hash</code></pre>
+<p>原 <code>content_hash</code> 继续记 <code>source_content_hash</code>,避免历史数据断裂。旧 CLI 不传新字段仍可写入。</p>
+<h3>10.4 兼容性结果后置</h3>
+<p>P0 只在本地 preflight 输出兼容性。公开兼容矩阵后续使用独立派生对象,不塞进采集事实 <code>meta</code>:</p>
+<pre><code class="language-text">skill_id + source_content_hash + agent_id + agent_version
++ adapter_version + status + reason_codes + tested_at</code></pre>
+<p>作者声明与平台实测必须分开,不能把“支持 Qwen”这种自报字段直接渲染成已验证徽章。</p>
+</section>
+<section class="card" id="s11">
+<h2><span class="no">11</span>兼容性原因码</h2>
+<p>原因码必须稳定,供 CLI JSON、测试和未来 UI 共用:</p>
+<div class="table-wrap"><table><thead><tr>
+<th>原因码</th>
+<th>含义</th>
+<th>默认级别</th>
+</tr></thead><tbody>
+<tr>
+<td><code>missing-skill-md</code></td>
+<td>缺少入口文件</td>
+<td>incompatible</td>
+</tr>
+<tr>
+<td><code>invalid-frontmatter</code></td>
+<td>YAML 或必填字段不合法</td>
+<td>incompatible</td>
+</tr>
+<tr>
+<td><code>name-folder-mismatch</code></td>
+<td>目标平台要求名称与目录一致</td>
+<td>incompatible</td>
+</tr>
+<tr>
+<td><code>unsupported-frontmatter-field</code></td>
+<td>平台不理解扩展字段</td>
+<td>warning</td>
+</tr>
+<tr>
+<td><code>runtime-missing</code></td>
+<td>Node/Python/系统命令不可用</td>
+<td>warning / incompatible</td>
+</tr>
+<tr>
+<td><code>mcp-missing</code></td>
+<td>Skill 依赖的 MCP 不存在</td>
+<td>warning</td>
+</tr>
+<tr>
+<td><code>script-execution-unknown</code></td>
+<td>宿主能否执行脚本尚未验证</td>
+<td>unknown</td>
+</tr>
+<tr>
+<td><code>adapter-version-stale</code></td>
+<td>平台文档晚于 Adapter 验证时间</td>
+<td>warning</td>
+</tr>
+<tr>
+<td><code>platform-version-unsupported</code></td>
+<td>已知宿主版本不在支持范围</td>
+<td>incompatible</td>
+</tr>
+</tbody></table></div>
+<p>“目录复制成功”只能说明 installed,不能自动把兼容性标为 compatible。</p>
+</section>
+<section class="card" id="s12">
+<h2><span class="no">12</span>代码改动面</h2>
+<div class="table-wrap"><table><thead><tr>
+<th>区域</th>
+<th>预期改动</th>
+</tr></thead><tbody>
+<tr>
+<td><code>packages/cli/</code></td>
+<td>单文件拆模块、统一 content-hash、Adapter registry、pinned resolver、事务安装、state、JSON 输出、测试</td>
+</tr>
+<tr>
+<td><code>packages/pipeline/src/jobs/sync.ts</code></td>
+<td>同步 <code>mirror_complete</code>;保持 <code>upstream_commit</code> 可查询</td>
+</tr>
+<tr>
+<td><code>infra/migrations/</code></td>
+<td>skills 增 <code>mirror_complete</code>;receipts 增加 Agent / projection 字段</td>
+</tr>
+<tr>
+<td><code>scripts/pack-zips.mjs</code></td>
+<td>确定性 zip、双重哈希、artifact index/manifest、对象存储上传、缺包失败、保留策略清单</td>
+</tr>
+<tr>
+<td><code>packages/web/app/skill/.../InstallBox.tsx</code></td>
+<td>安装命令加入 Agent/scope 选择或生成器;文案与 CLI 一致</td>
+</tr>
+<tr>
+<td><code>packages/web/lib/i18n/index.ts</code></td>
+<td>删除未经实现的自动探测承诺,待 v2 上线后换成精确描述</td>
+</tr>
+<tr>
+<td><code>packages/web/public/install.sh</code></td>
+<td>域名改为 <code>.com</code>;移除已下架的权限营养标签措辞;透传新参数</td>
+</tr>
+<tr>
+<td><code>packages/cli/package.json</code></td>
+<td>清理过时的 security/audit 描述;发布 <code>0.2.0</code></td>
+</tr>
+<tr>
+<td><code>.github/workflows/</code></td>
+<td>PR 上运行 CLI 单测、集成测试、制品确定性检查</td>
+</tr>
+</tbody></table></div>
+</section>
+<section class="card" id="s13">
+<h2><span class="no">13</span>分阶段实施</h2>
+<h3>S0 — 契约冻结与止血(1–2 天)</h3>
+<ul>
+<li>冻结 CLI 参数、退出码、Adapter 接口和 state schema;</li>
+<li>冻结缺失/非法 <code>content_hash</code> 必须以退出码 4 拒装,删除条件式放行;</li>
+<li>冻结 <code>LICENSE.upstream</code> 的哈希排除规则与 <code>--agent all</code> 部分成功退出码 8;</li>
+<li>给网页当前错误承诺加临时修正文案;</li>
+<li>在线 <code>fetchReport()</code> 带回 <code>upstream_commit</code>;</li>
+<li>现有默认 Claude fallback 改为无歧义才选择;</li>
+<li>目录已存在时默认拒绝复制;</li>
+<li>新增 ADR,记录“安装目标必须显式或可解释探测”。</li>
+</ul>
+<p>验收:不再发生“声称安装到 Codex、实际写进 Claude”与静默覆盖。</p>
+<h3>S1 — 可复现安装核心(3–5 天)</h3>
+<ul>
+<li>拆分 CLI 模块;</li>
+<li>实现统一 content-hash 模块和跨采集端 fixture;</li>
+<li>实现 pinned GitHub resolver;</li>
+<li>实现事务安装与 state;</li>
+<li>mirrored 完整包走 artifact hash 寻址,生成 source-to-artifact index 并接入对象存储保留策略;</li>
+<li><code>add/list/remove/verify --agent --scope --json</code> 跑通;</li>
+<li>补 CLI 核心测试。</li>
+</ul>
+<p>验收:同一 catalog hash 在不同时间、不同机器获取到相同目录内容;上游 HEAD 改变不影响安装货架版本。</p>
+<h3>S2 — 第一批 Adapter(3–5 天)</h3>
+<ul>
+<li>Claude、Codex、Cursor;</li>
+<li>Qwen Code、Kimi Code、Comate;</li>
+<li><code>agents</code> 探测命令和多 Agent 选择;</li>
+<li>平台 frontmatter preflight 与稳定原因码;</li>
+<li>文档中每个平台路径加入 fixture 测试。</li>
+</ul>
+<p>验收:六个平台的 user/project 路径安装、验证、移除均通过隔离 HOME/CWD 端到端测试。</p>
+<h3>S3 — 国内扩展与上线(2–4 天)</h3>
+<ul>
+<li>CodeBuddy、iFlow Adapter;</li>
+<li>receipts 新字段;</li>
+<li>详情页安装目标选择器与命令生成;</li>
+<li>npm <code>0.2.0</code> / <code>next</code> 灰度;</li>
+<li>观察错误码和成功率后切 <code>latest</code>。</li>
+</ul>
+<p>验收:官网不再只围绕 Claude 描述安装;国内 Agent 可直接复制准确命令。</p>
+<h3>S4 — 目标投影与公开兼容矩阵(后续)</h3>
+<ul>
+<li>对确需变换的平台启用 projection;</li>
+<li>公开 <code>source_content_hash / projection_hash</code> 双哈希;</li>
+<li>Agent runtime 实测与兼容性矩阵;</li>
+<li>Adapter SDK / 外部贡献流程;</li>
+<li>ZIP 导入、插件、API 类型 Adapter。</li>
+</ul>
+</section>
+<section class="card" id="s14">
+<h2><span class="no">14</span>测试计划</h2>
+<h3>14.1 单元测试</h3>
+<ul>
+<li>每个 Adapter 的 user/project 路径解析;</li>
+<li>Kimi 的 <code>$KIMI_CODE_HOME</code> 回退、<code>extra_skill_dirs</code>、相对路径规范化与去重;</li>
+<li>Comate 已可读取兼容目录时不重复复制;</li>
+<li><code>~</code>、相对路径、Windows 分隔符和 Unicode 路径;</li>
+<li>最近 <code>.git</code> 祖先与 <code>--project-root</code>;</li>
+<li>单 Agent、多 Agent、无 Agent 探测;</li>
+<li>frontmatter 原因码;</li>
+<li>source/projection hash 均排除 <code>LICENSE.upstream</code>,artifact hash 覆盖完整包字节;</li>
+<li><code>content_hash</code> 缺失、空值或非法格式一律在下载/写盘前失败;</li>
+<li>state 原子写入和旧 dirs 迁移;</li>
+<li>同名冲突状态机;</li>
+<li>pinned URL / commit 解析。</li>
+</ul>
+<h3>14.2 集成测试</h3>
+<ul>
+<li>使用临时 HOME 和临时 Git 仓模拟八个平台;</li>
+<li>mirrored artifact 先校验 <code>artifact_sha256</code>,解包后再按排除规则复算 source hash;</li>
+<li><code>artifacts/index.json</code> 从 source hash 正确解析 artifact hash,路径中的 hex 与制品字节哈希一致;</li>
+<li>indexed 条目从本地 fixture Git remote 按 commit fetch;</li>
+<li>上游 HEAD 前进后仍安装旧 commit;</li>
+<li>commit 不存在时失败且目标目录零残留;</li>
+<li>staging 后故障能恢复 backup;</li>
+<li>多目标安装部分失败时退出码为 8,成功项保留且 <code>succeeded[] / failed[]</code> 汇总准确;</li>
+<li>回执端点超时不影响安装。</li>
+</ul>
+<h3>14.3 CLI E2E</h3>
+<p>至少固化以下命令:</p>
+<pre><code class="language-bash">oh-my-skill agents --json
+oh-my-skill add fixture/repo/demo --agent qwen --scope project --from-dir &lt;fixture&gt;
+oh-my-skill verify fixture/repo/demo --agent qwen --scope project --from-dir &lt;fixture&gt;
+oh-my-skill list --agent qwen --scope project --json
+oh-my-skill remove fixture/repo/demo --agent qwen --scope project --yes</code></pre>
+<h3>14.4 Web 冒烟</h3>
+<ul>
+<li>切换 Agent 后生成的命令与 CLI 支持表一致;</li>
+<li>不支持下载的 indexed 条目不展示本店 artifact;</li>
+<li>文案不声称未实测兼容;</li>
+<li>中文/英文安装说明同步;</li>
+<li>旧深链 <code>.skill</code> 在迁移期仍可用。</li>
+</ul>
+</section>
+<section class="card" id="s15">
+<h2><span class="no">15</span>可观测性与成功指标</h2>
+<p>只收最小、匿名、可关闭的安装事实:</p>
+<ul>
+<li><code>install_success</code> 按 <code>agent_id / scope / adapter_version</code> 聚合;</li>
+<li><code>install_failure</code> 只记稳定原因码,不上传本地路径;</li>
+<li><code>detect_none / detect_ambiguous</code> 比例;</li>
+<li>artifact 命中率与 pinned upstream fallback 比例;</li>
+<li>artifact 对象数、总字节、月新增字节、孤儿对象与 GC 删除量;</li>
+<li>hash mismatch 比例;</li>
+<li>rollback 次数;</li>
+<li>从复制命令到成功回执的转化率。</li>
+</ul>
+<p>P0 上线门槛:</p>
+<ul>
+<li>hash mismatch 非预期率 = 0;</li>
+<li>静默覆盖 = 0;</li>
+<li>安装失败后目标目录残留率 = 0;</li>
+<li>八个 Adapter fixture 全绿;</li>
+<li>mirrored artifact 可复现构建连续两次字节一致;</li>
+<li>CLI 非交互模式无任何隐式平台选择。</li>
+</ul>
+</section>
+<section class="card" id="s16">
+<h2><span class="no">16</span>灰度、回滚与发布</h2>
+<ol>
+<li>CLI <code>0.2.0-beta.1</code> 先发 npm <code>next</code> tag;</li>
+<li>官网仅给内部/测试入口生成 <code>npx oh-my-skill@next ...</code>;</li>
+<li>观察 3–7 天错误码,修完再发布 <code>latest</code>;</li>
+<li>官网安装命令最后切到不带版本;</li>
+<li>保留旧 <code>/dl/&lt;id&gt;.skill</code> 深链至少一个发布周期,内部重定向到内容寻址 artifact;</li>
+<li>发生严重问题时回滚 npm dist-tag 与网页命令,不回滚 catalog;</li>
+<li>state schema 必须向前兼容,旧 CLI 读不懂新 state 时不得覆盖它。</li>
+</ol>
+</section>
+<section class="card" id="s17">
+<h2><span class="no">17</span>风险与对策</h2>
+<div class="table-wrap"><table><thead><tr>
+<th>风险</th>
+<th>对策</th>
+</tr></thead><tbody>
+<tr>
+<td>平台目录/字段快速变化</td>
+<td>manifest 带验证日期和版本;定期文档探测;Adapter 独立发版</td>
+</tr>
+<tr>
+<td>国内平台同名但新旧产品路径不同</td>
+<td>一个品牌可有多个 version family,探测结果带具体 variant</td>
+</tr>
+<tr>
+<td>Adapter 修改内容破坏原始哈希</td>
+<td>双哈希模型;P0 禁止变换;投影必须确定性</td>
+</tr>
+<tr>
+<td>indexed commit 被上游删除</td>
+<td>明确失败;不退 HEAD;许可允许时建议作者转 mirrored</td>
+</tr>
+<tr>
+<td>同名 Skill 冲突</td>
+<td>默认失败;本机账本识别身份;后续由 namespaced projection 解决</td>
+</tr>
+<tr>
+<td>平台安装成功但不会调用</td>
+<td>installed 与 compatible 分离;Adapter preflight + 后续 runtime eval</td>
+</tr>
+<tr>
+<td>动态 Adapter 成为供应链风险</td>
+<td>P0 只内置;未来外部 Adapter 需签名、权限沙箱和审核</td>
+</tr>
+<tr>
+<td>动态环境变量/配置目录解析错误</td>
+<td>使用类型化 resolver、路径规范化与去重;fixture 覆盖 Kimi 环境变量、配置数组和 Git 根</td>
+</tr>
+<tr>
+<td>不可变制品长期累积导致托管体积失控</td>
+<td>对象存储与 Web build 解耦;当前引用永久保留,无引用对象 180 天后 GC;监控容量与孤儿对象</td>
+</tr>
+<tr>
+<td>项目级安装污染用户仓库</td>
+<td>无现存项目目录时默认 user;project 必须显式或有强信号</td>
+</tr>
+<tr>
+<td>多 Agent 自动选择错误</td>
+<td>多命中必选;非 TTY 必须显式 <code>--agent</code></td>
+</tr>
+</tbody></table></div>
+</section>
+<section class="card" id="s18">
+<h2><span class="no">18</span>P0 验收清单</h2>
+<ul>
+<li><span class="check">☐</span> <code>detectAgentDir()</code> 空实现已删除;</li>
+<li><span class="check">☐</span> 网页与 CLI 的支持平台、路径和 scope 文案来自同一份 Adapter registry;</li>
+<li><span class="check">☐</span> <code>fetchReport()</code> 使用显式字段并保留 <code>upstream_commit</code>;</li>
+<li><span class="check">☐</span> <code>content_hash</code> 缺失、空值或非法格式会在下载/写盘前以退出码 4 拒装;</li>
+<li><span class="check">☐</span> source/projection hash 统一排除 <code>LICENSE.upstream</code>,artifact hash 覆盖完整制品字节;</li>
+<li><span class="check">☐</span> 在线安装不再 clone 最新 HEAD;</li>
+<li><span class="check">☐</span> mirrored 完整条目按 <code>artifact_sha256</code> 寻址,并有 source-to-artifact index、manifest 与 180 天无引用保留策略;</li>
+<li><span class="check">☐</span> indexed / mirror incomplete 走 pinned upstream;</li>
+<li><span class="check">☐</span> Agent/scope 歧义不会静默选择;</li>
+<li><span class="check">☐</span> <code>--agent all</code> 部分成功返回退出码 8 和逐目标 JSON,不回滚已成功目标;</li>
+<li><span class="check">☐</span> 同名冲突和 unmanaged 目录不会静默覆盖;</li>
+<li><span class="check">☐</span> 安装过程可回滚且失败无残留;</li>
+<li><span class="check">☐</span> 本机 state 同时记录 skill、Agent、scope、目标路径和哈希;</li>
+<li><span class="check">☐</span> Claude、Codex、Cursor、Qwen、Kimi、Comate fixture 通过;</li>
+<li><span class="check">☐</span> Kimi 的环境变量与 <code>extra_skill_dirs</code> 可解析,Comate 不重复安装已有兼容副本;</li>
+<li><span class="check">☐</span> CodeBuddy、iFlow fixture 通过;</li>
+<li><span class="check">☐</span> <code>verify</code> 能区分原始哈希与投影哈希;</li>
+<li><span class="check">☐</span> receipt 保持 ADR 0017 语义,并可选记录 Agent 维度;</li>
+<li><span class="check">☐</span> <code>install.sh</code> 域名和已下架安全文案已清理;</li>
+<li><span class="check">☐</span> PR CI 覆盖 unit、integration、CLI E2E 和 artifact reproducibility;</li>
+<li><span class="check">☐</span> npm <code>next</code> 灰度通过后才切 <code>latest</code>。</li>
+</ul>
+</section>
+<section class="card" id="s19">
+<h2><span class="no">19</span>ADR 0029 冻结裁决</h2>
+<p>本轮审查补齐的四项不再列为开放问题,应直接作为 ADR 不变量:缺失/非法内容哈希拒装;<code>LICENSE.upstream</code> 不进入 source/projection hash 但进入 artifact hash;<code>--agent all</code> 部分成功返回退出码 8;平台路径只采用正式、稳定文档,无法确认者进入研究队列。Kimi 动态路径、Comate 兼容目录去重和 artifact 保留策略同样写入实现约束。</p>
+<p>2026-07-15 已采纳以下三项建议,其余可按本文直接拆任务:</p>
+<ol>
+<li><strong>默认 scope</strong>:建议“已存在项目平台目录 → project;否则 user”,避免隐式改仓库;</li>
+<li><strong>多 Agent 行为</strong>:建议 TTY 选择、非 TTY 报错;<code>--yes</code> 不解决歧义;</li>
+<li><strong>P0 是否允许内容投影</strong>:建议不允许,先做原样安装 + 兼容性阻断;双哈希能力保留到 S4。</li>
+</ol>
+<p>以上裁决已写入 <a href="../decisions/0029-cross-agent-reproducible-install.md">ADR 0029</a>,作为 CLI、网页安装生成器和未来 Adapter SDK 的共同约束。</p>
+</section></main>
+  <footer class="footer">oh-my-skill · implementation plan · 2026-07-15</footer>
+</div>
+<a class="backtop" href="#top" aria-label="返回顶部">↑</a>
+</body>
+</html>

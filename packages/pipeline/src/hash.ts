@@ -1,5 +1,5 @@
-import { createHash } from "node:crypto";
 import type { TreeEntry } from "./git.ts";
+import { sourceContentHashFromTree } from "../../cli/lib/content-hash.mjs";
 
 /**
  * content_hash:对 skill 目录内全部 blob 的 (相对路径, git blob sha) 排序集合取 sha256。
@@ -7,13 +7,7 @@ import type { TreeEntry } from "./git.ts";
  * CLI 安装时用同样算法对本地文件重算校验(git hash-object 算法)。
  */
 export function contentHash(dirPrefix: string, entries: TreeEntry[]): string {
-  const lines = entries
-    .filter((e) => e.type === "blob" && e.path.startsWith(dirPrefix))
-    .map((e) => `${e.path.slice(dirPrefix.length)}:${e.sha}`)
-    .sort();
-  const h = createHash("sha256");
-  h.update(lines.join("\n"));
-  return `sha256:${h.digest("hex")}`;
+  return sourceContentHashFromTree(dirPrefix, entries);
 }
 
 const SCRIPT_EXT = /\.(py|sh|bash|zsh|js|mjs|cjs|ts|rb|pl|ps1|bat|cmd|exe|bin)$/i;

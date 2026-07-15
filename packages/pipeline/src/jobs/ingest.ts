@@ -17,6 +17,7 @@ import { loadLists, writeList, addItem, recomputeWorkSignals } from "../lists.ts
 import { markMissing } from "../delist.ts";
 import { CONTEXT_SIZE_COUNTER_ID } from "../context-size.ts";
 import { categorize } from "../categorize.ts";
+import { sourceContentHashDirectory } from "../../../cli/lib/content-hash.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 
@@ -297,7 +298,7 @@ async function main() {
   if (idCollisions) console.warn(`  ⚠ 本轮共 ${idCollisions} 处同 id 内容冲突(同仓同名 skill 会静默漏收,见上方日志)`);
 
   let written = 0;
-  const stats = { added: 0, updated: 0, unchanged: 0, backfilled: 0, preserved: 0, fmInvalid: 0, uncategorized: 0, mirrorSkipped: 0, mirrorBackfilled: 0, licenseInjected: 0, skillMdWritten: 0, skillMdRemoved: 0 };
+  const stats = { added: 0, updated: 0, unchanged: 0, backfilled: 0, preserved: 0, fmInvalid: 0, uncategorized: 0, mirrorSkipped: 0, mirrorBackfilled: 0, mirrorInvalidated: 0, licenseInjected: 0, skillMdWritten: 0, skillMdRemoved: 0 };
   const touched: { skill_id: string; content_hash: string }[] = [];
   for (const c of byId.values()) {
     const prev = existing.get(c.report.meta.id);
@@ -329,15 +330,21 @@ async function main() {
         delete prev.meta.delisted_at;
         patched = true;
       }
-      // 镜像补齐(--mirror 重跑,服务 .skill 下载通道):licence 允许(mirrorSrcDir 有值)而磁盘无副本的
-      // 存量条目,外科式落副本并把 hosting 对齐磁盘事实——内容没变,变的只是「本店是否实际托管」。
-      // 此前该分支不搬镜像,--mirror 对存量未变条目是空跑(2026-07-08 首发包补镜像时暴露)。
-      if (c.mirrorSrcDir && !existsSync(join(entryDir(prev.meta.id), "mirror"))) {
-        const mDir = join(entryDir(prev.meta.id), "mirror");
+      // 镜像补齐/自愈:complete 镜像必须复算命中当前 hash;漂移时 --mirror 重拉,
+      // 普通索引趟则立刻隔离为 indexed,不能继续把旧副本冒充当前版本。
+      const mDir = join(entryDir(prev.meta.id), "mirror");
+      const hasMirror = existsSync(mDir);
+      const mirrorDrift = hasMirror && prev.meta.mirror_complete === true
+        ? await sourceContentHashDirectory(mDir).then((hash) => hash !== prev.meta.content_hash).catch(() => true)
+        : false;
+      if (c.mirrorSrcDir && (!hasMirror || mirrorDrift || prev.meta.hosting !== "mirrored")) {
+        if (hasMirror) await rm(mDir, { recursive: true, force: true });
         const skipped = await copyMirrorFiltered(c.mirrorSrcDir, mDir, MIRROR_MAX_BYTES)
           .catch((e) => { console.warn(`  ⚠ 镜像补齐 ${prev.meta.id} 失败,保持 indexed: ${(e as Error).message}`); return null; });
         if (skipped === null) {
           await rm(mDir, { recursive: true, force: true }).catch(() => {});
+          prev.meta.hosting = "indexed";
+          delete prev.meta.mirror_complete;
         } else {
           prev.meta.hosting = "mirrored";
           prev.meta.mirror_complete = skipped.length === 0;
@@ -346,8 +353,14 @@ async function main() {
             console.warn(`  ⚠ 镜像跳过大文件(不入 git)${prev.meta.id}/${s.path} — ${(s.bytes / 1048576).toFixed(1)}MB > ${(MIRROR_MAX_BYTES / 1048576).toFixed(0)}MB`);
           }
           stats.mirrorBackfilled++;
-          patched = true;
         }
+        patched = true;
+      } else if (mirrorDrift) {
+        prev.meta.hosting = "indexed";
+        delete prev.meta.mirror_complete;
+        stats.mirrorInvalidated++;
+        patched = true;
+        console.warn(`  ⚠ ${prev.meta.id} 完整镜像 hash 漂移,已隔离为 indexed;下次 --mirror 刷新`);
       }
       // 仓级证注入(存量补证):镜像在而证缺 → 补 LICENSE.upstream(纯文件补充,不动报告字段)
       {
@@ -413,6 +426,8 @@ async function main() {
     const mirrorDir = join(dir, "mirror");
     if (c.mirrorSrcDir) {
       // 过滤式镜像:跳过超 MIRROR_MAX_BYTES 的文件(大 blob 不进 git);有跳过 → mirror 非完整
+      // 内容更新时先清旧目录,否则上游已删除的文件会残留并让 complete 镜像永久漂移。
+      await rm(mirrorDir, { recursive: true, force: true });
       const skipped = await copyMirrorFiltered(c.mirrorSrcDir, mirrorDir, MIRROR_MAX_BYTES)
         .catch((e) => { console.warn(`  ⚠ 镜像 ${c.report.meta.id} 失败(降级为索引): ${(e as Error).message}`); return null; });
       if (skipped === null) {
@@ -432,12 +447,19 @@ async function main() {
       // 索引趟(未带 --mirror):hosting 只表达「本店实际托管」,以磁盘事实定值——
       // licence 允许(候选分类=mirrored)且磁盘已有副本 → 沿用 mirrored(完整度沿用 prev);
       // 其余一律 indexed。候选默认的 licence 分类值在此被磁盘事实覆盖,杜绝「标 mirrored 无副本」再产生。
-      if (c.report.meta.hosting === "mirrored" && existsSync(mirrorDir)) {
+      const mirrorCurrent = prev?.meta.content_hash === c.report.meta.content_hash;
+      if (c.report.meta.hosting === "mirrored" && existsSync(mirrorDir) && mirrorCurrent) {
         c.report.meta.mirror_complete = prev?.meta.mirror_complete ?? true;
         if (await injectLicense(c, mirrorDir)) stats.licenseInjected++; // 更新路径的存量镜像也补证
       } else {
-        if (existsSync(mirrorDir))
-          console.warn(`  ⚠ ${c.report.meta.id} licence 收紧但磁盘遗留 mirror/(hosting 置 indexed,副本去留人工核)`);
+        if (existsSync(mirrorDir)) {
+          if (!mirrorCurrent) {
+            stats.mirrorInvalidated++;
+            console.warn(`  ⚠ ${c.report.meta.id} 内容已更新但本趟未拉新镜像,旧 mirror 已隔离为 indexed`);
+          } else {
+            console.warn(`  ⚠ ${c.report.meta.id} licence 收紧但磁盘遗留 mirror/(hosting 置 indexed,副本去留人工核)`);
+          }
+        }
         c.report.meta.hosting = "indexed";
         delete c.report.meta.mirror_complete;
       }
@@ -545,6 +567,7 @@ async function main() {
   console.log(`  未变跳过: ${stats.unchanged}`);
   if (stats.backfilled) console.log(`  外科式回填(context_size / upstream_commit_at / 镜像补齐,其余字段未动): ${stats.backfilled}`);
   if (stats.mirrorBackfilled) console.log(`  其中镜像补齐(--mirror 对存量落副本): ${stats.mirrorBackfilled}`);
+  if (stats.mirrorInvalidated) console.log(`  漂移/过期镜像隔离为 indexed: ${stats.mirrorInvalidated}`);
   if (stats.licenseInjected) console.log(`  仓级证注入(mirror/LICENSE.upstream,再分发合规): ${stats.licenseInjected}`);
   if (stats.skillMdWritten || stats.skillMdRemoved) console.log(`  正文快照 skill.md(ADR 0025): 写入 ${stats.skillMdWritten} · 清理 ${stats.skillMdRemoved}`);
   if (appearNew || appearKnown) console.log(`  跨仓拷贝 → 出现记账(不落条目): 新增 ${appearNew} · 已知 ${appearKnown}`);

@@ -7,6 +7,7 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import type { Collection, Skill } from "./skill-types";
+import { artifactForSkill } from "./artifacts-server";
 
 export type { Collection, EvalData, Skill } from "./skill-types";
 export { byPopularity, fmtInstalls, normStars } from "./skill-utils";
@@ -39,13 +40,16 @@ function scan(): Cache {
                   source: r.howto.source === "author" ? ("author" as const) : ("llm" as const),
                 }
               : null;
+          const artifact = artifactForSkill(r.meta.id, r.meta.content_hash);
           all.push({
             id: r.meta.id, owner: owner.name, repo: repo.name, name: r.meta.name, description: r.meta.description,
             license: r.meta.license, hosting: r.meta.hosting, publisher: r.meta.publisher,
             upstream: r.meta.upstream, category: r.meta.category ?? undefined, tags: r.meta.tags ?? [],
             tagline: copy?.tagline, sceneTags: copy?.scene_tags, fitLine: copy?.fit_line,
             taglineEn: copy?.tagline_en, sceneTagsEn: copy?.scene_tags_en, fitLineEn: copy?.fit_line_en,
-            hasMirror: existsSync(join(CATALOG, owner.name, repo.name, name.name, "mirror")),
+            hasMirror: Boolean(artifact),
+            artifactUrl: artifact?.artifact_url,
+            artifactSha256: artifact?.artifact_sha256,
             duplicateOf: r.meta.duplicate_of ?? null,
             delistedAt: r.meta.delisted_at ?? null,
             frontmatterValid: r.frontmatter_valid !== false,
@@ -96,10 +100,12 @@ export function getSkill(owner: string, repo: string, name: string): Skill | und
  */
 export function getSkillBody(id: string): { text: string; source: "mirror" | "snapshot" } | null {
   const dir = join(CATALOG, ...id.split("/"));
-  for (const [p, source] of [
-    [join(dir, "mirror", "SKILL.md"), "mirror"],
-    [join(dir, "skill.md"), "snapshot"],
-  ] as const) {
+  const choices: [string, "mirror" | "snapshot"][] = [];
+  // mirror 正文只有在当前 source hash 已产出双哈希制品后才可信;旧镜像可留作隔离缓存,
+  // 但不能在详情页冒充当前上游正文。
+  if (artifactForSkill(id)) choices.push([join(dir, "mirror", "SKILL.md"), "mirror"]);
+  choices.push([join(dir, "skill.md"), "snapshot"]);
+  for (const [p, source] of choices) {
     if (!existsSync(p)) continue;
     try {
       const text = readFileSync(p, "utf8");

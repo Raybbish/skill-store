@@ -37,7 +37,7 @@ function CopyBtn({ text, onCopied }: { text: string; onCopied?: () => void }) {
  */
 export default function InstallBox({ skill }: { skill: Skill }) {
   const tt = useT();
-  const { id, upstream, hasMirror, contentHash } = skill;
+  const { id, upstream, hasMirror, artifactUrl, contentHash } = skill;
   const leaf = id.split("/").pop() ?? id;
   // 复制命令内嵌短 token(ADR 0017 路径②):CLI 装机回执带回,绑定 web 会话——藏在复制动作里。
   // 挂载后再取(localStorage),初始渲染不带,避免 SSG 水合不匹配。
@@ -53,14 +53,14 @@ export default function InstallBox({ skill }: { skill: Skill }) {
     <div className="inst">
       <div className="inst-m">
         <div className="inst-h"><span>/</span> {tt("inst.download")}</div>
-        {hasMirror ? (
+        {hasMirror && artifactUrl ? (
           <>
             <div className="inst-cmd">
               <code className="inst-file">{leaf}.skill</code>
               <span className="inst-note">{tt("inst.dragNote")}</span>
               {/* 同一份文件、两个下载名:.skill 给拖拽安装,.zip 给手动放置(download 属性同源改名) */}
-              <DlLink id={id} href={`/dl/${id}.skill`} download={`${leaf}.skill`} contentHash={contentHash}>↓ .skill</DlLink>
-              <DlLink id={id} href={`/dl/${id}.skill`} download={`${leaf}.zip`} contentHash={contentHash}>↓ .zip</DlLink>
+              <DlLink id={id} href={artifactUrl} download={`${leaf}.skill`} contentHash={contentHash}>↓ .skill</DlLink>
+              <DlLink id={id} href={artifactUrl} download={`${leaf}.zip`} contentHash={contentHash}>↓ .zip</DlLink>
             </div>
             <details className="inst-dirs">
               <summary>{tt("inst.otherAgent")}</summary>
