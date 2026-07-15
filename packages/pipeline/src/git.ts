@@ -10,6 +10,10 @@ import { join } from "node:path";
 
 const exec = promisify(execFile);
 
+/** git clone 硬超时:巨仓/网络卡住到点 SIGKILL,抛错交上层各源 try/catch 跳过该仓,不再拖垮整趟
+ *  (ADR 0027:失败要有界。曾有单仓 clone 挂住让整趟 ingest 卡 35 分钟无进展)。env CLONE_TIMEOUT_MS 覆盖。 */
+const CLONE_TIMEOUT_MS = Number(process.env.CLONE_TIMEOUT_MS) || 120_000;
+
 export interface TreeEntry {
   path: string;
   type: "blob" | "tree";
@@ -29,9 +33,17 @@ export interface ClonedRepo {
 
 export async function cloneShallow(repoSlug: string): Promise<ClonedRepo> {
   const dir = await mkdtemp(join(tmpdir(), "skill-ingest-"));
-  await exec("git", ["clone", "--depth", "1", "--quiet", `https://github.com/${repoSlug}.git`, dir], {
-    maxBuffer: 64 * 1024 * 1024,
-  });
+  try {
+    await exec("git", ["clone", "--depth", "1", "--quiet", `https://github.com/${repoSlug}.git`, dir], {
+      maxBuffer: 64 * 1024 * 1024,
+      timeout: CLONE_TIMEOUT_MS, // 到点抛 ETIMEDOUT
+      killSignal: "SIGKILL", // 网络卡死的 git 可能不理 SIGTERM,直接 KILL
+    });
+  } catch (e) {
+    // 半成品克隆会占满 runner 磁盘(巨仓半下载),清掉再上抛;上层各源接住后跳过该仓
+    await rm(dir, { recursive: true, force: true }).catch(() => {});
+    throw e;
+  }
   const headCommit = (await exec("git", ["-C", dir, "rev-parse", "HEAD"])).stdout.trim();
   // 上游仓库最近一次提交时间(--depth 1 → HEAD 即唯一 commit;仓库级,非单 skill 路径级)
   const headCommitAt = (await exec("git", ["-C", dir, "log", "-1", "--format=%cI"])).stdout.trim();
