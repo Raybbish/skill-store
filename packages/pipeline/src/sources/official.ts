@@ -51,7 +51,7 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
     .filter((e) => /(^|\/)SKILL\.md$/.test(e.path))
     .map((e) => e.path);
 
-  const candidates: SkillCandidate[] = [];
+  const built: { cand: SkillCandidate; relDir: string; name: string }[] = [];
   for (const skillMdPath of skillMdPaths) {
     const dir = skillMdPath.replace(/SKILL\.md$/, ""); // 含尾部 "/",根目录时为 ""
     try {
@@ -105,20 +105,76 @@ export async function discoverFromRepo(repoSlug: string): Promise<DiscoverResult
         eval: null,
       };
 
-      candidates.push({
-        report,
-        // 索引阶段不镜像(海量、近零成本);仅 INGEST_MIRROR=1 且 licence 允许时下载副本
-        mirrorSrcDir: process.env.INGEST_MIRROR === "1" && hosting === "mirrored" ? join(clone.dir, dir) : null,
-        skillMdSrcPath: join(clone.dir, skillMdPath),
-        // 仓级证入的白名单 → 记证文件位置供镜像注入;不受 INGEST_MIRROR 门控(存量镜像补证也用它)
-        licenseSrcPath:
-          hosting === "mirrored" && !localLicenseEntry && repoLicenseEntry
-            ? join(clone.dir, repoLicenseEntry.path)
-            : null,
+      built.push({
+        cand: {
+          report,
+          // 索引阶段不镜像(海量、近零成本);仅 INGEST_MIRROR=1 且 licence 允许时下载副本
+          mirrorSrcDir: process.env.INGEST_MIRROR === "1" && hosting === "mirrored" ? join(clone.dir, dir) : null,
+          skillMdSrcPath: join(clone.dir, skillMdPath),
+          // 仓级证入的白名单 → 记证文件位置供镜像注入;不受 INGEST_MIRROR 门控(存量镜像补证也用它)
+          licenseSrcPath:
+            hosting === "mirrored" && !localLicenseEntry && repoLicenseEntry
+              ? join(clone.dir, repoLicenseEntry.path)
+              : null,
+        },
+        relDir: dir.replace(/\/$/, ""), // 去尾斜杠;根目录为 ""
+        name,
       });
     } catch (e) {
       console.warn(`  ✗ 跳过 ${repoSlug}:${dir || "(root)"} — ${(e as Error).message}`);
     }
   }
-  return { candidates, cleanup: clone.cleanup };
+
+  // 同仓内 name 撞车消歧(ADR 0027 P2):ID = owner/repo/name 不含路径,同仓两个不同 skill 若
+  // name 归一化后相同就撞同一 id,去重阶段静默丢弃后到者。这里在源头按目录路径给相撞者补路径段,
+  // 让每个 SKILL.md 都有独立 id(content_hash 按内容锚,不受影响)。
+  disambiguateIds(built, owner, repoSeg, repoSlug);
+  return { candidates: built.map((b) => b.cand), cleanup: clone.cleanup };
+}
+
+/** 目录相对路径 → 可读 slug;根目录回落 "root"。分段各自 normalize 再连字符。 */
+export function pathSlug(relDir: string): string {
+  const s = relDir.split("/").filter(Boolean).map(normalizeName).filter(Boolean).join("-");
+  return s || "root";
+}
+
+/**
+ * 同仓内按 name 分组消歧:size==1 保留裸 name(存量 id 不变);size>1 组里目录字典序最小者保留裸
+ * name(不制造孤儿、存量 winner id 不变),其余各自补 `__<路径slug>`。全仓 leaf 二次去重兜底
+ * (normalizeName 允许下划线,补段理论上可能与它者裸 name 相撞),必要时追加 -N。只改 meta.id。
+ */
+export function disambiguateIds(
+  built: { cand: SkillCandidate; relDir: string; name: string }[],
+  owner: string,
+  repoSeg: string,
+  repoSlug: string,
+): void {
+  const byName = new Map<string, { cand: SkillCandidate; relDir: string; name: string }[]>();
+  for (const b of built) {
+    const g = byName.get(b.name);
+    if (g) g.push(b);
+    else byName.set(b.name, [b]);
+  }
+  const used = new Set<string>();
+  for (const [name, group] of byName) if (group.length === 1) used.add(name);
+
+  let groups = 0, suffixed = 0;
+  for (const [name, group] of byName) {
+    if (group.length === 1) continue;
+    groups++;
+    group.sort((a, b) => a.relDir.localeCompare(b.relDir));
+    for (let i = 0; i < group.length; i++) {
+      let leaf: string;
+      if (i === 0) leaf = name; // winner:目录字典序最小者保留裸 name
+      else {
+        const base = `${name}__${pathSlug(group[i].relDir)}`;
+        leaf = base;
+        for (let n = 1; used.has(leaf); n++) leaf = `${base}-${n}`;
+        suffixed++;
+      }
+      used.add(leaf);
+      group[i].cand.report.meta.id = `${owner}/${repoSeg}/${leaf}`;
+    }
+  }
+  if (groups) console.log(`    ↔ 同名消歧 ${repoSlug}:${groups} 组撞名 → 补路径段 ${suffixed} 条(原会静默漏收)`);
 }
