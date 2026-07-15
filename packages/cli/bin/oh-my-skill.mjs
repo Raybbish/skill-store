@@ -17,6 +17,12 @@ import { homedir, tmpdir } from "node:os";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { createInterface } from "node:readline/promises";
+import {
+  ADAPTER_VERSION,
+  findInstall,
+  removeInstall,
+  upsertInstall,
+} from "../lib/install-state.mjs";
 
 const exec = promisify(execFile);
 const API = process.env.OMS_API ?? "https://xlrvinquhuyobewenrlo.supabase.co";
@@ -27,6 +33,8 @@ const cmd = args[0];
 const target = args[1];
 const flag = (n) => args.includes(`--${n}`);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : undefined; };
+const JSON_MODE = flag("json");
+const log = (...values) => { if (!JSON_MODE) console.log(...values); };
 /** 取值型 flag(其后跟一个值),解析多目标位置参数时要跳过它们的值 */
 const VALUE_FLAGS = new Set(["--to", "--from-dir", "--t", "--agent", "--scope", "--project-root"]);
 
@@ -71,25 +79,35 @@ async function machineId() {
   const id = randomUUID();
   await mkdir(dirname(file), { recursive: true });
   await writeFile(file, id + "\n");
-  console.log("ℹ 首次使用:已生成匿名安装计数 id(~/.oh-my-skill/machine-id,不含个人信息);OMS_TELEMETRY=0 可关闭上报");
+  log("ℹ 首次使用:已生成匿名安装计数 id(~/.oh-my-skill/machine-id,不含个人信息);OMS_TELEMETRY=0 可关闭上报");
   return id;
 }
-async function postReceipt(skillId, channel, contentHash) {
+async function postReceipt(skillId, channel, contentHash, targetInfo = null) {
   if (process.env.OMS_TELEMETRY === "0" || !KEY || opt("from-dir")) return;
   try {
-    await fetch(`${API}/rest/v1/install_receipts`, {
+    const base = {
+      skill_id: skillId,
+      content_hash: contentHash ?? null,
+      channel,
+      machine_id: await machineId(),
+      token: opt("t") ?? null,
+      cli_version: CLI_VERSION,
+    };
+    const extended = {
+      ...base,
+      agent_id: targetInfo?.agentId ?? null,
+      scope: targetInfo?.scope ?? null,
+      adapter_version: targetInfo ? ADAPTER_VERSION : null,
+      projection_hash: contentHash ?? null,
+    };
+    const send = (body) => fetch(`${API}/rest/v1/install_receipts`, {
       method: "POST",
       signal: AbortSignal.timeout(3000),
       headers: { apikey: KEY, authorization: `Bearer ${KEY}`, "content-type": "application/json", prefer: "return=minimal" },
-      body: JSON.stringify({
-        skill_id: skillId,
-        content_hash: contentHash ?? null,
-        channel,
-        machine_id: await machineId(),
-        token: opt("t") ?? null,
-        cli_version: CLI_VERSION,
-      }),
+      body: JSON.stringify(body),
     });
+    const response = await send(extended);
+    if (!response.ok) await send(base); // 迁移灰度期兼容旧 receipts schema;失败仍不影响安装。
   } catch { /* 回执失败绝不影响安装 */ }
 }
 const CLI_VERSION = await readFile(new URL("../package.json", import.meta.url), "utf8")
@@ -191,54 +209,85 @@ async function projectRoot() {
   }
 }
 
-async function agentDir(agentId, scope) {
+async function agentTarget(agentId, scope) {
   const spec = AGENT_SPECS[agentId];
   if (!spec) {
     throw new CliError(2, `未知 Agent: ${agentId}。可选:${Object.keys(AGENT_SPECS).join(", ")}`);
   }
-  if (scope === "project") return join(await projectRoot(), spec.dir, "skills");
+  if (scope === "project") {
+    const root = await projectRoot();
+    return { agentId, scope, dir: join(root, spec.dir, "skills"), projectRoot: root };
+  }
   const userBase = spec.envHome && process.env[spec.envHome]
     ? resolve(process.env[spec.envHome])
     : join(homedir(), spec.dir);
-  return join(userBase, "skills");
+  return { agentId, scope: "user", dir: join(userBase, "skills"), projectRoot: null };
 }
 
-async function detectAgentDir() {
+async function resolveSingleTarget() {
   const to = opt("to");
-  if (to) return resolve(to);
-
   const requestedAgent = opt("agent");
   const requestedScope = opt("scope");
   if (requestedScope && !["user", "project"].includes(requestedScope)) {
     throw new CliError(2, `未知 scope: ${requestedScope}。可选:user, project`);
   }
+  if (to) {
+    const scope = requestedScope ?? "custom";
+    return {
+      agentId: requestedAgent && requestedAgent !== "all" ? requestedAgent : "custom",
+      scope,
+      dir: resolve(to),
+      projectRoot: scope === "project" ? await projectRoot() : null,
+    };
+  }
   if (requestedAgent === "all") {
-    throw new CliError(2, "--agent all 将在多目标事务阶段开放;当前请逐个指定 --agent。");
+    throw new CliError(2, "--agent all 是多目标操作,不能解析为单一目录。");
   }
   if (requestedAgent) {
-    if (requestedScope) return agentDir(requestedAgent, requestedScope);
-    const project = await agentDir(requestedAgent, "project");
-    return (await pathExists(project)) ? project : agentDir(requestedAgent, "user");
+    if (requestedScope) return agentTarget(requestedAgent, requestedScope);
+    const project = await agentTarget(requestedAgent, "project");
+    return (await pathExists(project.dir)) ? project : agentTarget(requestedAgent, "user");
   }
 
   const scopes = requestedScope ? [requestedScope] : ["project", "user"];
   const matches = [];
   for (const agentId of Object.keys(AGENT_SPECS)) {
     for (const scope of scopes) {
-      const dir = await agentDir(agentId, scope);
-      if (await pathExists(dir)) matches.push({ agentId, scope, dir });
+      const target = await agentTarget(agentId, scope);
+      if (await pathExists(target.dir)) matches.push(target);
     }
   }
   const unique = [...new Map(matches.map((m) => [m.dir, m])).values()];
-  if (unique.length === 1) return unique[0].dir;
+  if (unique.length === 1) return unique[0];
   if (unique.length === 0) {
     throw new CliError(2, "未探测到唯一 Agent 目录。请显式传 --agent <id> [--scope user|project],或用 --to <dir>。");
   }
   throw new CliError(2, `探测到多个 Agent 目录:${unique.map((m) => `${m.agentId}/${m.scope}`).join(", ")}。请显式传 --agent 和 --scope。`);
 }
 
+async function resolveAllTargets() {
+  if (opt("to")) throw new CliError(2, "--agent all 不能与单一 --to 目标同时使用。");
+  const scope = opt("scope");
+  if (!scope || !["user", "project"].includes(scope)) {
+    throw new CliError(2, "--agent all 必须显式指定 --scope user|project。");
+  }
+  const found = [];
+  for (const agentId of Object.keys(AGENT_SPECS)) {
+    const target = await agentTarget(agentId, scope);
+    if (await pathExists(target.dir)) found.push(target);
+  }
+  const unique = [...new Map(found.map((target) => [target.dir, target])).values()];
+  if (!unique.length) throw new CliError(2, `在 ${scope} scope 未探测到任何 Agent 目录。`);
+  return unique;
+}
+
+async function detectAgentDir() {
+  return (await resolveSingleTarget()).dir;
+}
+
 async function confirm(msg) {
   if (flag("yes")) return true;
+  if (JSON_MODE) throw new CliError(2, "--json 非交互模式必须同时传 --yes。");
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   const a = (await rl.question(`${msg} [y/N] `)).trim().toLowerCase();
   rl.close();
@@ -267,33 +316,73 @@ async function checkoutPinnedUpstream(meta, work) {
   return join(work, source.subpath);
 }
 
-async function add(id) {
+async function add(id, targetOverride = null) {
   const report = await fetchReport(id);
   const m = report.meta;
   if (!m || m.id !== id) throw new CliError(3, `货架返回的 Skill 身份与请求不一致:${m?.id ?? "<missing>"}`);
   const expected = requireSourceHash(m);
   if (m.delisted_at) throw new CliError(3, `✗ ${m.id} 已停止收录,拒绝新安装。`);
 
-  const destRoot = await detectAgentDir();
+  const targetInfo = targetOverride ?? await resolveSingleTarget();
+  const destRoot = targetInfo.dir;
   const dest = join(destRoot, m.id.split("/").at(-1));
-  if (await pathExists(dest)) {
-    throw new CliError(6, `✗ 目标已存在:${dest}\n  当前版本不覆盖既有目录;请先 verify/remove,或选择其他明确目标。`);
+  const managed = await findInstall(dest);
+  const destinationExists = await pathExists(dest);
+  let updating = false;
+  if (destinationExists) {
+    if (!managed) {
+      throw new CliError(6, `✗ 目标已存在且不在本机账本中:${dest}\n  为避免覆盖未知内容,请显式移走该目录后重试。`);
+    }
+    if (managed.skill_id !== m.id) {
+      throw new CliError(6, `✗ 目标由另一 Skill 管理:${managed.skill_id} → ${dest}`);
+    }
+    const installedHash = await dirContentHash(dest).catch((error) => {
+      throw new CliError(7, `读取已安装目录失败:${error.message}`);
+    });
+    if (managed.source_content_hash === expected && installedHash === expected) {
+      log(`✓ ${m.id} 在 ${targetInfo.agentId}/${targetInfo.scope} 已是当前版本 ${expected.slice(0, 27)}…`);
+      return {
+        status: "unchanged",
+        skill_id: m.id,
+        agent_id: targetInfo.agentId,
+        scope: targetInfo.scope,
+        destination: dest,
+        source_content_hash: expected,
+        projection_hash: expected,
+      };
+    }
+    if (!managed.projection_hash || installedHash !== managed.projection_hash) {
+      throw new CliError(6, `✗ 已受管目录被本地修改:${dest}\n  当前版本不自动覆盖修改内容。`);
+    }
+    updating = true;
   }
 
-  console.log(`\n■ ${m.id}  (${m.license} / ${m.hosting})`);
+  log(`\n■ ${m.id}  (${m.license} / ${m.hosting}) → ${targetInfo.agentId}/${targetInfo.scope}`);
   const v = await loadVerdict(id, expected);
   if (v) {
-    console.log(`  判定: ${v.status}(policy ${v.scanner?.policy})—— 披露非背书`);
+    log(`  判定: ${v.status}(policy ${v.scanner?.policy})—— 披露非背书`);
     for (const [k, f] of Object.entries(v.factors ?? {})) {
-      console.log(`    ${k}: ${f.present === true ? "含" : f.present === false ? "无" : "未判定"}${f.detail ? ` — ${f.detail}` : ""}`);
+      log(`    ${k}: ${f.present === true ? "含" : f.present === false ? "无" : "未判定"}${f.detail ? ` — ${f.detail}` : ""}`);
     }
   }
-  if (!(await confirm("确认安装?"))) return console.log("已取消");
+  if (!(await confirm(updating ? "确认更新?" : "确认安装?"))) {
+    log("已取消");
+    return {
+      status: "cancelled",
+      skill_id: m.id,
+      agent_id: targetInfo.agentId,
+      scope: targetInfo.scope,
+      destination: dest,
+    };
+  }
 
   // 获取文件:本地完整 mirror,或精确 fetch 货架记录的 upstream_commit。
   const work = join(tmpdir(), `oh-my-skill-${randomUUID()}`);
   await mkdir(work, { recursive: true });
   const staging = join(destRoot, `.${m.id.split("/").at(-1)}.oms-staging-${randomUUID()}`);
+  const backup = join(destRoot, `.${m.id.split("/").at(-1)}.oms-backup-${randomUUID()}`);
+  let filesystemCommitted = false;
+  let stateCommitted = false;
   try {
     const local = opt("from-dir");
     const srcDir = local && m.hosting === "mirrored" && m.mirror_complete === true
@@ -306,24 +395,61 @@ async function add(id) {
     if (actual !== expected) {
       throw new CliError(4, `✗ 内容哈希不匹配!货架 ${expected.slice(0, 20)}… vs 实际 ${actual.slice(0, 20)}…\n  内容可能在收录后被修改,已拒绝安装。`);
     }
-    console.log(`  ✓ 内容哈希校验通过 ${actual.slice(0, 27)}…`);
+    log(`  ✓ 内容哈希校验通过 ${actual.slice(0, 27)}…`);
 
     await mkdir(destRoot, { recursive: true });
     await cp(srcDir, staging, { recursive: true, force: false, errorOnExist: true });
     const stagedHash = await dirContentHash(staging);
     if (stagedHash !== expected) throw new CliError(4, "✗ staging 复算哈希不一致,已拒绝落盘。");
-    if (await pathExists(dest)) throw new CliError(6, `✗ 安装期间目标被创建:${dest};未覆盖。`);
+    if (updating) await rename(dest, backup);
+    else if (await pathExists(dest)) throw new CliError(6, `✗ 安装期间目标被创建:${dest};未覆盖。`);
     await rename(staging, dest);
+    filesystemCommitted = true;
+    await upsertInstall({
+      skill_id: m.id,
+      agent_id: targetInfo.agentId,
+      scope: targetInfo.scope,
+      project_root: targetInfo.projectRoot,
+      destination: dest,
+      source_content_hash: expected,
+      projection_hash: expected,
+      adapter_version: ADAPTER_VERSION,
+      installed_at: new Date().toISOString(),
+    });
+    stateCommitted = true;
   } catch (error) {
+    let rollbackFailure = null;
+    if (filesystemCommitted && !stateCommitted) {
+      await rm(dest, { recursive: true, force: true }).catch((failure) => { rollbackFailure = failure; });
+    }
+    if (!stateCommitted && await pathExists(backup)) {
+      await rename(backup, dest).catch((failure) => { rollbackFailure ??= failure; });
+    }
+    if (rollbackFailure) {
+      throw new CliError(7, `${error.message}\n  自动回滚未完成;备份若存在请从 ${backup} 人工恢复:${rollbackFailure.message}`);
+    }
     if (error instanceof CliError) throw error;
+    if (Number.isInteger(error?.exitCode)) throw error;
     throw new CliError(7, `本地写入失败:${error.message}`);
   } finally {
     await rm(staging, { recursive: true, force: true }).catch(() => {});
     await rm(work, { recursive: true, force: true }).catch(() => {});
   }
-  console.log(`✓ 已安装到 ${dest}\n`);
+  if (stateCommitted) await rm(backup, { recursive: true, force: true }).catch(() => {
+    log(`△ 安装已成功,但旧版本备份未能清理:${backup}`);
+  });
+  log(`✓ 已${updating ? "更新" : "安装"}到 ${dest}\n`);
   if (opt("to")) await rememberDir(opt("to")); // 一次教会:自定义安装路径记住,verify 默认搜得到
-  await postReceipt(m.id, "cli", expected); // 装成才留痕;3s 超时,失败静默
+  await postReceipt(m.id, "cli", expected, targetInfo); // 装成才留痕;3s 超时,失败静默
+  return {
+    status: updating ? "updated" : "installed",
+    skill_id: m.id,
+    agent_id: targetInfo.agentId,
+    scope: targetInfo.scope,
+    destination: dest,
+    source_content_hash: expected,
+    projection_hash: expected,
+  };
 }
 
 /**
@@ -348,7 +474,7 @@ async function rememberDir(dir) {
       dirs.push(dir);
       await mkdir(dirname(DIRS_FILE), { recursive: true });
       await writeFile(DIRS_FILE, JSON.stringify(dirs, null, 2) + "\n");
-      console.log(`ℹ 已记住技能目录 ${dir}(下次不用带 --to;记录在 ~/.oh-my-skill/dirs.json)`);
+      log(`ℹ 已记住技能目录 ${dir}(下次不用带 --to;记录在 ~/.oh-my-skill/dirs.json)`);
     }
   } catch { /* 记不住也不影响本次 */ }
 }
@@ -364,7 +490,7 @@ async function agentDirs() {
   const scopes = requestedScope ? [requestedScope] : ["user", "project"];
   const dirs = [];
   for (const agentId of Object.keys(AGENT_SPECS)) {
-    for (const scope of scopes) dirs.push(await agentDir(agentId, scope));
+    for (const scope of scopes) dirs.push((await agentTarget(agentId, scope)).dir);
   }
   dirs.push(join(homedir(), ".agents", "skills"), join(await projectRoot(), ".agents", "skills"));
   try { dirs.push(...JSON.parse(await readFile(DIRS_FILE, "utf8"))); } catch { /* 无记忆 */ }
@@ -384,15 +510,15 @@ async function verifyOne(id, { quiet = false } = {}) {
   const local = await findLocal(leaf);
   if (!local) {
     if (!quiet) {
-      console.log(`✗ 本机未找到 ${leaf}(查过 ${(await agentDirs()).join(" / ")};装在别处用 --to 指路径,成功后会记住)`);
-      console.log(`  提示:下载的 .skill 文件躺在下载文件夹里不算安装——拖进 Claude 或 \`oh-my-skill add\` 才算;`);
-      console.log(`  另外,从网站下载本身已留有记录,写短评不需要再跑 verify。`);
+      log(`✗ 本机未找到 ${leaf}(查过 ${(await agentDirs()).join(" / ")};装在别处用 --to 指路径,成功后会记住)`);
+      log(`  提示:下载的 .skill 文件躺在下载文件夹里不算安装——拖进 Claude 或 \`oh-my-skill add\` 才算;`);
+      log(`  另外,从网站下载本身已留有记录,写短评不需要再跑 verify。`);
     }
     return false;
   }
   const actual = await dirContentHash(local);
   const match = actual === expected;
-  console.log(match
+  log(match
     ? `✓ ${m.id} — 本机副本与货架一致 ${actual.slice(0, 27)}…`
     : `△ ${m.id} — 本机副本与货架不同(旧版本或已自行修改);按实际内容留痕`);
   if (opt("to")) await rememberDir(opt("to")); // 一次教会:自定义路径验证成功即记住
@@ -414,44 +540,144 @@ async function verifyAll() {
         });
         const rows = res.ok ? await res.json() : [];
         if (rows.length === 1) { if (await verifyOne(rows[0].id, { quiet: true })) verified++; }
-        else if (rows.length > 1) console.log(`? ${leaf} — 货架有 ${rows.length} 个同名,手动指定:oh-my-skill verify <owner/repo/${leaf}>`);
-        else console.log(`- ${leaf} — 货架未收录`);
+        else if (rows.length > 1) log(`? ${leaf} — 货架有 ${rows.length} 个同名,手动指定:oh-my-skill verify <owner/repo/${leaf}>`);
+        else log(`- ${leaf} — 货架未收录`);
       } catch { /* 单个失败继续 */ }
     }
   }
-  console.log(`\n扫描 ${seen} 个本地 skill,完成验证 ${verified} 个`);
+  log(`\n扫描 ${seen} 个本地 skill,完成验证 ${verified} 个`);
+  return { seen, verified };
 }
 
 async function list() {
   const dir = await detectAgentDir();
+  let names = [];
   try {
-    for (const name of await readdir(dir)) console.log(name);
-  } catch { console.log(`(空:${dir})`); }
+    names = await readdir(dir);
+    for (const name of names) log(name);
+  } catch { log(`(空:${dir})`); }
+  return { destination: dir, skills: names };
 }
 
 async function remove(id) {
-  const dest = join(await detectAgentDir(), id.includes("/") ? id.split("/").at(-1) : id);
-  if (await confirm(`删除 ${dest}?`)) { await rm(dest, { recursive: true, force: true }); console.log("✓ 已删除"); }
+  const targetInfo = await resolveSingleTarget();
+  const dest = join(targetInfo.dir, id.includes("/") ? id.split("/").at(-1) : id);
+  const managed = await findInstall(dest);
+  if (!managed) throw new CliError(6, `✗ ${dest} 不在本机安装账本中,拒绝删除未知目录。`);
+  if (id.includes("/") && managed.skill_id !== id) {
+    throw new CliError(6, `✗ 账本身份不一致:${managed.skill_id} → ${dest}`);
+  }
+  if (!(await confirm(`删除 ${dest}?`))) return { status: "cancelled", destination: dest };
+
+  const backup = `${dest}.oms-remove-${randomUUID()}`;
+  const exists = await pathExists(dest);
+  try {
+    if (exists) await rename(dest, backup);
+    await removeInstall(dest);
+  } catch (error) {
+    if (exists && await pathExists(backup)) await rename(backup, dest).catch(() => {});
+    if (Number.isInteger(error?.exitCode)) throw error;
+    throw new CliError(7, `删除事务失败:${error.message}`);
+  }
+  if (exists) {
+    await rm(backup, { recursive: true, force: true }).catch((error) => {
+      throw new CliError(7, `账本已删除,但文件备份未能清理:${backup}:${error.message}`);
+    });
+  }
+  log("✓ 已删除");
+  return { status: "removed", skill_id: managed.skill_id, destination: dest };
 }
 
 const run = { add, list, remove, verify: verifyOne }[cmd];
 if (!run || (cmd !== "list" && !target && !(cmd === "verify" && flag("all")))) {
-  console.log("用法: oh-my-skill add <owner/repo/name>… [--agent <id>] [--scope user|project] [--yes]");
-  console.log("      oh-my-skill verify <owner/repo/name> | verify --all   已装过?验证本机副本,不重装");
-  console.log("      oh-my-skill list | remove <name> [--agent <id>] [--scope user|project]");
-  console.log("      通用覆盖:--to <dir> --from-dir <catalog> --project-root <dir>");
+  log("用法: oh-my-skill add <owner/repo/name>… [--agent <id>|all] [--scope user|project] [--yes] [--json]");
+  log("      oh-my-skill verify <owner/repo/name> | verify --all   已装过?验证本机副本,不重装");
+  log("      oh-my-skill list | remove <name> [--agent <id>] [--scope user|project]");
+  log("      通用覆盖:--to <dir> --from-dir <catalog> --project-root <dir>");
+  if (JSON_MODE) console.log(JSON.stringify({ status: "error", code: 1, message: "参数不足或命令未知", details: {} }));
   process.exit(1);
 }
-(async () => {
+
+function errorCode(error) {
+  return Number.isInteger(error?.exitCode) ? error.exitCode : 1;
+}
+
+async function main() {
   if (cmd === "add") {
-    // 多目标顺序安装(场景包「装整套」);每个仍走完整的确认→哈希校验流程
     const ids = targets();
-    for (const id of ids) await add(id);
-    if (ids.length > 1) console.log(`\n✓ 一套装齐:${ids.length} 个 skill 处理完毕`);
-  } else if (cmd === "verify") {
-    if (flag("all")) await verifyAll();
-    else for (const id of targets()) await verifyOne(id);
-  } else {
-    await run(target);
+    if (opt("agent") === "all") {
+      const targetInfos = await resolveAllTargets();
+      const succeeded = [];
+      const failed = [];
+      for (const id of ids) {
+        for (const targetInfo of targetInfos) {
+          try {
+            const result = await add(id, targetInfo);
+            if (result.status === "cancelled") {
+              failed.push({ skill_id: id, agent_id: targetInfo.agentId, scope: targetInfo.scope, destination: result.destination, code: 2, reason: "cancelled" });
+            } else succeeded.push(result);
+          } catch (error) {
+            failed.push({
+              skill_id: id,
+              agent_id: targetInfo.agentId,
+              scope: targetInfo.scope,
+              destination: join(targetInfo.dir, id.split("/").at(-1)),
+              code: errorCode(error),
+              reason: error.message,
+            });
+            log(`✗ ${id} → ${targetInfo.agentId}/${targetInfo.scope}: ${error.message}`);
+          }
+        }
+      }
+      let code = 0;
+      let status = "success";
+      if (failed.length && succeeded.length) { code = 8; status = "partial"; }
+      else if (failed.length) {
+        const codes = [...new Set(failed.map((item) => item.code))];
+        code = codes.length === 1 ? codes[0] : 1;
+        status = "error";
+      }
+      const message = status === "success"
+        ? `全部 ${succeeded.length} 个目标成功`
+        : status === "partial"
+          ? `${succeeded.length} 个目标成功,${failed.length} 个失败`
+          : `全部 ${failed.length} 个目标失败`;
+      log(`\n${status === "success" ? "✓" : status === "partial" ? "△" : "✗"} ${message}`);
+      return { code, payload: { status, code, message, succeeded, failed, details: { succeeded, failed } } };
+    }
+
+    const targetInfo = await resolveSingleTarget();
+    const results = [];
+    for (const id of ids) results.push(await add(id, targetInfo));
+    if (ids.length > 1) log(`\n✓ 一套装齐:${ids.length} 个 skill 处理完毕`);
+    return {
+      code: 0,
+      payload: {
+        status: "success",
+        code: 0,
+        message: ids.length > 1 ? `${ids.length} 个 Skill 处理完毕` : `${ids[0]} 处理完毕`,
+        details: ids.length === 1 ? results[0] : { results },
+      },
+    };
   }
-})().catch((e) => { console.error(e.message); process.exit(e instanceof CliError ? e.exitCode : 1); });
+
+  if (cmd === "verify") {
+    const details = flag("all")
+      ? await verifyAll()
+      : { results: await Promise.all(targets().map(async (id) => ({ skill_id: id, verified: await verifyOne(id) }))) };
+    return { code: 0, payload: { status: "success", code: 0, message: "验证完成", details } };
+  }
+
+  const details = await run(target);
+  return { code: 0, payload: { status: "success", code: 0, message: `${cmd} 完成`, details } };
+}
+
+main().then(({ code, payload }) => {
+  if (JSON_MODE) console.log(JSON.stringify(payload));
+  process.exitCode = code;
+}).catch((error) => {
+  const code = errorCode(error);
+  if (JSON_MODE) console.log(JSON.stringify({ status: "error", code, message: error.message, details: {} }));
+  else console.error(error.message);
+  process.exitCode = code;
+});
