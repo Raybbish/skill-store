@@ -12,6 +12,8 @@
  *  2. 二级限流感知退避:429、或 403 且 remaining>0 判为二级(主配额没满),
  *     无 retry-after 也固定退避(默认 60s 起、指数封顶)重试,而不是立刻收工;
  *  3. 主配额耗尽(remaining==0):等到 x-ratelimit-reset(有界)再重试。
+ *  4. 小时级滑动封禁识别(ADR 0030):二级限流且 reset 距今超阈值 → 不重试立即收工
+ *     ——07-16 实测这种封禁重试会续期,退避永远赢不了,唯一正确动作是留给错峰窗口。
  * 有 retry-after 一律优先按它退避;单次等待有硬上限,退避预算耗尽才把受限结果回给调用方
  * (code-search 据此判 degraded 置红,语义不变)。
  */
@@ -26,6 +28,12 @@ const MAX_ATTEMPTS = Number(process.env.SEARCH_MAX_ATTEMPTS) || 3;
 const SECONDARY_BASE_MS = Number(process.env.SEARCH_SECONDARY_BACKOFF_MS) || 60_000;
 /** 单次等待硬上限(含等 reset),防止把 job 拖到 timeout */
 const MAX_WAIT_MS = Number(process.env.SEARCH_MAX_WAIT_MS) || 180_000;
+/**
+ * 二级限流下 reset 距今超过该值 → 判「小时级滑动封禁」,一发即收工不重试(ADR 0030)。
+ * 07-16 实测:code_search 二级封禁的 x-ratelimit-reset 恒 ≈ now+63min,且每次重试把 reset 后移
+ * ——重试不仅赢不了,还在续期封禁。
+ */
+const RESET_GIVEUP_MS = Number(process.env.SEARCH_RESET_GIVEUP_MS) || 600_000;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const num = (h: Headers | null, k: string) => {
@@ -104,6 +112,19 @@ export async function searchApiFetch<T>(url: string, label = "search"): Promise<
         ` resource=${headers?.get("x-ratelimit-resource") ?? "-"}`,
     );
     if (body) console.warn(`    响应体:${body}`);
+
+    // 小时级滑动封禁(ADR 0030):二级限流 + 无 retry-after + reset 距今超阈值 → 重试只会续期,
+    // 立即把受限结果交回调用方(code-search 收工判 degraded、游标保留,等错峰窗口/次日再试)。
+    if (secondary && !(retryAfter > 0) && Number.isFinite(reset)) {
+      const resetInMs = reset * 1000 - Date.now();
+      if (resetInMs > RESET_GIVEUP_MS) {
+        console.warn(
+          `    reset 距今 ${Math.round(resetInMs / 60_000)} 分钟(阈值 ${Math.round(RESET_GIVEUP_MS / 60_000)} 分钟):` +
+            `判为小时级滑动封禁,重试只会续期,本请求立即收工`,
+        );
+        return { status: res.status, data: null, headers, body, ok: false };
+      }
+    }
 
     if (attempt + 1 >= MAX_ATTEMPTS) {
       // 退避预算耗尽:回传受限结果,调用方收工(code-search → degraded → 置红)

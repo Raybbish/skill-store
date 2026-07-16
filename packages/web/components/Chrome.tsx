@@ -20,7 +20,7 @@ function NavMe() {
     });
   }, []);
   // /me 是单路由共享页,不加 locale 前缀
-  return <Link href="/me/" className="nav-me" title={tt("me.title")}>{who ?? tt("nav.signIn")}</Link>;
+  return <Link href={who ? "/me/" : "/login/"} className="nav-me" title={who ? tt("me.title") : tt("nav.signIn")}>{who ?? tt("nav.signIn")}</Link>;
 }
 
 export function NavTabs() {

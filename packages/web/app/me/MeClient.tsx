@@ -8,9 +8,9 @@
  */
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { authConfigured, getSession, sessionFromUrlHash, signOut, type Session } from "@/lib/auth";
 import { claimsEnabled } from "@/lib/claims";
-import SignInBox from "@/components/SignInBox";
 import { useT } from "@/lib/i18n/client";
 
 export default function MeClient() {
@@ -18,6 +18,7 @@ export default function MeClient() {
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [studioOn, setStudioOn] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (!authConfigured()) { setReady(true); return; }
@@ -28,6 +29,10 @@ export default function MeClient() {
       setReady(true);
     })();
   }, []);
+
+  useEffect(() => {
+    if (ready && authConfigured() && !session) router.replace("/login/");
+  }, [ready, session, router]);
 
   const hero = (
     <section className="hero">
@@ -61,12 +66,6 @@ export default function MeClient() {
     );
   }
 
-  // 未登录:统一登录组件(SignInBox,与短评区同款;并列不分主次,ADR 0023 口径)
-  return (
-    <>
-      {hero}
-      <p className="me-uses" style={{ maxWidth: 440, marginBottom: 14 }}>{tt("me.uses")}</p>
-      <SignInBox onSession={setSession} />
-    </>
-  );
+  // 未登录:重定向到 /login(ADR 0023 追记三——登录版式独立到 /login);此处仅过渡态
+  return <>{hero}<div className="rev-empty">{tt("st.loading")}</div></>;
 }
