@@ -7,6 +7,12 @@ allowed-tools: Read, Write, Edit, Grep, Glob, Bash, WebFetch
 
 # Design System Setup Wizard
 
+> **Building a full screen, not just wiring up the project?** Prefer **`/ss-build`** — it runs
+> this setup's lock step AND the Quality Gate loop (build → `/ss-score` → fix to ≥ 80 → then
+> show), which this wizard doesn't. Use `/ss-setup` to install + configure; use `/ss-build` to
+> actually produce a screen that passes the gate. When this wizard scaffolds the first page
+> (Step 5), run the Quality Gate on it before finishing — don't present an unscored draft.
+
 ## When NOT to use
 
 - For projects already configured with StyleSeed → use `/ss-update` instead
@@ -151,8 +157,12 @@ Then:
    <!-- Locked design decisions. The agent re-reads this every prompt and must obey it. -->
    - App domain:        [Step 1 app type]
    - Skin:              [Step 3 concept, or "custom"]
-   - Key color (accent): [Step 2 hex]    # the ONLY accent — everything else greyscale
+   - Preset:            (none)          # set later by /ss-restyle — the gate reads this
+   - Palette mode:      single-accent   # single-accent | brand-palette: [#hex=role, ...] — optionally +categorical
+   - Key color (accent): [Step 2 hex]    # the accent (single-accent mode) — everything else greyscale
    - Radius personality: [sharp | soft | pill — one everywhere]
+   - Elevation:         layered-shadow  # ENUM: layered-shadow | tonal-ramp | flat-borders | oled-black
+   - Density:           comfortable     # airy | comfortable | compact | dense
    - Motion seed:       [Spring | Silk | Snap | Float | Pulse]
    - Type:              [Step 4 font]
    - Locked:            [today]
