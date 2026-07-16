@@ -8,7 +8,6 @@ export interface PublisherView {
   pub: string;
   /** 作品集只带瘦卡 —— 列表行所需字段面,别把全量 Skill 序列化给客户端组件(ADR 0007) */
   works: SkillCard[];
-  totalInstalls: number;
 }
 
 export function listPublishers(): string[] {
@@ -21,6 +20,5 @@ export function getPublisherView(pub: string): PublisherView | null {
     .sort((a, b) => (b.installs ?? 0) - (a.installs ?? 0))
     .map(toCard);
   if (!works.length) return null;
-  const totalInstalls = works.reduce((a, s) => a + (s.installs ?? 0), 0);
-  return { pub, works, totalInstalls };
+  return { pub, works };
 }
