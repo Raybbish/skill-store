@@ -55,6 +55,7 @@
 - **P0 规模化止血 + 取数缝**(ADR 0007,2026-07-04):`lib/store.ts` 定 `SkillStore` 接口(search/getSkill,签名冻结)+ `SkillCard` 瘦卡;`build-index.ts` 构建期产 `public/idx/`(30 条/片 ×194 + docs.json + meta.json,热门序含 per-repo cap=3,收掉同仓聚顶);browse 改服务端首屏 30 条 + 分片翻页 + 懒加载本地搜索(深链 `?cat=&tag=&q=`);`data.ts` 单扫缓存 + `getSkill` O(1);全站客户端组件只喂瘦卡。**基线:browse 首屏 6.0MB→25KB;build-index 3.4s@5,816 条;docs.json 4.9MB(P1 门控:>1.5万条 或 >8MB 或搜索 p95>200ms → Typesense)**。两侧 `tsc` 全绿;待本机 `npm run web` 浏览器回归。
 
 ### 进行中
+- **Code Search 封禁对策([ADR 0030](decisions/0030-code-search-hourly-ban-offpeak.md),2026-07-16,待推送验证)**:07-16 复发——二级封禁是小时级滑动窗口(reset ≈ now+63min)且重试续期,ADR 0027 P1 的 60/120s 退避设计上赢不了。已改:`gh-search-client` 读 reset 超 10 分钟一发即收工(`SEARCH_RESET_GIVEUP_MS`);code-search 拆独立 workflow(07:00 UTC 错峰 + 与 ingest 同 concurrency 组互斥);主 ingest 移除 `--code-search` 与游标推送步骤。验收:两 run 各绿、游标离开 切片3页2;再 429 时日志应「一发收工」而非三连重试。
 - **上线打磨批 = taste 审计 P0/P1 批次(未提交,2026-07-11 工作区;审计报告在 Desktop)**:① SEO/门面——`sitemap.ts`(构建期单 sitemap.xml,~1w URL,只列可见条目、墓碑页不推爬虫)+ `robots.txt` + `og.png`/OG·twitter metadata(`metadataBase=oh-my-skill.com`)+ `icon.svg` + `not-found.tsx` + `/privacy` 页(**联系方式待补**)+ **hreflang/per-page metadata(`langAlternates` 全站接线)** + skip link/移动端断点;波及 ~26 个 web 文件(含 en 侧)。② 微文案补漏批:87 条 skill-report.json 中英同批重写(generated_at 07-11)。**均待收口提交;上线 runbook 见 Desktop `skill-store-上线操作序列.html`(七步)。**
 - **分类 / 标签体系**:`packages/schemas` 词表(`featuredLabels` / `tagLabels`)+ `skill.category/tags` + browse/home 分类导航 + `/category/[slug]` 分类页——开发中,未提交。
 - 可复现评测:OpenAI runner + `score`/`types` 迭代中(未提交)。

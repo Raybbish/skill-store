@@ -1,0 +1,104 @@
+name: Code Search Sweep
+
+# 长尾发现线独立错峰(ADR 0030,从 ingest.yml 拆出):
+# 07-16 复发实锤——主 ingest 的 topic 搜索 + 几十仓 clone 之后紧接全网 filename:SKILL.md,
+# 同 token 触发 GitHub 小时级二级封禁(x-ratelimit-reset ≈ now+63min,且重试续期)。
+# 对策 = 拆独立 workflow 错峰 4 小时 + 与主 ingest 共用 concurrency 组互斥,两条采集线永不同窗。
+# 产物仍落同一条 ingest/daily PR(接续机制与主 ingest 相同);游标照旧直推 main。
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # 每日 07:00 UTC(北京 15:00),与主 ingest(03:00 UTC)错开 4 小时
+  workflow_dispatch:
+
+concurrency:
+  group: ingest # 与 ingest.yml 同组:互斥串行,cron 漂移也不会与主采集同窗突发
+  cancel-in-progress: false
+
+jobs:
+  code-search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      HAS_LLM: ${{ secrets.LLM_API_KEY != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # 与 ingest.yml 同款接续(ADR 0027):候选累积在 ingest/daily,不互相覆盖
+      - name: Resume unmerged ingest/daily
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch --no-tags --deepen=50 origin main ingest/daily || { echo "ingest/daily 不存在,跳过接续"; exit 0; }
+          git merge --no-edit origin/ingest/daily \
+            || { echo "::warning::ingest/daily 接续合并失败(冲突或浅克隆无 merge base),本轮从 main 重算"; git merge --abort || true; }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # 只跑 code-search 线。sources.yaml 官方仓仍会顺带枚举:量小、幂等,
+      # 退市缺席计数有同日闸(delist.ts markMissing)不会双计。
+      - name: Run code search sweep
+        id: sweep
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run ingest -- --code-search 30
+
+      # 新仓条目当场补中英微文案(增量、便宜);howto 重活留给主 ingest 的热门批
+      - name: 补微文案(中英)+ 分类
+        if: env.HAS_LLM == 'true'
+        continue-on-error: true
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.LLM_BASE_URL || 'https://api.deepseek.com' }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
+        run: npm run categorize:llm -- --scope missing-copy
+
+      # ADR 0027:游标是运行状态不是待审数据,直推 main,不寄生在审核 PR 里
+      # (从 ingest.yml 原样迁来,ADR 0030)。用临时 worktree 保证只有游标这一个文件进 main。
+      - name: Persist code-search cursor
+        run: |
+          git fetch --no-tags origin main
+          git diff --quiet origin/main -- catalog/_meta/code-search-state.json && { echo "游标无变化,跳过"; exit 0; }
+          git worktree add --detach /tmp/cursor origin/main
+          mkdir -p /tmp/cursor/catalog/_meta
+          cp catalog/_meta/code-search-state.json /tmp/cursor/catalog/_meta/code-search-state.json
+          cd /tmp/cursor
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add catalog/_meta/code-search-state.json
+          git diff --cached --quiet && { echo "与 main 一致,跳过"; exit 0; }
+          git commit -m "chore(code-search): advance sweep cursor [skip ci]"
+          git push origin HEAD:main
+
+      # 与 ingest.yml 同分支同标题 = 滚动更新同一条 PR;body 保持同文,避免两条 workflow 互相覆写措辞
+      - name: Create PR with catalog changes
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: catalog/
+          branch: ingest/daily
+          commit-message: "chore(ingest): code-search sweep"
+          title: "Ingest: daily catalog update"
+          body: |
+            自动采集产生的 catalog 变更。合并前请抽查:
+            - 新增条目的 license/hosting 分流是否正确
+            - frontmatter 不合规条目
+            - catalog/lists/ 清单记录(ADR 0019:跨仓拷贝记 appearance 不落条目;拦截仓 blocked 零内容)
+            - Code Search 新仓质量与游标推进(catalog/_meta/code-search-state.json)
+            - skills.sh 榜单解析条数(页面结构变化会解析失败,见日志)
+
+      # 停摆可见(ADR 0027):0 次成功响应 → 非零退出 → 本 job 置红;游标保留,次日或手动重试。
+      # 撞小时级封禁时日志应是「一发即收工」而非三连重试(ADR 0030 验收判据)。
+      - name: Fail if sweep degraded
+        if: steps.sweep.outcome == 'failure'
+        run: |
+          echo "::error::code search 以非零码退出(停摆或封禁),游标未推进,请查 Run code search sweep 日志"
+          exit 1

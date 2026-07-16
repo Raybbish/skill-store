@@ -46,8 +46,8 @@ jobs:
 
       - run: npm ci
 
-      # continue-on-error:ingest 以非零码收尾时(Code Search degraded,ADR 0027)不中断后续步骤,
-      # catalog PR 与游标照常产出;末端 gate 再把整个 job 置红,保证「停摆可见」。
+      # continue-on-error:ingest 以非零码收尾时(单源故障,ADR 0027)不中断后续步骤,
+      # catalog PR 照常产出;末端 gate 再把整个 job 置红,保证「停摆可见」。
       - name: Run ingest
         id: ingest
         continue-on-error: true
@@ -58,8 +58,9 @@ jobs:
             npm run ingest -- --source "${{ inputs.source }}"
           else
             # 全源采集:官方仓 + GitHub 全域 topic 头部(每仓折叠采样)+ awesome 精选信号 + skills.sh 安装量榜
-            # + Code Search 全网扫描(ADR 0019 S1:filename:SKILL.md 切片续扫,游标在 catalog/_meta/code-search-state.json)
-            npm run ingest -- --github-search 100 --hub-signals 300 --skills-sh 200 --code-search 30
+            # ⚠ Code Search 全网扫描已拆至 code-search.yml 错峰跑(ADR 0030):topic 搜索 + 大量 clone
+            # 之后紧接全网 code search,同 token 会触发 GitHub 小时级二级封禁(07-16 复发实锤)
+            npm run ingest -- --github-search 100 --hub-signals 300 --skills-sh 200
           fi
 
       # ---- LLM 富化(ADR 0022/0025):采集完成后补中英文微文案 + 怎么用,随同一条 ingest/daily PR 落库 ----
@@ -84,24 +85,6 @@ jobs:
           LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
         run: npm run howto:llm -- --scope hot
 
-      # ADR 0027:游标是运行状态不是待审数据,直推 main,不寄生在审核 PR 里
-      # (旧行为:游标随 catalog PR 走 ingest/daily,PR 不合并下一轮就从 main 的旧游标重来,
-      # 这是游标卡在 slice=0/page=2 的直接原因)。用临时 worktree 保证只有游标这一个文件进 main。
-      - name: Persist code-search cursor
-        run: |
-          git fetch --no-tags origin main
-          git diff --quiet origin/main -- catalog/_meta/code-search-state.json && { echo "游标无变化,跳过"; exit 0; }
-          git worktree add --detach /tmp/cursor origin/main
-          mkdir -p /tmp/cursor/catalog/_meta
-          cp catalog/_meta/code-search-state.json /tmp/cursor/catalog/_meta/code-search-state.json
-          cd /tmp/cursor
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add catalog/_meta/code-search-state.json
-          git diff --cached --quiet && { echo "与 main 一致,跳过"; exit 0; }
-          git commit -m "chore(code-search): advance sweep cursor [skip ci]"
-          git push origin HEAD:main
-
       - name: Create PR with catalog changes
         uses: peter-evans/create-pull-request@v7
         with:
@@ -119,10 +102,11 @@ jobs:
             - Code Search 新仓质量与游标推进(catalog/_meta/code-search-state.json)
             - skills.sh 榜单解析条数(页面结构变化会解析失败,见日志)
 
-      # ADR 0027:ingest 非零退出(Code Search 停摆等)时,PR/游标已照常产出,但整个 job 必须置红——
+      # ADR 0027:ingest 非零退出时,PR 已照常产出,但整个 job 必须置红——
       # 「每天 Actions 成功」曾长期掩盖「长尾发现线三次运行零成功响应」。
+      # (Code Search 线已拆至 code-search.yml,其停摆由该 workflow 自身的 gate 置红,ADR 0030)
       - name: Fail if ingest degraded
         if: steps.ingest.outcome == 'failure'
         run: |
-          echo "::error::ingest 以非零码退出(Code Search degraded 或单源故障),catalog PR 已照常产出,请查 Run ingest 日志"
+          echo "::error::ingest 以非零码退出(单源故障),catalog PR 已照常产出,请查 Run ingest 日志"
           exit 1
