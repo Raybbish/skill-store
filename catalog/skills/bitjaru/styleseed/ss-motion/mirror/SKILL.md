@@ -11,7 +11,10 @@ allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 
 - For general framer-motion docs or learning → use the framer-motion site
 - For non-React motion (CSS-only transitions, GSAP) — this skill targets `motion.X` JSX only
-- For full scroll-linked timelines or parallax — out of scope per DESIGN-LANGUAGE.md Rule 59
+- For full scroll-linked timelines or parallax — out of scope for *this* skill (it does per-component
+  seeds/moves). Note these ARE allowed on a marketing/landing/brand page (DESIGN-LANGUAGE §43
+  Cinematic tier); just build them with a scroll library, not this skill. On app/data surfaces they
+  stay banned.
 - For tweaking the existing FadeIn/FadeUp/Stagger wrappers — edit `engine/components/ui/motion.tsx` directly
 
 ## Vibe → Seed mapping
@@ -163,4 +166,7 @@ Apply seed: **$0** · Context: **$1** · Target: **$ARGUMENTS**
 - Do not invent new seed names. There are exactly five.
 - Do not edit `engine/motion/seeds/*.ts` from this skill — those are calibrated by hand. Add a new seed only via a separate, explicit ask.
 - Do not introduce a third-party animation lib (gsap, anime.js). StyleSeed targets framer-motion exclusively.
-- Do not add scroll-linked, parallax, or infinite animations (DESIGN-LANGUAGE.md Rule 59).
+- Do not add scroll-linked, parallax, or infinite animations *via this skill* — it does
+  per-component seeds/moves. (Scroll-linked/parallax/3D ARE allowed on a marketing/landing/brand
+  page per DESIGN-LANGUAGE §43 Cinematic tier — build those directly with a scroll lib; on
+  app/data surfaces they stay forbidden.) Infinite loops remain banned everywhere except skeleton pulse.
