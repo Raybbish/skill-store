@@ -52,3 +52,15 @@ GitHub 按钮 · `SkillClaim` 面板入口 · `infra/migrations/2026-07-12-submi
 作者工作台入口(claims flag 开着才显示)。页脚加「我的」。名下内容(短评/回执/认领/提交)留 M2。
 (同日再改,用户裁决:入口从页脚上移**导航右侧账号位**——未登录「登录」、已登录显示 @login/邮箱前缀,
 点击进 /me;SSR 首帧恒「登录」防水合错配;页脚「我的」撤,入口不重复。位置即约定,状态即信息。)
+
+## 追记三(2026-07-16):独立 /login 登录页 + SignInBox 精修
+**反转追记一「不设独立登录页」**(用户裁决,留痕):账号触点增多(评论/认领/studio/me)后,
+「回跳当前页」模式在从导航主动登录的场景下缺一个像样的落点。新增独立 `/login` 双栏页
+(左品牌栏:标识+简介+统计;右登录栏;去盒子,hairline 分列)——导航账号位(追记二)未登录
+改进 `/login/`,已登录仍进 `/me`;`/me` 未登录态收敛为引导进 /login。OAuth/魔法链接回跳
+「发起页」的机制不变,/login 只是发起点之一。
+SignInBox 统一精修:GitHub 深色实心按钮 +「或」分隔 + 邮箱 6 位分段验证码(自动跳格/退格
+回退/粘贴自动分配/60s 倒计时重发;发送中·验证中·跳转中均有状态反馈;焦点环)。
+落地件:`app/login/`(page + LoginClient)· `SignInBox.tsx` · `Chrome.tsx` 账号位指向 ·
+`MeClient` 两态收敛 · i18n 词条 · globals.css `lg-*` 族。随 #65 进 main(2026-07-16);
+3 行对齐微调(brand/col 改 flex-start)在 `fix/hide-thirdparty-installs` 待合并。

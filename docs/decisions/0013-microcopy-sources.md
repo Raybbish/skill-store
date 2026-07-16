@@ -43,3 +43,10 @@
 2. **层的视觉分化**(`globals.css`):facet #tag 维持白底描边胶囊(名词感);场景 chip 改软蓝底(`--seal`)、无边框、小圆角、hover 下划线(话题/链接语感),卡片与详情页行首加「场景」微标签点明轴职责。
 3. **话题聚合页的壳**(`HomeClient`):搜索词精确命中 `meta.sceneVocab` 时,列表抬头从「全部 skill」换成「〔场景〕代码评审」——体验是聚合页,实现仍是搜索,零新路由。
 4. **prompt 约束防再产**(推迟到 1.5万 批跑):微文案段加「场景词必须是情境,不能是动作名词」;lint 侧同义簇拦截届时一并评估。
+
+
+## 补充(2026-07-16):埋点收集端落地 = Supabase 表,零新基建
+
+P0 冻结 schema 时收集端留白(「甚至先落 nginx 日志」)。上线 4 天对账发现:三事件前端全接线,但 `NEXT_PUBLIC_ANALYTICS_URL` 无处可指 → 全站 no-op,「数据不能等 P1 才开始攒」的担忧正在发生。
+
+**裁决:收集端 = Supabase `analytics_events` 表**(`2026-07-16-analytics-events.sql`),与 install_receipts 同款「匿名可插不可读」;payload 键 = 列名,sendBeacon(JSON Blob)直插 PostgREST,anon key 走 query 参数(sendBeacon 无 header 位)。不引入 CF Worker/三方——数据量在 Supabase 免费档吃得下,P2 若迁 Postgres 主库这张表原地就是主库表。字段、回填阈值、隐私边界均不变(详见 design/analytics-events.md「收集端」节)。
