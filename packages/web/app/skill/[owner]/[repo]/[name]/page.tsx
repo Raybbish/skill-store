@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { allSkills, getSkill, getSkillBody, fmtInstalls } from "@/lib/data";
+import { allSkills, getSkill, getSkillBody } from "@/lib/data";
 import InstallBox from "./InstallBox";
 import HowTo from "@/components/HowTo";
 import SkillReviews from "@/components/SkillReviews";
@@ -95,7 +95,6 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
         )}
         <InstallBox skill={s} />
         <div className="d-stats">
-          {s.installs != null && <div><b>{fmtInstalls(s.installs)}</b><span><L zh="安装量" en="installs" /></span></div>}
           <div><b>{s.stars ?? "–"}</b><span>GitHub stars</span></div>
           {contextSize == null ? (
             <div><b><Pending /></b><span><L zh="上下文体积" en="context size" /></span></div>

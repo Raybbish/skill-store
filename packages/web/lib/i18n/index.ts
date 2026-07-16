@@ -84,7 +84,7 @@ const zh = {
   "rev.rejected": "校验未通过", "rev.rlsHint": "还差一步:短评需要「已验证安装」——先装过或跑一次 verify", "rev.failed": "提交失败({s})",
   // 详情页 chrome
   "d.addedAt": "收录于 {t}", "d.upstreamAt": "上游提交 {t}", "d.pick": "★ 社区精选", "d.noDesc": "(无描述)",
-  "d.scene": "场景", "d.installs": "安装量", "d.stars": "GitHub stars",
+  "d.scene": "场景", "d.stars": "GitHub stars",
   "d.pending": "待重算", "d.ctxSingle": "上下文体积 · 单文件", "d.ctxMin": "最小装载", "d.ctxRefs": "含声明引用", "d.ctxTotal": "文本包总量",
   "d.hosting": "托管", "d.mirrored": "镜像", "d.indexed": "索引",
   "d.tomb": "上游已移除或改名,本条目于 {d} 停止收录;历史数据与镜像保留。",
@@ -155,7 +155,7 @@ const zh = {
   "pack.dlNote": ".skill 双击或拖进 Claude 即装;整包 zip 解压后把文件夹放进你工具的技能目录",
   "pack.editorNote": "编辑手记",
   "browse.redirect": "正在跳转…",
-  "pub.listed": "已上架", "pub.installs": "累计安装", "pub.works": "作品集",
+  "pub.listed": "已上架", "pub.works": "作品集",
 } as const;
 
 export type MsgKey = keyof typeof zh;
@@ -215,7 +215,7 @@ const en: Record<MsgKey, string> = {
   "rev.cliAlt": "Prefer the terminal? One command works too", "rev.recheck": "Verified — check again", "rev.later": "Not now",
   "rev.rejected": "Verification failed", "rev.rlsHint": "One step left: reviews require a verified install — install it or run verify once", "rev.failed": "Submit failed ({s})",
   "d.addedAt": "Added {t}", "d.upstreamAt": "Upstream commit {t}", "d.pick": "★ Community pick", "d.noDesc": "(no description)",
-  "d.scene": "Scene", "d.installs": "installs", "d.stars": "GitHub stars",
+  "d.scene": "Scene", "d.stars": "GitHub stars",
   "d.pending": "pending", "d.ctxSingle": "Context size · single file", "d.ctxMin": "Min load", "d.ctxRefs": "With declared refs", "d.ctxTotal": "Total text",
   "d.hosting": "hosting", "d.mirrored": "Mirrored", "d.indexed": "Indexed",
   "d.tomb": "The upstream was removed or renamed; this entry stopped being listed on {d}. History and mirror are preserved.",
@@ -279,7 +279,7 @@ const en: Record<MsgKey, string> = {
   "pack.dlNote": ".skill installs by double-click or drag into Claude; unzip the pack and place folders into your tool's skills directory",
   "pack.editorNote": "Editor's note",
   "browse.redirect": "Redirecting…",
-  "pub.listed": "listed", "pub.installs": "total installs", "pub.works": "Works",
+  "pub.listed": "listed", "pub.works": "Works",
 };
 
 export const dicts: Record<Locale, Record<MsgKey, string>> = { zh, en };

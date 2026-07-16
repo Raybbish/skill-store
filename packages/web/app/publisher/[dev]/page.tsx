@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { fmtInstalls } from "@/lib/data";
 import { listPublishers, getPublisherView } from "@/lib/publishers";
 import SkillRow from "@/components/SkillRow";
 import { BackHome } from "@/components/Chrome";
@@ -30,7 +29,6 @@ export default async function PublisherPage({ params }: { params: Promise<{ dev:
         <div className="d-pub">@{v.pub}</div>
         <div className="d-stats">
           <div><b>{v.works.length}</b><span><L zh="已上架" en="listed" /></span></div>
-          <div><b>{fmtInstalls(v.totalInstalls)}</b><span><L zh="累计安装" en="total installs" /></span></div>
         </div>
       </section>
 
