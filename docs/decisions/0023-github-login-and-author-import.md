@@ -64,3 +64,10 @@ SignInBox 统一精修:GitHub 深色实心按钮 +「或」分隔 + 邮箱 6 位
 落地件:`app/login/`(page + LoginClient)· `SignInBox.tsx` · `Chrome.tsx` 账号位指向 ·
 `MeClient` 两态收敛 · i18n 词条 · globals.css `lg-*` 族。随 #65 进 main(2026-07-16);
 3 行对齐微调(brand/col 改 flex-start)在 `fix/hide-thirdparty-installs` 待合并。
+
+### 追记三修订(2026-07-16 同日,用户裁决):双栏 → 单栏居中(方向 A)
+上线目检「还是太丑」,诊断四点:① flex-start 微调致重心失衡(下 60% 空白,主因);② GitHub 按钮随栏拉满成 ~700px 黑砖;③「登录 / 注册」假 tab 制造不存在的选择;④ 表单主次不清、注脚散落。
+三版对比稿(A 居中单栏 / B 双栏+货架剪影 / C 双栏+数字墙,Desktop `skill-store-登录页-三版对比稿.html`)**用户选 A**:
+去双栏与品牌栏,窄栏 400px 水平垂直双居中,品牌缩成表单头上一行小标;删假 tab 眉行;两条注脚合并一行沉底
+(`me.authNote`,me.ghNote/me.twoAccounts/login.eyebrow/desc/stats 键随删,零孤儿键);SignInBox 逻辑零动。
+page.tsx 不再注入计数(readIdxMeta/featuredLabels 退出登录页)。

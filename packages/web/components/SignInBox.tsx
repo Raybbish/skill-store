@@ -88,7 +88,6 @@ export default function SignInBox({ onSession, onCancel }: { onSession: (s: Sess
             )}
             {tt("gh.signIn")}
           </button>
-          <p className="me-note">{tt("me.ghNote")}</p>
           <div className="me-or">{tt("me.or")}</div>
           <div className="me-row">
             <input type="email" autoComplete="email" placeholder={tt("talk.emailPh")} value={email} disabled={busy}
@@ -99,7 +98,7 @@ export default function SignInBox({ onSession, onCancel }: { onSession: (s: Sess
             </button>
           </div>
           <p className="me-note">
-            {tt("me.twoAccounts")}
+            {tt("me.authNote")}
             {onCancel && <> · <button className="rev-x" onClick={onCancel}>{tt("talk.cancel")}</button></>}
           </p>
         </>
