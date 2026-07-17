@@ -36,12 +36,19 @@ footer{margin-top:22px;color:var(--faint);font-size:12px;text-align:center;font-
 <header>
   <div class="e">OH-MY-SKILL · 项目状态面板</div>
   <h1>我们在哪</h1>
-  <div class="m">生成于 2026-07-17 04:29 UTC · 分支 main · 工作区干净</div>
+  <div class="m">生成于 2026-07-17 09:05 UTC · 分支 fix/stale-mirrors-0717 · 未提交 333 处</div>
 </header>
-<div class="grid"><div class="card"><b class="">11057</b><span>skill 总数</span></div><div class="card"><b class="ok">52<i>/55</i></b><span>verdict pass(legacy·历史)</span></div><div class="card"><b class="">indexed 6485 <i>·</i> mirrored 4572</b><span>托管(磁盘)·漂移87</span></div><div class="card"><b class="warn">3</b><span>flagged 待裁决</span></div><div class="card"><b class="">0</b><span>已评测</span></div><div class="card"><b class="">871</b><span>发布者</span></div></div>
+<div class="grid"><div class="card"><b class="">11073</b><span>skill 总数</span></div><div class="card"><b class="ok">52<i>/55</i></b><span>verdict pass(legacy·历史)</span></div><div class="card"><b class="">indexed 6494 <i>·</i> mirrored 4579</b><span>托管(磁盘)·漂移38</span></div><div class="card"><b class="warn">3</b><span>flagged 待裁决</span></div><div class="card"><b class="">0</b><span>已评测</span></div><div class="card"><b class="">871</b><span>发布者</span></div></div>
 <div class="doc">
   <h2>最近提交</h2>
-  <pre>73f0604e feat/login solo (#71)</pre>
+  <pre>393749acc6 chore(ingest): daily catalog update (#66)
+d81d771b19 chore: refresh status snapshot [skip ci]
+73f0604e54 feat/login solo (#71)
+3863f846a1 fix/hide thirdparty installs (#70)
+9eb08f73c9 Fix/hide thirdparty installs (#69)
+31d0811bb7 Fix/hide thirdparty installs (#68)
+fba93954b8 fix(catalog): 刷新 lark/styleseed 过期镜像副本,清 preflight 13 项欠账 (#67)
+8460f5ccae chore(code-search): advance sweep cursor [skip ci]</pre>
   <h1>STATUS — 我们在哪</h1>
 <blockquote>手写现状。可派生的数字(catalog / 审计 / 提交)见 <a href="./STATUS.generated.md"><code>STATUS.generated.md</code></a>,由 <code>npm run status</code> 自动生成——别在这里手抄数字。</blockquote>
 <blockquote></blockquote>
@@ -51,6 +58,7 @@ footer{margin-top:22px;color:var(--faint);font-size:12px;text-align:center;font-
 <blockquote>⛔ <strong>安全扫描已整套下架</strong>(2026-07-04,<a href="decisions/0011-unlist-security-scan.md">ADR 0011</a>):前端认证徽章/权限披露/审计文案全部摘除,<code>audit</code>/<code>review</code>/<code>audit:l3</code> scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。</blockquote>
 <h3>已完成</h3>
 <ul>
+<li><strong>preflight 镜像欠账第二轮清账(48 项)+ 漂移机制定性</strong>(2026-07-17):合并 #66 后 Deploy Web 被 artifact preflight 挡下——mattpocock/skills(38)/nanocoai/nanoclaw(5)/worldwonderer/oh-story-claudecode(5)三仓上游更新、镜像未跟。修法同 07-16 runbook:缺席仓临时入册 sources.yaml → 逐仓 <code>ingest --source &lt;repo&gt; --mirror</code> 重拉 → <code>PACK_PREFLIGHT_ONLY=1</code> 复验零失败 → 临时条目删除。<strong>机制定性(待补刀)</strong>:官方仓线更新路径有「未拉镜像先隔离为 indexed」自愈,<strong>搜索/榜单线的更新路径没有</strong>——三仓中两个不在 sources.yaml,每次上游一动就再挡一次部署;应把隔离逻辑补到所有更新路径(或 preflight 降级为隔离而非 fail)。沙箱教训一并记档:挂载盘 unlink 受限 + tsx 需平台二进制,含删除语义的 job 一律本机跑。</li>
 <li><strong>埋点收集端落地:三事件 beacon → Supabase 直插(ADR 0013 补充)</strong>(2026-07-16):上线对账发现三事件(search/click/install)前端 07-05 起全接线但收集端从未存在,生产全 no-op、行为链 0 攒——补 <code>infra/migrations/2026-07-16-analytics-events.sql</code>(<code>analytics_events</code> 表,匿名可插不可读同回执手法,payload 键=列名,事件形状表级 check,纯追加不建二级索引);<code>lib/analytics.ts</code> 发送裹 <code>application/json</code> Blob(裸字符串 text/plain 会被 PostgREST 拒收),端点 = REST 直插 + anon key query 参数(sendBeacon 无 header 位)。web <code>tsc</code> 绿。<strong>待用户端三步:Supabase 执行迁移 → <code>gh secret set NEXT_PUBLIC_ANALYTICS_URL</code>(值 = <code>https://&lt;project&gt;.supabase.co/rest/v1/analytics_events?apikey=&lt;anon&gt;</code>,管道写法不带 --body)→ 合 main 自动生效。建议放量前接上,首波真实行为数据最值钱。</strong></li>
 <li><strong>登录页重设计:独立 <code>/login</code> 双栏 + SignInBox 精修(<a href="decisions/0023-github-login-and-author-import.md">ADR 0023</a> 追记三)</strong>(2026-07-16,随 #65 进 main 已自动部署):反转 07-12「不设独立登录页」裁决(追记三留痕)——导航账号位未登录改进 <code>/login/</code>(已登录仍进 /me);双栏外壳去盒子(品牌栏+登录栏 hairline 分列);SignInBox 统一精修:GitHub 深色实心按钮 +「或」分隔 + 邮箱 6 位分段验证码(自动跳格/退格回退/粘贴自动分配/60s 倒计时重发,发送中·验证中·跳转中均有反馈)。web <code>tsc</code> 绿。<strong>同日再修(用户目检「还是太丑」,裁决方向 A)</strong>:双栏整体退役改<strong>单栏窄栏(400px)双居中</strong>——flex-start 重心失衡是主因,连带删「登录 / 注册」假 tab、GitHub 按钮宽随表单不再拉满、两条注脚合一(<code>me.authNote</code>,孤儿键清零);SignInBox 逻辑零动;三版对比稿留档 Desktop。待提交(建议新分支 <code>feat/login-solo</code>)。</li>
 <li><strong>Code Search 小时级封禁对策落码合并(<a href="decisions/0030-code-search-hourly-ban-offpeak.md">ADR 0030</a>)</strong>(2026-07-16,#65):07-16 复发定性——二级封禁是小时级滑动窗口(reset ≈ now+63min)且<strong>重试本身给封禁续期</strong>,ADR 0027 P1 退避设计上赢不了。① <code>gh-search-client</code> 判为二级限流且 reset−now &gt;10 分钟(<code>SEARCH_RESET_GIVEUP_MS</code>)→ 一发即收工不再重试;② code-search 拆独立 workflow(cron 07:00 UTC 错峰 4 小时 + 与 ingest 同 <code>concurrency: ingest</code> 组互斥,产物落同一条 ingest/daily PR);③ 主 ingest 移除 <code>--code-search</code> 与游标推送步骤。<strong>⚠ 验收未完(见「进行中」)。</strong></li>
