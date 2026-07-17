@@ -74,8 +74,9 @@ function segmentCJK(q: string): string {
 const STOP_TOKENS = new Set([
   // 中文功能词
   "的", "地", "得", "了", "吗", "呢", "吧", "啊", "呀", "哦", "是", "有", "能", "会", "可以",
-  "请", "帮", "帮我", "给我", "我", "你", "我们", "想", "要", "想要", "需要", "找", "求", "推荐",
-  "有没有", "什么", "哪个", "哪些", "怎么", "怎样", "如何", "一个", "一款", "一些", "用", "用来", "用于",
+  "请", "帮", "帮我", "帮忙", "给我", "我", "你", "我们", "想", "要", "想要", "需要", "找", "求", "推荐",
+  "这个", "那个", "这些", "那些",
+  "有没有", "没有", "找个", "一下", "什么", "哪个", "哪些", "怎么", "怎样", "如何", "一个", "一款", "一些", "用", "用来", "用于",
   // 店内全量词:条条都是,不筛选任何东西
   "skill", "skills", "技能", "插件", "工具",
   // 英文功能词
@@ -83,7 +84,15 @@ const STOP_TOKENS = new Set([
 ]);
 function normalizeQuery(q: string): string {
   const seg = segmentCJK(q);
-  const kept = seg.split(/\s+/).filter(Boolean).filter((t) => !STOP_TOKENS.has(t.toLowerCase()));
+  const toks = seg.split(/\s+/).filter(Boolean);
+  const kept: string[] = [];
+  for (let i = 0; i < toks.length; i++) {
+    const t = toks[i].toLowerCase();
+    if (STOP_TOKENS.has(t)) continue;
+    // 分词器把停用词切碎的情形(「插件」→「插 件」):相邻两 token 拼回仍是停用词则一并剔
+    if (i + 1 < toks.length && STOP_TOKENS.has(t + toks[i + 1].toLowerCase())) { i++; continue; }
+    kept.push(toks[i]);
+  }
   return kept.length ? kept.join(" ") : seg;
 }
 
