@@ -67,6 +67,26 @@ function segmentCJK(q: string): string {
   }
 }
 
+/** 查询降噪(ADR 0033):剔除零信息量 token 再检索。「读论文的skill」→「读 论文」。
+ *  tokens_matched 是 _text_match 的最高优先级分量——「skill」在本店是全量词(万条皆 skill,
+ *  却能以 name 权重精确命中 skill-* 抢头部),「的/帮我/推荐」是功能词,谁含谁加分,全是噪声。
+ *  只剔精确 token(实义动名词一律保留);全剔空时回退不剔(真搜「skill」「工具」仍可搜)。 */
+const STOP_TOKENS = new Set([
+  // 中文功能词
+  "的", "地", "得", "了", "吗", "呢", "吧", "啊", "呀", "哦", "是", "有", "能", "会", "可以",
+  "请", "帮", "帮我", "给我", "我", "你", "我们", "想", "要", "想要", "需要", "找", "求", "推荐",
+  "有没有", "什么", "哪个", "哪些", "怎么", "怎样", "如何", "一个", "一款", "一些", "用", "用来", "用于",
+  // 店内全量词:条条都是,不筛选任何东西
+  "skill", "skills", "技能", "插件", "工具",
+  // 英文功能词
+  "a", "an", "the", "for", "to", "of", "with", "my", "me", "that", "this", "how", "what", "please", "find",
+]);
+function normalizeQuery(q: string): string {
+  const seg = segmentCJK(q);
+  const kept = seg.split(/\s+/).filter(Boolean).filter((t) => !STOP_TOKENS.has(t.toLowerCase()));
+  return kept.length ? kept.join(" ") : seg;
+}
+
 export class TypesenseStore extends StaticStore implements SkillStore {
   constructor(private url: string, private key: string, base = "/idx") {
     super(base);
@@ -79,7 +99,7 @@ export class TypesenseStore extends StaticStore implements SkillStore {
    * B 决策:不再 fail-open 回落本地 docs——Typesense 挂即抛错,前端进「索引加载失败,刷新重试」态。
    */
   override async search(query: string, filters: SearchFilters, page: number): Promise<SearchResult> {
-    const q = segmentCJK(query.trim()); // CJK 连写预分词成空格分隔,drop_tokens 才能丢词回退(ADR 0028)
+    const q = normalizeQuery(query.trim()); // 预分词(ADR 0028)+ 查询降噪(ADR 0033)
     const params = new URLSearchParams({
       q: q || "*", // 无词 → 通配全量
       query_by: TS_QUERY_BY,
@@ -99,6 +119,11 @@ export class TypesenseStore extends StaticStore implements SkillStore {
       // both_sides:3 让 ≤3 词的短查询从两端各丢一次取并集。_text_match 仍主序,头部精度不塌。
       params.set("drop_tokens_threshold", "10");
       params.set("drop_tokens_mode", "both_sides:3");
+      // 拼写容错解锁(ADR 0032):typo_tokens_threshold 默认 1 = 只要已有 1 条命中就永不尝试容错——
+      // 「excell」被无关前缀命中 operational-excellence 卡成 found=1,excel 技能全体隐身。
+      // 提到 10,与 drop_tokens_threshold 同一哲学:头部不足 10 条才扩(1-2 typo 由 num_typos 默认值管);
+      // _text_match 主序保证精确命中恒压容错命中,头部精度不塌;CJK 词长 <4 不触发 typo(min_len_1typo=4),中文行为不变。
+      params.set("typo_tokens_threshold", "10");
       if (sort === "stars") params.set("sort_by", "stars(missing_values: last):desc,_text_match:desc,pop:desc");
       else if (sort === "new") params.set("sort_by", "addedAt(missing_values: last):desc,_text_match:desc,pop:desc");
       else params.set("sort_by", "_text_match:desc,pop:desc");

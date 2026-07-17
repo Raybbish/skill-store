@@ -1,31 +1,17 @@
-# 自动刷新 docs/STATUS.generated.md(可选;不想要就删掉本文件)
-# push 只校验不提交(避免「push → 机器人抢先一笔 → 下次 push 被拒」的乒乓);
-# 快照的自动提交只在每日定时 / 手动触发时做。
+# push 校验 scripts/status.mjs 可运行;快照产物(STATUS.generated.md/STATUS.html)已退出 git 跟踪
+# (ADR 0031):本文件不再提交任何东西——此前定时直推 main 与各 PR 两头写同一文件,是 docs 冲突的主源。
+# 看数字:本地 npm run status。
 name: status
 on:
   push:
     branches: [main]
-  schedule:
-    - cron: "20 1 * * *"
   workflow_dispatch:
 jobs:
-  refresh:
+  check:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: node scripts/status.mjs
-      - name: commit if changed(仅定时/手动;push 只校验)
-        if: github.event_name != 'push'
-        run: |
-          if ! git diff --quiet -- docs/STATUS.generated.md docs/STATUS.html; then
-            git config user.name "status-bot"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add docs/STATUS.generated.md docs/STATUS.html
-            git commit -m "chore: refresh status snapshot [skip ci]"
-            git push
-          fi

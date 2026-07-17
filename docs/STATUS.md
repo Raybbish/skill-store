@@ -1,8 +1,8 @@
 # STATUS — 我们在哪
 
-> 手写现状。可派生的数字(catalog / 审计 / 提交)见 [`STATUS.generated.md`](./STATUS.generated.md),由 `npm run status` 自动生成——别在这里手抄数字。
+> 手写现状(唯一进 git 的状态文件)。可派生的数字(catalog / 审计 / 提交)本地跑 `npm run status` 生成快照看(产物已退出 git 跟踪,[ADR 0031](decisions/0031-untrack-status-snapshots.md))——别在这里手抄数字。
 >
-> _上次人工更新:2026-07-16(全仓文档对账除锈:补记 07-12~16 合并批;ADR 0030 进观察期)_
+> _上次人工更新:2026-07-17(搜索拼写容错解锁 ADR 0032)_
 
 ## 里程碑:M0 · 可信目录(进行中)
 目标:500+ 已收录 skill、可浏览 / 可搜 / 可一键装、catalog 公开可验证。
@@ -10,6 +10,8 @@
 > ⛔ **安全扫描已整套下架**(2026-07-04,[ADR 0011](decisions/0011-unlist-security-scan.md)):前端认证徽章/权限披露/审计文案全部摘除,`audit`/`review`/`audit:l3` scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。
 
 ### 已完成
+- **搜索拼写容错解锁:typo_tokens_threshold 1→10([ADR 0032](decisions/0032-typo-tolerance-threshold.md))**(2026-07-17,用户报障「首页搜索基本找不到」):线上索引直测定位单一根因——Typesense `typo_tokens_threshold` 默认 1,只要已有任意 1 条命中(哪怕无关前缀撞词)就永不尝试拼写容错:「excell」被 operational-excellence 卡成 found=1,excel-* 全体隐身;解锁后 17。修 = `store-typesense.ts` 带词分支加 `typo_tokens_threshold=10`,与 ADR 0028 drop_tokens 同哲学(头部 <10 才扩,`_text_match` 主序头部不塌);CJK 词长 < min_len_1typo=4 不触发,中文行为零扰动。同义词表评估后不做:转述层已兜(「幻灯片」55、「抠图」命中 background-removal),ppt→pptx 等缩写本就是 1 typo;推迟到搜索埋点攒出真实缺口再议。纯查询期参数,合 main 部署即生效,零索引重推。web `tsc` 绿。
+- **STATUS 生成物退出 git 跟踪([ADR 0031](decisions/0031-untrack-status-snapshots.md))**(2026-07-17,用户裁决):status.yml 定时直推与各 PR 两头写 `STATUS.generated.md`/`STATUS.html`,07-16~17 三条 PR 的冲突全在这三件套;gitignore 条目早已存在但从未 `git rm --cached`(烂尾考古)。修:退出跟踪 + status.yml 撤定时提交与写权限只留 push 校验 + CLAUDE.md 契约改口「数字=本地 `npm run status`」。docs 冲突面缩到手写 STATUS.md 一个文件;`chore/untrack-status` 旧分支可删。**待用户终端:`git rm --cached docs/STATUS.generated.md docs/STATUS.html`。**
 - **howto 补「新上架」维度(ADR 0025 补充,用户裁决)**(2026-07-17):star/人气圈定(hot top1000、--min-stars 批)只覆盖「已经红了的货」,新增条目 star 尚空被系统性排除——实测近两天新上架 287 条仅 6 条有 howto(微文案 258/287,其本就按缺补)。修:`howto:llm` 加 `--scope recent [--days N]`(按 `first_seen_at` 圈定,默认 3 天,窗口滚动兜缺跑,锚幂等重叠零成本);ingest.yml 富化段加「补怎么用(新上架)」步骤(15 分钟帽,每天一两百条 DeepSeek 几毛钱)。star 批既有口径不动,两维互补。根 `tsc` 绿。**待:存量缺口本机补一轮 `npm run howto:llm -- --scope recent --days 14`。**
 - **howto 补「新上架」维度(ADR 0025 补充,用户裁决)**(2026-07-17):star/人气圈定(hot top1000、--min-stars 批)只覆盖「已经红了的货」,新增条目 star 尚空被系统性排除——实测近两天新上架 287 条仅 6 条有 howto(微文案 258/287,其本就按缺补)。修:`howto:llm` 加 `--scope recent [--days N]`(按 `first_seen_at` 圈定,默认 3 天,窗口滚动兜缺跑,锚幂等重叠零成本);ingest.yml 富化段加「补怎么用(新上架)」步骤(15 分钟帽,每天一两百条 DeepSeek 几毛钱)。star 批既有口径不动,两维互补。根 `tsc` 绿。**待:存量缺口本机补一轮 `npm run howto:llm -- --scope recent --days 14`。**
 - **howto 补「新上架」维度(ADR 0025 补充,用户裁决)**(2026-07-17):star/人气圈定(hot top1000、--min-stars 批)只覆盖「已经红了的货」,新增条目 star 尚空被系统性排除——实测近两天新上架 287 条仅 6 条有 howto(微文案 258/287,因其本就按缺补)。而新货没口碑,转述恰是详情页唯一人话,说明价值最高、量最小。修:`howto:llm` 加 `--scope recent [--days N]`(按 `first_seen_at` 圈定,默认 3 天,窗口滚动兜缺跑,锚幂等重叠零成本);ingest.yml 富化段加「补怎么用(新上架)」步骤(15 分钟帽,每天一两百条 DeepSeek 几毛钱)。star 批既有口径不动,两维互补。根 `tsc` 绿。**待:存量缺口本机补一轮 `npm run howto:llm -- --scope recent --days 14`。**

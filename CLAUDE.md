@@ -11,13 +11,13 @@
 ## 收工前(必做 —— 这就是"完成"的定义)
 - 有可见进展 → 更新 `docs/STATUS.md` 的「已完成 / 进行中 / 下一步」。
 - 做了架构或产品决策 → 在 `docs/decisions/` 加一条 ADR(编号递增,格式见该目录 README)。
-- 改了数据 / 管线 → 跑 `npm run status` 刷新 `docs/STATUS.generated.md` 一起提交。
+- 改了数据 / 管线 → 本地跑 `npm run status` 核对数字;快照产物已退出 git 跟踪,**不随提交**([ADR 0031](docs/decisions/0031-untrack-status-snapshots.md))。
 - **一次改动 = 一个分支 + 一个 PR**;PR 描述写清"这个 agent 在做什么"。PR 列表就是全体 agent 的看板。
 
 ## 目录
 - `packages/` 代码:`pipeline`(采集+评测;审计已下架)· `web`(Next 前端)· `cli` · `schemas`
 - `catalog/` **事实源**(公开;改动走 PR、带 commit 溯源)
-- `docs/` 文档,**Markdown 为准**:`STATUS.md` 手写现状 · `STATUS.generated.md` 脚本自动生成 · `decisions/` ADR
+- `docs/` 文档,**Markdown 为准**:`STATUS.md` 手写现状(唯一进 git 的状态文件) · `decisions/` ADR;快照 `STATUS.generated.md`/`STATUS.html` 本地生成不入库(ADR 0031)
 - `scripts/status.mjs` 从 catalog + git 派生状态快照
 
 ## 硬约束(沿用 PRD)
