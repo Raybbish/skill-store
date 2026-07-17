@@ -5,7 +5,7 @@
     "name": "use-native-credential-proxy",
     "description": "Opt out of the OneCLI gateway and supply Anthropic credentials from .env instead. For users who want simple .env-based credential management without the OneCLI agent vault. Reads the API key or OAuth token from .env and injects it into the container's API requests.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/use-native-credential-proxy",
-    "upstream_commit": "a11ad11ec05b23cedc15ad0ac92c92e1eb9c829b",
+    "upstream_commit": "e926e30eb74ce111167bc7b8a977899ac84168ad",
     "content_hash": "sha256:35f97c825ad7902fbaf8118a194e113cd18019a13da0bf2239cb05fc522429ec",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30263,
+    "stars_github": 30268,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-16T05:35:44.530Z",
+    "fetched_at": "2026-07-17T05:37:11.390Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-15T11:22:24+03:00",
+    "upstream_commit_at": "2026-07-16T15:37:08+02:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-16T05:35:44.530Z",
+    "generated_at": "2026-07-17T05:37:11.390Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -97,41 +97,31 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会直接从 .env 文件读取 API 密钥或 OAuth 令牌，不再经过 OneCLI 网关。容器启动时，凭证作为环境变量注入，Claude 原生使用。",
-    "when": "当你在 .env 中设置 NANOCLAW_NATIVE_CREDENTIALS=true 并配置了 ANTHROPIC_API_KEY 或 CLAUDE_CODE_OAUTH_TOKEN 时触发。每次容器启动时生效。",
+    "what": "装上后，Claude 会直接从宿主机的 .env 文件读取 API 密钥或 OAuth 令牌，并注入到容器环境中，不再经过 OneCLI 网关。",
+    "when": "当你在 .env 中设置 NANOCLAW_NATIVE_CREDENTIALS=true 并配置了 ANTHROPIC_API_KEY 或 CLAUDE_CODE_OAUTH_TOKEN 等凭证时触发。",
     "say": [
       {
-        "text": "帮我检查 .env 中的 API 密钥是否有效。",
-        "note": "Claude 会读取 .env 中的凭证并验证。"
+        "text": "帮我检查 .env 中的 API 密钥是否有效。"
       },
       {
-        "text": "用我的 Claude Pro 订阅令牌启动容器。",
-        "note": "需要先运行 claude setup-token 获取令牌。"
-      },
-      {
-        "text": "切换到自定义 API 端点 https://myapi.com。",
-        "note": "在 .env 中设置 ANTHROPIC_BASE_URL。"
+        "text": "切换到使用 Claude 订阅令牌。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:35f97c825ad7902fbaf8118a194e113cd18019a13da0bf2239cb05fc522429ec",
     "model": "deepseek-chat",
-    "generated_at": "2026-07-16T05:43:44.258Z",
+    "generated_at": "2026-07-17T05:44:02.780Z",
     "lint_pass": true,
-    "what_en": "When enabled, Claude reads API key or OAuth token directly from .env instead of using the OneCLI gateway. Credentials are injected as environment variables into the container, which Claude uses natively.",
-    "when_en": "Triggered when NANOCLAW_NATIVE_CREDENTIALS=true is set in .env along with ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN. Applies each time a container starts.",
+    "what_en": "When enabled, Claude reads the API key or OAuth token from the host's .env file and injects it into the container environment, bypassing the OneCLI gateway.",
+    "when_en": "Triggered when NANOCLAW_NATIVE_CREDENTIALS=true is set in .env along with ANTHROPIC_API_KEY, CLAUDE_CODE_OAUTH_TOKEN, or ANTHROPIC_AUTH_TOKEN.",
     "say_en": [
       {
         "text": "Check if the API key in .env is valid.",
-        "note": "Claude reads the credential from .env and verifies it."
+        "note": "Claude reads the credential from .env and tries to connect to the Anthropic API."
       },
       {
-        "text": "Start the container with my Claude Pro subscription token.",
-        "note": "Requires running claude setup-token first."
-      },
-      {
-        "text": "Switch to custom API endpoint https://myapi.com.",
-        "note": "Set ANTHROPIC_BASE_URL in .env."
+        "text": "Switch to using a Claude subscription token.",
+        "note": "Claude guides you to run claude setup-token and update .env."
       }
     ]
   }
