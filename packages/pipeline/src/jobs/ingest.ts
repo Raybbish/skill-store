@@ -447,15 +447,20 @@ async function main() {
       // 索引趟(未带 --mirror):hosting 只表达「本店实际托管」,以磁盘事实定值——
       // licence 允许(候选分类=mirrored)且磁盘已有副本 → 沿用 mirrored(完整度沿用 prev);
       // 其余一律 indexed。候选默认的 licence 分类值在此被磁盘事实覆盖,杜绝「标 mirrored 无副本」再产生。
-      const mirrorCurrent = prev?.meta.content_hash === c.report.meta.content_hash;
+      // 镜像可信的前提有两个,缺一不可:① hash 未变;② prev 仍处 mirrored——被隔离(indexed)的条目
+      // 其 prev.hash 与磁盘旧副本已脱钩,hash 相等不代表镜像是当前内容(2026-07-17 lark 三项漂移复活的根因:
+      // 隔离态条目在下一趟索引 cron 被此分支升回 mirrored+complete,却没有任何拷贝发生)。
+      // 索引趟只沿用、永不升级;升回 mirrored 只归 --mirror 趟(那条路径真的拷副本)。
+      const mirrorCurrent = prev?.meta.content_hash === c.report.meta.content_hash && prev?.meta.hosting === "mirrored";
       if (c.report.meta.hosting === "mirrored" && existsSync(mirrorDir) && mirrorCurrent) {
-        c.report.meta.mirror_complete = prev?.meta.mirror_complete ?? true;
+        c.report.meta.mirror_complete = prev?.meta.mirror_complete === true; // 隔离时字段已删,缺省不得冒充 complete
         if (await injectLicense(c, mirrorDir)) stats.licenseInjected++; // 更新路径的存量镜像也补证
       } else {
         if (existsSync(mirrorDir)) {
           if (!mirrorCurrent) {
             stats.mirrorInvalidated++;
-            console.warn(`  ⚠ ${c.report.meta.id} 内容已更新但本趟未拉新镜像,旧 mirror 已隔离为 indexed`);
+            const why = prev?.meta.hosting === "mirrored" ? "内容已更新但本趟未拉新镜像" : "先前已隔离,旧副本不可信";
+            console.warn(`  ⚠ ${c.report.meta.id} ${why},mirror 维持隔离(indexed);下次 --mirror 重拉`);
           } else {
             console.warn(`  ⚠ ${c.report.meta.id} licence 收紧但磁盘遗留 mirror/(hosting 置 indexed,副本去留人工核)`);
           }
