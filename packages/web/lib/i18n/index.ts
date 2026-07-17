@@ -27,7 +27,7 @@ const zh = {
   "footer.privacy": "隐私", "footer.tail": "Agent Skills 商店",
   // 首页
   "home.searchPlaceholder": "搜索 {n} 个 skill…",
-  "home.packsTitle": "一套装齐", "home.packsK": "按场景配好,一条命令",
+  "home.packsTitle": "一套装齐", "home.packsK": "按场景配好,一条命令", "home.packsPrev": "向左滚动", "home.packsNext": "向右滚动",
   "home.allSkills": "全部 skill", "home.relevance": "相关度排序",
   "home.scene": "场景", "home.exitScene": "退出场景",
   "home.filterRepo": "只看仓库", "home.filterPub": "只看发布者",
@@ -161,7 +161,7 @@ const en: Record<MsgKey, string> = {
   "nav.back": "‹ Home", "nav.signIn": "Sign in",
   "footer.privacy": "Privacy", "footer.tail": "The Agent Skills store",
   "home.searchPlaceholder": "Search {n} skills…",
-  "home.packsTitle": "Starter packs", "home.packsK": "Curated by scenario, one command",
+  "home.packsTitle": "Starter packs", "home.packsK": "Curated by scenario, one command", "home.packsPrev": "Scroll left", "home.packsNext": "Scroll right",
   "home.allSkills": "All skills", "home.relevance": "by relevance",
   "home.scene": "Scene", "home.exitScene": "Exit scene",
   "home.filterRepo": "From repo", "home.filterPub": "From publisher",

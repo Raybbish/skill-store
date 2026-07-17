@@ -19,8 +19,13 @@ const nf = (x: number | null | undefined) => (typeof x === "number" && !Number.i
  *  未配 → 纯 StaticStore,行为与 P0 完全一致。 */
 const store = createStore();
 
-/** 场景包跑马灯:双轨无缝循环,hover 暂停;reduced-motion 降级为静态横滑(见 globals.css) */
-function PackMarquee({ packs, locale }: { packs: Pack[]; locale: Locale }) {
+/** 场景包横滑:手动滚动(触控板/滚轮/箭头按钮),不自动播放(见 globals.css) */
+function PackShelf({ packs, locale }: { packs: Pack[]; locale: Locale }) {
+  const rail = useRef<HTMLDivElement>(null);
+  const nudge = (dir: 1 | -1) => {
+    const el = rail.current;
+    el?.scrollBy({ left: dir * Math.round(el.clientWidth * 0.7), behavior: "smooth" });
+  };
   if (!packs.length) return null;
   const Card = ({ p }: { p: Pack }) => (
     <Link href={localePath(locale, `/pack/${p.id}/`)} className="pk">
@@ -34,13 +39,16 @@ function PackMarquee({ packs, locale }: { packs: Pack[]; locale: Locale }) {
   );
   return (
     <div className="sec">
-      <div className="sec-h"><h2>{t(locale, "home.packsTitle")}</h2><span className="k">{t(locale, "home.packsK")}</span></div>
-      <div className="mq">
+      <div className="sec-h">
+        <h2>{t(locale, "home.packsTitle")}</h2><span className="k">{t(locale, "home.packsK")}</span>
+        <span className="mq-nav">
+          <button type="button" aria-label={t(locale, "home.packsPrev")} onClick={() => nudge(-1)}>‹</button>
+          <button type="button" aria-label={t(locale, "home.packsNext")} onClick={() => nudge(1)}>›</button>
+        </span>
+      </div>
+      <div className="mq" ref={rail}>
         <div className="mq-track">
           {packs.map((p) => <Card p={p} key={p.id} />)}
-          <span aria-hidden="true" style={{ display: "contents" }}>
-            {packs.map((p) => <Card p={p} key={`${p.id}-b`} />)}
-          </span>
         </div>
       </div>
     </div>
@@ -205,7 +213,7 @@ export default function HomeClient({ locale, first, meta, cats, tags, facets, ca
         </div>
       </section>
 
-      <PackMarquee packs={packs} locale={locale} />
+      <PackShelf packs={packs} locale={locale} />
 
       <div className="sec">
         <div className="sec-h">

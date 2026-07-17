@@ -101,19 +101,15 @@ a{color:inherit;text-decoration:none}
 .go{color:var(--blue);font-weight:700;font-size:14px}
 .empty{padding:30px 0;text-align:center;color:var(--faint);font-size:14px}
 
-/* 场景包跑马灯(首页):双轨无缝循环,hover 暂停;reduced-motion 降级为静态横滑 */
-.mq{overflow:hidden;position:relative;margin:0 -26px;padding:4px 0 6px}
-.mq:before,.mq:after{content:"";position:absolute;top:0;bottom:0;width:56px;z-index:2;pointer-events:none}
-.mq:before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
-.mq:after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
-.mq-track{display:flex;gap:12px;width:max-content;animation:mq 36s linear infinite;padding:0 26px}
-.mq:hover .mq-track{animation-play-state:paused}
-@keyframes mq{to{transform:translateX(-50%)}}
-@media (prefers-reduced-motion:reduce){
-  .mq{overflow-x:auto}
-  .mq-track{animation:none;width:auto}
-}
-.pk{flex:0 0 auto;display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:12px 16px 12px 12px;background:#fff;cursor:pointer;transition:transform .12s,box-shadow .12s}
+/* 场景包横滑(首页):手动横向滚动(触控板/滚轮/箭头按钮),无自动播放;
+   两侧渐隐用 mask(贴视口不随内容滚),滚动条隐藏,snap 轻吸附方便回退 */
+.mq{overflow-x:auto;position:relative;margin:0 -26px;padding:4px 0 6px;scrollbar-width:none;scroll-snap-type:x proximity;scroll-padding-left:26px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+.mq::-webkit-scrollbar{display:none}
+.mq-track{display:flex;gap:12px;width:max-content;padding:0 26px}
+.sec-h .mq-nav{margin-left:auto;display:flex;gap:6px;align-self:center}
+.mq-nav button{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--sub);font-size:15px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0;font-family:var(--ui)}
+.mq-nav button:hover{color:var(--ink);border-color:var(--sub)}
+.pk{scroll-snap-align:start;flex:0 0 auto;display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:12px 16px 12px 12px;background:#fff;cursor:pointer;transition:transform .12s,box-shadow .12s}
 .pk:hover{transform:translateY(-2px);box-shadow:0 8px 24px -14px rgba(20,22,29,.25)}
 .pk .tile{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font-size:22px;flex-shrink:0}
 .pk .pt{font-family:var(--display);font-weight:700;font-size:15px;white-space:nowrap;display:block}
@@ -363,7 +359,7 @@ footer a:hover{color:var(--ink);text-decoration-color:var(--faint)}
   .tabs .lang-sw{flex-shrink:0}
   .hero{padding:32px 0 16px}
   .hero h1{font-size:30px}
-  .mq{margin:0 -16px}
+  .mq{margin:0 -16px;scroll-padding-left:16px}
   .mq-track{padding:0 16px}
   .idx{width:30px;font-size:22px}
   .row{gap:12px}
