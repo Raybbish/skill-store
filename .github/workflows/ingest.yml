@@ -85,6 +85,16 @@ jobs:
           LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
         run: npm run howto:llm -- --scope hot
 
+      - name: 补怎么用(新上架,近3天) # star 是滞后指标:hot/min-stars 圈不到新增条目,按 first_seen_at 即时补(每天一两百条,费用可控;锚幂等,与 hot 重叠零成本)
+        if: env.HAS_LLM == 'true'
+        continue-on-error: true
+        timeout-minutes: 15
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.LLM_BASE_URL || 'https://api.deepseek.com' }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
+        run: npm run howto:llm -- --scope recent
+
       - name: Create PR with catalog changes
         uses: peter-evans/create-pull-request@v7
         with:

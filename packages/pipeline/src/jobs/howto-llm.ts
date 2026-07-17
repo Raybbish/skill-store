@@ -16,6 +16,8 @@
  *   npm run howto:llm -- --scope hot            # 场景包成员 ∪ 人气 top(默认 1000)(S1)
  *   npm run howto:llm -- --scope all            # 全量补齐(S2,分批跑)
  *   npm run howto:llm -- --scope missing-en     # 只补「zh 新鲜可用但缺英文」的存量(没拿到英文不动旧块)
+ *   npm run howto:llm -- --scope recent [--days N] # 新上架(first_seen_at 近 N 天,默认 3):star 是滞后指标,
+ *                                                  # 新货说明价值最高、量最小,即时补;窗口滚动兜住某天没跑完的
  *   npm run howto:llm -- --scope all --min-stars 1000   # 全量里按 GitHub star 阈值圈定(≥1000;仓库级 star)
  *   npm run howto:llm -- --top 500              # 调热门集大小
  *   npm run howto:llm -- --limit 20 --dry       # 试跑不写盘
@@ -238,6 +240,16 @@ async function main() {
     const hot = await hotIds(shelf, top);
     pool = stale.filter((e) => hot.has(e.report.meta.id));
   }
+  // recent:新上架维度(2026-07-17 用户裁决)——star 门槛圈的是「已经红了的货」,新增条目 star 尚空,
+  // 被系统性排除;按 first_seen_at 圈定即时补,每天增量一两百条费用可控。锚幂等:窗口重叠重跑零成本。
+  if (scope === "recent") {
+    const days = argVal("days") ? Number(argVal("days")) : 3;
+    const cutoff = Date.now() - days * 86_400_000;
+    pool = stale.filter((e) => {
+      const fs = e.report.signals.first_seen_at;
+      return fs != null && Date.parse(fs) >= cutoff;
+    });
+  }
   // --min-stars N:任意 scope 之上再按 GitHub star 阈值圈定(仓库级 star,同仓 skill 共享;
   // 与 hot 的「人气排名 top N」不同口径,规范用法 --scope all --min-stars 1000)
   if (minStars != null) {
@@ -246,7 +258,7 @@ async function main() {
   const targets = pool.slice(0, limit);
 
   console.log(
-    `howto:llm  scope=${scope}${scope === "hot" ? `(top=${top})` : ""}${minStars != null ? `  ★≥${minStars}` : ""}  待生成 ${stale.length} · 本次目标 ${targets.length}` +
+    `howto:llm  scope=${scope}${scope === "hot" ? `(top=${top})` : ""}${scope === "recent" ? `(days=${argVal("days") ?? 3})` : ""}${minStars != null ? `  ★≥${minStars}` : ""}  待生成 ${stale.length} · 本次目标 ${targets.length}` +
       `  并发=${CONCURRENCY}${dry ? "  (dry)" : ""}${process.env.LLM_MOCK === "1" ? "  [MOCK]" : ""}`,
   );
 
