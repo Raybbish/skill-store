@@ -1,12 +1,12 @@
-import ChartsView from "../../charts/ChartsView";
-import { langAlternates } from "@/lib/i18n";
+"use client";
+import { useEffect } from "react";
+import { useT } from "@/lib/i18n/client";
 
-export const metadata = {
-  title: "Charts · oh-my-skill",
-  description: "New arrivals by day, plus trending skills.",
-  alternates: langAlternates("/charts/", "en"),
-};
-
-export default function ChartsEn() {
-  return <ChartsView locale="en" />;
+/** Charts merged into the home page (ADR 0034): thin shell keeps old links alive. */
+export default function ChartsRedirectEn() {
+  const tt = useT();
+  useEffect(() => {
+    window.location.replace("/en/");
+  }, []);
+  return <div className="empty">{tt("browse.redirect")}</div>;
 }

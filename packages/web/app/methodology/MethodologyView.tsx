@@ -52,7 +52,7 @@ export default function MethodologyView({ locale }: { locale: Locale }) {
             </div>
             <div className="rt">
               {c.stars != null && <div className="score"><span className="gold">★</span> {fmtInstalls(c.stars)}</div>}
-              {!c.blocked && <Link href={`${localePath(locale, "/")}?repo=${encodeURIComponent(c.id)}`} className="go">{t(locale, "cov.listedLink")}</Link>}
+              {!c.blocked && <Link href={`${localePath(locale, "/browse/")}?repo=${encodeURIComponent(c.id)}`} className="go">{t(locale, "cov.listedLink")}</Link>}
               <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "var(--faint)", fontWeight: 600 }}>{t(locale, "cov.source")}</a>
             </div>
           </div>

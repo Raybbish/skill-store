@@ -1,12 +1,12 @@
-import ChartsView from "./ChartsView";
-import { langAlternates } from "@/lib/i18n";
+"use client";
+import { useEffect } from "react";
+import { useT } from "@/lib/i18n/client";
 
-export const metadata = {
-  title: "榜单 · oh-my-skill",
-  description: "新上架按收录日分组,热门前 20,一页看全。",
-  alternates: langAlternates("/charts/", "zh"),
-};
-
-export default function Charts() {
-  return <ChartsView locale="zh" />;
+/** 榜单已并入首页(ADR 0034):薄壳跳转保住旧链接与外部收藏。 */
+export default function ChartsRedirect() {
+  const tt = useT();
+  useEffect(() => {
+    window.location.replace("/");
+  }, []);
+  return <div className="empty">{tt("browse.redirect")}</div>;
 }

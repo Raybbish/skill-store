@@ -71,7 +71,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       )}
 
       <div className="filters" style={{ marginTop: 14 }}>
-        <Link href="/" className="chip"><L zh="← 全部 skill" en="← All skills" /></Link>
+        <Link href="/browse/" className="chip"><L zh="← 全部 skill" en="← All skills" /></Link>
         {featuredLabels().map((l) => (
           <Link key={l.slug} href={`/category/${l.slug}/`} className={`chip ${l.slug === slug ? "on" : ""}`}><L zh={l.label_zh} en={l.label_en} /></Link>
         ))}
@@ -84,7 +84,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
       {truncated && (
         <div className="filters" style={{ marginTop: 16, justifyContent: "center" }}>
-          <Link href={`/?${featured ? "cat" : "tag"}=${slug}`} className="chip">
+          <Link href={`/browse/?${featured ? "cat" : "tag"}=${slug}`} className="chip">
             <L zh={`在浏览页看全部 ${skills.length.toLocaleString()} 条(分页)›`} en={`Browse all ${skills.length.toLocaleString()} (paginated) ›`} />
           </Link>
         </div>

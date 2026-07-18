@@ -2,7 +2,7 @@
 
 > 手写现状。可派生的数字(catalog / 审计 / 提交)见 [`STATUS.generated.md`](./STATUS.generated.md),由 `npm run status` 自动生成——别在这里手抄数字。
 >
-> _上次人工更新:2026-07-16(全仓文档对账除锈:补记 07-12~16 合并批;ADR 0030 进观察期)_
+> _上次人工更新:2026-07-17(首页与榜单对调落码待合)_
 
 ## 里程碑:M0 · 可信目录(进行中)
 目标:500+ 已收录 skill、可浏览 / 可搜 / 可一键装、catalog 公开可验证。
@@ -10,6 +10,7 @@
 > ⛔ **安全扫描已整套下架**(2026-07-04,[ADR 0011](decisions/0011-unlist-security-scan.md)):前端认证徽章/权限披露/审计文案全部摘除,`audit`/`review`/`audit:l3` scripts 移除(源码留仓参考),CLI 只保留 content_hash 校验。待详细研究与设计后再上架。下面「已完成」里的审计条目为历史记录。
 
 ### 已完成
+- **首页与榜单对调:店况首页 + /browse 目录检索([ADR 0034](decisions/0034-home-browse-swap.md))**(2026-07-17,分支 `feat/home-browse-swap` 待提交):`/` 改店况首页(事实条「收录 N · 今日 +a · 本周 +b」+ 搜索入口 + PackShelf 货架 + 左「新上架按日」/右「热门 TOP 20」两栏,SkillRow 加 `variant="compact"`,移动端双 tab 去 emoji);目录检索整体迁 `/browse/`(HomeClient→BrowseClient,hero 降级小标题、货架撤下,新增 /en/browse/);`/charts/` 变薄壳跳 `/`;旧 / 检索深链客户端转发保活;内链四处(场景词/分类页/收录页/详情页)改指 /browse/;右栏与浏览页默认态**有意重复**(设计稿拍板 06-d)。设计稿(二稿+taste 自审)在 Desktop。**待:终端 `git rm` charts 两个废弃 stub(沙箱 unlink 受限)→ 提交开 PR;合并后观察 / 与 /browse/ 的 SEO 收录轮替。**
 - **howto 补「新上架」维度(ADR 0025 补充,用户裁决)**(2026-07-17):star/人气圈定(hot top1000、--min-stars 批)只覆盖「已经红了的货」,新增条目 star 尚空被系统性排除——实测近两天新上架 287 条仅 6 条有 howto(微文案 258/287,其本就按缺补)。修:`howto:llm` 加 `--scope recent [--days N]`(按 `first_seen_at` 圈定,默认 3 天,窗口滚动兜缺跑,锚幂等重叠零成本);ingest.yml 富化段加「补怎么用(新上架)」步骤(15 分钟帽,每天一两百条 DeepSeek 几毛钱)。star 批既有口径不动,两维互补。根 `tsc` 绿。**待:存量缺口本机补一轮 `npm run howto:llm -- --scope recent --days 14`。**
 - **howto 补「新上架」维度(ADR 0025 补充,用户裁决)**(2026-07-17):star/人气圈定(hot top1000、--min-stars 批)只覆盖「已经红了的货」,新增条目 star 尚空被系统性排除——实测近两天新上架 287 条仅 6 条有 howto(微文案 258/287,其本就按缺补)。修:`howto:llm` 加 `--scope recent [--days N]`(按 `first_seen_at` 圈定,默认 3 天,窗口滚动兜缺跑,锚幂等重叠零成本);ingest.yml 富化段加「补怎么用(新上架)」步骤(15 分钟帽,每天一两百条 DeepSeek 几毛钱)。star 批既有口径不动,两维互补。根 `tsc` 绿。**待:存量缺口本机补一轮 `npm run howto:llm -- --scope recent --days 14`。**
 - **howto 补「新上架」维度(ADR 0025 补充,用户裁决)**(2026-07-17):star/人气圈定(hot top1000、--min-stars 批)只覆盖「已经红了的货」,新增条目 star 尚空被系统性排除——实测近两天新上架 287 条仅 6 条有 howto(微文案 258/287,因其本就按缺补)。而新货没口碑,转述恰是详情页唯一人话,说明价值最高、量最小。修:`howto:llm` 加 `--scope recent [--days N]`(按 `first_seen_at` 圈定,默认 3 天,窗口滚动兜缺跑,锚幂等重叠零成本);ingest.yml 富化段加「补怎么用(新上架)」步骤(15 分钟帽,每天一两百条 DeepSeek 几毛钱)。star 批既有口径不动,两维互补。根 `tsc` 绿。**待:存量缺口本机补一轮 `npm run howto:llm -- --scope recent --days 14`。**

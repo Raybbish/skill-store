@@ -9,15 +9,18 @@ import { useLocale, useT } from "@/lib/i18n/client";
 const fmt = (n: number) => (n >= 1e6 ? `${Math.round(n / 1e5) / 10}M` : n >= 1e3 ? `${Math.round(n / 100) / 10}K` : String(n));
 
 /** 列表行只吃瘦卡(SkillCard);全量 Skill 结构上兼容,详情页直接传也行(ADR 0007)。
- *  chrome 双语(useT);skill 名/描述/场景词是商品与转述内容,保持原文(ADR 0022)。 */
-export default function SkillRow({ skill, rank, isNew }: { skill: SkillCard; rank?: number; isNew?: boolean }) {
+ *  chrome 双语(useT);skill 名/描述/场景词是商品与转述内容,保持原文(ADR 0022)。
+ *  variant="compact"(ADR 0034,店况首页新上架栏):两行 —— 名称行 + tagline(缀 @publisher),
+ *  砍场景词行与「获取」钮(详情页与浏览页都还有),行高 ~110 → ~64px。 */
+export default function SkillRow({ skill, rank, isNew, variant }: { skill: SkillCard; rank?: number; isNew?: boolean; variant?: "full" | "compact" }) {
   const tt = useT();
   const locale = useLocale();
   const s = skill;
+  const compact = variant === "compact";
   const href = `/skill/${s.owner}/${s.repo}/${s.name}/`; // 详情页单路由(共享,chrome 客户端切换)
   const onOpen = () => trackClick(s.id, rank); // 埋点:click(rank 作 pos,q 由 analytics 从 URL 读)
   return (
-    <div className="row">
+    <div className={`row${compact ? " compact" : ""}`}>
       {rank != null && <div className={`idx ${rank <= 3 ? "top" : ""}`}>{String(rank).padStart(2, "0")}</div>}
       <div className="main">
         <div className="nm"><Link href={href} onClick={onOpen}>{s.name}</Link><TrustBadge skill={s} />{isNew && <span className="new-tag">NEW</span>}</div>
@@ -25,25 +28,25 @@ export default function SkillRow({ skill, rank, isNew }: { skill: SkillCard; ran
         {(() => {
           const tg = locale === "en" ? s.taglineEn ?? null : s.tagline ?? null;
           const sub = tg ?? (s.description ? (s.description.length > 60 ? s.description.slice(0, 60) + "…" : s.description) : null);
-          return sub ? <div className="ds">{sub}</div> : null;
+          return sub ? <div className="ds">{sub}{compact && s.publisher ? <span className="ds-au">@{s.publisher}</span> : null}</div> : null;
         })()}
         {/* 场景词 =「话题」层:行首微标签 + 话题样式与 facet #tag 分化;点击 = 搜索聚合,不进 facet(ADR 0013 补充) */}
-        {(() => { const sc = locale === "en" ? (s.sceneEn ?? s.scene) : s.scene; return sc && sc.length > 0 && (
+        {(() => { const sc = compact ? null : (locale === "en" ? (s.sceneEn ?? s.scene) : s.scene); return sc && sc.length > 0 && (
           <div className="scene">
             <span className="sc-k">{tt("row.scene")}</span>
             {sc.slice(0, 3).map((w) => (
-              <Link key={w} href={`${localePath(locale, "/")}?q=${encodeURIComponent(w)}`} className="sc" prefetch={false}>{w}</Link>
+              <Link key={w} href={`${localePath(locale, "/browse/")}?q=${encodeURIComponent(w)}`} className="sc" prefetch={false}>{w}</Link>
             ))}
           </div>
         ); })()}
-        <div className="au">@{s.publisher}</div>
+        {!compact && <div className="au">@{s.publisher}</div>}
       </div>
       <div className="rt">
         {/* 第三方安装量(skills.sh 遥测)不上界面(2026-07-16 裁决):数字真实但非本店口径,等回执攒量;排序内部仍用 */}
         {s.stars != null
           ? <div className="score"><span className="gold">★</span> {fmt(s.stars)}</div>
           : <div className="dl">{tt("row.new")}</div>}
-        <Link href={href} className="go" onClick={onOpen}>{tt("row.get")}</Link>
+        {!compact && <Link href={href} className="go" onClick={onOpen}>{tt("row.get")}</Link>}
       </div>
     </div>
   );
