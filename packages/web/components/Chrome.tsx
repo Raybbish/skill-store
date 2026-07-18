@@ -37,7 +37,7 @@ export function NavTabs() {
   return (
     <nav className="tabs">
       <Link href={p("/")} {...cur("/")}>{tt("nav.home")}</Link>
-      <Link href={p("/charts/")} {...cur("/charts/")}>{tt("nav.charts")}</Link>
+      <Link href={p("/browse/")} {...cur("/browse/")}>{tt("nav.browse")}</Link>
       <Link href={p("/changelog/")} {...cur("/changelog/")}>{tt("nav.changelog")}</Link>
       <Link href={p("/methodology/")} {...cur("/methodology/")}>{tt("nav.methodology")}</Link>
       <LocaleSwitch />

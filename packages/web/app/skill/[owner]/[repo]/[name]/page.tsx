@@ -81,10 +81,10 @@ export default async function SkillPage({ params }: { params: Promise<{ owner: s
             <span className="sc-k"><L zh="场景" en="Scene" /></span>
             <L
               zh={s.sceneTags.map((w) => (
-                <a key={w} href={`/?q=${encodeURIComponent(w)}`} className="sc">{w}</a>
+                <a key={w} href={`/browse/?q=${encodeURIComponent(w)}`} className="sc">{w}</a>
               ))}
               en={(s.sceneTagsEn ?? s.sceneTags).map((w) => (
-                <a key={w} href={`/en/?q=${encodeURIComponent(w)}`} className="sc">{w}</a>
+                <a key={w} href={`/en/browse/?q=${encodeURIComponent(w)}`} className="sc">{w}</a>
               ))}
             />
           </div>

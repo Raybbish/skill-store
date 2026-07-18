@@ -22,7 +22,7 @@ export function langAlternates(path: string, locale: Locale) {
 
 const zh = {
   // 导航 / 页脚
-  "nav.home": "首页", "nav.charts": "榜单", "nav.changelog": "动态", "nav.methodology": "收录",
+  "nav.home": "首页", "nav.browse": "浏览", "nav.changelog": "动态", "nav.methodology": "收录",
   "nav.back": "‹ 首页", "nav.signIn": "登录",
   "footer.privacy": "隐私", "footer.tail": "Agent Skills 商店",
   // 首页
@@ -39,11 +39,13 @@ const zh = {
   "home.searchLabel": "搜索 skill",
   // 分面名(labels.ts FACETS 只有中文名,英文在这里补)
   "facet.activity": "做什么", "facet.surface": "用在哪", "facet.language": "语言", "facet.tech": "技术", "facet.meta": "其他",
-  // 榜单
-  "charts.eyebrow": "榜单", "charts.title": "今天有什么新的",
-  "charts.tabNew": "🆕 新上架", "charts.tabHot": "🔥 热门", "charts.tabEval": "🧪 评测榜 · 开发中",
-  "charts.dayCount": "{label} · 新上架 {n} 个", "charts.empty": "暂无新上架记录",
-  "charts.today": "今天", "charts.yesterday": "昨天",
+  // 店况首页(ADR 0034:榜单并入;评测榜占位退役,头版不挂期货)
+  "home.statTotal": "收录 {n}", "home.statToday": "今日 +{n}", "home.statWeek": "本周 +{n}",
+  "home.tabNew": "新上架", "home.tabHot": "热门",
+  "home.dayCount": "{label} · 新上架 {n} 个", "home.newEmpty": "暂无新上架记录",
+  "home.today": "今天", "home.yesterday": "昨天",
+  "home.hotTitle": "热门 TOP 20", "home.allNew": "全部新上架", "home.fullCatalog": "完整目录",
+  "browse.h1": "浏览",
   // 动态
   "cl.title": "动态 · oh-my-skill", "cl.desc": "商店周报:本周新增、上线与下线,一页看全。",
   "cl.eyebrow": "动态", "cl.week": "本周", "cl.weekTail": "条上架",
@@ -157,7 +159,7 @@ const zh = {
 export type MsgKey = keyof typeof zh;
 
 const en: Record<MsgKey, string> = {
-  "nav.home": "Home", "nav.charts": "Charts", "nav.changelog": "Updates", "nav.methodology": "Coverage",
+  "nav.home": "Home", "nav.browse": "Browse", "nav.changelog": "Updates", "nav.methodology": "Coverage",
   "nav.back": "‹ Home", "nav.signIn": "Sign in",
   "footer.privacy": "Privacy", "footer.tail": "The Agent Skills store",
   "home.searchPlaceholder": "Search {n} skills…",
@@ -172,10 +174,12 @@ const en: Record<MsgKey, string> = {
   "home.sortLabel": "Sort", "home.sortHot": "Popular", "home.sortStars": "Stars", "home.sortNew": "Newest",
   "home.searchLabel": "Search skills",
   "facet.activity": "Activity", "facet.surface": "Surface", "facet.language": "Language", "facet.tech": "Tech", "facet.meta": "Other",
-  "charts.eyebrow": "Charts", "charts.title": "What's new today",
-  "charts.tabNew": "🆕 New", "charts.tabHot": "🔥 Trending", "charts.tabEval": "🧪 Evals · in progress",
-  "charts.dayCount": "{label} · {n} new", "charts.empty": "No arrivals on record yet",
-  "charts.today": "Today", "charts.yesterday": "Yesterday",
+  "home.statTotal": "{n} listed", "home.statToday": "+{n} today", "home.statWeek": "+{n} this week",
+  "home.tabNew": "New", "home.tabHot": "Trending",
+  "home.dayCount": "{label} · {n} new", "home.newEmpty": "No arrivals on record yet",
+  "home.today": "Today", "home.yesterday": "Yesterday",
+  "home.hotTitle": "Trending TOP 20", "home.allNew": "All new arrivals", "home.fullCatalog": "Full catalog",
+  "browse.h1": "Browse",
   "cl.title": "Updates · oh-my-skill", "cl.desc": "Weekly store updates: new arrivals, releases and removals.",
   "cl.eyebrow": "Updates", "cl.week": "This week", "cl.weekTail": "listed",
   "cl.release": "Shipped", "cl.change": "Changed", "cl.notice": "Notice", "cl.empty": "Nothing yet",
