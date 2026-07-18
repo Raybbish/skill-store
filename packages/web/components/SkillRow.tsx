@@ -45,7 +45,7 @@ export default function SkillRow({ skill, rank, isNew, variant }: { skill: Skill
         {/* 第三方安装量(skills.sh 遥测)不上界面(2026-07-16 裁决):数字真实但非本店口径,等回执攒量;排序内部仍用 */}
         {s.stars != null
           ? <div className="score"><span className="gold">★</span> {fmt(s.stars)}</div>
-          : <div className="dl">{tt("row.new")}</div>}
+          : compact ? null : <div className="dl">{tt("row.new")}</div>}{/* compact(首页新上架栏):行首已有 NEW 标签,star 缺失不再重复兜底「新」 */}
         {!compact && <Link href={href} className="go" onClick={onOpen}>{tt("row.get")}</Link>}
       </div>
     </div>
