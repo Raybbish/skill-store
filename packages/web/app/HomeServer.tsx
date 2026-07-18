@@ -34,6 +34,9 @@ export default function HomeServer({ locale }: { locale: Locale }) {
     else groups.push({ label, isToday: k === todayKey, items: [c] });
   }
   const today = groups.find((g) => g.isToday)?.items.length ?? 0;
+  // 只展示最新一日(2026-07-18 用户裁定:不要「昨天」流水)。今天有货=只显今天;
+  // 今天空档=顺延显示最近一天(组标题自带日期,事实标注,无空窗)。今日计数仍按真实今天算(+0 时事实条整项不显示)。
+  const shown = groups.slice(0, 1);
 
-  return <HomeClient locale={locale} groups={groups} hot={hot} packs={packs} stats={{ total: meta.total, today, week }} />;
+  return <HomeClient locale={locale} groups={shown} hot={hot} packs={packs} stats={{ total: meta.total, today, week }} />;
 }
