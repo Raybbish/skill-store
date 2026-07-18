@@ -29,6 +29,25 @@ function load(): Session | null {
 }
 function save(s: Session | null): void {
   try { s ? localStorage.setItem(STORE, JSON.stringify(s)) : localStorage.removeItem(STORE); } catch { /* 忽略 */ }
+  // 会话落盘即广播:导航账号位等常驻组件靠它即时刷新(修「登录后导航仍显示‘登录'」)
+  try { window.dispatchEvent(new Event(AUTH_EVENT)); } catch { /* SSR 忽略 */ }
+}
+
+/** 会话变更事件名(登录/退出/续期都触发;storage 事件补跨标签页) */
+const AUTH_EVENT = "oms:auth";
+
+/**
+ * 订阅登录态变化:同页由 save() 广播,跨标签页由 storage 事件兜底。
+ * 返回退订函数。仅客户端可调(挂在 useEffect 里天然满足)。
+ */
+export function onAuthChange(fn: () => void): () => void {
+  const onStorage = (e: StorageEvent) => { if (!e.key || e.key === STORE) fn(); };
+  window.addEventListener(AUTH_EVENT, fn);
+  window.addEventListener("storage", onStorage);
+  return () => {
+    window.removeEventListener(AUTH_EVENT, fn);
+    window.removeEventListener("storage", onStorage);
+  };
 }
 
 async function gotrue(path: string, body: unknown): Promise<Record<string, unknown>> {

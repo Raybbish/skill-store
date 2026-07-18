@@ -3,21 +3,29 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getSession } from "@/lib/auth";
+import { getSession, onAuthChange } from "@/lib/auth";
 import { localePath } from "@/lib/i18n";
 import { LocaleSwitch, useLocale, useT } from "@/lib/i18n/client";
 
 /** 导航右侧账号位(ADR 0023 追记二):未登录「登录」,已登录显示身份;点击都进 /me。
  *  SSR/首帧恒「登录」(与静态输出一致),挂载后按会话订正——与 useLocale 同款防水合错配。
+ *  订阅 onAuthChange:登录成功(验证码/魔法链接/OAuth 回跳)与退出都即时刷新——
+ *  此前只在挂载时查一次,客户端跳转不重挂,登录完导航仍显示「登录」(07-18 修)。
  *  延迟注册不破:这是状态展示,不是登录门。 */
 function NavMe() {
   const tt = useT();
   const [who, setWho] = useState<string | null>(null);
   useEffect(() => {
-    void getSession().then((s) => {
-      if (!s) return;
-      setWho(s.user.github_login ? `@${s.user.github_login}` : (s.user.email ?? "").split("@")[0] || null);
-    });
+    let live = true;
+    const refresh = () => {
+      void getSession().then((s) => {
+        if (!live) return;
+        setWho(s ? (s.user.github_login ? `@${s.user.github_login}` : (s.user.email ?? "").split("@")[0] || null) : null);
+      });
+    };
+    refresh();
+    const off = onAuthChange(refresh);
+    return () => { live = false; off(); };
   }, []);
   // /me 是单路由共享页,不加 locale 前缀
   return <Link href={who ? "/me/" : "/login/"} className="nav-me" title={who ? tt("me.title") : tt("nav.signIn")}>{who ?? tt("nav.signIn")}</Link>;
