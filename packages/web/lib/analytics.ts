@@ -11,10 +11,10 @@
  * 收集端 = Supabase `analytics_events` 表(infra/migrations/2026-07-16-analytics-events.sql,
  * 匿名可插不可读,payload 键=列名,PostgREST 直插零中间层):
  *   NEXT_PUBLIC_ANALYTICS_URL = https://<project>.supabase.co/rest/v1/analytics_events?apikey=<anon>
- *   (sendBeacon 不能带 header → anon key 走 query 参数;key 本就烘在前端产物里,无新增暴露面。)
- * 未配置时全部 no-op(不阻塞、不报错)。发送用 navigator.sendBeacon(不占主线程、页面卸载也能发,
- * JSON Blob 保证 content-type 正确——代价是一次 CORS 预检,fire-and-forget 无所谓),
- * 不支持 sendBeacon 则 fetch keepalive 兜底。
+ *   (apikey 走 URL query 参数,已烘在前端产物里,无新增暴露面。)
+ * 未配置时全部 no-op(不阻塞、不报错)。发送用 fetch + keepalive + credentials:"omit":
+ * keepalive 保证页面卸载时也能发、不占主线程;credentials:"omit" 使其为非凭据请求 ——
+ * 不能用 sendBeacon:它带凭据发出,撞 Supabase REST 的 ACAO:* 通配头,真正的 POST 被浏览器就地拦下(见 send())。
  */
 
 const ENDPOINT = process.env.NEXT_PUBLIC_ANALYTICS_URL || "";
@@ -49,11 +49,17 @@ function refQ(): string | undefined {
 function send(ev: Event): void {
   if (!ENDPOINT || typeof window === "undefined") return; // collector 未接 = 静默不发
   try {
-    const body = JSON.stringify(ev);
-    // 字符串会以 text/plain 发出,PostgREST 拒收 —— 必须裹成 application/json Blob。
-    const blob = new Blob([body], { type: "application/json" });
-    if (navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, blob)) return;
-    void fetch(ENDPOINT, { method: "POST", body, keepalive: true, headers: { "content-type": "application/json" } });
+    // 不能用 sendBeacon:它以「带凭据」模式发出,而 Supabase REST 回 ACAO:* ——
+    // 带凭据 + 通配源会被浏览器就地拦下(preflight 过、真正的 POST 根本不发)。
+    // 改用 fetch + credentials:"omit"(非凭据),通配源即被接受;keepalive 顶替 beacon 卸载期送达。
+    void fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(ev),
+      keepalive: true,
+      credentials: "omit",
+      mode: "cors",
+    }).catch(() => {});
   } catch {
     /* 埋点绝不影响主流程 */
   }
