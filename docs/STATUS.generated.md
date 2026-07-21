@@ -1,15 +1,15 @@
 <!-- 自动生成,勿手改。运行: npm run status -->
 # 项目状态(自动快照)
 
-_生成于 2026-07-20 04:56 UTC · 分支 `main` · 工作区干净_
+_生成于 2026-07-21 04:36 UTC · 分支 `main` · 工作区干净_
 
 ## Catalog
-- **skill 总数:11411**
+- **skill 总数:11660**
 - verdict 账本(catalog/verdicts,ADR 0012;扫描停摆中,现存均为 legacy 历史判定):有判定 **55** —— pass 52 · flagged 3
-- 托管(磁盘事实):indexed 6832 · mirrored 4579 · ⚠ 字段漂移 82 条(`npm run reconcile:hosting` 对账)
-- 已评测:**0** · 发布者:**895**
+- 托管(磁盘事实):indexed 7081 · mirrored 4579 · ⚠ 字段漂移 109 条(`npm run reconcile:hosting` 对账)
+- 已评测:**0** · 发布者:**912**
 
 ## 最近提交
 ```
-a08abf55 fix(analytics): 埋点改 fetch(credentials:omit) —— sendBeacon 带凭据撞 Supabase 通配 CORS 致零上报 (#84)
+8451dfac Ingest: daily catalog update (#87)
 ```
