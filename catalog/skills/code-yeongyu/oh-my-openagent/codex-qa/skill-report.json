@@ -5,7 +5,7 @@
     "name": "codex-qa",
     "description": "QA the omo Codex Light edition (lazycodex / packages/omo-codex) itself, in strict isolation so ONLY our plugin is exercised, never the user's real ~/.codex. The first-party method drives the real `codex app-server` against an isolated CODEX_HOME plus a LOCAL mock model (no real API call), and proves a plugin hook fired by asserting hook/started + hook/completed notifications. Also: isolated install verification, per-component hook probes, a tmux TUI smoke, and runtime log observation (RUST_LOG / logs SQLite / /debug-config). Ships tested helper scripts each with a --self-test. Use whenever someone changes anything under packages/omo-codex or wants to QA, smoke-test, verify, or debug the Codex plugin, its hooks/components, the installer/config.toml, the app-server flow, or the Codex TUI. Triggers: codex qa, qa codex, codex-qa, test codex plugin, verify codex hook, codex app-server, lazycodex qa, isolated CODEX_HOME, prove codex hook fired, codex tui test.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/codex-qa",
-    "upstream_commit": "242b1c1fcaf191f070e40b48b78b8b5b59ee9502",
+    "upstream_commit": "e78abe7e7d5b7271e85535032151dba706f80179",
     "content_hash": "sha256:e250bc7e592efec7695feff0eba0643b5815c44fbf3158df8d3808359212f8f5",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66206,
+    "stars_github": 66410,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-20T06:12:05.579Z",
+    "fetched_at": "2026-07-23T05:49:17.004Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-19T23:30:45+09:00",
+    "upstream_commit_at": "2026-07-23T14:15:27+09:00",
     "repo_skill_count": 44
   },
   "context_size": {
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-20T06:12:05.579Z",
+    "generated_at": "2026-07-23T05:49:17.004Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -118,21 +118,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装后，Claude 会使用隔离环境对 omo Codex Light 版插件进行质量测试，包括验证插件钩子是否触发、安装是否正确、组件钩子是否工作、终端界面是否正常，以及检查运行时日志。所有测试都在独立目录中进行，不会影响用户真实的 Codex 配置。",
-    "when": "当你修改了 packages/omo-codex 下的代码，或者需要测试、验证、调试 Codex 插件、钩子、安装、应用服务器或终端界面时触发。",
+    "what": "装上后，Claude 会在隔离环境中对 omo Codex Light 版（lazycodex）进行质量检测，包括验证插件钩子是否触发、安装是否正确、组件钩子是否工作、TUI 是否正常启动，并收集日志证据。",
+    "when": "当你修改了 packages/omo-codex 下的代码，或者需要测试、验证、调试 Codex 插件、钩子、安装、app-server 流程或 TUI 时触发。",
     "say": [
       {
-        "text": "执行 codex-qa 的安装验证测试，确认插件正确安装。",
-        "note": "在隔离环境中安装插件，并验证配置文件、组件等是否正确部署。"
+        "text": "运行 app-server-drive.sh --plugin 测试插件钩子。",
+        "note": "会启动隔离的 app-server，验证钩子触发。"
       },
       {
-        "text": "启动 codex-qa 的终端界面冒烟测试，检查 TUI 能否正常启动。"
+        "text": "运行 install-verify.sh --self-test 验证安装。",
+        "note": "在隔离环境中安装并检查配置。"
+      },
+      {
+        "text": "运行 tui-smoke.sh --self-test 测试 TUI。",
+        "note": "在隔离环境中启动 TUI 并检查是否正常。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e250bc7e592efec7695feff0eba0643b5815c44fbf3158df8d3808359212f8f5",
     "model": "deepseek-chat",
-    "generated_at": "2026-07-20T06:14:30.124Z",
-    "lint_pass": true
+    "generated_at": "2026-07-23T05:52:04.373Z",
+    "lint_pass": true,
+    "what_en": "After installation, Claude will QA the omo Codex Light edition (lazycodex) in an isolated environment, including verifying plugin hooks fire, correct installation, component hook probes, TUI smoke test, and collecting log evidence.",
+    "when_en": "Triggered when you modify code under packages/omo-codex, or need to test, verify, or debug the Codex plugin, hooks, installer, app-server flow, or TUI.",
+    "say_en": [
+      {
+        "text": "Run app-server-drive.sh --plugin to test plugin hooks.",
+        "note": "Starts an isolated app-server and verifies hook firing."
+      },
+      {
+        "text": "Run install-verify.sh --self-test to verify installation.",
+        "note": "Installs in an isolated home and checks config."
+      },
+      {
+        "text": "Run tui-smoke.sh --self-test to smoke test the TUI.",
+        "note": "Boots the TUI in isolation and checks it survives."
+      }
+    ]
   }
 }

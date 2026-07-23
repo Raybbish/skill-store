@@ -5,11 +5,10 @@
     "name": "hunt-mfa-bypass",
     "description": "Hunt MFA / 2FA bypass — 7 distinct patterns. (1) MFA not enforced on sensitive endpoints (password change, email change accept without MFA challenge), (2) MFA-step skip via direct navigation to post-login URL, (3) MFA-token replay (same code accepted twice), (4) brute-force the 6-digit OTP without rate limit (10^6 attempts at server speed), (5) race condition on OTP validation, (6) recovery-code dump via /api/me, (7) backup factor downgrade (SMS factor with no rate limit). Plus the chain: cookie theft + password oracle + no step-up = ATO without MFA challenge. Detection: trace auth flow in Burp, find every state transition, check if MFA is middleware-gated vs per-endpoint, check OTP entropy and rate limit on OTP-validate. Validate: attacker session reaching post-MFA state. Use when hunting auth bypass, MFA flows, chaining primitives toward ATO.",
     "upstream": "https://github.com/elementalsouls/Claude-BugHunter/tree/main/skills/hunt-mfa-bypass",
-    "upstream_commit": "05098fc78842ec23fb96be4d07bd9cdc128a443b",
-    "content_hash": "sha256:7252ff11d6ab5dfb4e41c1712c8168df819661f439bfa358c751241910f86222",
+    "upstream_commit": "4b6c6a525169df4cc5b3353257393ffd7b57e455",
+    "content_hash": "sha256:b5c081c2a9a4ce94ec7be0fe9ad9afb6042e584ef81c826edbd0a0c065d82259",
     "license": "MIT",
-    "hosting": "mirrored",
-    "mirror_complete": true,
+    "hosting": "indexed",
     "category": "security",
     "version": null,
     "publisher": "elementalsouls",
@@ -22,39 +21,13 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 2989,
+    "stars_github": 3017,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-03T13:32:24.385Z",
-    "repo_skill_count": 71,
-    "bulk_source": true,
+    "fetched_at": "2026-07-23T05:49:55.442Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-01T14:55:27+05:30"
-  },
-  "token_cost": {
-    "body_tokens": 1524,
-    "method": "chars/4-estimate"
-  },
-  "eval": null,
-  "copy": {
-    "tagline": "检测并验证七种多因素认证绕过漏洞",
-    "scene_tags": [
-      "安全测试",
-      "渗透测试",
-      "认证审计"
-    ],
-    "fit_line": "适合你，如果你需要审计应用的多因素认证实现是否安全",
-    "tagline_en": "Detect and validate seven MFA bypass patterns",
-    "scene_tags_en": [
-      "security testing",
-      "penetration testing",
-      "auth audit"
-    ],
-    "fit_line_en": "For you if you need to audit MFA implementations for bypass vulnerabilities",
-    "source": "llm",
-    "content_hash": "sha256:7252ff11d6ab5dfb4e41c1712c8168df819661f439bfa358c751241910f86222",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-11T07:53:34.129Z",
-    "lint_pass": true
+    "upstream_commit_at": "2026-07-22T22:02:43+05:30",
+    "repo_skill_count": 82,
+    "bulk_source": true
   },
   "context_size": {
     "version": "1",
@@ -63,58 +36,57 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-09T05:17:21.954Z",
+    "generated_at": "2026-07-23T05:49:55.442Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 6161,
-        "chars": 6097,
-        "tokens": 1337
+        "bytes": 8722,
+        "chars": 8619,
+        "tokens": 1950
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 6161,
-        "chars": 6097,
-        "tokens": 1337
+        "bytes": 8722,
+        "chars": 8619,
+        "tokens": 1950
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 6161,
-        "chars": 6097,
-        "tokens": 1337
+        "bytes": 8722,
+        "chars": 8619,
+        "tokens": 1950
       }
     }
   },
-  "howto": {
-    "what": "装上后，Claude 会帮你测试 7 种 MFA 绕过模式，包括：无速率限制的 OTP 爆破、OTP 重用、响应篡改、跳过 MFA 步骤、竞争条件、备份码爆破、设备信任升级。它还会检测认证流程中的漏洞并验证攻击者能否进入 MFA 后的状态。",
-    "when": "当你需要测试多因素认证（MFA/2FA）的绕过漏洞时触发，例如检查敏感端点是否强制 MFA、OTP 是否有速率限制、能否跳过 MFA 步骤等。",
-    "say": [
-      {
-        "text": "帮我测试这个登录页面的 MFA 是否有速率限制。",
-        "note": "Claude 会指导你使用 ffuf 爆破 OTP。"
-      },
-      {
-        "text": "检查一下修改密码的接口是否强制要求 MFA。",
-        "note": "Claude 会分析认证流程中的状态转换。"
-      },
-      {
-        "text": "测试 OTP 验证是否存在竞争条件漏洞。",
-        "note": "Claude 会提供并发请求的代码示例。"
-      }
+  "eval": null,
+  "copy": {
+    "tagline": "检测并利用七种多因素认证绕过漏洞",
+    "scene_tags": [
+      "安全测试",
+      "渗透测试",
+      "认证审计"
     ],
+    "fit_line": "适合你，如果你需要审计Web应用的多因素认证实现是否安全。",
+    "tagline_en": "Detect and exploit seven MFA bypass patterns in web apps.",
+    "scene_tags_en": [
+      "security testing",
+      "penetration testing",
+      "auth audit"
+    ],
+    "fit_line_en": "For you if you need to audit MFA implementations for bypass vulnerabilities.",
     "source": "llm",
-    "content_hash": "sha256:7252ff11d6ab5dfb4e41c1712c8168df819661f439bfa358c751241910f86222",
+    "content_hash": "sha256:b5c081c2a9a4ce94ec7be0fe9ad9afb6042e584ef81c826edbd0a0c065d82259",
     "model": "deepseek-chat",
-    "generated_at": "2026-07-14T12:00:51.490Z",
+    "generated_at": "2026-07-23T05:51:39.227Z",
     "lint_pass": true
   }
 }

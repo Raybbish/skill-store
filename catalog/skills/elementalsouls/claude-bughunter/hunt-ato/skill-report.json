@@ -3,13 +3,12 @@
   "meta": {
     "id": "elementalsouls/claude-bughunter/hunt-ato",
     "name": "hunt-ato",
-    "description": "Hunt account takeover taxonomy — 9 distinct paths to ATO, plus chains. Paths: (1) password reset flaws (host-header injection redirects token, predictable/numeric token, Referer leak, no-expiry/reuse), (2) email change without re-auth, (3) OAuth account-link CSRF, (4) MFA bypass (per hunt-mfa-bypass), (5) session fixation, (6) JWT manipulation (alg:none, RS256→HS256 key confusion, weak HMAC secret, kid injection), (7) password change without step-up (chain with login timing/length oracle), (8) social-recovery / security-question brute-force, (9) SSO subdomain takeover at OAuth redirect_uri. Chains: cookie theft + password oracle + no step-up = persistent ATO; lax redirect_uri = auth-code theft; dangling-CNAME takeover at redirect_uri = ATO. Validate: demonstrate real takeover of test account B from attacker A's session; OOB/Collaborator confirm blind token-leak steps. Use when hunting ATO chains, testing password reset / email change / MFA / OAuth / session / JWT, or chaining primitives toward Critical.",
+    "description": "Hunt account takeover taxonomy — 9 distinct paths to ATO, plus chains. Paths: (1) password reset flaws (host-header injection redirects token, predictable/numeric token, Referer leak, no-expiry/reuse), (2) email change without re-auth, (3) OAuth account-link CSRF, (4) MFA bypass (per hunt-mfa-bypass), (5) session fixation, (6) JWT manipulation (forge token to another identity; crypto details → hunt-jwt-crypto), (7) password change without step-up (chain with login timing/length oracle), (8) social-recovery / security-question brute-force, (9) SSO subdomain takeover at OAuth redirect_uri. Chains: cookie theft + password oracle + no step-up = persistent ATO; lax redirect_uri = auth-code theft; dangling-CNAME takeover at redirect_uri = ATO. Validate: demonstrate real takeover of test account B from attacker A's session; OOB/Collaborator confirm blind token-leak steps. Use when hunting ATO chains, testing password reset / email change / MFA / OAuth / session / JWT, or chaining primitives toward Critical.",
     "upstream": "https://github.com/elementalsouls/Claude-BugHunter/tree/main/skills/hunt-ato",
-    "upstream_commit": "05098fc78842ec23fb96be4d07bd9cdc128a443b",
-    "content_hash": "sha256:7830cdb9edb9b2d20de2b213c788cc63b31ae517fa07a754f391f99818fdd906",
+    "upstream_commit": "4b6c6a525169df4cc5b3353257393ffd7b57e455",
+    "content_hash": "sha256:b4930fe914d1549d6b80e64bffd9568c9cc283584e517d3a612a5d538e68d3e2",
     "license": "MIT",
-    "hosting": "mirrored",
-    "mirror_complete": true,
+    "hosting": "indexed",
     "category": "security",
     "version": null,
     "publisher": "elementalsouls",
@@ -22,39 +21,13 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 2989,
+    "stars_github": 3017,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-03T13:32:24.385Z",
-    "repo_skill_count": 71,
-    "bulk_source": true,
+    "fetched_at": "2026-07-23T05:49:55.442Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-01T14:55:27+05:30"
-  },
-  "token_cost": {
-    "body_tokens": 3054,
-    "method": "chars/4-estimate"
-  },
-  "eval": null,
-  "copy": {
-    "tagline": "发现并验证账户接管漏洞的多种路径与链条",
-    "scene_tags": [
-      "安全测试",
-      "漏洞验证",
-      "渗透测试"
-    ],
-    "fit_line": "适合你，如果做安全测试时需要系统化检测账户接管漏洞",
-    "tagline_en": "Discover and validate multiple account takeover paths and chains",
-    "scene_tags_en": [
-      "security testing",
-      "vulnerability validation",
-      "penetration testing"
-    ],
-    "fit_line_en": "For you if you need to systematically detect account takeover vulnerabilities during security testing",
-    "source": "llm",
-    "content_hash": "sha256:7830cdb9edb9b2d20de2b213c788cc63b31ae517fa07a754f391f99818fdd906",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-11T07:53:25.245Z",
-    "lint_pass": true
+    "upstream_commit_at": "2026-07-22T22:02:43+05:30",
+    "repo_skill_count": 82,
+    "bulk_source": true
   },
   "context_size": {
     "version": "1",
@@ -63,70 +36,57 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-09T05:17:21.954Z",
+    "generated_at": "2026-07-23T05:49:55.442Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 12344,
-        "chars": 12214,
-        "tokens": 2741
+        "bytes": 12341,
+        "chars": 12211,
+        "tokens": 2736
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 12344,
-        "chars": 12214,
-        "tokens": 2741
+        "bytes": 12341,
+        "chars": 12211,
+        "tokens": 2736
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 12344,
-        "chars": 12214,
-        "tokens": 2741
+        "bytes": 12341,
+        "chars": 12211,
+        "tokens": 2736
       }
     }
   },
-  "howto": {
-    "what": "安装后，Claude 会指导你测试 9 种账户接管路径，包括密码重置缺陷、JWT 伪造、OAuth 子域名劫持等，并验证能否从攻击者会话实际接管另一个测试账户。",
-    "when": "当你需要测试密码重置、邮箱修改、MFA、OAuth、会话或 JWT 的安全性，或尝试将多个漏洞组合成账户接管链时触发。",
-    "say": [
-      {
-        "text": "测试密码重置令牌是否可预测。"
-      },
-      {
-        "text": "检查邮箱修改接口是否需要重新认证。",
-        "note": "Claude 会测试能否直接修改邮箱并触发密码重置接管账户。"
-      },
-      {
-        "text": "尝试 JWT alg:none 攻击。"
-      }
+  "eval": null,
+  "copy": {
+    "tagline": "发现并验证账户接管漏洞的9种路径与攻击链",
+    "scene_tags": [
+      "安全测试",
+      "漏洞挖掘",
+      "上线前检查"
     ],
+    "fit_line": "适合你，如果你在渗透测试中需要系统化检测账户接管漏洞。",
+    "tagline_en": "Discover and validate 9 account takeover paths and attack chains",
+    "scene_tags_en": [
+      "security testing",
+      "vulnerability hunting",
+      "pre-release check"
+    ],
+    "fit_line_en": "For you if you need to systematically detect account takeover vulnerabilities during penetration testing.",
     "source": "llm",
-    "content_hash": "sha256:7830cdb9edb9b2d20de2b213c788cc63b31ae517fa07a754f391f99818fdd906",
+    "content_hash": "sha256:b4930fe914d1549d6b80e64bffd9568c9cc283584e517d3a612a5d538e68d3e2",
     "model": "deepseek-chat",
-    "generated_at": "2026-07-14T12:00:35.249Z",
-    "lint_pass": true,
-    "what_en": "After installation, Claude guides you through testing 9 account takeover paths, including password reset flaws, JWT forgery, OAuth subdomain takeover, etc., and validates whether you can actually take over a second test account from an attacker's session.",
-    "when_en": "Triggered when you need to test password reset, email change, MFA, OAuth, session, or JWT security, or chain multiple primitives into an account takeover.",
-    "say_en": [
-      {
-        "text": "Test if password reset tokens are predictable.",
-        "note": "Claude guides you to enumerate 6-digit tokens and verify brute-forceability."
-      },
-      {
-        "text": "Check if the email change endpoint requires re-authentication."
-      },
-      {
-        "text": "Try JWT alg:none attack."
-      }
-    ]
+    "generated_at": "2026-07-23T05:51:35.305Z",
+    "lint_pass": true
   }
 }

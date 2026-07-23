@@ -3,13 +3,12 @@
   "meta": {
     "id": "elementalsouls/claude-bughunter/hunt-api-misconfig",
     "name": "hunt-api-misconfig",
-    "description": "Hunt API security misconfiguration — mass assignment, JWT attacks, prototype pollution, HTTP verb tampering. Mass assignment: send {is_admin:true, role:admin, verified:true} on profile/account/reset endpoints — server blindly applies. JWT: alg=none, weak HMAC bruteforce, kid path traversal, JWK injection, token confusion. Prototype pollution: __proto__ injection in JSON merge / Object.assign / lodash _.merge → polluted prototype reaches sink (RCE in Node, XSS in browser). HTTP verb: GET-bypass-CSRF, X-HTTP-Method-Override, TRACE enabled. Detection: API responses with extra fields, JWTs in headers (decode at jwt.io). CORS misconfiguration (reflect-any-origin, null origin, subdomain-regex bypass, postMessage) is owned by hunt-cors. Use when hunting API misconfigs, JWT flaws, mass-assignment, prototype pollution.",
+    "description": "Hunt API security misconfiguration — mass assignment, prototype pollution, HTTP verb tampering. Mass assignment: send {is_admin:true, role:admin, verified:true} on profile/account/reset endpoints — server blindly applies. JWT signature/crypto forging (alg:none, key confusion, kid/jku) is owned by hunt-jwt-crypto; this skill covers only non-crypto JWT handling. Prototype pollution: __proto__ injection in JSON merge / Object.assign / lodash _.merge → polluted prototype reaches sink (RCE in Node, XSS in browser). HTTP verb: GET-bypass-CSRF, X-HTTP-Method-Override, TRACE enabled. Detection: API responses with extra fields, JWTs in headers (decode at jwt.io). CORS misconfiguration (reflect-any-origin, null origin, subdomain-regex bypass, postMessage) is owned by hunt-cors. Use when hunting API misconfigs, mass-assignment, prototype pollution (JWT crypto → hunt-jwt-crypto).",
     "upstream": "https://github.com/elementalsouls/Claude-BugHunter/tree/main/skills/hunt-api-misconfig",
-    "upstream_commit": "05098fc78842ec23fb96be4d07bd9cdc128a443b",
-    "content_hash": "sha256:51cce71bb95894fac7f611b871df9d79e50804afb4802e5cc748f83612be6b32",
+    "upstream_commit": "4b6c6a525169df4cc5b3353257393ffd7b57e455",
+    "content_hash": "sha256:5b5e2d404a3dfbaba9196dabab854af9509dcc48037818ecede74eea27d107a4",
     "license": "MIT",
-    "hosting": "mirrored",
-    "mirror_complete": true,
+    "hosting": "indexed",
     "category": "security",
     "version": null,
     "publisher": "elementalsouls",
@@ -22,38 +21,13 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 2989,
+    "stars_github": 3017,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-03T13:32:24.385Z",
-    "repo_skill_count": 71,
-    "bulk_source": true,
+    "fetched_at": "2026-07-23T05:49:55.442Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-01T14:55:27+05:30"
-  },
-  "token_cost": {
-    "body_tokens": 3274,
-    "method": "chars/4-estimate"
-  },
-  "eval": null,
-  "copy": {
-    "tagline": "检测API安全配置缺陷，包括JWT攻击与批量赋值漏洞",
-    "scene_tags": [
-      "api安全测试",
-      "渗透测试",
-      "上线前检查"
-    ],
-    "fit_line": "适合你，如果负责API安全测试或渗透测试，需要快速发现配置缺陷。",
-    "tagline_en": "Detect API security misconfigurations including JWT attacks and mass assignment.",
-    "scene_tags_en": [
-      "API security testing",
-      "penetration testing",
-      "pre-release check"
-    ],
-    "source": "llm",
-    "content_hash": "sha256:51cce71bb95894fac7f611b871df9d79e50804afb4802e5cc748f83612be6b32",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-11T07:53:24.603Z",
-    "lint_pass": true
+    "upstream_commit_at": "2026-07-22T22:02:43+05:30",
+    "repo_skill_count": 82,
+    "bulk_source": true
   },
   "context_size": {
     "version": "1",
@@ -62,74 +36,56 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-09T05:17:21.954Z",
+    "generated_at": "2026-07-23T05:49:55.442Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 13204,
-        "chars": 13094,
-        "tokens": 2769
+        "bytes": 17888,
+        "chars": 17776,
+        "tokens": 3806
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 13204,
-        "chars": 13094,
-        "tokens": 2769
+        "bytes": 17888,
+        "chars": 17776,
+        "tokens": 3806
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 13204,
-        "chars": 13094,
-        "tokens": 2769
+        "bytes": 17888,
+        "chars": 17776,
+        "tokens": 3806
       }
     }
   },
-  "howto": {
-    "what": "装上后，Claude 会帮你检测 API 安全配置问题，包括批量赋值、JWT 攻击、原型污染、HTTP 动词篡改、OData 注入、Swagger 暴露等，并给出利用方法和检测步骤。",
-    "when": "当你需要测试 API 安全配置、寻找批量赋值、JWT 漏洞、原型污染等问题时触发。",
-    "say": [
-      {
-        "text": "帮我测试这个API是否存在批量赋值漏洞。",
-        "note": "Claude会指导你发送包含is_admin等字段的请求。"
-      },
-      {
-        "text": "检查这个JWT是否使用了none算法。",
-        "note": "Claude会教你解码并修改JWT进行测试。"
-      },
-      {
-        "text": "这个API的Swagger文档暴露了吗？",
-        "note": "Claude会列出常见路径并指导检测。"
-      }
+  "eval": null,
+  "copy": {
+    "tagline": "检测API安全配置缺陷，如批量赋值、原型污染和HTTP动词篡改",
+    "scene_tags": [
+      "安全测试",
+      "api审计",
+      "上线前检查"
     ],
+    "fit_line": "适合你，如果需要在API上线前发现批量赋值、原型污染等配置漏洞",
+    "scene_tags_en": [
+      "security testing",
+      "API audit",
+      "pre-release check"
+    ],
+    "fit_line_en": "For you if you need to find mass assignment, prototype pollution, and other API config flaws before release",
     "source": "llm",
-    "content_hash": "sha256:51cce71bb95894fac7f611b871df9d79e50804afb4802e5cc748f83612be6b32",
+    "content_hash": "sha256:5b5e2d404a3dfbaba9196dabab854af9509dcc48037818ecede74eea27d107a4",
     "model": "deepseek-chat",
-    "generated_at": "2026-07-14T12:00:32.518Z",
-    "lint_pass": true,
-    "what_en": "After installation, Claude helps you detect API security misconfigurations including mass assignment, JWT attacks, prototype pollution, HTTP verb tampering, OData injection, and Swagger exposure, with exploitation methods and detection steps.",
-    "when_en": "Triggered when you need to test API security configurations, find mass assignment, JWT flaws, prototype pollution, etc.",
-    "say_en": [
-      {
-        "text": "Test this API for mass assignment vulnerability.",
-        "note": "Claude guides you to send requests with fields like is_admin."
-      },
-      {
-        "text": "Check if this JWT uses the none algorithm.",
-        "note": "Claude shows how to decode and modify JWT for testing."
-      },
-      {
-        "text": "Is the Swagger doc for this API exposed?",
-        "note": "Claude lists common paths and guides detection."
-      }
-    ]
+    "generated_at": "2026-07-23T05:51:35.112Z",
+    "lint_pass": true
   }
 }
