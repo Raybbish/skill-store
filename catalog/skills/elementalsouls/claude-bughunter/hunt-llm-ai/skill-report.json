@@ -5,11 +5,10 @@
     "name": "hunt-llm-ai",
     "description": "Hunt LLM/AI feature bugs — prompt injection, indirect injection, exfiltration via tool-use/markdown, ASCII smuggling, agentic AI security (OWASP Agentic Apps 2026, ASI01-ASI10). Patterns: direct injection ('ignore previous instructions'), indirect injection via documents/web pages/email the model reads, ASCII smuggling (Unicode Tags block U+E0000-U+E007F, invisible to humans, decoded by the model), tool-use exfiltration (model has fetch/browse tool, attacker injects OOB URL, model exfils chat history/secrets), markdown-image zero-click exfil, system-prompt extraction, IDOR-via-AI (cross-tenant data). Targets: chatbots, RAG, summarizers, agentic copilots, MCP tools. Detection: any LLM-backed endpoint, doc upload triggering AI processing, autonomous agent with tools. Validate: OOB/Collaborator callback for exfil, verbatim-reproducible system-prompt leak (run twice), verifiable cross-tenant leak or RCE. Confabulation is NOT a finding. Use when hunting AI features, chatbots, RAG, agentic systems, MCP.",
     "upstream": "https://github.com/elementalsouls/Claude-BugHunter/tree/main/skills/hunt-llm-ai",
-    "upstream_commit": "05098fc78842ec23fb96be4d07bd9cdc128a443b",
-    "content_hash": "sha256:400b7a4ce2a733f04a0cf1d8eb65f5dfa3a4c92287832def536596453babedff",
+    "upstream_commit": "4b6c6a525169df4cc5b3353257393ffd7b57e455",
+    "content_hash": "sha256:87bbcb9a2c7ef7de1f27d05c1aef76479031a2e48cf0dc39f7f5a4dc4a260773",
     "license": "MIT",
-    "hosting": "mirrored",
-    "mirror_complete": true,
+    "hosting": "indexed",
     "category": "security",
     "version": null,
     "publisher": "elementalsouls",
@@ -22,39 +21,13 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 2989,
+    "stars_github": 3017,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-03T13:32:24.385Z",
-    "repo_skill_count": 71,
-    "bulk_source": true,
+    "fetched_at": "2026-07-23T05:49:55.442Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-01T14:55:27+05:30"
-  },
-  "token_cost": {
-    "body_tokens": 3198,
-    "method": "chars/4-estimate"
-  },
-  "eval": null,
-  "copy": {
-    "tagline": "检测 LLM/AI 应用中的安全漏洞",
-    "scene_tags": [
-      "ai安全测试",
-      "漏洞挖掘",
-      "红队评估"
-    ],
-    "fit_line": "适合你，如果你需要审计 AI 应用的安全性，发现提示注入、数据泄露等风险。",
-    "tagline_en": "Find security vulnerabilities in LLM/AI applications",
-    "scene_tags_en": [
-      "AI security testing",
-      "vulnerability hunting",
-      "red team assessment"
-    ],
-    "fit_line_en": "For you if you need to audit AI application security and discover prompt injection, data exfiltration risks.",
-    "source": "llm",
-    "content_hash": "sha256:400b7a4ce2a733f04a0cf1d8eb65f5dfa3a4c92287832def536596453babedff",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-11T07:53:34.130Z",
-    "lint_pass": true
+    "upstream_commit_at": "2026-07-22T22:02:43+05:30",
+    "repo_skill_count": 82,
+    "bulk_source": true
   },
   "context_size": {
     "version": "1",
@@ -63,74 +36,57 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-09T05:17:21.954Z",
+    "generated_at": "2026-07-23T05:49:55.442Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 12876,
-        "chars": 12790,
-        "tokens": 2838
+        "bytes": 14343,
+        "chars": 14249,
+        "tokens": 3156
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 12876,
-        "chars": 12790,
-        "tokens": 2838
+        "bytes": 14343,
+        "chars": 14249,
+        "tokens": 3156
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 12876,
-        "chars": 12790,
-        "tokens": 2838
+        "bytes": 14343,
+        "chars": 14249,
+        "tokens": 3156
       }
     }
   },
-  "howto": {
-    "what": "装上后，Claude 会变成 AI 安全测试助手，专门检测大语言模型和 AI 应用的安全漏洞，包括提示注入、数据泄露、系统提示提取等。它会指导你如何构造攻击载荷并验证漏洞。",
-    "when": "当你需要测试聊天机器人、RAG 系统、智能助手或 MCP 工具的安全性时触发。",
-    "say": [
-      {
-        "text": "测试这个聊天机器人是否存在提示注入漏洞。",
-        "note": "Claude 会提供注入测试语句和验证方法。"
-      },
-      {
-        "text": "检查这个文档上传功能是否会导致间接注入。",
-        "note": "Claude 会指导你构造隐藏指令的文档。"
-      },
-      {
-        "text": "验证这个 AI 工具是否存在数据泄露风险。",
-        "note": "Claude 会教你使用 OOB 回调来确认泄露。"
-      }
+  "eval": null,
+  "copy": {
+    "tagline": "检测 LLM/AI 应用中的安全漏洞",
+    "scene_tags": [
+      "ai安全测试",
+      "漏洞狩猎",
+      "红队评估"
     ],
+    "fit_line": "适合你，如果你需要测试 AI 应用是否存在提示注入、数据泄露等安全风险。",
+    "tagline_en": "Hunt security vulnerabilities in LLM/AI applications",
+    "scene_tags_en": [
+      "AI security testing",
+      "vulnerability hunting",
+      "red team assessment"
+    ],
+    "fit_line_en": "For you if you need to test AI applications for prompt injection, data exfiltration, and other security risks.",
     "source": "llm",
-    "content_hash": "sha256:400b7a4ce2a733f04a0cf1d8eb65f5dfa3a4c92287832def536596453babedff",
+    "content_hash": "sha256:87bbcb9a2c7ef7de1f27d05c1aef76479031a2e48cf0dc39f7f5a4dc4a260773",
     "model": "deepseek-chat",
-    "generated_at": "2026-07-14T12:00:50.416Z",
-    "lint_pass": true,
-    "what_en": "After installation, Claude becomes an AI security testing assistant specialized in detecting vulnerabilities in LLM and AI applications, including prompt injection, data exfiltration, and system prompt leakage. It guides you on crafting attack payloads and validating findings.",
-    "when_en": "Triggered when you need to test the security of chatbots, RAG systems, agentic copilots, or MCP tools.",
-    "say_en": [
-      {
-        "text": "Test this chatbot for prompt injection vulnerabilities.",
-        "note": "Claude provides injection test phrases and validation methods."
-      },
-      {
-        "text": "Check if this document upload feature is vulnerable to indirect injection.",
-        "note": "Claude guides you on crafting documents with hidden instructions."
-      },
-      {
-        "text": "Verify if this AI tool has data exfiltration risks.",
-        "note": "Claude teaches you to use OOB callbacks to confirm leaks."
-      }
-    ]
+    "generated_at": "2026-07-23T05:51:38.887Z",
+    "lint_pass": true
   }
 }
