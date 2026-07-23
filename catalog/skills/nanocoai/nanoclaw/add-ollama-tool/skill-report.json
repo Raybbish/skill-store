@@ -5,7 +5,7 @@
     "name": "add-ollama-tool",
     "description": "Add Ollama MCP server so the container agent can call local models and optionally manage the Ollama model library.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-tool",
-    "upstream_commit": "0b034342fc19fea2c95da20c2a42b4eaa31f5d84",
+    "upstream_commit": "641963c1e4b7ba4f000a18dfc5e2fea29069feec",
     "content_hash": "sha256:d8474643a5cf86e8446bf461282f88444a9d0a87b7d7844c025ec229ec594779",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30280,
+    "stars_github": 30312,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-19T05:46:35.193Z",
+    "fetched_at": "2026-07-22T05:44:22.884Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-19T00:20:41+02:00",
+    "upstream_commit_at": "2026-07-21T11:34:11+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-19T05:46:35.193Z",
+    "generated_at": "2026-07-22T05:44:22.884Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,32 +98,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装后，Claude 可以通过 Ollama MCP 服务器调用本地模型来回答问题或执行任务，并能列出已安装的模型。如果启用管理工具，还可以拉取、删除、查看模型详情和列出正在运行的模型。",
-    "when": "当 Claude 需要调用本地模型（如生成文本、回答问题）时触发。如果启用了管理工具，当用户要求管理模型（如拉取、删除）时也会触发。",
+    "what": "安装后，Claude 可以通过 Ollama MCP 服务器调用本地运行的 AI 模型（如 gemma3、llama3.2）来回答问题或执行任务，并能列出已安装的模型。如果启用管理工具，还可以拉取、删除模型或查看运行中的模型。",
+    "when": "当 Claude 需要调用本地模型来生成回复或管理模型库时触发。例如，用户要求“用 ollama 告诉我法国的首都”或“拉取 gemma3:1b 模型”。",
     "say": [
       {
-        "text": "用 ollama 告诉我法国的首都是什么。",
-        "note": "Claude 会列出模型并选择一个生成回答。"
+        "text": "用 ollama 列出已安装的模型。"
       },
       {
-        "text": "拉取 gemma3:1b 模型。"
+        "text": "用 gemma3:1b 模型回答：法国的首都是什么？",
+        "note": "Claude 会调用 ollama_generate 工具。"
+      },
+      {
+        "text": "拉取 llama3.2 模型。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d8474643a5cf86e8446bf461282f88444a9d0a87b7d7844c025ec229ec594779",
     "model": "deepseek-chat",
-    "generated_at": "2026-07-19T05:53:19.152Z",
+    "generated_at": "2026-07-22T05:49:29.594Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can call local models via the Ollama MCP server to answer questions or perform tasks, and can list installed models. If admin tools are enabled, it can also pull, delete, show model details, and list running models.",
-    "when_en": "Triggered when Claude needs to use a local model (e.g., generate text, answer questions). If admin tools are enabled, also triggered when the user asks to manage models (e.g., pull, delete).",
+    "what_en": "After installation, Claude can call local AI models (e.g., gemma3, llama3.2) via the Ollama MCP server to answer questions or perform tasks, and can list installed models. If management tools are enabled, it can also pull, delete models, or check running models.",
+    "when_en": "Triggered when Claude needs to use a local model to generate a response or manage the model library. For example, when the user says \"use ollama to tell me the capital of France\" or \"pull the gemma3:1b model\".",
     "say_en": [
       {
-        "text": "Use ollama to tell me the capital of France.",
-        "note": "Claude will list models and pick one to generate a response."
+        "text": "List installed models using ollama.",
+        "note": "Claude will call the ollama_list_models tool."
       },
       {
-        "text": "Pull the gemma3:1b model.",
-        "note": "Requires admin tools enabled; Claude will call ollama_pull_model."
+        "text": "Use gemma3:1b to answer: what is the capital of France?",
+        "note": "Claude will call the ollama_generate tool."
+      },
+      {
+        "text": "Pull the llama3.2 model.",
+        "note": "Requires management tools enabled; Claude will call ollama_pull_model."
       }
     ]
   }

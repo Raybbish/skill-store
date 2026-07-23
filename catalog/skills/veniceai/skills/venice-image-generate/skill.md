@@ -1,6 +1,6 @@
 ---
 name: venice-image-generate
-description: Generate images with Venice. Covers POST /image/generate (Venice-native), POST /images/generations (OpenAI-compatible), GET /image/styles (style presets), request fields (prompt, dimensions, cfg_scale, seed, variants, style_preset, aspect_ratio, resolution, safe_mode, watermark), and response formats.
+description: Generate images with Venice. Covers POST /image/generate (Venice-native), POST /images/generations (OpenAI-compatible), GET /image/styles (style presets), request fields (prompt, dimensions, cfg_scale, seed, variants, style_preset, style_references, aspect_ratio, resolution, safe_mode, watermark), and response formats.
 ---
 
 # Venice Image Generation
@@ -22,6 +22,7 @@ For editing / upscaling / multi-image / background removal, see [`venice-image-e
 - You need multiple variants in one call.
 - You're porting from OpenAI's `images.generate` and want a zero-change SDK swap.
 - You want to browse style presets before committing to one.
+- You want generated images to match the look of existing images (`style_references`).
 
 ## `/image/generate` — Venice-native
 
@@ -62,6 +63,7 @@ curl https://api.venice.ai/api/v1/image/generate \
 | `variants` | int | 1 | 1–4. Only if `return_binary: false`. |
 | `lora_strength` | int | — | 0–100 when model uses Loras. |
 | `style_preset` | string | — | Value from `GET /image/styles`. |
+| `style_references` | array | — | Reference images that guide the aesthetic of the output. Each item: `{ "image": <base64 or http(s) URL, <8MB>, "strength": 0.1–1 (default 0.5) }`. Only on models with `supportsStyleReferences: true`; per-model cap in `constraints.maxStyleReferences`. `strength` is ignored when `constraints.supportsStyleReferenceStrength` is `false`. |
 | `format` | `"webp"`/`"png"`/`"jpeg"` | `webp` | Response image format. |
 | `return_binary` | bool | `false` | `true` → binary `image/*` response; `false` → JSON with base64. |
 | `embed_exif_metadata` | bool | `false` | Embed prompt info in EXIF. |
@@ -118,7 +120,7 @@ const b64 = res.data[0].b64_json
 | `n` | `1` | Venice only supports a single image per call here. |
 | `quality`, `style` (`vivid`/`natural`), `background`, `output_compression`, `user` | — | Accepted for OpenAI compat, not used by Venice. |
 
-If you need `variants`, `seed`, `negative_prompt`, `cfg_scale`, or `style_preset`, switch to `/image/generate`.
+If you need `variants`, `seed`, `negative_prompt`, `cfg_scale`, `style_preset`, or `style_references`, switch to `/image/generate`.
 
 ## `/image/styles` — list presets
 
@@ -143,6 +145,9 @@ Inspect per-model `model_spec`:
 - `constraints.resolutions[]` + `defaultResolution` — if present, the model supports `resolution` (`1K`/`2K`/`4K`).
 - `constraints.steps.{default,max}` — step bounds (some models ignore `steps` entirely).
 - `constraints.promptCharacterLimit` — max prompt length (also applies to `negative_prompt`).
+- `supportsStyleReferences` — whether the model accepts `style_references` on `/image/generate`.
+- `constraints.maxStyleReferences` — max number of style reference images (only present on supporting models).
+- `constraints.supportsStyleReferenceStrength` — whether per-reference `strength` is honored (only present on supporting models).
 - `pricing.generation.usd` — flat USD per image, or `pricing.resolutions[].usd` for resolution-tiered models.
 
 Pick a model that matches the **feature + size combo** you plan to use.
@@ -173,6 +178,21 @@ Pick a model that matches the **feature + size combo** you plan to use.
   "style_preset": "3D Model"
 }
 ```
+
+### Style references (match the look of existing images)
+
+```json
+{
+  "model": "krea-v2-large",
+  "prompt": "a lighthouse on a rocky coast at dusk",
+  "style_references": [
+    { "image": "https://example.com/ref-1.png", "strength": 0.8 },
+    { "image": "data:image/png;base64,....", "strength": 0.4 }
+  ]
+}
+```
+
+Describe the **subject** in the prompt; the references carry the **style**. As of mid-2026 the supporting models are `krea-v2-large` / `krea-v2-medium` (up to 3 refs, strength honored) and `luma-uni-1` / `luma-uni-1-max` (up to 3 refs, strength ignored) — all anonymized routing. Always re-verify via `GET /models?type=image` (`supportsStyleReferences`).
 
 ### Stream binary to disk (Node)
 
@@ -207,4 +227,5 @@ await fs.writeFile('out.webp', buf)
 - `steps` is ignored by fast/turbo models; they hardcode step count internally.
 - `hide_watermark: true` is advisory — Venice may still watermark content flagged by safety classifiers.
 - Old `inpaint` field is deprecated; don't use it.
+- `style_references` is silently unsupported outside the models flagged `supportsStyleReferences: true`; check the flag rather than trying and inspecting output. Each reference image must be < 8MB.
 - For OpenAI-compat, `response_format: "url"` returns a **data URL**, not a hosted URL — plan for that if you're saving to storage.
