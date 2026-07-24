@@ -5,7 +5,7 @@
     "name": "work-with-pr",
     "description": "Full PR lifecycle in a fresh task-owned git worktree: implement via the ulw-loop skill with mandatory evidence-bound manual QA → reviewer-readable English PR → verification loop (CI + Cubic, where Cubic is skipped only when its quota is exhausted) → merge by default → worktree cleanup. Decomposes one task into the smallest atomic, independently-mergeable PRs and builds the independent ones concurrently via one worktree per PR driven by parallel subagents or a team. Unbounded loop: any failing gate sends you back to fix-and-re-QA inside that PR's worktree. Use whenever implementation work needs to land as a PR. Triggers: 'create a PR', 'implement and PR', 'work on this and make a PR', 'implement issue', 'land this as a PR', 'split into atomic PRs', 'parallel PRs', 'work-with-pr', 'PR workflow', 'implement end to end', even when user just says 'implement X' if the context implies PR delivery.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/work-with-pr",
-    "upstream_commit": "e78abe7e7d5b7271e85535032151dba706f80179",
+    "upstream_commit": "60201be160749965b9bb4c3b2744e1bbee820dc5",
     "content_hash": "sha256:9f16561199518df9355475dc4de0b66ec12f8e257d270f3b39148230ba0a672f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66410,
+    "stars_github": 66487,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-23T05:49:17.004Z",
+    "fetched_at": "2026-07-24T05:45:08.162Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-23T14:15:27+09:00",
-    "repo_skill_count": 44
+    "upstream_commit_at": "2026-07-24T01:52:49+09:00",
+    "repo_skill_count": 46
   },
   "context_size": {
     "version": "1",
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-23T05:49:17.004Z",
+    "generated_at": "2026-07-24T05:45:08.162Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,38 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会为每个任务创建独立的工作目录，将任务拆成多个小 PR，逐个实现、测试、创建英文 PR、通过 CI 和 Cubic 审查后自动合并，最后清理工作目录。",
+    "what": "Claude 会为每个任务创建独立的 git 工作区，将任务拆成多个小 PR，并行实现，通过手动 QA 和 CI 验证后自动合并并清理工作区。",
     "when": "当你要求“创建一个 PR”、“实现并提交 PR”、“拆分 PR”等，或上下文暗示需要提交代码时触发。",
     "say": [
       {
-        "text": "帮我实现这个功能并创建一个 PR。",
-        "note": "Claude 会拆任务、建分支、写代码、提 PR。"
+        "text": "帮我实现这个功能并创建一个 PR。"
       },
       {
-        "text": "把这个 issue 拆成几个原子 PR 并行开发。",
-        "note": "Claude 会分解任务，并行创建多个 PR。"
+        "text": "把这个 issue 拆成多个小 PR 并行开发。"
       },
       {
-        "text": "为这个改动创建一个 PR，并等待审查通过后合并。",
-        "note": "Claude 会执行完整流程直到合并。"
+        "text": "为这个改动创建 PR，并等待 CI 通过后自动合并。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f16561199518df9355475dc4de0b66ec12f8e257d270f3b39148230ba0a672f",
     "model": "deepseek-chat",
-    "generated_at": "2026-07-23T05:52:30.749Z",
+    "generated_at": "2026-07-24T05:48:31.681Z",
     "lint_pass": true,
-    "what_en": "Claude creates isolated worktrees, splits tasks into atomic PRs, implements with manual QA, creates English PRs, runs CI and Cubic verification, auto-merges, and cleans up.",
-    "when_en": "Triggered when you say 'create a PR', 'implement and PR', 'split into atomic PRs', etc., or when context implies code delivery.",
+    "what_en": "Claude creates isolated git worktrees per task, splits the task into small atomic PRs, implements them in parallel with manual QA, runs verification loops (CI + Cubic), auto-merges, and cleans up worktrees.",
+    "when_en": "Triggered when you say 'create a PR', 'implement and PR', 'split into atomic PRs', or similar, or when context implies code delivery.",
     "say_en": [
       {
         "text": "Implement this feature and create a PR.",
-        "note": "Claude will split, branch, code, and PR."
+        "note": "Claude will split, branch, implement, QA, and submit a PR."
       },
       {
-        "text": "Split this issue into atomic PRs and work in parallel.",
-        "note": "Claude will decompose and create multiple PRs concurrently."
+        "text": "Split this issue into multiple small PRs and develop in parallel.",
+        "note": "Claude will decompose the issue into atomic PRs and create parallel worktrees."
       },
       {
-        "text": "Create a PR for this change and wait for approval then merge.",
-        "note": "Claude will run the full lifecycle until merge."
+        "text": "Create a PR for this change and auto-merge after CI passes.",
+        "note": "Claude will create PR, run CI and Cubic checks, then auto-merge."
       }
     ]
   }
