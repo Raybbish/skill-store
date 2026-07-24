@@ -1,15 +1,15 @@
 <!-- 自动生成,勿手改。运行: npm run status -->
 # 项目状态(自动快照)
 
-_生成于 2026-07-23 04:40 UTC · 分支 `main` · 工作区干净_
+_生成于 2026-07-24 04:39 UTC · 分支 `main` · 工作区干净_
 
 ## Catalog
-- **skill 总数:11660**
+- **skill 总数:11969**
 - verdict 账本(catalog/verdicts,ADR 0012;扫描停摆中,现存均为 legacy 历史判定):有判定 **55** —— pass 52 · flagged 3
-- 托管(磁盘事实):indexed 7081 · mirrored 4579 · ⚠ 字段漂移 109 条(`npm run reconcile:hosting` 对账)
-- 已评测:**0** · 发布者:**912**
+- 托管(磁盘事实):indexed 7390 · mirrored 4579 · ⚠ 字段漂移 200 条(`npm run reconcile:hosting` 对账)
+- 已评测:**0** · 发布者:**939**
 
 ## 最近提交
 ```
-a28ea428 chore(code-search): advance sweep cursor [skip ci]
+267b08f3 chore(code-search): advance sweep cursor [skip ci]
 ```
