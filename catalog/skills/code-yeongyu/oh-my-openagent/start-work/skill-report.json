@@ -5,8 +5,8 @@
     "name": "start-work",
     "description": "Execute a Prometheus work plan in Codex with Boulder state, evidence ledger updates, worktree discipline, parallel subagents, and Stop-hook continuation. Use after planning when the user says start work, execute plan, continue plan, resume plan, or asks to run a .omo/plans plan.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/start-work",
-    "upstream_commit": "e78abe7e7d5b7271e85535032151dba706f80179",
-    "content_hash": "sha256:fc20e4c4a0339895f9a6d227516c31559468d755a018b204a48cc981c6469749",
+    "upstream_commit": "60201be160749965b9bb4c3b2744e1bbee820dc5",
+    "content_hash": "sha256:1d91889019f86feea73300f7d40c3443d34d8015cf0fe6523a91636097de3ee6",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
     "category": "dev",
@@ -16,18 +16,19 @@
     "duplicate_of": null,
     "tags": [
       "automation",
-      "agent-ops"
+      "cli",
+      "bash"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66410,
+    "stars_github": 66487,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-23T05:49:17.004Z",
+    "fetched_at": "2026-07-24T05:45:08.162Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-23T14:15:27+09:00",
-    "repo_skill_count": 44
+    "upstream_commit_at": "2026-07-24T01:52:49+09:00",
+    "repo_skill_count": 46
   },
   "context_size": {
     "version": "1",
@@ -36,92 +37,79 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-23T05:49:17.004Z",
+    "generated_at": "2026-07-24T05:45:08.162Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 16367,
-        "chars": 16325,
-        "tokens": 3447
+        "bytes": 18365,
+        "chars": 18323,
+        "tokens": 3922
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 16367,
-        "chars": 16325,
-        "tokens": 3447
+        "bytes": 18365,
+        "chars": 18323,
+        "tokens": 3922
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 16367,
-        "chars": 16325,
-        "tokens": 3447
+        "bytes": 18365,
+        "chars": 18323,
+        "tokens": 3922
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "在 Codex 中执行 Prometheus 工作计划",
+    "tagline": "在 Codex 中按计划自动执行多步骤工作流",
     "scene_tags": [
       "计划执行",
-      "工作流自动化"
+      "工作流自动化",
+      "任务恢复"
     ],
-    "fit_line": "适合你，如果需要在 Codex 中运行和管理复杂的工作计划",
-    "tagline_en": "Execute Prometheus work plans in Codex",
+    "fit_line": "适合你，如果需要在 Codex 中按计划自动执行多步骤工作流并支持中断恢复。",
+    "tagline_en": "Automate multi-step workflows in Codex from a plan",
     "scene_tags_en": [
       "plan execution",
-      "workflow automation"
+      "workflow automation",
+      "task resumption"
     ],
-    "fit_line_en": "For you if you need to run and manage complex work plans in Codex",
+    "fit_line_en": "For you if you need to automatically execute multi-step workflows in Codex from a plan with resume support.",
     "source": "llm",
-    "content_hash": "sha256:fc20e4c4a0339895f9a6d227516c31559468d755a018b204a48cc981c6469749",
+    "content_hash": "sha256:1d91889019f86feea73300f7d40c3443d34d8015cf0fe6523a91636097de3ee6",
     "model": "deepseek-chat",
-    "generated_at": "2026-07-14T08:44:00.379Z",
+    "generated_at": "2026-07-24T05:47:41.021Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "安装后，Claude 会变成一个任务调度员，不再自己写代码或改文件，而是把每个实现、测试、审查任务都分配给子代理并行执行，并记录证据到 .omo/ 目录。",
+    "what": "装上后，Claude 会变成一个任务调度员，负责读取并执行 Prometheus 格式的工作计划。它会将计划拆分成小任务，分配给多个子代理并行执行，并记录进度和证据。Claude 自己不会写代码或编辑文件，所有实现工作都由子代理完成。",
     "when": "当你说“开始工作”、“执行计划”、“继续计划”、“恢复计划”或要求运行 .omo/plans 下的计划时触发。",
     "say": [
       {
-        "text": "开始工作，执行 .omo/plans 下的开发计划。",
-        "note": "Claude 会读取计划文件，分配子代理并行执行任务。"
+        "text": "开始工作，执行 .omo/plans/feature-x.md 计划。",
+        "note": "Claude 会读取该计划并开始执行。"
       },
       {
-        "text": "继续计划，从上次中断的地方恢复。"
+        "text": "继续计划，从上次中断的地方继续。",
+        "note": "Claude 会恢复之前暂停的工作。"
       },
       {
-        "text": "执行计划 my-feature，使用工作树 /path/to/worktree。"
+        "text": "执行计划，并创建 PR。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:fc20e4c4a0339895f9a6d227516c31559468d755a018b204a48cc981c6469749",
+    "content_hash": "sha256:1d91889019f86feea73300f7d40c3443d34d8015cf0fe6523a91636097de3ee6",
     "model": "deepseek-chat",
-    "generated_at": "2026-07-23T05:52:25.646Z",
-    "lint_pass": true,
-    "what_en": "After installation, Claude becomes a task orchestrator that never writes code or edits files itself. Instead, it delegates every implementation, test, and review task to spawned subagents, runs them in parallel, and records evidence in the .omo/ directory.",
-    "when_en": "Triggered when you say 'start work', 'execute plan', 'continue plan', 'resume plan', or ask to run a plan under .omo/plans.",
-    "say_en": [
-      {
-        "text": "Start work, execute the development plan under .omo/plans.",
-        "note": "Claude reads the plan file and dispatches subagents to run tasks in parallel."
-      },
-      {
-        "text": "Continue plan, resume from where it left off.",
-        "note": "Claude checks .omo/boulder.json for state and continues unfinished plan work."
-      },
-      {
-        "text": "Execute plan my-feature using worktree /path/to/worktree.",
-        "note": "Claude runs the plan named my-feature inside the specified worktree."
-      }
-    ]
+    "generated_at": "2026-07-24T05:48:26.379Z",
+    "lint_pass": true
   }
 }
