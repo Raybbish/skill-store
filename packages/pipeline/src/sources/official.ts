@@ -137,6 +137,31 @@ export function pathSlug(relDir: string): string {
   return s || "root";
 }
 
+/** skill 的「去 agent 归一化身份」:剥掉 agent 约定 dot-dir(.claude/.cursor/…)与 plugins/<x> 包装、再小写。
+ *  两份同身份 = 同一 skill 铺在不同 agent 家(含 monorepo 子目录内)。路径须含 skills 段,否则返回 null 不折。 */
+function foldKey(relDir: string): string | null {
+  const segs = relDir.split("/").filter(Boolean);
+  if (!segs.includes("skills")) return null;
+  const out: string[] = [];
+  for (let i = 0; i < segs.length; i++) {
+    const s = segs[i];
+    if (s.startsWith(".")) continue;        // agent 约定 dot-dir:丢
+    if (s === "plugins") { i++; continue; } // plugins/<name> 包装:连名一起丢
+    out.push(s.toLowerCase());
+  }
+  return out.join("/");
+}
+/** canonical 选取优先级(小=优先):中立源(无 agent/无 plugins) < .claude < plugins < 其它 agent dot-dir */
+function homePriority(relDir: string): number {
+  const segs = relDir.split("/");
+  const agent = segs.find((s) => s.startsWith("."));
+  const hasPlugins = segs.includes("plugins");
+  if (!agent && !hasPlugins) return 0;
+  if (agent === ".claude") return 1;
+  if (hasPlugins && !agent) return 2;
+  return 3;
+}
+
 type Built = { cand: SkillCandidate; relDir: string; name: string };
 
 /**
@@ -158,15 +183,34 @@ export function disambiguateIds(built: Built[], owner: string, repoSeg: string, 
   for (const [name, group] of byName) if (group.length === 1) used.add(name);
 
   const dropped = new Set<Built>();
-  let groups = 0, suffixed = 0, mirrored = 0;
+  let groups = 0, suffixed = 0, mirrored = 0, crossAgent = 0;
   for (const [name, group] of byName) {
     if (group.length === 1) continue; // 单条:裸 name,id 不变
-    group.sort((a, b) => a.relDir.localeCompare(b.relDir));
+
+    // 跨 agent 目录折叠(多 agent 同一 skill,ADR 0035):去掉 agent dot-dir 与 plugins 包装后身份相同(foldKey)、
+    // 仅所在 agent 容器不同 = 作者把同一 skill 铺进 .claude/.cursor/.gemini… 多家 → 只留优先级最高的一份、余丢弃。
+    // foldKey=null(路径无 skills 段)或身份不同(跨项目同名/变体) → 不折,留给下面按真撞名处理。
+    const bySub = new Map<string, Built[]>();
+    const survivors: Built[] = [];
+    for (const b of group) {
+      const k = foldKey(b.relDir);
+      if (!k) { survivors.push(b); continue; }
+      const g = bySub.get(k);
+      if (g) g.push(b); else bySub.set(k, [b]);
+    }
+    for (const sub of bySub.values()) {
+      if (sub.length === 1) { survivors.push(sub[0]); continue; }
+      sub.sort((a, b) => homePriority(a.relDir) - homePriority(b.relDir) || a.relDir.localeCompare(b.relDir));
+      survivors.push(sub[0]); // winner:最高优先 home
+      for (const b of sub.slice(1)) { dropped.add(b); crossAgent++; }
+    }
+    if (survivors.length === 1) { used.add(name); continue; } // 折叠后仅剩一个 → 保留裸 name
+    survivors.sort((a, b) => a.relDir.localeCompare(b.relDir));
 
     // 镜像折叠:name 已相同,再看描述——描述非空且已见过 = 打包镜像,丢后到者(留字典序最小)
     const seenDesc = new Set<string>();
     const distinct: Built[] = [];
-    for (const b of group) {
+    for (const b of survivors) {
       const desc = (b.cand.report.meta.description ?? "").trim();
       if (desc && seenDesc.has(desc)) { dropped.add(b); mirrored++; continue; }
       if (desc) seenDesc.add(desc);
@@ -188,7 +232,7 @@ export function disambiguateIds(built: Built[], owner: string, repoSeg: string, 
       distinct[i].cand.report.meta.id = `${owner}/${repoSeg}/${leaf}`;
     }
   }
-  if (groups || mirrored)
-    console.log(`    ↔ 同名消歧 ${repoSlug}:真撞名 ${groups} 组补路径段 ${suffixed} · 打包镜像折叠丢 ${mirrored}`);
+  if (groups || mirrored || crossAgent)
+    console.log(`    ↔ 同名消歧 ${repoSlug}:多 agent 折叠丢 ${crossAgent} · 真撞名 ${groups} 组补路径段 ${suffixed} · 打包镜像折叠丢 ${mirrored}`);
   return dropped.size ? built.filter((b) => !dropped.has(b)) : built;
 }
