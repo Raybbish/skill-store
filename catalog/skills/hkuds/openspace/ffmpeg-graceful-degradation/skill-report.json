@@ -87,5 +87,44 @@
     "model": "deepseek-chat",
     "generated_at": "2026-07-24T09:22:57.957Z",
     "lint_pass": true
+  },
+  "howto": {
+    "what": "Claude在视频处理时会先检查编码器，测试短片段，若编码失败则依次尝试libx264、mpeg4、复制模式，最后用moviepy的捆绑ffmpeg。",
+    "when": "当用户要求处理视频文件，或ffmpeg编码报错时，Claude会启用渐进降级策略。",
+    "say": [
+      {
+        "text": "转码这个视频，如果libx264失败就用mpeg4。",
+        "note": "Claude会执行渐进降级。"
+      },
+      {
+        "text": "把这两个视频合并，用moviepy处理。",
+        "note": "Claude使用moviepy绕过系统编码问题。"
+      },
+      {
+        "text": "处理这个视频，优先用copy模式保持画质。",
+        "note": "Claude会尝试不重新编码。"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:269e4773c19c4548d40db83f72e1c284e597c2b7037bfc86fe80e999c1f48dd9",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-07-26T06:14:48.759Z",
+    "lint_pass": true,
+    "what_en": "When processing videos, Claude first checks available encoders, tests a short clip with the preferred codec (libx264), and if it fails, falls back to mpeg4, then copy mode, and finally uses moviepy's bundled ffmpeg as a safety net.",
+    "when_en": "This skill is triggered when the user requests video processing, especially when ffmpeg encoding errors occur, such as when running in containers or with unknown codecs.",
+    "say_en": [
+      {
+        "text": "Transcode this video, fallback to mpeg4 if libx264 fails.",
+        "note": "Claude applies progressive fallback."
+      },
+      {
+        "text": "Concatenate these clips using moviepy.",
+        "note": "Claude uses moviepy to avoid system issues."
+      },
+      {
+        "text": "Process this video, prefer copy mode.",
+        "note": "Claude tries no-reencode copy mode first."
+      }
+    ]
   }
 }
