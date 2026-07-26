@@ -86,5 +86,44 @@
     "model": "deepseek-chat",
     "generated_at": "2026-07-24T09:22:46.176Z",
     "lint_pass": true
+  },
+  "howto": {
+    "what": "Claude 在执行代码时会先确认工作目录，如果沙箱执行失败，它会依次尝试简化代码、用 shell heredoc 运行、或交给 shell_agent 处理，并确保输出文件路径正确。",
+    "when": "当 execute_code_sandbox 因语法错误、超时或未知错误失败时触发；或者在需要生成文件但怀疑目录出错时也会启用。",
+    "say": [
+      {
+        "text": "帮我运行这段代码，如果沙箱报错就用 shell 执行。",
+        "note": "触发二级回退策略。"
+      },
+      {
+        "text": "确保输出文件保存在 deliverables 目录里。",
+        "note": "锚定工作区路径。"
+      },
+      {
+        "text": "用 shell_agent 处理这个多步骤任务。",
+        "note": "委托给三级回退。"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:a910cd8374d84b4161815b6bae203a63dd7f8ba17dd1b06e3391d425d7b8bc2a",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-07-26T06:14:01.994Z",
+    "lint_pass": true,
+    "what_en": "Claude anchors the working directory at task start. If execute_code_sandbox fails, it retries with simpler code, then uses run_shell with heredoc, then delegates to shell_agent. It also enforces explicit path management.",
+    "when_en": "Triggered when execute_code_sandbox fails due to syntax/import errors, timeout, or unknown errors. Also used when file location issues are anticipated.",
+    "say_en": [
+      {
+        "text": "Run this code, fallback to shell if sandbox fails.",
+        "note": "Triggers level 2 fallback."
+      },
+      {
+        "text": "Ensure output is saved in deliverables folder.",
+        "note": "Anchors workspace path."
+      },
+      {
+        "text": "Use shell_agent for this multi-step task.",
+        "note": "Delegates to level 3."
+      }
+    ]
   }
 }
