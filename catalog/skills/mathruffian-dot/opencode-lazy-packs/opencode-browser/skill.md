@@ -1,0 +1,137 @@
+---
+name: opencode-browser
+description: 安裝瀏覽器控制工具（Playwright MCP + open-computer-use）。說「裝瀏覽器控制」「瀏覽器自動化」時載入。
+---
+
+# OpenCode 加碼包：安裝瀏覽器控制（extras，非研習主線）
+
+
+---
+
+## 這個懶人包會幫你做什麼？
+
+讓 OpenCode 可以控制瀏覽器和桌面應用：
+- 安裝 Playwright MCP（網頁控制）
+- 安裝 open-computer-use（桌面自動化）
+- 寫入 opencode.json 設定
+- 驗證連線
+
+---
+
+## 先備條件
+
+- [ ] Node.js 18+ 已安裝
+- [ ] 電腦有網路
+
+---
+
+## 請 OpenCode 幫我執行以下步驟
+
+### 步驟一：寫入 Playwright MCP 設定
+
+編輯 `~/.config/opencode/opencode.json`，加入：
+
+```json
+{
+  "mcp": {
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "-y", "@playwright/mcp"],
+      "enabled": true
+    }
+  }
+}
+```
+
+### 步驟二：安裝 open-computer-use
+
+```bash
+npm install -g open-computer-use
+```
+
+確認指令可用：
+```bash
+open-computer-use --version
+```
+
+### 步驟三：寫入 open-computer-use MCP 設定
+
+> ⚠️ **Windows 注意**：`npx open-computer-use install-opencode-mcp` 會提示 `requires a POSIX shell`。Windows 請手動編輯設定檔。
+
+編輯 `~/.config/opencode/opencode.json`，加入：
+
+```json
+{
+  "mcp": {
+    "open-computer-use": {
+      "type": "local",
+      "command": ["open-computer-use", "mcp"],
+      "enabled": true
+    }
+  }
+}
+```
+
+> 💡 **為什麼不用 npx？** open-computer-use 的 MCP server 需要用 `open-computer-use mcp` 子命令啟動。用 `npx -y open-computer-use` 不會正確暴露 MCP 工具。
+
+---
+
+### 步驟三：驗證 Playwright
+
+重新開啟 OpenCode，然後問它：
+
+```
+請開啟 https://example.com 並告訴我頁面標題是什麼。
+```
+
+### 步驟四：驗證 open-computer-use
+
+```
+請截圖我的桌面（或特定視窗）。
+```
+
+---
+
+## 完成回報格式
+
+```md
+## 瀏覽器控制安裝完成
+
+- Playwright MCP：已設定 / 已啟用
+- open-computer-use：已設定 / 已啟用
+- 瀏覽器導航測試：成功 / 失敗
+- 桌面截圖測試：成功 / 失敗
+```
+
+---
+
+## 輕量替代方案：CLI-Anything Browser CLI
+
+若只需簡單網頁操作（導航、截圖、內容擷取），不需完整 Playwright 或桌面自動化，可使用 CLI-Anything 的 Browser CLI：
+
+### 安裝
+```bash
+pip install cli-anything-hub
+cli-hub install browser
+```
+
+### 使用範例
+```bash
+cli-anything-browser navigate https://example.com
+cli-anything-browser screenshot --output page.png
+cli-anything-browser extract --selector "main"
+```
+
+> 💡 Playwright MCP（本懶人包預設方案）適合完整瀏覽器自動化、表單填寫；Browser CLI 適合快速、輕量的網頁資料擷取。兩者可並存。
+
+---
+
+## 常見問題
+
+| 問題 | 解法 |
+|------|------|
+| Playwright 首次執行下載瀏覽器很慢 | 等待下載完成，只需一次 |
+| open-computer-use 找不到視窗 | 確認目標應用正在執行 |
+| `npx open-computer-use` 工具不出現 | 改用 `command: ["open-computer-use", "mcp"]` |
+| Windows `install-opencode-mcp` 報錯 | 手動編輯 opencode.json，不執行自動安裝 |
+
