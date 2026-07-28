@@ -5,7 +5,7 @@
     "name": "get-qodo-rules",
     "description": "Loads org- and repo-level coding rules from Qodo before code tasks begin, ensuring all generation and modification follows team standards. Use before any code generation or modification task when rules are not already loaded. Invoke when user asks to write, edit, refactor, or review code, or when starting implementation planning.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/get-qodo-rules",
-    "upstream_commit": "f1e6617957a3417ec8e3e456524a459b62fb0cc8",
+    "upstream_commit": "879835bf8bb882672742f0765747312c4948420f",
     "content_hash": "sha256:5811ce108f29709658c248a0395eac90e48f23ac59d63efa8a9602de008c3b4f",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30367,
+    "stars_github": 30380,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-26T05:55:47.305Z",
+    "fetched_at": "2026-07-27T06:23:57.317Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-26T01:19:35+03:00",
+    "upstream_commit_at": "2026-07-26T18:23:04+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-26T05:55:47.305Z",
+    "generated_at": "2026-07-27T06:23:57.317Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -97,26 +97,34 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会在写代码前自动从 Qodo 平台拉取组织和仓库的编码规则，然后根据规则严重程度自动应用：错误规则必须遵守并加注释，警告规则默认遵守，推荐规则酌情考虑，最后报告结果。",
-    "when": "当你要求写、改、重构或审查代码时触发，前提是对话中还没有显示「Qodo Rules Loaded」。",
+    "what": "当代码任务开始时，自动检查是否已加载Qodo编码规则。若未加载，从Qodo平台获取并按错误、警告、建议三个等级应用规则，最后报告哪些规则被遵循或跳过。",
+    "when": "在要求编写、修改、重构或审查代码时触发。也可以直接说'加载Qodo规则'等关键词触发。如果已加载过则跳过。",
     "say": [
       {
-        "text": "帮我写一段用户登录代码。",
-        "note": "Claude 会先加载 Qodo 规则再生成代码。"
+        "text": "帮我写一个用户登录功能，并应用团队编码规则。",
+        "note": "触发加载Qodo规则，然后在代码中遵循错误级规则。"
       },
       {
-        "text": "重构这个函数，让它更安全。",
-        "note": "Claude 会应用规则中的安全要求进行重构。"
-      },
-      {
-        "text": "审查这段代码是否符合团队标准。",
-        "note": "Claude 会加载已有规则来审查代码。"
+        "text": "重构这段代码，确保符合Qodo规则。",
+        "note": "重写代码时自动获取并应用Qodo规则。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5811ce108f29709658c248a0395eac90e48f23ac59d63efa8a9602de008c3b4f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-26T06:07:14.196Z",
-    "lint_pass": true
+    "generated_at": "2026-07-27T06:33:58.999Z",
+    "lint_pass": true,
+    "what_en": "Before code tasks, checks if Qodo rules are already loaded. If not, fetches them from Qodo API and applies rules by severity: ERROR (must comply), WARNING (should comply), RECOMMENDATION (consider). Reports after code generation.",
+    "when_en": "Triggered when user asks to write, edit, refactor, or review code, or when explicit phrases like 'load Qodo rules' are used. Skipped if rules already loaded in context.",
+    "say_en": [
+      {
+        "text": "Write a user login feature and apply team coding rules.",
+        "note": "Triggers rule loading and enforces ERROR rules."
+      },
+      {
+        "text": "Refactor this code to follow Qodo rules.",
+        "note": "Fetches and applies rules during refactoring."
+      }
+    ]
   }
 }

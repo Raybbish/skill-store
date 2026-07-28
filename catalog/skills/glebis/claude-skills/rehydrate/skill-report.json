@@ -1,0 +1,127 @@
+{
+  "schema_version": "2",
+  "meta": {
+    "id": "glebis/claude-skills/rehydrate",
+    "name": "rehydrate",
+    "description": "Put the real values back into an analysis that was produced from GREEN (placeholder) text — LOCALLY, using the user's own reversible map. Completes the confide round-trip (redact -> cloud-analyze the green -> rehydrate locally). Use when the user says \"rehydrate\", \"restore real names\", \"unmask the analysis\", \"put the names back\", \"de-redact this output\", \"reverse the placeholders\", or hands you an analysis full of [CONFIDE_PERSON_0001]/[CONFIDE_DATE_0002] plus a *.map.json. Runs only on the user's own map; the map never leaves the machine; nothing fetched or transmitted. Prints counts only — never echoes restored PII. Warns on placeholders not in the map (possible LLM hallucination).",
+    "upstream": "https://github.com/glebis/claude-skills/tree/main/confide/skills/rehydrate",
+    "upstream_commit": "2482fd161932132768eb9a6af0389e9953a0cad0",
+    "content_hash": "sha256:080e6d33a66ff94259ca23a941010b00506c4b3d8caf1203ea5bc2a7b38ae1b4",
+    "license": "none(all-rights-reserved)",
+    "hosting": "indexed",
+    "category": "data-ai",
+    "version": null,
+    "publisher": "glebis",
+    "publisher_verified": false,
+    "duplicate_of": null,
+    "tags": []
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "signals": {
+    "stars_github": 330,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-07-26T09:08:59.584Z",
+    "first_seen_at": "2026-07-26T09:08:59.584Z",
+    "upstream_commit_at": "2026-07-24T15:27:03+02:00",
+    "repo_skill_count": 109,
+    "bulk_source": true
+  },
+  "context_size": {
+    "version": "1",
+    "counter": {
+      "id": "static-mixed-estimate-v1.1",
+      "method": "heuristic",
+      "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
+    },
+    "generated_at": "2026-07-26T09:08:59.584Z",
+    "scopes": {
+      "activation_core": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 3660,
+        "chars": 3628,
+        "tokens": 810
+      },
+      "activation_with_declared_refs": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 3660,
+        "chars": 3628,
+        "tokens": 810
+      },
+      "package_total_text": {
+        "files": [
+          "SKILL.md",
+          "scripts/rehydrate.py"
+        ],
+        "text_files": 2,
+        "bytes": 11137,
+        "chars": 11079,
+        "tokens": 2345
+      }
+    }
+  },
+  "eval": null,
+  "copy": {
+    "tagline": "用本地映射还原分析中的真实姓名和日期",
+    "scene_tags": [
+      "分析还原",
+      "数据脱敏后处理"
+    ],
+    "fit_line": "适合你，如果需要对云端分析结果进行本地脱敏还原",
+    "tagline_en": "Restore real values into anonymized analysis using your local map",
+    "scene_tags_en": [
+      "analysis restoration"
+    ],
+    "fit_line_en": "For you if you need to safely de-redact cloud analysis results locally",
+    "source": "llm",
+    "content_hash": "sha256:080e6d33a66ff94259ca23a941010b00506c4b3d8caf1203ea5bc2a7b38ae1b4",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-07-26T09:10:48.523Z",
+    "lint_pass": true
+  },
+  "howto": {
+    "what": "装上后，Claude 可以把包含占位符（如 [CONFIDE_PERSON_0001]）的分析文本恢复成真实值。恢复过程使用你自己的映射文件，只输出恢复成功的数量，不泄露隐私信息。",
+    "when": "当你要求“rehydrate”“恢复真实姓名”“取消掩码”等，或提供包含占位符的分析文件和映射文件时触发。",
+    "say": [
+      {
+        "text": "帮我rehydrate这个分析文件，映射是session.map.json",
+        "note": "Claude 会用指定映射恢复占位符。"
+      },
+      {
+        "text": "恢复真实姓名，检查analysis.txt中的占位符",
+        "note": "Claude 会提示恢复数量和未匹配项。"
+      },
+      {
+        "text": "把占位符替换回原名，并报告未匹配的",
+        "note": "未匹配项可能是幻觉，Claude 会警告。"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:080e6d33a66ff94259ca23a941010b00506c4b3d8caf1203ea5bc2a7b38ae1b4",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-07-27T06:36:26.020Z",
+    "lint_pass": true,
+    "what_en": "Installing this skill allows Claude to replace placeholders (e.g., [CONFIDE_PERSON_0001]) in an analysis text with real values using your local map file. It only prints count statistics and never leaks the restored data.",
+    "when_en": "Triggered when you say \"rehydrate\", \"restore real names\", \"unmask the analysis\", etc., or provide an analysis with placeholders and a map file.",
+    "say_en": [
+      {
+        "text": "Rehydrate this analysis with session.map.json",
+        "note": "Claude uses the specified map to restore placeholders."
+      },
+      {
+        "text": "Restore real names from analysis.txt",
+        "note": "Claude shows restore count and any unmatched placeholders."
+      },
+      {
+        "text": "Replace placeholders and warn about unmatched ones",
+        "note": "Unmatched may indicate LLM hallucinations."
+      }
+    ]
+  }
+}

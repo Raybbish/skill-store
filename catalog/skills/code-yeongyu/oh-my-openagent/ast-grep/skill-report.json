@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "cd6f6cbce5be3f28d0cbae6389f7f8cc8b141304",
+    "upstream_commit": "242396a3e951fbbb9684216ac0250ba2c83cf8bf",
     "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
     "license": "MIT",
     "hosting": "mirrored",
@@ -20,11 +20,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66602,
+    "stars_github": 66641,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-26T05:55:40.578Z",
+    "fetched_at": "2026-07-27T06:23:51.455Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-26T13:50:24+09:00",
+    "upstream_commit_at": "2026-07-27T15:13:44+09:00",
     "repo_skill_count": 46
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-26T05:55:40.578Z",
+    "generated_at": "2026-07-27T06:23:51.455Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -111,26 +111,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装后，Claude 能够理解代码结构（而非纯文本），进行基于语法树的搜索和重写。支持 25 种编程语言，可以找到特定形状的函数、调用、类或导入，并执行改写，例如将 console.log(x) 改为 logger.info(x) 或移除 as any。默认先预览再应用。",
-    "when": "当用户的问题涉及代码结构（如函数形状、调用、类、导入）而非纯文本时触发。例如：查找所有接收 Request 参数的函数，或批量重写某种代码模式。",
+    "what": "安装后，Claude 可以按代码结构（而非文本）搜索和重写代码。支持 25 种语言，例如查找特定形状的函数、调用、类，或批量替换代码模式（如将 console.log 换成 logger.info），还能应用 YAML 规则做自动修复。",
+    "when": "当用户需要基于代码的结构形态（比如函数签名、调用模式、类定义）进行搜索或替换，而不是匹配字符串内容时触发。",
     "say": [
       {
-        "text": "找出所有接收 Request 参数的函数。",
-        "note": "Claude 会使用 ast-grep 搜索代码结构。"
+        "text": "把项目中所有的 console.log 替换成 logger.info",
+        "note": "Claude 会先预览再执行替换。"
       },
       {
-        "text": "将所有的 console.log(x) 替换成 logger.info(x)。",
-        "note": "先预览改动，再确认后执行。"
+        "text": "找到所有空 catch 块",
+        "note": "Claude 会搜索并列出匹配位置。"
       },
       {
-        "text": "移除此项目中的所有 as any 类型断言。",
-        "note": "Claude 会自动处理整个代码库。"
+        "text": "将 require 改成 import 语法",
+        "note": "Claude 会按结构匹配 CommonJS 模块导入。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-26T06:02:35.247Z",
-    "lint_pass": true
+    "generated_at": "2026-07-27T06:29:24.374Z",
+    "lint_pass": true,
+    "what_en": "After installing, Claude can search and rewrite code based on syntax structure (not text) across 25 languages. It finds functions, calls, classes, imports by shape, performs codemods like replacing console.log with logger.info, and applies YAML rules for auto-fixes.",
+    "when_en": "Triggered when the user needs structural code matching or transformation, such as finding every function with a specific parameter or rewriting all occurrences of a pattern, rather than searching by text content.",
+    "say_en": [
+      {
+        "text": "Replace all console.log with logger.info in the project.",
+        "note": "Claude will preview first, then apply."
+      },
+      {
+        "text": "Find all empty catch blocks.",
+        "note": "Claude will search and list matching locations."
+      },
+      {
+        "text": "Convert require() to import statements.",
+        "note": "Claude matches CommonJS modules structurally."
+      }
+    ]
   }
 }

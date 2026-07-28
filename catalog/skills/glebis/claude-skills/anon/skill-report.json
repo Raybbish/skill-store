@@ -1,0 +1,129 @@
+{
+  "schema_version": "2",
+  "meta": {
+    "id": "glebis/claude-skills/anon",
+    "name": "anon",
+    "description": "De-identify a session transcript (file or folder) by redacting PII LOCALLY before any sharing or cloud use. Produces a redacted GREEN copy with unique reserved-sentinel placeholders ([CONFIDE_PERSON_0001], [CONFIDE_EMAIL_0001], [CONFIDE_DATE_0002]...) plus a counts-only stats summary, and a local secret <name>.map.json (0600, gitignored) that enables confide:rehydrate to restore real values after a cloud analysis. Use when the user says \"anonymize this transcript\", \"redact PII\", \"de-identify session\", \"make safe to share\", \"strip personal data\", \"anonymize notes before sending to an LLM\", or points at a transcript/folder that should be scrubbed. Local-only by default — raw text never leaves the machine; the map is the only artifact with originals and stays local; nothing printed is PII; human review is still required before sharing.",
+    "upstream": "https://github.com/glebis/claude-skills/tree/main/confide/skills/anon",
+    "upstream_commit": "2482fd161932132768eb9a6af0389e9953a0cad0",
+    "content_hash": "sha256:2c111583bdd200478a08aff8ed7f7a787983c9c1e34c063bf759cd5111e6c103",
+    "license": "none(all-rights-reserved)",
+    "hosting": "indexed",
+    "category": "utility",
+    "version": null,
+    "publisher": "glebis",
+    "publisher_verified": false,
+    "duplicate_of": null,
+    "tags": []
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "signals": {
+    "stars_github": 330,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-07-26T09:08:59.584Z",
+    "first_seen_at": "2026-07-26T09:08:59.584Z",
+    "upstream_commit_at": "2026-07-24T15:27:03+02:00",
+    "repo_skill_count": 109,
+    "bulk_source": true
+  },
+  "context_size": {
+    "version": "1",
+    "counter": {
+      "id": "static-mixed-estimate-v1.1",
+      "method": "heuristic",
+      "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
+    },
+    "generated_at": "2026-07-26T09:08:59.584Z",
+    "scopes": {
+      "activation_core": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 5162,
+        "chars": 5108,
+        "tokens": 1175
+      },
+      "activation_with_declared_refs": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 5162,
+        "chars": 5108,
+        "tokens": 1175
+      },
+      "package_total_text": {
+        "files": [
+          "SKILL.md",
+          "scripts/anon.py"
+        ],
+        "text_files": 2,
+        "bytes": 17653,
+        "chars": 17585,
+        "tokens": 3952
+      }
+    }
+  },
+  "eval": null,
+  "copy": {
+    "tagline": "在分享前本地编辑对话记录中的个人身份信息",
+    "scene_tags": [
+      "隐私脱敏",
+      "数据安全",
+      "分享前处理"
+    ],
+    "fit_line": "适合你，如果需要在分享或使用云端分析前从对话记录中移除所有个人身份信息",
+    "scene_tags_en": [
+      "privacy redaction",
+      "data security",
+      "pre-sharing preparation"
+    ],
+    "fit_line_en": "For you if you need to strip all personal information from transcripts before sharing or sending to cloud analysis",
+    "source": "llm",
+    "content_hash": "sha256:2c111583bdd200478a08aff8ed7f7a787983c9c1e34c063bf759cd5111e6c103",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-07-26T09:09:39.977Z",
+    "lint_pass": true
+  },
+  "howto": {
+    "what": "当用户要求匿名化转录文件或文件夹时，Claude会在本地使用正则、Natasha和本地LLM识别PII，替换为唯一占位符，生成绿色副本和统计，同时创建一个映射文件用于后续恢复原始值。原始数据始终不离开本地。",
+    "when": "当用户说“anonymize this transcript”、“redact PII”或“de-identify session”等关键词，或指向需要清理的转录/文件夹时触发。",
+    "say": [
+      {
+        "text": "请匿名化这个转录文件。",
+        "note": "将生成绿色副本和映射文件。"
+      },
+      {
+        "text": "帮我脱敏会议记录文件夹。",
+        "note": "处理目录下所有.md/.txt文件。"
+      },
+      {
+        "text": "只使用正则层匿名化这个文件。",
+        "note": "--layers regex选项，完全离线。"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:2c111583bdd200478a08aff8ed7f7a787983c9c1e34c063bf759cd5111e6c103",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-07-27T06:35:32.639Z",
+    "lint_pass": true,
+    "what_en": "When the user asks to anonymize a transcript, Claude runs a local script to redact PII via regex, Natasha, and local LLM, replacing with placeholders, generating a green copy and stats, and a map for rehydration. Raw text stays local.",
+    "when_en": "Triggered when the user says 'anonymize this transcript', 'redact PII', or 'de-identify session', or points to a transcript/folder needing scrubbing.",
+    "say_en": [
+      {
+        "text": "Please anonymize this transcript.",
+        "note": "Generates green copy and map."
+      },
+      {
+        "text": "De-identify this meeting notes folder.",
+        "note": "Processes all .md/.txt files."
+      },
+      {
+        "text": "Use regex layer only on this file.",
+        "note": "Fully offline with --layers regex."
+      }
+    ]
+  }
+}
