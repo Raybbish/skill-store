@@ -5,7 +5,7 @@
     "name": "get-available-resources",
     "description": "Detect host inventory and effective CPU, memory, disk, scheduler, container, and accelerator limits when a user asks for resource-aware planning or before a clearly resource-sensitive local workload. Produces a redacted JSON snapshot and conservative planning helpers without stress tests or assuming visible host hardware is usable.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/get-available-resources",
-    "upstream_commit": "051f93f59fc64cd877d66554d03429f5c486b66e",
+    "upstream_commit": "e7ac42510774624f327003c95b6650e2883bc01d",
     "content_hash": "sha256:555ed7d7b44931c68ba98234ba31b49b322a454463fad29212d887be4b87df28",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 31867,
+    "stars_github": 31953,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-27T06:23:54.150Z",
+    "fetched_at": "2026-07-28T05:42:12.243Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-26T18:14:01-07:00",
-    "repo_skill_count": 154,
+    "upstream_commit_at": "2026-07-27T17:10:04-07:00",
+    "repo_skill_count": 156,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-27T06:23:54.150Z",
+    "generated_at": "2026-07-28T05:42:12.243Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -103,39 +103,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当用户发起计算密集型任务时，Claude 自动检测本机 CPU、GPU、内存、磁盘等资源，生成一个包含资源信息和策略推荐的 JSON 文件，并据此建议合适的并行处理、内存策略和 GPU 加速方案。",
-    "when": "在用户要求执行数据分析、模型训练、大规模文件处理等计算密集型或资源敏感任务时触发，通常由用户主动请求资源检测或任务开始时自动调用。",
+    "what": "当开始计算密集型任务（如大数据分析、模型训练、并行处理）时，Claude 自动检测系统 CPU、GPU、内存、磁盘等资源，生成 JSON 文件并提供优化建议（如并行 worker 数、GPU 加速、内存策略等）。",
+    "when": "用户提出资源密集型任务（如处理大文件、训练模型、并行计算）或明确询问系统资源时触发。",
     "say": [
       {
-        "text": "帮我对当前的系统资源做个检测，看看能跑多大的数据集。"
+        "text": "我要分析一个 50GB 的基因组数据集，先检查资源。",
+        "note": "触发资源检测并给出建议"
       },
       {
-        "text": "检查一下我的GPU，是否支持PyTorch的MPS后端。"
+        "text": "训练神经网络，看看有没有 GPU 可用。",
+        "note": "检测 GPU 并推荐后端"
       },
       {
-        "text": "我要分析一个50GB的基因组数据，先用资源检测看看如何分块处理。",
-        "note": "会基于内存和磁盘给出分块或 out-of-core 策略。"
+        "text": "处理 10000 个文件，推荐最优并行度。",
+        "note": "生成并行策略建议"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:555ed7d7b44931c68ba98234ba31b49b322a454463fad29212d887be4b87df28",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-27T06:32:22.847Z",
+    "generated_at": "2026-07-28T05:49:16.922Z",
     "lint_pass": true,
-    "what_en": "When a user starts a compute-intensive task, Claude automatically detects local CPU, GPU, memory, disk resources, generates a resource JSON file (.claude_resources.json) with strategic recommendations for parallel processing, memory strategy, and GPU acceleration.",
-    "when_en": "Triggered when the user requests resource detection or starts a resource-sensitive task like data analysis, model training, or large file processing, as instructed by the skill's usage guidelines.",
+    "what_en": "When a user starts a compute-intensive task (e.g., big data analysis, model training, parallel processing), Claude automatically detects system resources (CPU, GPU, memory, disk) and generates a JSON file with optimization recommendations (e.g., parallel workers, GPU acceleration, memory strategy).",
+    "when_en": "Triggered when the user mentions a resource-intensive task (e.g., process large files, train a model, parallel computing) or explicitly asks about system resources.",
     "say_en": [
       {
-        "text": "Run a system resource check to see how much data I can handle.",
-        "note": "Generates .claude_resources.json and recommendations."
+        "text": "I need to analyze a 50GB genomics dataset. Check resources first.",
+        "note": "Triggers resource detection and recommendations"
       },
       {
-        "text": "Check my GPU and recommend a PyTorch backend.",
-        "note": "Detects Apple Silicon, NVIDIA, or AMD GPUs."
+        "text": "Train a neural network. Detect available GPUs.",
+        "note": "Detects GPU and suggests backends"
       },
       {
-        "text": "I need to analyze a 50GB genomics dataset; first check resources to decide chunking.",
-        "note": "Provides memory/disk-based out-of-core strategy."
+        "text": "Process 10,000 files. Recommend optimal parallelism.",
+        "note": "Generates parallel strategy suggestions"
       }
     ]
   }

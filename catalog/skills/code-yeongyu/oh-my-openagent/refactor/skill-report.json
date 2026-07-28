@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Intelligent refactor command. Triggers: refactor, refactoring, cleanup, restructure, extract, simplify, modernize.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "242396a3e951fbbb9684216ac0250ba2c83cf8bf",
+    "upstream_commit": "8cabdfcc31b33161cce14958feff202413df277d",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66641,
+    "stars_github": 66687,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-27T06:23:51.455Z",
+    "fetched_at": "2026-07-28T05:42:00.346Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-27T15:13:44+09:00",
+    "upstream_commit_at": "2026-07-28T14:08:46+09:00",
     "repo_skill_count": 46
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-27T06:23:51.455Z",
+    "generated_at": "2026-07-28T05:42:00.346Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当用户要求重构代码时，Claude会执行一个多阶段流程：先理解意图并确认目标，然后分析代码库、构建依赖图、评估测试覆盖率，接着生成详细计划，再逐步执行重构，并在每一步验证测试和类型检查，最后进行全面回归测试。",
-    "when": "当你说出“重构”、“清理”、“简化”等关键词，或直接使用 /refactor 命令并指定目标时触发。",
+    "what": "当你要求重构代码时，Claude 会先分析你的意图和整个代码库，然后分阶段进行：绘制依赖图、评估测试覆盖、生成详细计划、逐步执行重构并在每次更改后自动测试，确保没有破坏任何功能。",
+    "when": "当你说“重构”、“清理”等关键词，或使用 /refactor 命令时触发。",
     "say": [
       {
-        "text": "重构 AuthService 类，提取验证逻辑到独立模块。",
-        "note": "Claude会先确认意图，然后执行。"
+        "text": "把这个函数提取到新模块",
+        "note": "触发 extract 模式，Claude 会分析并移动代码。"
       },
       {
-        "text": "清理所有使用了弃用API的函数。",
-        "note": "Claude会查找并替换。"
+        "text": "重构 auth 模块，用安全策略"
+      },
+      {
+        "text": "清理所有弃用 API 的调用",
+        "note": "触发 cleanup，Claude 会替换为推荐 API。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-27T06:30:06.281Z",
-    "lint_pass": false,
-    "what_en": "When the user requests code refactoring, Claude performs a multi-phase process: understands intent, analyzes the codebase, builds a dependency map, assesses test coverage, generates a detailed plan, executes steps with continuous verification, and runs final regression checks.",
-    "when_en": "Triggers when you say keywords like \"refactor\", \"cleanup\", \"simplify\", etc., or use the /refactor command with a target.",
+    "generated_at": "2026-07-28T05:46:49.887Z",
+    "lint_pass": true,
+    "what_en": "When you ask to refactor code, Claude will first analyze your intent and the entire codebase, then proceed in phases: build dependency graph, assess test coverage, generate detailed plan, execute refactoring step by step, and run tests after each change to ensure no regressions.",
+    "when_en": "Triggered when you say keywords like 'refactor', 'cleanup', etc., or use the /refactor command.",
     "say_en": [
       {
-        "text": "/refactor src/auth/handler.ts --scope=module --strategy=safe",
-        "note": "Claude analyzes and safely refactors the file."
+        "text": "Extract this function to a new module",
+        "note": "Triggers extract mode; Claude analyzes and moves code."
       },
       {
-        "text": "Refactor AuthService class, extract validation logic into a separate module.",
-        "note": "Claude confirms intent then executes."
+        "text": "Refactor auth module with safe strategy",
+        "note": "Specifies scope and strategy; Claude executes plan."
       },
       {
-        "text": "Clean up all functions using deprecated APIs.",
-        "note": "Claude finds and replaces them."
+        "text": "Clean up all deprecated API calls",
+        "note": "Triggers cleanup; Claude replaces with recommended APIs."
       }
     ]
   }
