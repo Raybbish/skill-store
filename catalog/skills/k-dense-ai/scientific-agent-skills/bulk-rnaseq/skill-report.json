@@ -5,7 +5,7 @@
     "name": "bulk-rnaseq",
     "description": "End-to-end bulk RNA-seq orchestrator — takes raw FASTQ reads through QC and trimming (FastQC, fastp/Trim Galore), alignment and quantification (STAR, Salmon, featureCounts), assembles a gene-level counts matrix, then hands off to differential expression (pydeseq2), pathway/GSEA enrichment (pathway-enrichment), and publication figures (scientific-visualization). Use whenever the user has bulk RNA-seq reads or quant output and wants a complete, reproducible differential-expression workflow — e.g. \"analyze my RNA-seq\", \"FASTQ to DESeq2\", \"run nf-core/rnaseq\", \"STAR/Salmon quantification\", \"build a counts matrix for DESeq2\", or \"go from reads to differentially expressed genes and enriched pathways\". Routes between an nf-core/rnaseq (Nextflow) path and a standalone STAR/Salmon path, and covers experimental design, strandedness, and QC gates. For single-cell RNA-seq use the scanpy skill instead.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/bulk-rnaseq",
-    "upstream_commit": "e7ac42510774624f327003c95b6650e2883bc01d",
+    "upstream_commit": "ab2f84ab10597c59fac186ecda6d5edd5dcc8b92",
     "content_hash": "sha256:fe16b09bf7951111c2ca88b3027645c608ae10d2fe15f3e2d059c6d340fdf03e",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 31953,
+    "stars_github": 32035,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-28T05:42:12.243Z",
+    "fetched_at": "2026-07-29T05:46:54.359Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-27T17:10:04-07:00",
-    "repo_skill_count": 156,
+    "upstream_commit_at": "2026-07-28T17:34:25-07:00",
+    "repo_skill_count": 158,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-28T05:42:12.243Z",
+    "generated_at": "2026-07-29T05:46:54.359Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -102,42 +102,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 能自动处理从原始 FASTQ 文件到差异表达基因和通路富集的完整批量 RNA-seq 分析，包括质量控制和修剪、比对与定量、基因计数矩阵构建、差异表达（PyDESeq2）、富集分析，并生成发表级图形。它会根据用户输入选择 nf-core/rnaseq 或独立工具路径。",
-    "when": "当用户提供批量 RNA-seq 的原始 FASTQ 文件或定量结果，并要求进行完整的差异表达分析时触发，例如用户说“分析我的 RNA-seq”、“FASTQ 到 DESeq2”或“运行 nf-core/rnaseq”。",
+    "what": "装上该技能后，Claude能自动编排批量RNA-seq分析全流程：从原始FASTQ文件出发，进行质检、修剪、比对定量，构建基因计数矩阵，再完成差异表达分析（DESeq2）、通路富集（GSEA/ORA）并生成发表级图表。它支持nf-core/rnaseq或独立工具两条路径，并强制执行可重复性和质量门控。",
+    "when": "当用户要求分析批量RNA-seq数据时触发，例如提到“从FASTQ到差异基因”、“运行nf-core/rnaseq”、“进行STAR/Salmon定量”或“构建计数矩阵用于DESeq2”。",
     "say": [
       {
-        "text": "帮我分析这些 FASTQ 文件，得到差异表达基因和通路富集结果。",
-        "note": "Claude 将执行完整的 RNA-seq 分析流程。"
+        "text": "帮我分析这批FASTQ文件，做差异表达分析",
+        "note": "Claude会引导选择路径和参数"
       },
       {
-        "text": "用 STAR 和 Salmon 对我的样本进行定量，并构建计数矩阵。",
-        "note": "适用于独立工具路径。"
+        "text": "从Salmon定量结果构建计数矩阵并运行DESeq2",
+        "note": "跳过上游，直接进行差异表达"
       },
       {
-        "text": "运行 nf-core/rnaseq 流程，从样本表开始。",
-        "note": "使用推荐的全自动路径。"
+        "text": "检查我的实验设计，看看是否有批次效应",
+        "note": "Claude会验证设计并给出建议"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:fe16b09bf7951111c2ca88b3027645c608ae10d2fe15f3e2d059c6d340fdf03e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-28T05:48:33.905Z",
-    "lint_pass": true,
-    "what_en": "After installation, Claude can orchestrate a complete bulk RNA-seq analysis: from raw FASTQ to QC, alignment, quantification, counts matrix, differential expression (PyDESeq2), pathway enrichment, and publication figures. It routes between nf-core/rnaseq and standalone tools.",
-    "when_en": "Triggered when the user has bulk RNA-seq FASTQ or quant output and requests a full differential expression workflow. Example phrases: \"analyze my RNA-seq\", \"FASTQ to DESeq2\", \"run nf-core/rnaseq\".",
-    "say_en": [
-      {
-        "text": "Analyze these FASTQ files and return DEGs and enriched pathways.",
-        "note": "Claude will run the full pipeline."
-      },
-      {
-        "text": "Quantify my samples with STAR and Salmon, then build a counts matrix.",
-        "note": "For standalone path."
-      },
-      {
-        "text": "Run nf-core/rnaseq from this samplesheet.",
-        "note": "Use recommended pipeline."
-      }
-    ]
+    "generated_at": "2026-07-29T05:56:24.133Z",
+    "lint_pass": false
   }
 }

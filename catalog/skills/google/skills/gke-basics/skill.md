@@ -72,6 +72,10 @@ requirements. **Do not load multiple GKE skills unless explicitly required.**
 :                      : productionize,          :                             :
 :                      : readiness scoring,      :                             :
 :                      : audit cluster           :                             :
+| Manifest Generation  | generate YAML, manifest | `gke-manifest-generation`   |
+:                      : template,               :                             :
+:                      : securityContext probes, :                             :
+:                      : resource limits         :                             :
 
 ## Conceptual & Informational Queries (CRITICAL)
 

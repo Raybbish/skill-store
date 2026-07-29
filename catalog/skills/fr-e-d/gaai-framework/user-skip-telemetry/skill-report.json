@@ -86,5 +86,44 @@
     "model": "deepseek-v4-flash",
     "generated_at": "2026-07-28T09:44:03.229Z",
     "lint_pass": true
+  },
+  "howto": {
+    "what": "装上后，Claude会在问答循环结束后自动统计用户跳过的题目数量、类型和原因，并在用户主动跳过全部问题时弹出一个可选的原因选择框，最终生成一份可用于PostHog分析的跳过记录。",
+    "when": "当用户在与Claude的问答交互中跳过问题（如输入“跳过”或选择“N”），并在abort-safe-handler返回后触发。每次bootstrap会话只执行一次。",
+    "say": [
+      {
+        "text": "跳过所有问题",
+        "note": "触发记录全部跳过，并询问原因"
+      },
+      {
+        "text": "跳过这个问题",
+        "note": "触发记录单题跳过"
+      },
+      {
+        "text": "时间紧迫",
+        "note": "在原因下拉框中输入此选项，记录为time_pressed"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:addc88dbe89b387a16d8685d0cb0bf5becf53ce797712bbba6bfdd7f9245a06c",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-07-29T06:06:52.727Z",
+    "lint_pass": true,
+    "what_en": "After installation, Claude will automatically count Q&A skip events, classify skip types (pre-loop, mid-loop skip-all, per-question, etc.), show an optional skip-reason dropdown when user-initiated skip occurs, and produce a structured skip_metrics_record for PostHog ingestion.",
+    "when_en": "Triggered immediately after abort-safe-handler returns, once per bootstrap session. It activates for all skip paths: pre-loop, mid-loop skip-all, per-question skips, and no-skip sessions.",
+    "say_en": [
+      {
+        "text": "Skip all questions",
+        "note": "triggers mid-loop skip-all and prompts for reason"
+      },
+      {
+        "text": "Skip this question",
+        "note": "triggers per-question skip recording"
+      },
+      {
+        "text": "Time-pressed",
+        "note": "input this in the reason dropdown to record as time_pressed"
+      }
+    ]
   }
 }
