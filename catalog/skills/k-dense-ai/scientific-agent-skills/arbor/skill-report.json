@@ -5,7 +5,7 @@
     "name": "arbor",
     "description": "Autonomously improve a real artifact (code, training recipe, agent harness, data pipeline, prompt) against an objective and an evaluator, using Hypothesis Tree Refinement (HTR) from the Arbor paper. Use this whenever someone wants to iteratively optimize something over many experiments without overfitting — e.g. \"get my model's eval score up\", \"improve this agent/harness\", \"tune this pipeline\", \"beat the baseline on this benchmark\", \"run a search over approaches and keep the best\", \"do an MLE-bench / Kaggle-style optimization\", or any long-horizon \"make this artifact better and don't just memorize the dev set\" task. Trigger it even when the user doesn't say \"Arbor\" or \"hypothesis tree\" but describes repeated experiment-and-evaluate loops, branching exploration of competing ideas, or worries about a dev/test gap. Runs Claude itself as the coordinator with subagent executors in isolated git worktrees; for the standalone `arbor` CLI tool see references/arbor-upstream.md.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arbor",
-    "upstream_commit": "e7ac42510774624f327003c95b6650e2883bc01d",
+    "upstream_commit": "ab2f84ab10597c59fac186ecda6d5edd5dcc8b92",
     "content_hash": "sha256:8301a26b4f1f43021b4daf2f444ed0cf3dab8ad35f2b9aee255f1b75de87f5c5",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 31953,
+    "stars_github": 32035,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-28T05:42:12.243Z",
+    "fetched_at": "2026-07-29T05:46:54.359Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-27T17:10:04-07:00",
-    "repo_skill_count": 156,
+    "upstream_commit_at": "2026-07-28T17:34:25-07:00",
+    "repo_skill_count": 158,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-28T05:42:12.243Z",
+    "generated_at": "2026-07-29T05:46:54.359Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,26 +98,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，当你提供要优化的制品（代码、配置、提示等）、目标和评估器时，Claude 会自动运行多轮实验：它维护一个假设树来记录每次实验的洞见，分配子代理在隔离的 git worktree 中测试每个假设，并用独立测试评估器来防止过拟合，最终返回改进后的最佳制品。",
-    "when": "当你说想迭代优化某个制品（如代码、训练配方、代理、流水线），并需要一个可量化的目标和评估器时触发。例如提到“提高评估分数”、“改进代理”、“优化流水线”、“超过基线”等，或者你描述重复实验、分支探索、担心过拟合。",
+    "what": "装上后，Claude 会变成自动实验员：根据你给的任务、评估标准和现有代码或配置，自己设计并执行多轮实验，记录每次尝试和结果，最后给出一个优化后的版本。",
+    "when": "当你想要反复改进某个代码或模型，并有一个评估分数作为目标时触发，例如想提高测试分数或调优参数。",
     "say": [
       {
-        "text": "帮我优化这个模型的评估分数，目标是提升准确率。",
-        "note": "Claude 会启动自主优化循环，使用假设树细化方法。"
+        "text": "帮我优化这个模型的训练脚本，目标是降低验证损失。",
+        "note": "Claude 会启动自主优化循环，生成并测试多种改进方案。"
       },
       {
-        "text": "改进我的代理工具，让它通过更多测试用例。",
-        "note": "Claude 会设定评估器并运行多轮实验。"
+        "text": "改进我的数据管道，提高下游准确率。",
+        "note": "Claude 会分析管道瓶颈，通过实验逐步提升性能。"
       },
       {
-        "text": "尝试几种不同的数据过滤策略，保留效果最好的。",
-        "note": "Claude 会并行测试假设并记录洞见。"
+        "text": "对这个基准测试进行超参数搜索并保留最佳结果。",
+        "note": "Claude 会系统探索不同参数组合，避免过拟合。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:8301a26b4f1f43021b4daf2f444ed0cf3dab8ad35f2b9aee255f1b75de87f5c5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-28T05:48:15.340Z",
-    "lint_pass": false
+    "generated_at": "2026-07-29T05:56:11.373Z",
+    "lint_pass": true,
+    "what_en": "After installation, Claude becomes an automated experimenter: given a task, evaluation criteria, and existing code or config, it designs and runs multiple rounds of experiments, records each trial and result, and delivers an optimized version.",
+    "when_en": "Triggered when you want to iteratively improve a code or model with a measurable objective, e.g., to increase test scores or tune parameters.",
+    "say_en": [
+      {
+        "text": "Optimize this model training script to reduce validation loss."
+      },
+      {
+        "text": "Improve my data pipeline to boost downstream accuracy.",
+        "note": "Claude will analyze pipeline bottlenecks and iteratively enhance performance."
+      },
+      {
+        "text": "Search hyperparameters for this benchmark and keep the best result."
+      }
+    ]
   }
 }
