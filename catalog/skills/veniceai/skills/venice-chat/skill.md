@@ -51,8 +51,10 @@ Response shape is the standard OpenAI `chat.completion` object (`id`, `object: "
 | `logprobs`, `top_logprobs` | return token log-probabilities |
 | `reasoning.effort` / `reasoning_effort` | `none` \| `minimal` \| `low` \| `medium` \| `high` \| `xhigh` \| `max` |
 | `reasoning.summary` | `auto` \| `concise` \| `detailed` |
-| `prompt_cache_key`, `prompt_cache_retention` (`default`/`extended`/`24h`) | prompt caching hints |
-| `text.verbosity` | `low`/`medium`/`high`/`auto` |
+| `prompt_cache_key`, `prompt_cache_retention` (`default`/`extended`/`24h`) | prompt caching hints. `extended` and `24h` both extend retention to 24 hours on supported models |
+| `verbosity`, `text.verbosity` | `low`/`medium`/`high`/`auto`. Also accepted as a root-level field, not only nested under `text` |
+| `include` | array of extra fields to include in the response (OpenAI compat) |
+| `fallbacks` | up to 10 entries. Anthropic beta parameter for Claude Fable 5 server-side refusal fallback. Forwarded only on direct Anthropic routes and ignored by every other provider |
 | `metadata` | key/value strings for tracking |
 | `user`, `store` | accepted but ignored (OpenAI compat) |
 

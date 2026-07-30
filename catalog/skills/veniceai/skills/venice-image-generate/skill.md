@@ -64,6 +64,9 @@ curl https://api.venice.ai/api/v1/image/generate \
 | `lora_strength` | int | — | 0–100 when model uses Loras. |
 | `style_preset` | string | — | Value from `GET /image/styles`. |
 | `style_references` | array | — | Reference images that guide the aesthetic of the output. Each item: `{ "image": <base64 or http(s) URL, <8MB>, "strength": 0.1–1 (default 0.5) }`. Only on models with `supportsStyleReferences: true`; per-model cap in `constraints.maxStyleReferences`. `strength` is ignored when `constraints.supportsStyleReferenceStrength` is `false`. |
+| `quality` | `"low"`/`"medium"`/`"high"` | — | Output quality on models that support it (e.g. GPT Image 2). Higher values can raise the request charge. |
+| `enhance_prompt` | bool | `false` | Rewrite the prompt to add clarifying visual detail before generating. Costs extra credits when a rewrite happens and adds up to ~30 s. The final prompt returns URL-encoded in the `x-venice-enhanced-prompt` response header. |
+| `disable_prompt_optimization_thinking` | bool | model default | Skip the model's prompt-optimization thinking step for speed. Only honored by models with `supportsOptimizePromptThinking`. |
 | `format` | `"webp"`/`"png"`/`"jpeg"` | `webp` | Response image format. |
 | `return_binary` | bool | `false` | `true` → binary `image/*` response; `false` → JSON with base64. |
 | `embed_exif_metadata` | bool | `false` | Embed prompt info in EXIF. |

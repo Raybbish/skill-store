@@ -66,6 +66,9 @@ requirements. **Do not load multiple GKE skills unless explicitly required.**
 :                      : disaster recovery, CMEK :                             :
 | Storage & PVC        | SSD, PV, PVC,           | `gke-storage`               |
 :                      : StorageClass, GCS FUSE  :                             :
+| TPU Metrics          | TPU metrics, TensorCore,   | `gke-tpu-metrics-monitoring` |
+:                      : duty cycle, TPU memory,    :                          :
+:                      : node status, MTTR, MTBI    :                          :
 | Reliability          | PDB, health probe,      | `gke-reliability`           |
 :                      : liveness, readiness     :                             :
 | Productionization    | production readiness,   | `gke-productionize`         |
