@@ -5,7 +5,7 @@ description: High-level map of the Venice.ai API - base URL, authentication mode
 
 # Venice API Overview
 
-Venice.ai is an OpenAI-compatible inference platform for text, image, audio, video, and embeddings. One API — two ways to pay: a traditional **API key** (Pro account), or a **wallet** (x402, USDC on Base, no account required).
+Venice.ai is an OpenAI-compatible inference platform for text, image, audio, video, and embeddings. One API — two ways to pay: a traditional **API key** (Pro account), or a **wallet** (x402, USDC on Base or Solana, no account required).
 
 ## Use when
 
@@ -22,14 +22,14 @@ All endpoints live under:
 https://api.venice.ai/api/v1
 ```
 
-The OpenAPI spec is distributed at `outerface/swagger.yaml` (current version `20260420.235001`).
+The OpenAPI spec is distributed at `outerface/swagger.yaml` (current version `20260728.190807`).
 
 ## Authentication (pick one per request)
 
 | Scheme | Header | Best for |
 |---|---|---|
 | `BearerAuth` | `Authorization: Bearer <VENICE_API_KEY>` | Server-side apps, dashboards, usage analytics, bundled credits |
-| `siwx` (x402) | `X-Sign-In-With-X: <base64 SIWE JSON>` | No account, pay-as-you-go with USDC on Base, serverless / agents |
+| `siwx` (x402) | `SIGN-IN-WITH-X: <base64 SIWX JSON>` | No account, pay-as-you-go with USDC on Base or Solana, serverless / agents |
 
 Every inference endpoint accepts **either** — see [`venice-auth`](../venice-auth/SKILL.md).
 
@@ -55,7 +55,7 @@ await v.models.list()
 | Embeddings | `POST /embeddings` | [`venice-embeddings`](../venice-embeddings/SKILL.md) |
 | Image gen | `POST /image/generate`, `POST /images/generations`, `GET /image/styles` | [`venice-image-generate`](../venice-image-generate/SKILL.md) |
 | Image edit | `POST /image/edit`, `POST /image/multi-edit`, `POST /image/upscale`, `POST /image/background-remove` | [`venice-image-edit`](../venice-image-edit/SKILL.md) |
-| TTS | `POST /audio/speech` | [`venice-audio-speech`](../venice-audio-speech/SKILL.md) |
+| TTS | `POST /audio/speech`, `POST /audio/voices` (voice cloning) | [`venice-audio-speech`](../venice-audio-speech/SKILL.md) |
 | STT | `POST /audio/transcriptions` | [`venice-audio-transcription`](../venice-audio-transcription/SKILL.md) |
 | Music (async) | `POST /audio/quote`, `/audio/queue`, `/audio/retrieve`, `/audio/complete` | [`venice-audio-music`](../venice-audio-music/SKILL.md) |
 | Video (async) | `POST /video/quote`, `/video/queue`, `/video/retrieve`, `/video/complete`, `/video/transcriptions` | [`venice-video`](../venice-video/SKILL.md) |
@@ -72,7 +72,7 @@ await v.models.list()
 | Category | Endpoints | Skill |
 |---|---|---|
 | API keys | `GET|POST|DELETE /api_keys`, `/api_keys/{id}`, `/api_keys/rate_limits`, `/api_keys/rate_limits/log`, `/api_keys/generate_web3_key` | [`venice-api-keys`](../venice-api-keys/SKILL.md) |
-| Billing | `GET /billing/balance`, `/billing/usage`, `/billing/usage-analytics` | [`venice-billing`](../venice-billing/SKILL.md) |
+| Billing | `GET /billing/balance`, `/billing/usage-history`, `/billing/usage-analytics`, `/billing/usage` (deprecated) | [`venice-billing`](../venice-billing/SKILL.md) |
 | x402 wallet | `GET /x402/balance/{wallet}`, `POST /x402/top-up`, `GET /x402/transactions/{wallet}` | [`venice-x402`](../venice-x402/SKILL.md) |
 
 ### Utility
@@ -137,4 +137,4 @@ or, for 400 validation errors:
 2. `GET /models` — pick a model and note its `model_spec.constraints` and `model_spec.pricing`.
 3. Wire up one happy-path call from the matching skill.
 4. Add error handling using [`venice-errors`](../venice-errors/SKILL.md) (402, 422, 429).
-5. Hook up observability via `X-Balance-Remaining` / `/billing/usage` / `/x402/transactions`.
+5. Hook up observability via `X-Balance-Remaining` / `/billing/usage-history` / `/x402/transactions`.

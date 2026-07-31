@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "ace13396a4b9aedcd334c1f4f0897c867a41de5d",
+    "upstream_commit": "b6d047382141c5dcc141fa23ba8ba032b8cf7841",
     "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
     "license": "MIT",
     "hosting": "mirrored",
@@ -20,11 +20,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66743,
+    "stars_github": 66805,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-29T05:46:43.900Z",
+    "fetched_at": "2026-07-30T05:35:14.740Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-29T14:18:58+09:00",
+    "upstream_commit_at": "2026-07-30T14:29:52+09:00",
     "repo_skill_count": 47
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-29T05:46:43.900Z",
+    "generated_at": "2026-07-30T05:35:14.740Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -111,26 +111,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude可以使用ast-grep工具，根据代码的结构特征（而非纯文本）来搜索和批量改写。例如，它能找到所有符合特定模式（如接受某个参数的函数）的代码，并把它们替换成另一种形式。",
-    "when": "当你需要基于代码语法结构进行搜索或修改时触发，例如查找所有特定形状的函数、调用、类，或执行确定的代码迁移（如将console.log改写为logger.info）。注意：如果目标是文本内容（如注释、字符串），应改用rg/grep。",
+    "what": "装上后，Claude 使用 ast-grep 工具基于代码的语法结构（如函数、类、调用）来搜索和重写代码，而非基于文本内容。它支持 25 种编程语言，适合用于结构匹配和确定性代码修改。",
+    "when": "当用户询问关于代码结构的问题时触发，例如“找到所有带 Request 参数的函数”、“将 console.log 重写为 logger.info”或“运行 YAML 规则扫描代码”。",
     "say": [
       {
-        "text": "帮我把项目中所有的“console.log”替换成“logger.info”。",
-        "note": "这会在目标代码中执行模式替换。"
+        "text": "把项目中所有的 console.log 改成 logger.info。",
+        "note": "Claude 会先用干运行预览改动，然后确认应用。"
       },
       {
-        "text": "找出所有用“Request”类作为参数的函数。",
-        "note": "会搜索并返回匹配的函数定义。"
+        "text": "找到所有空的 catch 块。",
+        "note": "Claude 会显示匹配位置。"
       },
       {
-        "text": "移除以“as any”结尾的类型断言。",
-        "note": "会删除所有匹配的“as any”语句。"
+        "text": "替换所有 as any 类型断言。",
+        "note": "Claude 会执行结构替换。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-29T05:53:04.167Z",
-    "lint_pass": true
+    "generated_at": "2026-07-30T05:39:46.772Z",
+    "lint_pass": true,
+    "what_en": "After installation, Claude will use ast-grep to search and rewrite code based on its syntactic structure (e.g., functions, classes, calls) rather than text. It supports 25 languages and is preferred for structural code matching or deterministic codemods.",
+    "when_en": "Triggered when user asks about code structure, such as 'find every function with a Request parameter', 'rewrite console.log to logger.info', or 'run YAML rules for scanning'.",
+    "say_en": [
+      {
+        "text": "Rewrite all console.log to logger.info in the project.",
+        "note": "Claude will dry-run first then apply."
+      },
+      {
+        "text": "Find all empty catch blocks.",
+        "note": "Claude will show match locations."
+      },
+      {
+        "text": "Strip all `as any` type casts.",
+        "note": "Claude will perform structural replacement."
+      }
+    ]
   }
 }

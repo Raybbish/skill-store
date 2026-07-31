@@ -5,7 +5,7 @@
     "name": "ultimate-browsing",
     "description": "Escalation skill for blocked or hard-to-reach web access — load it when a normal browse/fetch is blocked (WAF, 403, Cloudflare, JS-only render, login-gated, or a platform a generic fetcher cannot read). Tiered router: TIER 1 insane-search (headless extraction + WAF bypass via curl_cffi TLS impersonation, yt-dlp, Jina Reader, public APIs, Playwright real-Chrome fallback); TIER 1.5 agent-reach (platform-native readers for Chinese and social platforms: Xiaohongshu, Douyin, Weibo, Bilibili, V2EX, WeChat, plus Twitter/Reddit/LinkedIn/GitHub); TIER 2 Chrome stealth (CloakBrowser stealth Chromium + agent-browser CDP for clicks, forms, screenshots, video, cookie login). Triggers: blocked site, bypass bot detection, cloudflare/WAF bypass, scrape, stealth browser, import cookies, fill form, screenshot, play youtube, xiaohongshu, douyin, weibo, bilibili, v2ex, wechat article, podcast transcript. NOT for simple searches (use web-search) or plain fetches (use webfetch).",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ultimate-browsing",
-    "upstream_commit": "ace13396a4b9aedcd334c1f4f0897c867a41de5d",
+    "upstream_commit": "b6d047382141c5dcc141fa23ba8ba032b8cf7841",
     "content_hash": "sha256:1cb158f93fffc0fb8158e0934131b1312e50f899f77882b912795044a111bcc2",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66743,
+    "stars_github": 66805,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-29T05:46:43.900Z",
+    "fetched_at": "2026-07-30T05:35:14.740Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-29T14:18:58+09:00",
+    "upstream_commit_at": "2026-07-30T14:29:52+09:00",
     "repo_skill_count": 47
   },
   "context_size": {
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-29T05:46:43.900Z",
+    "generated_at": "2026-07-30T05:35:14.740Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -150,18 +150,34 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude能访问被封锁或难以抓取的网页，包括遭遇WAF/403/Cloudflare的页面、需要JS渲染的页面、登录墙后的页面，以及小红书、抖音等社交平台的内容。系统会自动选择最优方式：先尝试无头浏览器绕过，再调用平台专用读取器，最后使用隐身Chrome进行交互操作。",
-    "when": "当用户要求访问被封锁的网站、绕过WAF/Cloudflare防护、抓取小红书/抖音等特定平台内容，或需要截图、填写表单等交互操作时触发。",
+    "what": "当遇到正常浏览无法打开的网页时，Claude会依次尝试三种方式：先用伪装浏览器绕过反爬（如Cloudflare），再调用平台自有API（如小红书、抖音），最后用隐身浏览器模拟点击、截图、登录等操作，最终获取被封锁的网页内容或执行交互任务。",
+    "when": "当你要求Claude打开一个被屏蔽的网址（出现403、WAF、Cloudflare验证），或需要JavaScript渲染、登录后才能访问，或来源是小红书、抖音、微博等平台，且常规的web-search或webfetch无法完成时触发。",
     "say": [
       {
-        "text": "对这个网页截图并保存：https://example.com",
-        "note": "Claude会启动Tier 2隐身Chrome进行截图。"
+        "text": "打开这个被Cloudflare挡住的网页",
+        "note": "Claude会用反爬技术绕过封锁并返回内容。"
+      },
+      {
+        "text": "读取这篇文章的正文，网址返回403错误",
+        "note": "Claude会启动隐身浏览器模拟正常访问。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1cb158f93fffc0fb8158e0934131b1312e50f899f77882b912795044a111bcc2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-29T05:54:03.436Z",
-    "lint_pass": true
+    "generated_at": "2026-07-30T05:40:22.937Z",
+    "lint_pass": true,
+    "what_en": "When normal browsing fails, Claude uses three escalation tiers: first, a headless extractor with WAF bypass; second, platform-native APIs for Chinese/social media; third, a stealth Chromium browser for clicks, screenshots, and logins. It returns the blocked content or completes the interactive task.",
+    "when_en": "Triggered when you ask Claude to access a blocked URL (403, WAF, Cloudflare), requires JavaScript rendering, login-gated, or from platforms like Xiaohongshu, Douyin, Weibo, etc., and regular web-search/webfetch cannot handle it.",
+    "say_en": [
+      {
+        "text": "Open this page blocked by Cloudflare",
+        "note": "Claude will bypass the WAF and fetch the content."
+      },
+      {
+        "text": "Read this article; the URL returns 403",
+        "note": "Claude will launch a stealth browser to simulate normal access."
+      }
+    ]
   }
 }

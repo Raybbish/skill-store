@@ -28,7 +28,7 @@ Otherwise use [`venice-chat`](../venice-chat/SKILL.md) — it has more features,
 
 ## Authentication
 
-Same as the rest of the API — either `Authorization: Bearer <key>` or `X-Sign-In-With-X: <SIWE>`. See [`venice-auth`](../venice-auth/SKILL.md).
+Same as the rest of the API — either `Authorization: Bearer <key>` or `SIGN-IN-WITH-X: <SIWX>`. See [`venice-auth`](../venice-auth/SKILL.md).
 
 ## Minimal request
 
@@ -124,10 +124,20 @@ Match tool outputs back by `call_id` when continuing the turn.
 | `input` | Required. String or input-items array. To set system/developer context, include a leading message with `role: "system"`/`"developer"` in the input array. |
 | `tools` | Array of `{type:"function",function:{...}}` or built-in `{type:"web_search"}` — availability depends on the model. |
 | `tool_choice` | `"auto"` / `"required"` / `"none"` / `{type:"function",function:{"name":"..."}}`. |
-| `reasoning.effort` | Reasoning effort hint for thinking models (`"low"` \| `"medium"` \| `"high"`). |
-| `temperature`, `top_p`, `max_output_tokens`, `n`, `stop`, `seed`, `prompt_cache_key` | Standard generation controls — translated to `/chat/completions` equivalents server-side. |
+| `reasoning.effort` | Reasoning effort hint for thinking models (`"low"` \| `"medium"` \| `"high"`). Mapped to `reasoning_effort`. |
+| `temperature`, `top_p`, `max_output_tokens` | Standard generation controls. `max_output_tokens` maps to `max_tokens`. |
+| `web_search` | Boolean shortcut for enabling web search, equivalent to adding `{"type":"web_search"}` to `tools` or setting `venice_parameters.enable_web_search`. |
+| `include` | Array of additional response fields to include (OpenAI compat). |
+| `fallbacks` | Up to 10 entries. Anthropic beta parameter for Claude Fable 5 server-side refusal fallback; forwarded only on direct Anthropic routes. |
 | `stream` | Boolean. SSE response with typed events (`response.created`, `response.output_item.added`, `response.output_text.delta`, `response.completed`, …). |
 | `venice_parameters` | Subset listed above. Example: `{"character_slug":"alan-watts","enable_web_search":"on"}`. |
+
+**Silently dropped generation controls.** `n`, `stop`, `seed`, and
+`prompt_cache_key` are not in the Alpha schema and are not translated to
+`/chat/completions`. The request body is permissive, so sending them does not
+error — they just never reach inference. If you need reproducible sampling
+(`seed`), stop sequences, or explicit cache routing, stay on
+`/chat/completions`.
 
 Fields commonly found in OpenAI's Responses API that are **not** in Venice's Alpha schema (and silently ignored or rejected by Zod): `instructions`, `metadata`, `parallel_tool_calls`, `response_format`, `store`, `previous_response_id`, `background`. For `response_format` / JSON-schema structured output, use `/chat/completions`.
 
