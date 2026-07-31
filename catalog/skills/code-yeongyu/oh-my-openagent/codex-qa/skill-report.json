@@ -5,7 +5,7 @@
     "name": "codex-qa",
     "description": "QA the omo Codex Light edition (lazycodex / packages/omo-codex) itself, in strict isolation so ONLY our plugin is exercised, never the user's real ~/.codex. The first-party method drives the real `codex app-server` against an isolated CODEX_HOME plus a LOCAL mock model (no real API call), and proves a plugin hook fired by asserting hook/started + hook/completed notifications. Also: isolated install verification, per-component hook probes, a tmux TUI smoke, and runtime log observation (RUST_LOG / logs SQLite / /debug-config). Ships tested helper scripts each with a --self-test. Use whenever someone changes anything under packages/omo-codex or wants to QA, smoke-test, verify, or debug the Codex plugin, its hooks/components, the installer/config.toml, the app-server flow, or the Codex TUI. Triggers: codex qa, qa codex, codex-qa, test codex plugin, verify codex hook, codex app-server, lazycodex qa, isolated CODEX_HOME, prove codex hook fired, codex tui test.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/codex-qa",
-    "upstream_commit": "b6d047382141c5dcc141fa23ba8ba032b8cf7841",
+    "upstream_commit": "bc9295823d11b2a9afc19c2c35818a29db1c6b6c",
     "content_hash": "sha256:e250bc7e592efec7695feff0eba0643b5815c44fbf3158df8d3808359212f8f5",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66805,
+    "stars_github": 66882,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-30T05:35:14.740Z",
+    "fetched_at": "2026-07-31T06:07:26.971Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-30T14:29:52+09:00",
+    "upstream_commit_at": "2026-07-31T13:56:29+09:00",
     "repo_skill_count": 47
   },
   "context_size": {
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-30T05:35:14.740Z",
+    "generated_at": "2026-07-31T06:07:26.971Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -118,23 +118,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "此技能让 Claude 对 omo Codex Light 版进行隔离质量测试：使用独立目录和本地模拟模型，不碰用户真实配置；会启动 app-server、验证插件钩子触发、检查安装、测试组件钩子、TUI 界面以及运行时日志。",
-    "when": "当你修改了 `packages/omo-codex` 下的代码，或需要 QA、冒烟测试、验证、调试 Codex 插件、钩子、组件、安装、app-server 流程或 TUI 时触发。常用触发词：“codex qa”、“test codex plugin”等。",
+    "what": "装上后,遇到 QA 需求时,Claude 会用隔离环境对 Codex 插件执行测试,不碰你真实的 ~/.codex,也不用真实模型 API,验证钩子、安装、界面等,并把证据写入 .omo/evidence 目录。",
+    "when": "当你说“codex qa”“qa codex”“test codex plugin”等,或要求验证/调试 Codex 插件、钩子、安装、TUI 等时触发。",
     "say": [
       {
-        "text": "运行 codex-qa 的 app-server 驱动测试。"
+        "text": "请对 codex 插件跑一遍完整 QA。",
+        "note": "会先检查依赖,再在隔离环境执行测试。"
       },
       {
-        "text": "验证安装是否成功。"
+        "text": "验证 codex 钩子是否触发。",
+        "note": "用 app-server 通知流证明钩子已触发。"
       },
       {
-        "text": "测试 TUI 界面能否正常启动。"
+        "text": "测试 codex 插件安装是否正确。",
+        "note": "在隔离的 CODEX_HOME 里安装并校验。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e250bc7e592efec7695feff0eba0643b5815c44fbf3158df8d3808359212f8f5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-30T05:39:43.284Z",
-    "lint_pass": false
+    "generated_at": "2026-07-31T06:15:20.334Z",
+    "lint_pass": true,
+    "what_en": "When triggered, Claude runs QA on the omo Codex plugin in strict isolation—isolated CODEX_HOME plus a local mock model—so your real ~/.codex is untouched and no real API call is made. It verifies hooks, install, and TUI smoke, and writes evidence files.",
+    "when_en": "Triggered when you say 'codex qa', 'qa codex', 'test codex plugin', etc., or ask to verify/debug the Codex plugin, its hooks, components, installer, or TUI.",
+    "say_en": [
+      {
+        "text": "Run a full QA on the codex plugin.",
+        "note": "Checks deps first, then runs isolated tests."
+      },
+      {
+        "text": "Verify whether the codex hook fires.",
+        "note": "Uses app-server notification stream as proof."
+      },
+      {
+        "text": "Test codex plugin installation.",
+        "note": "Installs into an isolated CODEX_HOME and verifies."
+      }
+    ]
   }
 }

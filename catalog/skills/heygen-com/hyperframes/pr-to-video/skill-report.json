@@ -5,8 +5,8 @@
     "name": "pr-to-video",
     "description": "Turn a GitHub pull request (a PR URL, owner/repo#N, or 'this PR' in a checked-out repo) into a code-change explainer video — changelog, feature reveal, fix, or refactor walkthrough built from the diff, commits, and files: the input is a code change, not a website. Not a product promo (/product-launch-video) or a no-PR topic explainer (/faceless-explainer). Unclear → /hyperframes.",
     "upstream": "https://github.com/heygen-com/hyperframes/tree/main/skills/pr-to-video",
-    "upstream_commit": "5244dde5f10c221221924985aa4651d89fb7c98a",
-    "content_hash": "sha256:5227f8d3d5213e90ffcc67f8d17dfceb677c8e80288c898d6dafc95eebb4f561",
+    "upstream_commit": "3a6b7f06127102be719aa4d91f1a8b40b299a0c6",
+    "content_hash": "sha256:e022e295e99579c88db54bd3930264e642ac17c55f16e5c208ba6adb2ffa611f",
     "license": "Apache-2.0",
     "hosting": "indexed",
     "category": "media",
@@ -14,18 +14,16 @@
     "publisher": "heygen-com",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": [
-      "automation"
-    ]
+    "tags": []
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 131300,
-    "fetched_at": "2026-07-30T05:37:13.677Z",
+    "installs_skills_sh": 134000,
+    "fetched_at": "2026-07-31T06:11:00.712Z",
     "first_seen_at": "2026-07-09T06:10:14.498Z",
-    "upstream_commit_at": "2026-07-29T18:37:58-07:00"
+    "upstream_commit_at": "2026-07-30T21:52:30-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-30T05:37:13.677Z",
+    "generated_at": "2026-07-31T06:11:00.712Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -70,6 +68,7 @@
           "references/story-design.md",
           "references/visual-design.md",
           "scripts/assemble-index.mjs",
+          "scripts/assemble-index.test.mjs",
           "scripts/audio.mjs",
           "scripts/build-frame.mjs",
           "scripts/captions.mjs",
@@ -93,62 +92,69 @@
           "scripts/workflow-guardrails.test.mjs",
           "sub-agents/frame-worker.md"
         ],
-        "text_files": 29,
-        "bytes": 326878,
-        "chars": 322077,
-        "tokens": 70671
+        "text_files": 30,
+        "bytes": 334842,
+        "chars": 329937,
+        "tokens": 72415
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "将 GitHub PR 自动生成代码变更讲解视频",
+    "tagline": "生成代码改动的解说视频",
     "scene_tags": [
       "代码评审",
-      "版本更新",
-      "团队同步"
+      "发布说明"
     ],
-    "fit_line": "适合你，如果你经常需要向团队解释代码变更。",
-    "tagline_en": "Turn a GitHub PR into a code-change explanation video.",
+    "fit_line": "适合你,如果你常需要向团队解释代码改动",
+    "tagline_en": "Generate explainer videos from code changes",
     "scene_tags_en": [
       "code review",
-      "release notes",
-      "team sync"
+      "release notes"
     ],
-    "fit_line_en": "For you if you often need to explain code changes to your team.",
+    "fit_line_en": "For you if you often need to explain code changes to your team",
     "source": "llm",
-    "content_hash": "sha256:5227f8d3d5213e90ffcc67f8d17dfceb677c8e80288c898d6dafc95eebb4f561",
+    "content_hash": "sha256:e022e295e99579c88db54bd3930264e642ac17c55f16e5c208ba6adb2ffa611f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-29T05:51:18.646Z",
+    "generated_at": "2026-07-31T06:13:08.608Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "将 GitHub Pull Request（PR）转换为代码变更讲解视频。它会解析 PR 的 diff、提交和文件，自动生成脚本、画面和音频，最终合成一个视频。",
-    "when": "当你提供 PR 的 URL（如 https://github.com/owner/repo/pull/123）、owner/repo#N 格式，或在已检出仓库中说“这个 PR”时触发。",
+    "what": "装上后，Claude 会把一个 GitHub PR（代码改动）转成讲解视频：读取 PR 的 diff、提交和文件，按代码编辑风格逐帧生成 changelog、特性展示、修复或重构讲解，最终输出视频文件。",
+    "when": "当用户给出 PR 链接、owner/repo#N，或在已检出仓库里说“这个 PR”，并要求做成讲解视频时触发；不是产品宣传或无 PR 主题时不会走此技能。",
     "say": [
       {
-        "text": "把这个 PR 做成一个讲解视频。",
-        "note": "Claude 会开始处理该 PR 并生成视频生成流程。"
+        "text": "把这个 PR 生成一段改动讲解视频。",
+        "note": "会读取该 PR 并产出逐帧讲解视频。"
       },
       {
-        "text": "为 owner/repo#42 制作变更说明视频。"
+        "text": "把 acme-sdk#1842 做成一个 changelog 视频。",
+        "note": "按 changelog 原型规划分镜和脚本。"
+      },
+      {
+        "text": "当前仓库这个 PR，做成修复讲解。",
+        "note": "以修复为例编排结构。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:5227f8d3d5213e90ffcc67f8d17dfceb677c8e80288c898d6dafc95eebb4f561",
+    "content_hash": "sha256:e022e295e99579c88db54bd3930264e642ac17c55f16e5c208ba6adb2ffa611f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-30T05:41:08.780Z",
+    "generated_at": "2026-07-31T06:20:38.046Z",
     "lint_pass": true,
-    "what_en": "Turns a GitHub pull request into a code-change explainer video. It parses the PR's diff, commits, and files, then auto-generates scripts, frames, and audio to produce a final video.",
-    "when_en": "Triggered when you provide a PR URL (e.g., https://github.com/owner/repo/pull/123), owner/repo#N, or say 'this PR' in a checked-out repo.",
+    "what_en": "On install, Claude turns a GitHub PR (a code change) into an explainer video: it reads the PR's diff, commits, and files, and builds a frame-by-frame code-editorial video — changelog, feature reveal, fix, or refactor walkthrough — ending with a rendered MP4.",
+    "when_en": "Triggered when the user gives a PR reference (a PR URL, owner/repo#N, or “this PR” in a checked-out repo) and asks for an explainer video; not for product promos or non-PR topics.",
     "say_en": [
       {
-        "text": "Turn this PR into an explainer video.",
-        "note": "Claude starts processing the PR and runs the video generation workflow."
+        "text": "Turn this PR into a change-explainer video.",
+        "note": "Reads the PR and produces a frame-by-frame video."
       },
       {
-        "text": "Make a changelog video for owner/repo#42.",
-        "note": "Claude fetches the PR info from GitHub and builds the video step by step."
+        "text": "Make a changelog video for acme-sdk#1842.",
+        "note": "Plans storyboard and script as a changelog."
+      },
+      {
+        "text": "Make a fix-explainer for this PR in the current repo.",
+        "note": "Structures it as a fix walkthrough."
       }
     ]
   }
