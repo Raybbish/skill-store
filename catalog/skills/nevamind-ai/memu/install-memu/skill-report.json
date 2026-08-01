@@ -5,8 +5,8 @@
     "name": "install-memu",
     "description": "Install or uninstall memU for whatever agent you are — identify your host, print its packaged guide, and follow it to wire (or unwire) both seams (record and inject). Use when the user asks to install, set up, integrate, remove, or uninstall memU.",
     "upstream": "https://github.com/NevaMind-AI/memU/tree/main/",
-    "upstream_commit": "bba029314b3c5de76b97898f4cd55a459c5099e8",
-    "content_hash": "sha256:9b338f452676a4eac464293b409b55562131be16bd89bab103a700969152c72b",
+    "upstream_commit": "af707d74f5792a66faa578377d20dc96ddb6c459",
+    "content_hash": "sha256:8bfe943a42d3dbf918b0f63d1ac668b2a8b27eb45f361190f3cb704fba4cedbc",
     "license": "Apache-2.0",
     "hosting": "indexed",
     "category": "dev",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 14121,
+    "stars_github": 14180,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-29T05:47:16.441Z",
+    "fetched_at": "2026-07-31T06:08:00.796Z",
     "first_seen_at": "2026-07-16T05:35:56.628Z",
-    "upstream_commit_at": "2026-07-28T17:50:02+08:00",
+    "upstream_commit_at": "2026-07-31T11:50:18+09:00",
     "repo_skill_count": 1
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-29T05:47:16.441Z",
+    "generated_at": "2026-07-31T06:08:00.796Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,6 +90,7 @@
           "docs/adr/0012-cloud-backed-agentic-backend.md",
           "docs/adr/0013-self-updating-instruction-templates.md",
           "docs/adr/0014-paginated-list-all-recall-files.md",
+          "docs/adr/0015-bridging-must-not-mine-its-own-run.md",
           "docs/adr/README.md",
           "docs/sqlite.md",
           "npm/README.md",
@@ -173,6 +174,7 @@
           "src/memu/hosts/bridging/pipeline.py",
           "src/memu/hosts/bridging/recall_files.py",
           "src/memu/hosts/bridging/resources.py",
+          "src/memu/hosts/bridging/self_sessions.py",
           "src/memu/hosts/bridging/transcripts.py",
           "src/memu/hosts/claude_code/BRIDGING_TASK.md",
           "src/memu/hosts/claude_code/INSTALL.md",
@@ -235,6 +237,7 @@
           "tests/conftest.py",
           "tests/test_agentic.py",
           "tests/test_bridging_promotion.py",
+          "tests/test_bridging_self_sessions.py",
           "tests/test_cli.py",
           "tests/test_cli_stdio.py",
           "tests/test_cloud.py",
@@ -248,72 +251,73 @@
           "tests/test_host_sessions.py",
           "tests/test_host_templates.py",
           "tests/test_postgres_migration_config.py",
+          "tests/test_recall_file_backfill.py",
           "tests/test_scheduling_windows.py",
           "tests/test_vector.py"
         ],
-        "text_files": 192,
-        "bytes": 927912,
-        "chars": 923639,
-        "tokens": 186440
+        "text_files": 196,
+        "bytes": 969287,
+        "chars": 964422,
+        "tokens": 194969
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "在任意 agent 上安装或移除 memU 系统",
+    "tagline": "给智能助手安装或卸载记忆功能",
     "scene_tags": [
-      "安装配置",
-      "工具管理"
+      "给助手加记忆",
+      "移除助手记忆"
     ],
-    "fit_line": "适合你，如果你需要为你的 agent 安装或卸载 memU",
-    "tagline_en": "Install or remove memU on any agent",
+    "fit_line": "适合你,如果你想给常用的 AI 助手加上或卸下记忆功能",
+    "tagline_en": "Install or remove a memory feature for your AI assistant",
     "scene_tags_en": [
-      "setup",
-      "tool management"
+      "adding assistant memory",
+      "removing assistant memory"
     ],
-    "fit_line_en": "For you if you need to install or uninstall memU on your agent",
+    "fit_line_en": "For you if you want to add or remove memory for your AI assistant",
     "source": "llm",
-    "content_hash": "sha256:9b338f452676a4eac464293b409b55562131be16bd89bab103a700969152c72b",
+    "content_hash": "sha256:8bfe943a42d3dbf918b0f63d1ac668b2a8b27eb45f361190f3cb704fba4cedbc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-29T05:52:34.236Z",
+    "generated_at": "2026-07-31T06:14:05.177Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "当您要求安装或卸载memU时，Claude会自动识别您当前使用的宿主环境，执行对应的安装或卸载步骤，并告知结果。",
-    "when": "当您说出“安装memU”、“卸载memU”或“设置memU”等关键词时触发。",
+    "what": "装上后,Claude 会定时把对话记录存入长期记忆,并在回答问题前自动调取过往记忆。",
+    "when": "当用户要求安装、设置、集成、移除或卸载 memU 时。",
     "say": [
       {
-        "text": "帮我安装memU",
-        "note": "Claude会自动检测环境并执行安装步骤。"
+        "text": "安装 memU",
+        "note": "自动识别当前环境并完成安装。"
       },
       {
-        "text": "卸载memU",
-        "note": "Claude会取消集成但保留记忆数据。"
+        "text": "卸载 memU",
+        "note": "按官方指南移除,并保留你的记忆数据。"
       },
       {
-        "text": "设置memU集成",
-        "note": "Claude会重新配置memU连接。"
+        "text": "把 memU 集成进来",
+        "note": "它会读取安装说明并按步骤接入。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:9b338f452676a4eac464293b409b55562131be16bd89bab103a700969152c72b",
+    "content_hash": "sha256:8bfe943a42d3dbf918b0f63d1ac668b2a8b27eb45f361190f3cb704fba4cedbc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-29T05:58:02.137Z",
+    "generated_at": "2026-07-31T06:26:53.966Z",
     "lint_pass": true,
-    "what_en": "When you ask to install or uninstall memU, Claude identifies your current host environment, executes the corresponding install or uninstall steps, and reports the result.",
-    "when_en": "Triggered when you say \"install memU\", \"uninstall memU\", \"set up memU\", or similar keywords.",
+    "what_en": "After install, Claude periodically saves conversation logs into long-term memory and retrieves relevant memories before answering.",
+    "when_en": "Triggers when the user asks to install, set up, integrate, remove, or uninstall memU.",
     "say_en": [
       {
-        "text": "Install memU for me",
-        "note": "Claude auto-detects environment and runs install steps."
+        "text": "Install memU.",
+        "note": "Automatically detects the environment and completes the install."
       },
       {
-        "text": "Uninstall memU",
-        "note": "Claude removes integration but keeps memory data."
+        "text": "Uninstall memU.",
+        "note": "Removes it per the official guide, keeping your memory data."
       },
       {
-        "text": "Set up memU integration",
-        "note": "Claude reconfigures memU connection."
+        "text": "Integrate memU.",
+        "note": "Reads the guide and wires it in step by step."
       }
     ]
   }

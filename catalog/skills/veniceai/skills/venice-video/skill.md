@@ -1,6 +1,6 @@
 ---
 name: venice-video
-description: Generate and transcribe videos via Venice. Covers the async /video/quote + /video/queue + /video/retrieve + /video/complete loop, text-to-video, image-to-video, video-to-video (upscale), audio input, reference images, scene and element support, plus /video/transcriptions for YouTube URLs.
+description: Generate and transcribe videos via Venice. Covers the async /video/quote + /video/queue + /video/retrieve + /video/complete loop, text-to-video, image-to-video, video-to-video (upscale), audio input, reference images, reference video and reference audio (R2V), scene and element support, plus /video/transcriptions for YouTube URLs.
 ---
 
 # Venice Video
@@ -39,6 +39,14 @@ curl https://api.venice.ai/api/v1/video/quote \
 ```
 
 Response: `{"quote": 0.35}` USD.
+
+`/video/quote` requires `model` and `duration`. It also takes `resolution`
+(required for models priced by duration × resolution × rate), `upscale_factor`
+and `video_url` for upscale models (`video_url` lets Venice auto-detect the
+source duration), and `reference_video_total_duration` for reference-to-video
+models — the aggregate seconds of every reference video you intend to send, up
+to 45. Quote a reference-video job without it and you get the no-reference
+baseline price.
 
 ### 2. Submit with `/video/queue`
 
@@ -94,7 +102,7 @@ Availability depends on the model — check `GET /models?type=video`.
 | `model` | string | Required. |
 | `prompt` | string, ≤ 2500–3500 | **Required** (min length 1). Max length varies per model. |
 | `negative_prompt` | string, ≤ 2500–3500 | — |
-| `duration` | enum `2s..30s` or `Auto` | Required. Model-specific subset. |
+| `duration` | enum `1s..16s` in 1s steps, plus `18s`, `20s`, `25s`, `30s`, `1 gen`, `Auto` | Required. Model-specific subset. `1 gen` means one generation unit for models priced per generation rather than per second. |
 | `aspect_ratio` | `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `9:16`, `16:9`, `21:9` | Some models ignore. |
 | `resolution` | `256p..4k`, or upscale hints `2x` / `4x` / `true_1080p` | Use `upscale_factor` for upscale models. |
 | `upscale_factor` | `1` / `2` / `4` | Only for upscale models. `1` = quality enhancement. |
@@ -104,6 +112,9 @@ Availability depends on the model — check `GET /models?type=video`.
 | `audio_url` | URL or data URL | Background music input. WAV/MP3, ≤ 30 s, ≤ 15 MB. |
 | `video_url` | URL or data URL | Video-to-video / upscale input. MP4/MOV/WebM. |
 | `reference_image_urls[]` | array of URLs, ≤ 9 | Character / style consistency images. |
+| `reference_video_urls[]` | array of URLs, ≤ 3 | Reference-to-video models (e.g. Seedance 2.0 R2V). Inherits subject motion, camera movement, and style. Per clip 2–15 s, `.mp4` or `.mov`, ≤ 50 MB; aggregate ≤ 15 s. |
+| `reference_audio_urls[]` | array of URLs, ≤ 3 | Donor audio for vocal timbre, narration, or sound effects. Per clip 2–15 s, `.wav` or `.mp3`; aggregate ≤ 15 s. **Must be paired with at least one reference image or reference video** — audio-only Reference workflows are rejected at validation. |
+| `consents` | object | Provider-specific consent attestations. Seedance requires consent only when the submitted media contains faces. |
 | `elements[]` | array, ≤ 4 | Advanced models (e.g. Kling O3 R2V): each has `frontal_image_url`, up to 3 `reference_image_urls`, `video_url`. Reference in prompt as `@Element1`, `@Element2`. |
 | `scene_image_urls[]` | array of URLs, ≤ 4 | Advanced scene refs; reference in prompt as `@Image1`, `@Image2`. |
 
@@ -219,6 +230,7 @@ async function waitForVideo(model: string, queueId: string, downloadUrl?: string
 - `download_url` is **only sometimes** returned at queue time. Always handle both paths: binary from `/retrieve` OR fetching `download_url` after status `COMPLETED`.
 - `download_url` expires in 24 h — download promptly.
 - Upscale models use `upscale_factor` *instead of* `resolution`.
-- `reference_image_urls[]` is capped at 9 entries, `elements[]` at 4, `scene_image_urls[]` at 4. Over-limit is `400`.
+- `reference_image_urls[]` is capped at 9 entries, `reference_video_urls[]` and `reference_audio_urls[]` at 3 each, `elements[]` at 4, `scene_image_urls[]` at 4. Over-limit is `400`.
+- Quote reference-video jobs with `reference_video_total_duration` (aggregate seconds of all reference videos). It switches the quote to the provider's "input with video" rate tier and the `(input + output) × pixels` token formula. Omit it and you get the no-reference baseline, which will under-quote the job.
 - `data:` URLs count toward payload size; large base64 videos may trip `413` — prefer hosted URLs.
 - `/video/transcriptions` is YouTube-URL-only; it does not accept arbitrary video uploads (use ffmpeg to strip audio, then `/audio/transcriptions`).
