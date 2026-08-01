@@ -5,7 +5,7 @@
     "name": "add-gmail-tool",
     "description": "Add Gmail as an MCP tool (read, search, send, label, draft) using OneCLI-managed OAuth. The agent gets Gmail tools in every enabled group; OneCLI injects real tokens at request time so no raw credentials are ever in the container or on disk in usable form.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-gmail-tool",
-    "upstream_commit": "3c8041696410076d32e24de9673b6fa35ec5d90c",
+    "upstream_commit": "87175bdb89ad27f50a557c23b141648de1919787",
     "content_hash": "sha256:8cfe0a3a982e42c030d6a8c9f2f2df7b7b5157eb286a7c107f82d29d9731f587",
     "license": "MIT",
     "hosting": "mirrored",
@@ -24,9 +24,9 @@
   "signals": {
     "stars_github": 30404,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-31T06:07:41.571Z",
+    "fetched_at": "2026-08-01T05:51:21.442Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-30T21:33:04+03:00",
+    "upstream_commit_at": "2026-07-31T23:28:03+02:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-31T06:07:41.571Z",
+    "generated_at": "2026-08-01T05:51:21.442Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -95,41 +95,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude（agent）在启用的群组里获得 Gmail 工具，可搜索、读取、发送、草拟邮件，管理标签和过滤器等；调用时由 OneCLI 自动注入真实令牌，容器和磁盘上不会出现可用形式的原始凭证。",
-    "when": "当用户在已接入 Gmail 的群组对话中提出查看标签、搜索邮件、发送邮件等涉及 Gmail 的操作时触发。",
+    "what": "装上后,Claude 驱动下的代理会获得 Gmail 工具:可搜索、读取、发送、起草、删除邮件,管理标签和过滤器,下载附件。工具以 mcp__gmail__ 开头;OneCLI 在请求时注入真实凭据,容器内只有占位符。",
+    "when": "当用户要求为代理接入 Gmail 邮箱(例如“把 Gmail 加为工具”)时触发。流程会检查 OneCLI 连接、写入占位凭据、为所选代理组注册 Gmail 并重启验证。",
     "say": [
       {
         "text": "列出我的 Gmail 标签",
-        "note": "Claude 会调用 Gmail 工具返回标签列表。"
+        "note": "会调用 Gmail 的标签列表工具。"
       },
       {
         "text": "搜索我上个月收件箱里的发票",
-        "note": "Claude 会调用搜索邮件工具查找匹配邮件。"
+        "note": "会触发 Gmail 邮件搜索工具。"
       },
       {
-        "text": "用我的 Gmail 给张三发一封邮件",
-        "note": "Claude 会调用发送邮件工具起草并发送。"
+        "text": "用 Gmail 给李雷发一封邮件,说下午开会",
+        "note": "会调用发送邮件工具;需先完成 Gmail 授权。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:8cfe0a3a982e42c030d6a8c9f2f2df7b7b5157eb286a7c107f82d29d9731f587",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-31T06:23:33.367Z",
+    "generated_at": "2026-08-01T06:12:05.337Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude (the agent) gets Gmail tools in enabled groups: search, read, send, draft emails, manage labels and filters, etc. OneCLI injects real tokens at request time, so no raw credentials appear in usable form in the container or on disk.",
-    "when_en": "Triggered when the user asks for Gmail-related actions in a group with Gmail enabled, e.g., listing labels, searching emails, sending emails.",
+    "what_en": "After install the agent gains Gmail tools: search, read, send, draft, delete, labels, filters, attachments. They appear as mcp__gmail__*; OneCLI injects real credentials at request time; container holds only placeholders.",
+    "when_en": "Triggers when a user asks to add Gmail to an agent (e.g. “add Gmail as a tool”). Then it checks OneCLI, writes stub credentials, registers Gmail for selected groups, rebuilds, and verifies.",
     "say_en": [
       {
-        "text": "List my Gmail labels",
-        "note": "Claude calls the Gmail tool to fetch labels."
+        "text": "List my Gmail labels.",
+        "note": "Calls the Gmail label-list tool."
       },
       {
-        "text": "Search my inbox for invoices from last month",
-        "note": "Claude uses the email search tool."
+        "text": "Search my inbox for invoices from last month.",
+        "note": "Triggers the Gmail search tool."
       },
       {
-        "text": "Send an email to John using my Gmail",
-        "note": "Claude drafts and sends via the email tool."
+        "text": "Send an email to Li Lei saying the meeting is at 3pm.",
+        "note": "Calls send_email, requires OAuth set up."
       }
     ]
   }

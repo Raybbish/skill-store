@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "MUST USE for ANY git operations. Atomic commits, rebase/squash, history search (blame, bisect, log -S). STRONGLY RECOMMENDED: Use with task(category='quick', load_skills=['git-master'], ...) to save context. Triggers: 'commit', 'rebase', 'squash', 'who wrote', 'when was X added', 'find the commit that'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-opencode/src/features/builtin-skills/git-master",
-    "upstream_commit": "bc9295823d11b2a9afc19c2c35818a29db1c6b6c",
+    "upstream_commit": "9c30f2e2011ab52443859bd3cada95ae3ccf978d",
     "content_hash": "sha256:3b8a86289df510ac57d9b0cadb1291fb665484a9802d513855e689251acf24b2",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,12 +24,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66882,
+    "stars_github": 66965,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-31T06:07:26.971Z",
+    "fetched_at": "2026-08-01T05:51:04.410Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-31T13:56:29+09:00",
-    "repo_skill_count": 47
+    "upstream_commit_at": "2026-08-01T01:26:12+09:00",
+    "repo_skill_count": 48
   },
   "context_size": {
     "version": "1",
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-31T06:07:26.971Z",
+    "generated_at": "2026-08-01T05:51:04.410Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,处理 Git 相关请求时,Claude 会先分析仓库语言与提交风格,再按目录、关注点把改动拆成多个原子提交,并处理 rebase/squash 与历史查找(blame、bisect、log -S 等)。",
-    "when": "当你说出 “commit”、“rebase”、“squash” 等关键词,或问某段代码谁写的、某功能何时加入等历史问题时触发。",
+    "what": "Claude 会按 git 专家方式工作:先判断请求是提交、rebase/squash 还是历史查找,再分析仓库最近 30 条提交的语言和风格,把改动按目录和关注点拆成多个原子提交,提交信息沿用仓库习惯;历史查找会使用 blame、bisect、log -S。",
+    "when": "SKILL 规定任何 git 操作都要用它;典型触发是你说“commit”“rebase”“squash”等关键词,或问“谁写的”“什么时候加的”“找引入这个改动的提交”这类历史问题。",
     "say": [
       {
-        "text": "把这次改动按模块拆成多个 commit",
-        "note": "会先检测仓库风格再拆分提交。"
+        "text": "帮我把这些改动按目录拆成多个提交,信息沿用仓库风格。",
+        "note": "Claude 会先输出风格检测和提交计划再执行。"
       },
       {
-        "text": "帮我 rebase 到 main,顺便 squash 成一条",
-        "note": "会检查分支是否已推送再重写历史。"
+        "text": "把最近几个提交 rebase 压缩合并,并处理冲突。",
+        "note": "会进入 REBASE 模式,检查分支状态后重写历史。"
       },
       {
-        "text": "查一下这行是谁在哪个 commit 加进来的",
-        "note": "会用 blame/log -S 定位引入点。"
+        "text": "查一下这行是谁写的,在哪个提交里加的。",
+        "note": "进入历史查找模式,用 blame 和 log 定位改动。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3b8a86289df510ac57d9b0cadb1291fb665484a9802d513855e689251acf24b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-31T06:15:43.998Z",
+    "generated_at": "2026-08-01T05:58:58.252Z",
     "lint_pass": true,
-    "what_en": "After installation, when handling Git requests, Claude first analyzes the repo's language and commit style, then splits changes into multiple atomic commits by directory/concern, and handles rebase/squash plus history search (blame, bisect, log -S).",
-    "when_en": "Triggered when you say 'commit', 'rebase', 'squash', or ask who wrote a line / when a feature was added / find the commit that introduced something.",
+    "what_en": "Claude classifies the request as commit, rebase/squash, or history lookup. It studies the last 30 commit messages for language and style, splits changes into atomic commits by directory and concern, and uses blame, bisect, and log -S for history searches.",
+    "when_en": "It should trigger on any git operation, typically when you say \"commit\", \"rebase\", or \"squash\", or ask who wrote something, when something was added, or which commit introduced a change.",
     "say_en": [
       {
-        "text": "Split these changes into multiple commits by module.",
-        "note": "It will detect repo style first, then split."
+        "text": "Split these changes into commits by directory, matching repo style.",
+        "note": "Claude prints a style report and commit plan first."
       },
       {
-        "text": "Rebase onto main and squash into a single commit.",
-        "note": "Checks branch push state before rewriting history."
+        "text": "Rebase and squash my recent commits, handling conflicts.",
+        "note": "Enters REBASE mode, checks branch state, then rewrites history."
       },
       {
-        "text": "Find which commit introduced this line and who wrote it.",
-        "note": "Uses blame and log -S to locate the origin."
+        "text": "Who wrote this line and which commit added it?",
+        "note": "Runs history lookup using blame and log."
       }
     ]
   }

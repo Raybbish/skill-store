@@ -5,7 +5,7 @@
     "name": "lsp-setup",
     "description": "Configure a Language Server (LSP) for a specific language so editor/agent tooling — diagnostics, go-to-definition, find-references, rename — works. Use when you need to: configure LSP, lsp setup, set up or install a language server, fix 'no LSP server configured' / 'server not installed', choose between servers (basedpyright vs pyright vs ty vs ruff), or wire .codex/lsp-client.json / .opencode/lsp.json. 언어서버 설정. Routes by file extension to references/<language>/README.md for the exact builtin server, per-OS install commands (macOS/Linux/Windows), config snippets for both config files, initialization options, alternatives, and troubleshooting. Ships scripts: detect-lsp.ts (scan a project for languages + each server's install/config status) and verify-lsp.ts (run a real diagnostics roundtrip). Covers typescript, python, go, rust, c/c++, java, kotlin, c#/razor, swift, ruby, php, dart, elixir, zig, lua, bash, yaml, terraform, haskell, julia.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/lsp-setup",
-    "upstream_commit": "bc9295823d11b2a9afc19c2c35818a29db1c6b6c",
+    "upstream_commit": "9c30f2e2011ab52443859bd3cada95ae3ccf978d",
     "content_hash": "sha256:031155c7675729ee30c576beb7191139c0813e8f0ee578cdc38c84fa79ab7a4a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66882,
+    "stars_github": 66965,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-31T06:07:26.971Z",
+    "fetched_at": "2026-08-01T05:51:04.410Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-31T13:56:29+09:00",
-    "repo_skill_count": 47
+    "upstream_commit_at": "2026-08-01T01:26:12+09:00",
+    "repo_skill_count": 48
   },
   "context_size": {
     "version": "1",
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-31T06:07:26.971Z",
+    "generated_at": "2026-08-01T05:51:04.410Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -137,37 +137,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会扫描项目识别所用语言，按系统给出语言服务器安装命令与配置片段，把配置写入 .codex/lsp-client.json 等项目文件，并运行验证脚本实际启动服务器检查诊断是否正常，给出 OK/FAIL 报告。",
-    "when": "当要求配置或安装语言服务器、修复“no LSP server configured”类报错，或编辑 .codex/lsp-client.json 等配置文件时触发。",
+    "what": "它会按扩展名识别项目语言,读取对应语言的参考文档;给出服务器安装命令和配置片段,并运行 detect/verify 脚本检查安装状态与真实诊断结果。",
+    "when": "当你说要配置 LSP、安装/设置语言服务器、修复“未配置/未安装 LSP 服务器”报错等时触发。",
     "say": [
       {
-        "text": "为这个 Python 项目配置 LSP 服务器并安装。",
-        "note": "它会检测语言、给出安装命令并配置。"
+        "text": "给这个 Python 项目配置 LSP,用 basedpyright 作为服务器"
       },
       {
-        "text": "修复“no LSP server configured”错误。",
-        "note": "它会检查服务器是否安装并给出方案。"
+        "text": "修复“no LSP server configured”报错,并验证配置",
+        "note": "会运行 verify-lsp.ts 做一次真实诊断往返。"
+      },
+      {
+        "text": "检测这个项目的语言和已安装的语言服务器",
+        "note": "会运行 detect-lsp.ts 扫描并报告各语言状态。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:031155c7675729ee30c576beb7191139c0813e8f0ee578cdc38c84fa79ab7a4a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-31T06:17:03.803Z",
+    "generated_at": "2026-08-01T05:59:41.380Z",
     "lint_pass": true,
-    "what_en": "Claude scans the project, identifies the language, gives install commands and config snippets, writes the config file, then runs a real LSP diagnostics check and reports OK/FAIL.",
-    "when_en": "Triggered when you ask to configure or install a language server, fix errors like 'no LSP server configured', or edit config files such as .codex/lsp-client.json.",
+    "what_en": "It identifies the project language by file extension, reads the matching reference, gives per-OS install commands and config snippets, and verifies setup with real diagnostics via scripts (detect-lsp.ts, verify-lsp.ts).",
+    "when_en": "Triggers when you ask to configure or install a language server, fix 'no LSP server configured'/'server not installed', or wire project config files.",
     "say_en": [
       {
-        "text": "Set up the LSP server for this Python project.",
-        "note": "It detects the language and gives install steps."
+        "text": "Set up LSP for this Python project using basedpyright.",
+        "note": "Picks the Python reference, installs, and writes config."
       },
       {
-        "text": "Fix the 'no LSP server configured' error.",
-        "note": "Checks installation and offers a fix."
+        "text": "Fix the 'no LSP server configured' error and verify the setup.",
+        "note": "Runs verify-lsp.ts for a real diagnostics roundtrip."
       },
       {
-        "text": "Generate .codex/lsp-client.json for a TypeScript project.",
-        "note": "Writes the matching server config."
+        "text": "Detect this project's languages and installed language servers.",
+        "note": "Runs detect-lsp.ts and reports status per language."
       }
     ]
   }

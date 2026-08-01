@@ -89,41 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会专门审查代码中的过度工程,找出可删除的部分,例如重复造的标准库功能、多余依赖、投机性抽象等。每条发现用一行说明位置、删除什么、用什么替代,最后用 net: -N lines 估算可减少的行数。若无需删减,则回复“Lean already. Ship.”。",
-    "when": "当你说出“review for over-engineering”、“what can we delete”等短语,或输入 /ponytail-review 命令时触发。说完“stop ponytail-review”或“normal mode”则退出。",
+    "what": "装上后,Claude 在代码审查时只关注过度工程化,输出逐条清单:每行指出位置、要删除的内容和替代方案。它专挑手写标准库已有函数、多余依赖、无用抽象等,最后给出能减少的总行数。",
+    "when": "当用户说“review for over-engineering”、“what can we delete”或“simplify review”等,或调用 /ponytail-review 时触发。只处理复杂性问题,不处理正确性、安全和性能。",
     "say": [
       {
-        "text": "帮我把这段代码里的过度工程找出来。",
-        "note": "Claude 会列出可删除的部分及替代方案。"
+        "text": "What can we delete? 看看这个 PR 有没有过度抽象。",
+        "note": "只查复杂性问题,不查正确性。"
       },
       {
-        "text": "这个改动是不是有过度设计的地方?",
-        "note": "会按位置一行一条给出删除建议。"
-      },
-      {
-        "text": "检查一下这个 diff 有什么可以删的复杂性?",
-        "note": "会输出 net: -N lines 估算可减少行数。"
+        "text": "这个文件是不是 over-engineered? 帮我简化一下。",
+        "note": "会给出具体删除建议和替代方案。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1d4b0f6a4132e50f48402504094038f1e7ea3445761cbe19f6e454fa76735b87",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-31T06:32:35.211Z",
-    "lint_pass": false,
-    "what_en": "Claude runs code review for over-engineering only. Finds what to delete: reinvented stdlib, unneeded deps, speculative abstractions. One line per finding: location, what to cut, replacement. Final metric: net -N lines. If nothing to cut: 'Lean already. Ship.'",
-    "when_en": "Triggered when the user says 'review for over-engineering', 'what can we delete', or similar, or invokes /ponytail-review. Exit on 'stop ponytail-review' or 'normal mode'.",
+    "generated_at": "2026-08-01T06:18:35.445Z",
+    "lint_pass": true,
+    "what_en": "After install, Claude reviews code solely for over-engineering and outputs a line-by-line list: each finding shows location, what to delete, and a replacement. It targets reimplemented stdlib, unneeded deps, useless abstractions, etc., ending with the total lines saved.",
+    "when_en": "Triggers when the user says \"review for over-engineering\", \"what can we delete\", or \"simplify review\", etc., or invokes /ponytail-review. Only handles complexity, not correctness, security, or performance.",
     "say_en": [
       {
-        "text": "Review this code for over-engineering.",
-        "note": "Claude lists what to cut and replacements."
+        "text": "Review for over-engineering: what can be deleted here?",
+        "note": "Claude lists removable deps and hand-rolled functions."
       },
       {
-        "text": "Is this diff over-engineered?",
-        "note": "Returns one-line findings with location."
+        "text": "What can we delete? Check this PR for over-abstraction.",
+        "note": "Only complexity, not correctness, is checked."
       },
       {
-        "text": "What can we delete from these changes?",
-        "note": "Ends with net: -N lines possible."
+        "text": "Is this file over-engineered? Simplify it for me.",
+        "note": "Gives specific cuts and replacements."
       }
     ]
   }

@@ -71,6 +71,9 @@ intelligence capabilities.
 - [Change History](references/change-history.md): Tracking and querying
   incremental table changes using APPENDS and CHANGES.
 
+-   [Continuous Queries](references/continuous-queries.md): Running continuous
+    SQL statements to analyze incoming data in real time.
+
 - [CLI Usage](references/cli-usage.md): Essential `bq` command-line tool
   operations for managing data and jobs.
 

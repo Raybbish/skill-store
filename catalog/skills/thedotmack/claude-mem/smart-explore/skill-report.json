@@ -5,7 +5,7 @@
     "name": "smart-explore",
     "description": "Token-optimized structural code search using tree-sitter AST parsing. Use instead of reading full files when you need to understand code structure, find functions, or explore a codebase efficiently.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/smart-explore",
-    "upstream_commit": "132b46343e60ecf4057c427736c57b08f7615dfe",
+    "upstream_commit": "a90066f9cf82cc936dd2d841319bb6b19658f7d4",
     "content_hash": "sha256:a3fc2901c7cbe643cffd951ecb27dfef76bd5d48bb0501057afd0c216be8cdbd",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -20,11 +20,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 88398,
+    "stars_github": 89197,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-24T05:45:04.603Z",
+    "fetched_at": "2026-08-01T05:50:58.404Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-23T15:47:35-07:00",
+    "upstream_commit_at": "2026-07-31T11:21:11-07:00",
     "repo_skill_count": 19
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-24T05:45:04.603Z",
+    "generated_at": "2026-08-01T05:50:58.404Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,31 +88,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会先用 smart_search 搜索代码结构，再用 smart_outline 查看文件骨架，最后用 smart_unfold 展开具体函数，代替直接读取整个文件。",
-    "when": "当你想了解代码结构、查找函数或高效浏览代码库时触发。",
+    "what": "装上后，Claude 在查看代码时会改用 smart_search、smart_outline、smart_unfold 三个结构探索工具，替代直接整文件读取：先搜索定位文件和符号，再看文件结构骨架，最后按需展开单个函数或类的完整源码。",
+    "when": "当你要查看代码结构、查找函数或高效探索代码库时触发，处理时会优先用结构搜索而不是 Read/Grep/Glob。",
     "say": [
       {
-        "text": "搜索项目中所有与 shutdown 相关的函数。"
+        "text": "搜索一下 src 目录里所有跟 shutdown 相关的函数",
+        "note": "会触发结构搜索，返回匹配符号和文件概览。"
       },
       {
-        "text": "展开 worker-service.ts 中的 shutdown 方法。"
+        "text": "看下 worker-service.ts 的文件结构",
+        "note": "会返回这个文件的所有函数和类的大纲。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a3fc2901c7cbe643cffd951ecb27dfef76bd5d48bb0501057afd0c216be8cdbd",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-24T05:50:05.249Z",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-01T06:16:51.862Z",
     "lint_pass": true,
-    "what_en": "When installed, Claude uses smart_search to discover code symbols, smart_outline to get file structure, and smart_unfold to expand specific functions, replacing full file reads.",
-    "when_en": "Triggered when you need to understand code structure, find functions, or explore a codebase efficiently.",
+    "what_en": "With this skill, Claude explores code via smart_search, smart_outline, and smart_unfold instead of reading whole files: it first finds files and symbols, then shows a structural skeleton, then unfolds the full source of a chosen function or class.",
+    "when_en": "Triggers when you ask to inspect code structure, find functions, or efficiently explore a codebase; it prefers structural search over Read, Grep, and Glob.",
     "say_en": [
       {
-        "text": "Search for all functions related to shutdown in the project.",
-        "note": "Claude will call smart_search and return ranked symbols with file overviews."
+        "text": "Search for all shutdown-related functions in the src directory",
+        "note": "Triggers structural search; returns matching symbols and file overviews."
       },
       {
-        "text": "Unfold the shutdown method in worker-service.ts.",
-        "note": "Claude will call smart_unfold to show the full source of that function."
+        "text": "Show the file structure of worker-service.ts",
+        "note": "Returns an outline of all functions and classes in that file."
+      },
+      {
+        "text": "Unfold the shutdown method in services/worker-service.ts",
+        "note": "Shows the full source of that method."
       }
     ]
   }
