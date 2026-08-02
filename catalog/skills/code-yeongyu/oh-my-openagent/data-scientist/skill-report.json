@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Expert data processing specialist with intelligent DuckDB/Polars selection for maximum performance. Always includes numpy, never uses pandas, runs everything through uv. Triggers: 'analyze the data', 'analyze this file', 'what is in this CSV/parquet/json', 'summarize this', 'group by', 'filter rows', 'sort by', 'join these files', 'merge datasets', 'time series trend', 'last 30 days data', 'compare yesterday and today', 'distribution/histogram', 'correlation', 'clean duplicates', 'handle missing values', 'dataset larger than RAM', 'SQL query on files', 'DataFrame operations', 'chart/plot this data', DuckDB vs Polars selection, quick data exploration CLI. NOT for plain text/code inspection, configs, or tiny inline math.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "9c30f2e2011ab52443859bd3cada95ae3ccf978d",
+    "upstream_commit": "b072d279110bdda2c6ac2525d0d24dc54d16148a",
     "content_hash": "sha256:e39ae723a946f2b155d695273288a77539d00adbfb1c8954bd676c6b016ae85e",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66965,
+    "stars_github": 67012,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-01T05:51:04.410Z",
+    "fetched_at": "2026-08-02T05:51:36.316Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-08-01T01:26:12+09:00",
+    "upstream_commit_at": "2026-08-01T09:26:37Z",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-01T05:51:04.410Z",
+    "generated_at": "2026-08-02T05:51:36.316Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -106,39 +106,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "该技能在 Claude 处理数据时自动选择一个高速引擎(DuckDB 或 Polars),始终配好 numpy 与 pyarrow,全程用 uv 执行,不用 pandas。产出是查询、聚合、清洗后的结果,并报告耗时与行数。",
-    "when": "当用户要求分析数据、查看 CSV/Parquet/JSON 文件内容,或提出分组、过滤、排序、合并等数据处理需求时触发;纯文本检查、配置文件等不触发。",
+    "what": "处理数据文件（CSV、Parquet、JSON 等）时，Claude 会用 uv 运行 Python，并自动挑选 DuckDB 或 Polars 做查询、过滤、分组、排序、合并、画图等，返回处理结果。大文件也能应对；它不用 pandas，但一定会带上 numpy。",
+    "when": "当你要求分析、总结、分组等数据处理操作，或提到 CSV、Parquet、JSON 等数据文件时触发；纯文本检查和简单小计算不触发。",
     "say": [
       {
-        "text": "分析这个 CSV 文件,看看有多少行。"
+        "text": "分析一下这个 CSV 文件，按类别汇总销售额"
       },
       {
-        "text": "按类别汇总订单金额,取前 10。",
-        "note": "完成分组聚合并展示头部结果。"
+        "text": "把这两个文件按客户 ID 合并，统计每位客户的总金额",
+        "note": "先用 DuckDB 做连接，再返回聚合结果。"
       },
       {
-        "text": "把这两个数据集按客户 ID 合并再过滤。"
+        "text": "这个数据有重复行，帮我清理并统计缺失值",
+        "note": "会去重并给出缺失情况，Polars 适合这一步。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e39ae723a946f2b155d695273288a77539d00adbfb1c8954bd676c6b016ae85e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-01T05:57:51.310Z",
+    "generated_at": "2026-08-02T06:00:56.935Z",
     "lint_pass": true,
-    "what_en": "This skill makes Claude automatically pick a fast engine (DuckDB or Polars), always include numpy and pyarrow, run everything via uv, and never use pandas. It returns query, aggregate, and cleaning results with timing and row counts.",
-    "when_en": "Triggers when the user asks to analyze data, inspect CSV/Parquet/JSON files, or requests grouping, filtering, sorting, merging, cleaning, etc. Not triggered by plain text/code inspection or configs.",
+    "what_en": "Claude processes data files (CSV/Parquet/JSON) via uv-run Python, intelligently choosing DuckDB or Polars to query, filter, group, sort, join, or plot, returning results. Handles large datasets; never uses pandas, always includes numpy.",
+    "when_en": "When you ask to analyze, summarize, or group data, or mention data files like CSV, Parquet, or JSON. Plain-text checks and small inline calculations do not trigger it.",
     "say_en": [
       {
-        "text": "Analyze this CSV file and tell me how many rows it has.",
-        "note": "Claude describes structure and stats."
+        "text": "Analyze this CSV file and sum sales by category.",
+        "note": "Claude picks DuckDB to group and sum, then reports time and row counts."
       },
       {
-        "text": "Summarize order amounts by category, top 10.",
-        "note": "It groups, aggregates, and shows top results."
+        "text": "Join these two files on customer ID and total amounts per customer.",
+        "note": "Uses DuckDB for the join, then returns the aggregated result."
       },
       {
-        "text": "Merge these two datasets by customer ID, then filter.",
-        "note": "Hybrid DuckDB join then Polars filter."
+        "text": "This file has duplicates—clean it and report missing values.",
+        "note": "Dedupes and summarizes missingness, likely with Polars."
       }
     ]
   }
