@@ -5,7 +5,7 @@
     "name": "broken-link-checker",
     "description": "Scans a website to find broken links (404s, 500s). Crawls internal pages,  identifies broken outbound links, and reports source pages for easy fixing. Use this when the user asks to \"check for broken links\", \"find 404s\",  \"audit my links\", or \"is my site healthy\".\n",
     "upstream": "https://github.com/nowork-studio/NotFair/tree/main/seo/broken-link-checker",
-    "upstream_commit": "82a79b7d7ddcd3143f6709bd4c2d42cbc15c9920",
+    "upstream_commit": "e682cc9f630d242d78a696763ab5f5fd852eff28",
     "content_hash": "sha256:4a0ebb865c5c852b626c5ac8fe38f97359564e18ea87539927da60b740b07031",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 3198,
+    "stars_github": 3301,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-24T05:45:48.572Z",
+    "fetched_at": "2026-07-31T06:08:34.794Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-22T23:29:02-07:00",
+    "upstream_commit_at": "2026-07-30T18:13:21-07:00",
     "repo_skill_count": 28
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-24T05:45:48.572Z",
+    "generated_at": "2026-07-31T06:08:34.794Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,32 +93,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会扫描你指定的网站，找出所有返回 404 或 500 错误的链接，并告诉你这些坏链接出现在哪个页面，方便你修复。",
-    "when": "当你要求“检查坏链接”、“找 404”、“审计我的链接”或“我的网站健康吗”时触发。",
+    "what": "若用户未提供网址,先询问要检查哪个网站;然后扫描该网站,找出返回 404(不存在)或 5xx(服务器错误)的链接,爬取内部页面,识别失效的外部链接,并列出坏链接的来源页面以便修复。",
+    "when": "当用户要求“check for broken links”“find 404s”,或说“audit my links”等时触发。",
     "say": [
       {
-        "text": "帮我检查一下 https://example.com 有没有坏链接。"
+        "text": "检查 https://example.com 有没有坏链接",
+        "note": "脚本会扫描并报告404和5xx错误。"
       },
       {
-        "text": "扫描我的网站，找出所有 404 错误。",
-        "note": "Claude 会询问网址，然后执行扫描。"
+        "text": "帮我找出 https://example.com 上所有失效的链接",
+        "note": "会标明每个坏链接所在的页面。"
+      },
+      {
+        "text": "审计 https://example.com 的链接,有404请告诉我",
+        "note": "会按内部/外部分组,便于优先修复。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4a0ebb865c5c852b626c5ac8fe38f97359564e18ea87539927da60b740b07031",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-24T05:49:38.686Z",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-07-31T06:27:40.188Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude will scan a website you specify, find all links returning 404 or 500 errors, and report which pages contain those broken links so you can fix them.",
-    "when_en": "Triggered when you ask to \"check for broken links\", \"find 404s\", \"audit my links\", or \"is my site healthy\".",
+    "what_en": "Scans a given website for broken links (404s, 5xx). Crawls internal pages, detects broken outbound links, and reports the source pages for fixing. Asks for a URL if none is given.",
+    "when_en": "Triggered when the user asks to check for broken links, find 404s, audit my links, etc.",
     "say_en": [
       {
         "text": "Check https://example.com for broken links.",
-        "note": "Claude will scan up to 50 pages and return a broken link report."
+        "note": "Scans the site and reports 404/5xx errors."
       },
       {
-        "text": "Scan my site and find all 404 errors.",
-        "note": "Claude will ask for the URL, then run the scan."
+        "text": "Find all broken links on https://example.com.",
+        "note": "Lists each broken link's source pages."
+      },
+      {
+        "text": "Audit https://example.com and report any 404s.",
+        "note": "Groups internal/external broken links."
       }
     ]
   }

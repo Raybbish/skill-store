@@ -5,7 +5,7 @@
     "name": "init-onecli",
     "description": "Install and initialize OneCLI Agent Vault. Migrates existing .env credentials to the vault. Use after /update-nanoclaw brings in OneCLI as a breaking change, or for first-time OneCLI setup.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/init-onecli",
-    "upstream_commit": "879835bf8bb882672742f0765747312c4948420f",
+    "upstream_commit": "4446b5bde12613ec58289b5a9ac2f5dde947d7e3",
     "content_hash": "sha256:20b0e44016b41ff88ed693ad019de0ed4c0cb6622df7d4bd41aa6c2ae8eb75b5",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30380,
+    "stars_github": 30405,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-27T06:23:57.317Z",
+    "fetched_at": "2026-08-02T05:51:48.065Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-26T18:23:04+03:00",
+    "upstream_commit_at": "2026-08-01T23:45:44+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-27T06:23:57.317Z",
+    "generated_at": "2026-08-02T05:51:48.065Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,33 +89,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装 OneCLI，配置代理保险库，将 .env 中的凭据迁移到保险库中，由 OneCLI 统一管理并在网关层安全注入，代理看不到原始密钥。",
-    "when": "在运行 /update-nanoclaw 后需要设置 OneCLI 时，或首次使用 OneCLI 时触发。",
+    "what": "它会安装并初始化 OneCLI 的密钥保管库,把 .env 里的 Anthropic 等密钥迁移进去,然后重新构建并重启服务。之后密钥由网关统一管理,代理和容器不再直接看到原始密钥。",
+    "when": "在 /update-nanoclaw 把 OneCLI 作为破坏性变更引入之后、首次设置 OneCLI 时、或 OneCLI 需要从头配置时触发。",
     "say": [
       {
-        "text": "请帮我初始化 OneCLI 并迁移 .env 里的凭据。",
-        "note": "技能会自动安装和配置。"
+        "text": "帮我初始化 OneCLI 并迁移 .env 密钥。",
+        "note": "会执行预检、安装、迁移并重启服务。"
       },
       {
-        "text": "我想把 Anthropic API 密钥存到 OneCLI 保险库中。",
-        "note": "技能会引导注册并迁移。"
+        "text": "检查 OneCLI 是否已就绪,没就绪就重新设置。",
+        "note": "先预检,再决定保留还是重配。"
+      },
+      {
+        "text": "重新配置 OneCLI,改用我的 Claude 订阅。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:20b0e44016b41ff88ed693ad019de0ed4c0cb6622df7d4bd41aa6c2ae8eb75b5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-27T06:33:58.237Z",
+    "generated_at": "2026-08-02T06:11:27.266Z",
     "lint_pass": true,
-    "what_en": "Installs OneCLI, configures the Agent Vault gateway, migrates credentials from .env into the vault, and manages credentials via OneCLI so agents never see raw keys.",
-    "when_en": "Triggered after /update-nanoclaw requires OneCLI setup, or for first-time OneCLI installation.",
+    "what_en": "Installs and initializes the OneCLI Agent Vault, migrates existing .env credentials (e.g. Anthropic keys) into it, then rebuilds and restarts the service. Credentials are managed by the gateway; agents and containers never see raw keys.",
+    "when_en": "Triggered after /update-nanoclaw introduces OneCLI as a breaking change, on first-time OneCLI setup, or when OneCLI needs to be configured from scratch.",
     "say_en": [
       {
-        "text": "Please initialize OneCLI and migrate credentials from .env.",
-        "note": "Skill automatically installs and configures."
+        "text": "Initialize OneCLI and migrate .env credentials.",
+        "note": "Runs preflight, install, and migration."
       },
       {
-        "text": "I want to store my Anthropic API key in the OneCLI vault.",
-        "note": "Skill guides registration and migration."
+        "text": "Check if OneCLI is ready; reconfigure if not.",
+        "note": "Preflights, then asks keep or reconfigure."
+      },
+      {
+        "text": "Reconfigure OneCLI using my Claude subscription.",
+        "note": "Guides you to run claude setup-token."
       }
     ]
   }

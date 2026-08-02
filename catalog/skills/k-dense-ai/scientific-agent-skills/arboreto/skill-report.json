@@ -5,7 +5,7 @@
     "name": "arboreto",
     "description": "Infer gene regulatory networks (GRNs) from gene expression data using scalable algorithms (GRNBoost2, GENIE3). Use when analyzing transcriptomics data (bulk RNA-seq, single-cell RNA-seq) to identify transcription factor-target gene relationships and regulatory interactions. Supports distributed computation for large-scale datasets.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arboreto",
-    "upstream_commit": "ab2f84ab10597c59fac186ecda6d5edd5dcc8b92",
+    "upstream_commit": "ad21a3868923628330734375dddbf7b86ea84222",
     "content_hash": "sha256:258ed0865c725fd406e34e1740b29be04ab8bdad1d42d6947bbc3c1a5cb7dcd3",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32035,
+    "stars_github": 32287,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-29T05:46:54.359Z",
+    "fetched_at": "2026-08-01T05:51:18.019Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-28T17:34:25-07:00",
+    "upstream_commit_at": "2026-07-31T11:01:54-07:00",
     "repo_skill_count": 158,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-29T05:46:54.359Z",
+    "generated_at": "2026-08-01T05:51:18.019Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,33 +94,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 可以调用 arboreto 库，从基因表达数据（如 RNA-seq）中推断基因调控网络，识别转录因子与靶基因之间的调控关系。",
-    "when": "当你提供基因表达数据（如单细胞或批量RNA-seq表达矩阵）并请求推断转录因子-靶基因调控网络时触发。",
+    "what": "装上后,Claude 能用 arboreto 从基因表达数据推断调控网络,得到“转录因子—靶基因—调控强度”的关系表,可用 GRNBoost2 或 GENIE3 算法,并支持本地多核或远程集群计算。",
+    "when": "当你分析转录组数据(如 bulk RNA-seq、单细胞 RNA-seq 等),需要找出转录因子与靶基因的调控关系时触发。",
     "say": [
       {
-        "text": "请用 arboreto 分析我的单细胞RNA-seq数据，找出转录因子调控关系。",
-        "note": "会运行 GRNBoost2 算法并返回调控网络。"
+        "text": "帮我用 GRNBoost2 从这份表达数据推断调控网络。"
       },
       {
-        "text": "帮我用 GRNBoost2 从表达矩阵推断基因调控网络。",
-        "note": "直接指定算法，结果以 TSV 格式输出。"
+        "text": "用 GENIE3 跑一下,只保留我列表里的转录因子。",
+        "note": "会按 tf_names 过滤再运行 GENIE3。"
+      },
+      {
+        "text": "按条件拆分表达数据,分别推断网络并比较结果。",
+        "note": "会对每个条件各跑一次,保存各自的网络文件。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:258ed0865c725fd406e34e1740b29be04ab8bdad1d42d6947bbc3c1a5cb7dcd3",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-29T05:56:10.731Z",
+    "generated_at": "2026-08-01T06:05:22.291Z",
     "lint_pass": true,
-    "what_en": "When installed, Claude can use the arboreto library to infer gene regulatory networks from gene expression data (e.g., RNA-seq), identifying transcription factor-target gene relationships.",
-    "when_en": "Triggers when you provide gene expression data (e.g., single-cell or bulk RNA-seq matrix) and request inference of transcription factor-target gene regulatory networks.",
+    "what_en": "Claude can use arboreto to infer gene regulatory networks from gene expression data, producing a table of TF–target links with importance scores. Supports GRNBoost2 and GENIE3, and can scale from local multi-core to remote Dask clusters.",
+    "when_en": "Triggered when analyzing transcriptomics data (bulk RNA-seq, single-cell RNA-seq, etc.) to identify transcription factor–target gene relationships and regulatory interactions.",
     "say_en": [
       {
-        "text": "Infer a gene regulatory network from my expression matrix using GRNBoost2.",
-        "note": "Specifies algorithm; output in TSV format."
+        "text": "Run GRNBoost2 on this expression file and infer the regulatory network.",
+        "note": "Outputs a TF–target–importance table."
       },
       {
-        "text": "Perform transcription factor-target gene analysis on bulk RNA-seq data with arboreto.",
-        "note": "Supports TF filtering and multi-condition comparisons."
+        "text": "Run GENIE3 but keep only the transcription factors in my list.",
+        "note": "Filters by tf_names while running GENIE3."
+      },
+      {
+        "text": "Split the expression matrix by condition, infer each network, then compare.",
+        "note": "Runs per condition and saves each network file."
       }
     ]
   }

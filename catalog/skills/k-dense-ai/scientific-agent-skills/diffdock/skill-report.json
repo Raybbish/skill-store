@@ -5,7 +5,7 @@
     "name": "diffdock",
     "description": "DiffDock and DiffDock-L molecular docking. Use for protein-small-molecule pose prediction from PDB or sequence plus SMILES/SDF/MOL2, batch docking, virtual screening, and pose-confidence interpretation. Not for binding affinity prediction.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/diffdock",
-    "upstream_commit": "ab2f84ab10597c59fac186ecda6d5edd5dcc8b92",
+    "upstream_commit": "ad21a3868923628330734375dddbf7b86ea84222",
     "content_hash": "sha256:0d34cf7713c21a0e1a4197a494392b92a82dbc8cb8d0ce41f08590e43d027f95",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32035,
+    "stars_github": 32287,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-29T05:46:54.359Z",
+    "fetched_at": "2026-08-01T05:51:18.019Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-28T17:34:25-07:00",
+    "upstream_commit_at": "2026-07-31T11:01:54-07:00",
     "repo_skill_count": 158,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-29T05:46:54.359Z",
+    "generated_at": "2026-08-01T05:51:18.019Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,29 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "该技能让 Claude 能进行分子对接：接收蛋白质（PDB 或序列）和配体（SMILES/SDF/MOL2），生成配体的3D结合姿态，并给出每个姿态的置信度分数。支持单个或批量对接，但**不**预测结合亲和力。",
-    "when": "当你描述对接任务要求，例如提供蛋白质文件+配体描述，或指定“虚拟筛选”、“预测结合位点”等关键词时触发。",
+    "what": "装上后，Claude 可用 DiffDock 进行蛋白质-小分子对接：从 PDB 或氨基酸序列及配体文件/SMILES 预测 3D 结合构象，输出带置信度分数的排名构象，并支持批量对接和虚拟筛选。",
+    "when": "当用户提出“对接”、“预测结合构象”、“虚拟筛选”等分子对接相关需求，或提供蛋白质结构和配体信息时触发。",
     "say": [
       {
-        "text": "用 CSV 文件 batch.csv 批量对接 10 个复合物。",
-        "note": "会依次处理并输出每个复合物的前10个姿态。"
+        "text": "用 DiffDock 对接这个配体和这个蛋白，输出前几个构象。",
+        "note": "执行单分子对接并显示排名构象。"
+      },
+      {
+        "text": "用这个 CSV 做批量对接和虚拟筛选。",
+        "note": "运行批处理对接流程。"
+      },
+      {
+        "text": "分析这些对接结果的置信度并导出 CSV。",
+        "note": "调用分析脚本生成统计摘要。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0d34cf7713c21a0e1a4197a494392b92a82dbc8cb8d0ce41f08590e43d027f95",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-29T05:56:44.661Z",
+    "generated_at": "2026-08-01T06:08:20.242Z",
     "lint_pass": true,
-    "what_en": "This skill enables Claude to perform molecular docking: accept a protein (PDB or sequence) and a ligand (SMILES/SDF/MOL2), generate 3D binding poses with confidence scores, and support single or batch docking. It does NOT predict binding affinity.",
-    "when_en": "Triggered when the user describes a docking task, e.g., providing a protein file and ligand description, or using keywords like \"virtual screening\" or \"predict binding site\".",
+    "what_en": "After installation, Claude can run DiffDock for protein-ligand docking: predict 3D binding poses from PDB or sequence with ligand files/SMILES, output ranked poses with confidence scores, and support batch docking and virtual screening.",
+    "when_en": "Triggered when the user asks for docking, pose prediction, or virtual screening, or provides a protein structure and ligand information.",
     "say_en": [
       {
-        "text": "Dock protein.pdb with ligand SMILES CC(=O)Oc1ccccc1C(=O)O.",
-        "note": "Runs single docking and outputs top-ranked SDF."
+        "text": "Use DiffDock to dock this ligand to this protein and show top poses.",
+        "note": "Runs single-complex docking and outputs ranked poses."
       },
       {
-        "text": "Batch dock 10 complexes using csv file batch.csv.",
-        "note": "Processes each complex and outputs top 10 poses per complex."
+        "text": "Run batch docking and virtual screening from this CSV.",
+        "note": "Starts the batch docking workflow."
+      },
+      {
+        "text": "Analyze confidence scores from these results and export to CSV.",
+        "note": "Calls the analysis script to generate statistics."
       }
     ]
   }
