@@ -5,7 +5,7 @@
     "name": "dispatching-parallel-agents",
     "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
     "upstream": "https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents",
-    "upstream_commit": "3dcbd5c4b48e02263fbf4a3c01e3fe4f81d584d9",
+    "upstream_commit": "44c9b2d6e889982ac18c27d05a19fefe335194e1",
     "content_hash": "sha256:fff328fc3785c25e4eccbcf17395f1769302ee2b3d6f626b802776a6ed89389f",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 144300,
-    "fetched_at": "2026-07-24T05:46:57.869Z",
+    "installs_skills_sh": 150100,
+    "fetched_at": "2026-07-30T05:37:14.530Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-07-23T17:27:16-07:00"
+    "upstream_commit_at": "2026-07-28T12:25:36-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-24T05:46:57.869Z",
+    "generated_at": "2026-07-30T05:37:14.530Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,33 +88,29 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你有多个互不依赖的任务时，Claude 会同时派出多个子代理分别处理，每个子代理只专注于自己的任务，最后汇总结果。",
-    "when": "当你遇到 3 个以上测试文件失败且原因不同，或多个子系统独立故障时触发。",
+    "what": "当你有多个互相独立的失败或任务时，Claude 会将每个问题分派给不同的子代理并行处理，每个子代理有独立的上下文，专注于自己的任务，最后返回各自的发现和修复总结。",
+    "when": "当你面对3个以上独立根因的测试失败、多个子系统独立故障，且每个问题无需其他上下文、无共享状态时触发。",
     "say": [
       {
-        "text": "帮我同时修复这三个测试文件的失败用例。",
-        "note": "Claude 会并行派出子代理分别处理每个文件。"
-      },
-      {
-        "text": "并行调查子系统A、B、C的独立故障。",
-        "note": "每个子系统由单独的子代理负责。"
+        "text": "前端白屏和后端超时是独立问题，各派一个代理分别排查。",
+        "note": "两个任务无共享状态，并行提高效率。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:fff328fc3785c25e4eccbcf17395f1769302ee2b3d6f626b802776a6ed89389f",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-24T05:49:50.915Z",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-07-30T05:42:44.666Z",
     "lint_pass": true,
-    "what_en": "When you have multiple independent tasks, Claude dispatches several sub-agents in parallel, each focusing on its own task, then integrates results.",
-    "when_en": "Triggered when you have 3+ test file failures with different root causes, or multiple independently broken subsystems.",
+    "what_en": "When you have multiple independent failures or tasks, Claude dispatches each problem to a specialized sub-agent with isolated context. All sub-agents work in parallel, focusing on their own task, and return summaries of their findings and fixes.",
+    "when_en": "Triggered when you face 3+ test failures with different root causes, multiple independently broken subsystems, and each problem can be understood without context from others, with no shared state.",
     "say_en": [
       {
-        "text": "Fix the failing tests in these three files simultaneously.",
-        "note": "Claude dispatches parallel sub-agents for each file."
+        "text": "Fix these three test files in parallel: abort.test.ts, batch.test.ts, approval.test.ts.",
+        "note": "Three independent tasks can run concurrently."
       },
       {
-        "text": "Investigate independent failures in subsystems A, B, and C in parallel.",
-        "note": "Each subsystem gets its own sub-agent."
+        "text": "White screen and backend timeout are separate issues, assign one agent each.",
+        "note": "No shared state, parallel execution boosts efficiency."
       }
     ]
   }

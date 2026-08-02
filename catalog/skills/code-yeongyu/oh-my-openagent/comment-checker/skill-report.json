@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "ace13396a4b9aedcd334c1f4f0897c867a41de5d",
+    "upstream_commit": "9c30f2e2011ab52443859bd3cada95ae3ccf978d",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 66743,
+    "stars_github": 66965,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-29T05:46:43.900Z",
+    "fetched_at": "2026-08-01T05:51:04.410Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-29T14:18:58+09:00",
-    "repo_skill_count": 47
+    "upstream_commit_at": "2026-08-01T01:26:12+09:00",
+    "repo_skill_count": 48
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-29T05:46:43.900Z",
+    "generated_at": "2026-08-01T05:51:04.410Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,33 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 在成功编辑代码后，如果注释检查器发现警告，会收到反馈并需要先修复或解释这些警告，然后才能继续工作。",
-    "when": "当 Claude 执行完 apply_patch、write、edit 等编辑操作后，且注释检查器报告警告时触发。",
+    "what": "装上后,Claude 每次用编辑类工具成功改完文件,若自动评论检查器报出警告,它会先修复或解释被标记的注释再继续。",
+    "when": "在 apply_patch、write、edit 等编辑操作成功后被触发,此时评论检查器的反馈会作为阻塞信息交给 Claude。",
     "say": [
       {
-        "text": "检查我刚刚改的代码注释有没有问题。",
-        "note": "Claude 会触发注释检查并告诉你结果。"
+        "text": "修复刚才改的代码里被标记的注释",
+        "note": "会让 Claude 处理检查器报出的评论问题。"
       },
       {
-        "text": "帮我解释一下这个注释检查警告。",
-        "note": "Claude 会查看警告并给出解释。"
+        "text": "解释一下这段注释为什么这样写",
+        "note": "如果警告可接受,它会说明理由。"
+      },
+      {
+        "text": "把代码里的 TODO 注释按规范改清楚",
+        "note": "触发检查器后让它调整注释格式。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-29T05:52:58.387Z",
+    "generated_at": "2026-08-01T05:57:39.142Z",
     "lint_pass": true,
-    "what_en": "After installation, when Claude successfully edits code and the comment checker reports a warning, Claude receives feedback and must fix or explain the flagged comment before proceeding.",
-    "when_en": "Triggered when Claude completes an edit action (e.g., apply_patch, write, edit) and the comment checker emits a warning.",
+    "what_en": "After installation, whenever Claude successfully modifies a file with edit tools, if the automatic comment checker reports a warning, it will fix or explain the flagged comment before continuing.",
+    "when_en": "Triggered after successful edit operations such as apply_patch, write, edit, etc., when the comment checker's feedback is passed to Claude as blocking input.",
     "say_en": [
       {
-        "text": "Check the comments in my recent code edit for issues.",
-        "note": "Claude runs the checker and reports findings."
+        "text": "Fix the flagged comments in the code you just changed.",
+        "note": "Claude will address the checker's warnings."
       },
       {
-        "text": "Explain this comment checker warning.",
-        "note": "Claude reviews the warning and provides an explanation."
+        "text": "Explain why this comment is written this way.",
+        "note": "If acceptable, it will provide reasoning."
+      },
+      {
+        "text": "Clean up TODO comments in the code per conventions.",
+        "note": "Trigger the checker to adjust comment style."
       }
     ]
   }

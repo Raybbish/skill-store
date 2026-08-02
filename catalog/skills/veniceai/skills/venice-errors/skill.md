@@ -51,7 +51,7 @@ Returned when a prompt trips content policy. `suggested_prompt` (a model-provide
 
 ### 4. `X402InferencePaymentRequired` — 402 on x402 inference calls
 
-Returned only when the caller authenticated with **SIWE** and has insufficient credit. Discriminated by `code: "PAYMENT_REQUIRED"`.
+Returned only when the caller authenticated with **SIWX** and has insufficient credit. Discriminated by `code: "PAYMENT_REQUIRED"`.
 
 ```json
 {
@@ -61,10 +61,10 @@ Returned only when the caller authenticated with **SIWE** and has insufficient c
   "suggestedTopUpUsd": 10,
   "minimumTopUpUsd": 5,
   "supportedTokens": ["USDC"],
-  "supportedChains": ["base"],
+  "supportedChains": ["base", "solana"],
   "topUpInstructions": {
     "step1": "POST /api/v1/x402/top-up with no payment header to get payment requirements",
-    "step2": "Sign a USDC transfer authorization using the x402 SDK (createPaymentHeader)",
+    "step2": "Choose a payment option from accepts and sign a USDC transfer authorization using the x402 SDK (createPaymentHeader)",
     "step3": "POST /api/v1/x402/top-up with the signed X-402-Payment header",
     "receiverWallet": "<RECEIVER_WALLET_ADDRESS>",
     "tokenAddress": "<USDC_TOKEN_ADDRESS>",
@@ -72,9 +72,12 @@ Returned only when the caller authenticated with **SIWE** and has insufficient c
     "network": "eip155:8453",
     "minimumAmountUsd": 5
   },
-  "siwxChallenge": { ... SIWE template ... }
+  "siwxChallenge": { ... SIWX template + supportedChains ... }
 }
 ```
+
+`topUpInstructions` describes the Base rail only, even when `supportedChains`
+includes Solana. Read `accepts[]` from `POST /x402/top-up` to pay on Solana.
 
 The `PAYMENT-REQUIRED` response header carries a base64-encoded x402 v2 `paymentRequired` **object** (`x402Version`, `error`, `resource`, `accepts[]`, optional `extensions`) — it is **not** the same JSON as the body. Protocol-level clients parse the header; human-facing clients parse the richer body. See [`venice-x402`](../venice-x402/SKILL.md).
 
@@ -201,7 +204,7 @@ When present on a response, keep the `X-Request-ID` header. Include it in suppor
 
 ## Common gotchas
 
-- A `402` from `/x402/top-up` with no `X-402-Payment` header is the **expected discovery** response, not an error. See [`venice-x402`](../venice-x402/SKILL.md).
+- A `402` from `/x402/top-up` with no `PAYMENT-SIGNATURE` header is the **expected discovery** response, not an error. See [`venice-x402`](../venice-x402/SKILL.md).
 - A `500` on `/chat/completions` with a huge file upload often means the upstream model chose to abort — reduce `max_tokens` / image size rather than blindly retrying.
 - `429` on `/crypto/rpc/{network}` may mean the **24-hour credit cap** tripped, not the per-minute one. Check `customMessage`.
 - `DetailedError.details` is a Zod `_errors` tree, not a flat map. Walk it recursively.

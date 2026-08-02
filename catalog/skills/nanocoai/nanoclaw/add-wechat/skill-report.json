@@ -5,7 +5,7 @@
     "name": "add-wechat",
     "description": "Add WeChat (personal) channel integration via Tencent's official iLink Bot API. Uses long-polling and QR scan — no webhook, no ToS risk, no paid token.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-wechat",
-    "upstream_commit": "879835bf8bb882672742f0765747312c4948420f",
+    "upstream_commit": "87175bdb89ad27f50a557c23b141648de1919787",
     "content_hash": "sha256:604f4f7966c47970e2c94403f4ddd5ad2d92ff2db89894dc9f8f2d474d963908",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30380,
+    "stars_github": 30404,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-27T06:23:57.317Z",
+    "fetched_at": "2026-08-01T05:51:21.442Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-26T18:23:04+03:00",
+    "upstream_commit_at": "2026-07-31T23:28:03+02:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-27T06:23:57.317Z",
+    "generated_at": "2026-08-01T05:51:21.442Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,33 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上该技能并完成设置后，Claude 可以接收微信个人账号的消息并自动回复。设置过程包括扫码登录和绑定消息组。",
-    "when": "当微信用户向机器人账号发送消息时，且频道已启用、扫码登录完成、消息组已绑定 agent 组，Claude 会收到消息并处理。",
+    "what": "装上后,微信个人号就接入智能体:扫码登录后,微信里收到的消息会自动转发给绑定的智能体组,智能体的回复会发回微信。无需配置 webhook。",
+    "when": "当你在 .env 中设置 WECHAT_ENABLED=true 并重启服务、用手机扫码完成登录,且有人给这个机器人账号发消息时触发。陌生人首条消息可能先弹审批卡片。",
     "say": [
       {
-        "text": "如果我在微信上发消息，你会回复吗？",
-        "note": "Claude会回复收到的微信消息"
+        "text": "你好,能收到这条消息吗?",
+        "note": "发送后若连接正常,智能体会回复。"
       },
       {
-        "text": "请把微信上陌生人发来的消息先给我审批",
-        "note": "设置request_approval策略"
+        "text": "帮我查一下明天的天气",
+        "note": "消息会进入智能体处理并回复。"
+      },
+      {
+        "text": "在吗?我想聊聊项目进度",
+        "note": "作为陌生用户首条消息,可能触发审批。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:604f4f7966c47970e2c94403f4ddd5ad2d92ff2db89894dc9f8f2d474d963908",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-27T06:34:32.078Z",
+    "generated_at": "2026-08-01T06:13:01.476Z",
     "lint_pass": true,
-    "what_en": "After installation and configuration, Claude can receive messages from personal WeChat accounts and reply automatically. Setup includes QR code login and wiring the messaging group to an agent group.",
-    "when_en": "Triggered when a WeChat user sends a message to the bot account, provided the channel is enabled, QR login completed, and the messaging group is wired to an agent group.",
+    "what_en": "After installation, WeChat personal accounts become a channel: scan a QR to log in, then messages received in WeChat are forwarded to the configured agent group, and replies go back to WeChat. No webhook needed.",
+    "when_en": "Triggered when WECHAT_ENABLED=true is set in .env, the service restarts, and a message is sent to the bot account via WeChat. If the sender is a stranger and policy is request_approval, an approval card appears first.",
     "say_en": [
       {
-        "text": "Will you reply if I send you a message on WeChat?",
-        "note": "Claude will reply to incoming WeChat messages."
+        "text": "Hi, can you receive this message?",
+        "note": "If connected, the agent will reply."
       },
       {
-        "text": "Please require my approval for messages from unknown WeChat users.",
-        "note": "Sets sender policy to request_approval."
+        "text": "Help me check tomorrow's weather.",
+        "note": "The message goes to the agent and gets a reply."
+      },
+      {
+        "text": "Are you there? Let's talk about the project.",
+        "note": "As a first message from a stranger, it may trigger approval."
       }
     ]
   }

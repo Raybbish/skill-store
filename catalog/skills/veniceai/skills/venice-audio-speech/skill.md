@@ -1,6 +1,6 @@
 ---
 name: venice-audio-speech
-description: Generate speech from text via POST /audio/speech. Covers TTS models (Kokoro, Qwen 3, xAI, Inworld, Chatterbox, Orpheus, ElevenLabs Turbo, MiniMax, Gemini Flash), voices per family, output formats (mp3/opus/aac/flac/wav/pcm), streaming, prompt/emotion styling, temperature/top_p, and language hints.
+description: Generate speech from text via POST /audio/speech, and clone a voice via POST /audio/voices. Covers TTS models (Kokoro, Qwen 3, xAI, Inworld, Chatterbox, Orpheus, ElevenLabs Turbo, MiniMax, Gemini Flash, Gradium), voices per family, cloned-voice handles, output formats (mp3/opus/aac/flac/wav/pcm), streaming, prompt/emotion styling, temperature/top_p, and language hints.
 ---
 
 # Venice TTS (`/audio/speech`)
@@ -40,7 +40,7 @@ Response is the raw audio (`Content-Type` matches `response_format`).
 |---|---|---|---|
 | `input` | string | — | **Required.** Up to **4096** characters. |
 | `model` | enum | `tts-kokoro` (OpenAPI schema default) | See model list below. `tts-xai-v1` is the recommended frontier default; pick the model that fits your voice + language needs. |
-| `voice` | enum | model-specific (e.g. `eve` for `tts-xai-v1`) | **Voice is model-specific** — wrong combo = `400`. See voice families. |
+| `voice` | string, ≤ 512 | model-specific (e.g. `eve` for `tts-xai-v1`) | **Voice is model-specific** — wrong combo = `400`. See voice families. Also accepts a cloned-voice handle (`vv_…`) from `POST /audio/voices`, paired with the same `model` that created it. |
 | `response_format` | `mp3` / `opus` / `aac` / `flac` / `wav` / `pcm` | `mp3` | `pcm` returns 24 kHz signed-16 LE for pipelines. |
 | `speed` | number | `1.0` | Range `0.25–4.0`. |
 | `streaming` | bool | `false` | `true` → streamed sentence-by-sentence as audio continues to generate. |
@@ -60,8 +60,9 @@ Response is the raw audio (`Content-Type` matches `response_format`).
 | `tts-chatterbox-hd` | Chatterbox | HD voices (Aurora, Blade, …), temperature. |
 | `tts-orpheus` | Orpheus | Conversational (tara, leah, jess, leo, …), temperature. |
 | `tts-elevenlabs-turbo-v2-5` | ElevenLabs Turbo | Rachel, Aria, Charlotte, Roger, … |
-| `tts-minimax-speech-02-hd` | MiniMax | WiseWoman, DeepVoiceMan, … |
+| `tts-minimax-speech-02-hd` | MiniMax | WiseWoman, DeepVoiceMan, … Supports **persistent** voice cloning. |
 | `tts-gemini-3-1-flash` | Gemini Flash | Star-named voices (Achernar, Achird, Zephyr, …). |
+| `tts-gradium-v1` | Gradium | Multilingual across en/de/es/fr/pt, where the **voice picks the language** (there is no separate language parameter). Proprietary upstream, so `capabilities.private` is `false`. |
 
 Always inspect the entry for your model in `GET /models?type=tts` — `model_spec.voices` is the authoritative voice list. Per-model toggles like `supportsPromptParam`, `supportsTemperatureParam`, `supportsTopPParam` live on the internal model definitions but are not currently exposed on `/models` — treat the request schema below (`instructions`, `temperature`, `top_p`) as the support matrix.
 
@@ -74,15 +75,45 @@ Always inspect the entry for your model in `GET /models?type=tts` — `model_spe
   - `ff_*`, `hf_*`, `hm_*`, `if_*`, `im_*`, `jf_*`, `jm_*`, `pf_*`, `pm_*`, `ef_*`, `em_*` — French, Hindi, Italian, Japanese, Portuguese, Spanish
   - Examples: `af_sky`, `af_bella`, `am_adam`, `bm_george`, `zf_xiaoxiao`
 - **Qwen 3** — `Vivian`, `Serena`, `Ono_Anna`, `Sohee`, `Uncle_Fu`, `Dylan`, `Eric`, `Ryan`, `Aiden`
-- **xAI** — `eve`, `ara`, `rex`, `sal`, `leo`
+- **xAI** — 26 voices. Original five: `eve`, `ara`, `rex`, `sal`, `leo`. Flagship multilingual set: `altair`, `atlas`, `carina`, `castor`, `celeste`, `cosmo`, `helios`, `helix`, `iris`, `kepler`, `lumen`, `luna`, `lux`, `naksh`, `orion`, `perseus`, `rigel`, `sirius`, `ursa`, `zagan`, `zenith`
 - **Orpheus** — `tara`, `leah`, `jess`, `mia`, `zoe`, `dan`, `zac`
 - **Inworld** — `Craig`, `Ashley`, `Olivia`, `Sarah`, `Elizabeth`, `Priya`, `Alex`, `Edward`, `Theodore`, `Ronald`, `Mark`, `Hades`, `Luna`, `Pixie`
 - **Chatterbox** — `Aurora`, `Britney`, `Siobhan`, `Vicky`, `Blade`, `Carl`, `Cliff`, `Richard`, `Rico`
 - **ElevenLabs Turbo** — `Rachel`, `Aria`, `Laura`, `Charlotte`, `Alice`, `Matilda`, `Jessica`, `Lily`, `Roger`, `Charlie`, `George`, `Callum`, `River`, `Liam`, `Will`, `Chris`, `Brian`, `Daniel`, `Bill`
 - **MiniMax** — `WiseWoman`, `FriendlyPerson`, `InspirationalGirl`, `CalmWoman`, `LivelyGirl`, `LovelyGirl`, `SweetGirl`, `ExuberantGirl`, `DeepVoiceMan`, `CasualGuy`, `PatientMan`, `YoungKnight`, `DeterminedMan`, `ImposingManner`, `ElegantMan`
 - **Gemini 3 Flash** — star names: `Achernar`, `Achird`, `Algenib`, `Algieba`, `Alnilam`, `Aoede`, `Autonoe`, `Callirrhoe`, `Charon`, `Despina`, `Enceladus`, `Erinome`, `Fenrir`, `Gacrux`, `Iapetus`, `Kore`, `Laomedeia`, `Leda`, `Orus`, `Pulcherrima`, `Puck`, `Rasalgethi`, `Sadachbia`, `Sadaltager`, `Schedar`, `Sulafat`, `Umbriel`, `Vindemiatrix`, `Zephyr`, `Zubenelgenubi`
+- **Gradium** — the voice selects the language. English: `Emma` (default), `Kent`, `Eva`, `Jack`. German: `Mia`, `Maximilian`. Spanish: `Valentina`, `Sergio`. French: `Elise`, `Leo`. Portuguese: `Alice`, `Davi`
 
 Pass a voice that isn't in the chosen model's list and you get `400`.
+
+## Voice cloning — `POST /audio/voices`
+
+Clone a voice from an audio sample and get back a handle (`vv_…`) you can pass
+as `voice` on `/audio/speech`. `multipart/form-data` only.
+
+```bash
+curl https://api.venice.ai/api/v1/audio/voices \
+  -H "Authorization: Bearer $VENICE_API_KEY" \
+  -F "model=tts-chatterbox-hd" \
+  -F "file=@sample.wav"
+```
+
+| Field | Notes |
+|---|---|
+| `file` | The voice sample, multipart field name `file`. Accepted containers depend on the model. Aim for a clean speech recording of at least 5–10 seconds. |
+| `model` | `tts-chatterbox-hd` (default) or `tts-minimax-speech-02-hd`. |
+
+| Model | Containers | Persistence | Availability |
+|---|---|---|---|
+| `tts-chatterbox-hd` | MP3, WAV, FLAC, M4A | **Zero-shot.** No voice template is derived; the reference audio is stored with a TTL and re-read on every synthesis call. Handles expire after **7 days**, full stop. | Regular users. |
+| `tts-minimax-speech-02-hd` | MP3, WAV only | **Persistent.** The provider derives a voice template that survives across calls. Auto-deleted after **7 days without use**; each successful TTS request resets the window. | Limited access — contact support@venice.ai to have it enabled. |
+
+A handle is bound to the model that created it. Pass a `vv_…` handle with a
+different `model` on `/audio/speech` and the call fails.
+
+Samples in a container outside the per-model allowlist are rejected with `400`
+before anything is uploaded. Beyond the shared TTS error codes, this endpoint
+also returns `403` and `413` (sample too large).
 
 ## Streaming
 
@@ -150,3 +181,5 @@ For other families, emotion comes from the **voice choice itself** (e.g. Inworld
 - `streaming: true` + SDKs: some OpenAI SDK versions don't expose streaming for `audio.speech.create`; call the REST endpoint directly and consume the HTTP body.
 - `speed` compounds with model internal speech rate — extreme values (`0.25`, `4.0`) often sound unnatural; keep within `0.8–1.3` for narration.
 - Voice names are case-sensitive (`eve` ≠ `EVE`, `af_sky` ≠ `AF_SKY`).
+- Cloned voices expire. Chatterbox handles die 7 days after creation no matter what; MiniMax handles die after 7 days of no use. Re-clone rather than assuming a handle you stored last month still resolves.
+- Gradium has no `language` parameter. Pick the voice for the language you want.
