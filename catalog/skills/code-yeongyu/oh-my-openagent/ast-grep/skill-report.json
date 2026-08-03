@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "b072d279110bdda2c6ac2525d0d24dc54d16148a",
+    "upstream_commit": "967615cbf8865af47bb5fb1e931bb995872f5871",
     "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
     "license": "MIT",
     "hosting": "mirrored",
@@ -20,11 +20,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67012,
+    "stars_github": 67081,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-02T05:51:36.316Z",
+    "fetched_at": "2026-08-03T06:16:03.744Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-01T09:26:37Z",
+    "upstream_commit_at": "2026-08-03T14:05:17+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-02T05:51:36.316Z",
+    "generated_at": "2026-08-03T06:16:03.744Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -111,26 +111,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,当你想按代码结构(而不是纯文本)查找或改写代码时,Claude 会改用 ast-grep(sg) 工具。它可以按函数、调用、类、import 等形状找代码,也能批量改写,比如把 console.log 换成 logger.info、去掉 as any、把 require() 改成 import、找空 catch 块等。它自带一个 helper 脚本,会先校验模式、默认先模拟再真正修改。",
-    "when": "当你提出的问题跟代码结构有关,例如“找出所有带 Request 参数的函数”“把所有 console.log(x) 改成 logger.info(x)”,或要求扫描/应用 YAML 规则时;涉及字符串内容、注释、文件名等纯文本问题时则用 grep/rg。",
+    "what": "装好后，Claude 能按代码结构而非文本来搜索和改写代码，支持 25 种语言。可查找特定形状的代码、批量替换写法（如 console.log 改 logger.info），并先预览改动、统计受影响文件数。",
+    "when": "当你要求按代码结构查找或改写时触发，例如“找出所有带某参数的函数”“把 console.log 换成 logger.info”“去掉 as any 断言”。纯文本搜索（如字符串、注释）不会触发。",
     "say": [
       {
-        "text": "找出所有接收 Request 参数的函数",
-        "note": "会按语法树搜索,而不是按文字匹配"
+        "text": "查找所有接收 Request 参数的函数",
+        "note": "按AST结构搜索，返回文件位置和匹配数"
       },
       {
-        "text": "把仓库里所有 console.log(x) 改成 logger.info(x)",
-        "note": "先给预览,确认后才真正改写"
+        "text": "把项目里 console.log(x) 都改成 logger.info(x)",
+        "note": "先预览改动，确认后再应用"
       },
       {
-        "text": "去掉所有 as any 类型断言",
-        "note": "按结构匹配并批量移除"
+        "text": "扫描并应用 rules 目录的 YAML 规则",
+        "note": "运行代码检查并输出违规位置"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-02T06:00:37.453Z",
-    "lint_pass": false
+    "generated_at": "2026-08-03T06:22:21.092Z",
+    "lint_pass": true,
+    "what_en": "After installation, Claude can search and rewrite code by structure, not text, across 25 languages. It finds code shapes, batch-replaces patterns (e.g., console.log to logger.info), previews changes, and reports affected file counts.",
+    "when_en": "Triggers on structural code search/rewrite requests, e.g., find functions with a given parameter, rewrite console.log to logger.info, strip as any. Plain-text searches (strings, comments) don't trigger it.",
+    "say_en": [
+      {
+        "text": "Find all functions that take a Request parameter",
+        "note": "Searches by AST structure, returns locations and match counts."
+      },
+      {
+        "text": "Rewrite console.log(x) to logger.info(x) in the repo",
+        "note": "Previews changes first; applies only after confirmation."
+      },
+      {
+        "text": "Scan and apply YAML rules in the rules directory",
+        "note": "Runs code checks and reports violations."
+      }
+    ]
   }
 }
