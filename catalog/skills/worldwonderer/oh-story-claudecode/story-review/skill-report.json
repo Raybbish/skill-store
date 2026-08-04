@@ -5,7 +5,7 @@
     "name": "story-review",
     "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/story-review、/审查、「审查一下」「帮我审一下」。",
     "upstream": "https://github.com/worldwonderer/oh-story-claudecode/tree/main/skills/story-review",
-    "upstream_commit": "8aaa701a783a3065144b2df2faac9fa70e9c8f7b",
+    "upstream_commit": "f7ae18279e0fa22f42a523055901bdde173e2fac",
     "content_hash": "sha256:8cc3287bd9c6fe5abc7e960870f8a89a6e76680f89ab47309df2f0515ad5283e",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 4781,
+    "stars_github": 4932,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-30T05:35:47.731Z",
+    "fetched_at": "2026-08-03T06:17:12.395Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-29T07:02:44-07:00",
+    "upstream_commit_at": "2026-08-02T19:39:45-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-30T05:35:47.731Z",
+    "generated_at": "2026-08-03T06:17:12.395Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -106,33 +106,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会变成故事审查协调器，自动分析小说文本的结构、角色、文字和设定问题，并输出可执行的修改建议。",
-    "when": "当你输入 /story-review、/审查，或说“审查一下”、“帮我审一下”时触发。",
+    "what": "Claude 变身为小说审查协调器:找结构/角色/文字/设定问题,给修改建议。full/lean 并行 spawn 审查 Agent,缺失或失败自动降级 solo;参考文件不可读用内置标准。输出统一 findings。",
+    "when": "用户输入 /story-review、/审查,或说「审查一下」等指令时触发。",
     "say": [
       {
-        "text": "帮我审一下今天写的第一章。",
-        "note": "Claude 会执行默认 full 模式审查。"
+        "text": "审查一下第三章,主要看结构和节奏。",
+        "note": "默认 full 模式,spawn 全部 4 个 Agent。"
       },
       {
-        "text": "/story-review lean 这段对话。",
-        "note": "使用 lean 模式，只审查结构和一致性。"
+        "text": "/story-review lean 帮我审最近改的章节。",
+        "note": "lean 只派结构 + 一致性两个 Agent。"
+      },
+      {
+        "text": "帮我审一下第200到300章,别忘了跨批伏笔。",
+        "note": "会读取追踪/伏笔.md,注入继承的开放项。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:8cc3287bd9c6fe5abc7e960870f8a89a6e76680f89ab47309df2f0515ad5283e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-30T05:43:04.349Z",
+    "generated_at": "2026-08-03T06:37:06.752Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude becomes a story review coordinator that automatically analyzes novel text for structural, character, prose, and setting issues, then outputs actionable improvement suggestions.",
-    "when_en": "Triggered when you enter /story-review, /审查, or say \"审查一下\" or \"帮我审一下\".",
+    "what_en": "Claude becomes a story reviewer: finds structure/character/prose/setting issues and suggests fixes. Full/lean spawns agents in parallel; missing/failed agents fall back to solo. Unreadable refs use embedded rubric; unified findings output.",
+    "when_en": "Triggers when the user enters /story-review, /审查, or says “审查一下” and similar.",
     "say_en": [
       {
-        "text": "Review chapter 1 I wrote today.",
-        "note": "Claude runs default full mode review."
+        "text": "Review chapter 3, focusing on structure and pacing.",
+        "note": "Default full mode spawns all 4 agents."
       },
       {
-        "text": "/story-review lean on this dialogue.",
-        "note": "Uses lean mode for structure and consistency only."
+        "text": "/story-review lean for the chapters I just edited.",
+        "note": "Lean only spawns architect + consistency agents."
+      },
+      {
+        "text": "Review chapters 200 to 300, keep cross-batch foreshadowing hooks in mind.",
+        "note": "Reads tracking notes; injects inherited open items."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "give-me-tips",
     "description": "Explains any senpi tip in depth - startup tips, working tips, and any Tip: line shown in the TUI (including the Fable-5-refusal fallback tip). Use when the user asks about a Tip: line, says give-me-tips, asks what a tip means, how a tipped feature works, or which tips they can see. Queries the live tip list (senpi --list-tips) first, checks what THIS user can actually see, then verifies the real feature code before explaining.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/give-me-tips",
-    "upstream_commit": "b072d279110bdda2c6ac2525d0d24dc54d16148a",
+    "upstream_commit": "967615cbf8865af47bb5fb1e931bb995872f5871",
     "content_hash": "sha256:2a2952cd7c58505d508f45d89a577249186ba833c79bd58368e37dcfb9f61f2d",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67012,
+    "stars_github": 67081,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-02T05:51:36.316Z",
+    "fetched_at": "2026-08-03T06:16:03.744Z",
     "first_seen_at": "2026-07-29T05:46:43.900Z",
-    "upstream_commit_at": "2026-08-01T09:26:37Z",
+    "upstream_commit_at": "2026-08-03T14:05:17+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-02T05:51:36.316Z",
+    "generated_at": "2026-08-03T06:16:03.744Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -85,37 +85,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,当用户问起 senpi 提示(Tip: 行)的含义时,Claude 会先运行 `senpi --list-tips` 获取真实提示列表,并检查该用户的设置确认实际可见的提示,然后阅读相关功能代码,给出深度解释并引用文件路径。",
-    "when": "当用户提到 “Tip:” 行、说 give-me-tips,或询问提示的含义/用法等时触发。",
+    "what": "装上后，Claude 会先运行 `senpi --list-tips` 获取当前可用提示列表，再读取该用户的设置和提示历史，确认你实际能看到的提示，最后查看功能源码，用你的语言给出含文件路径的深度解释；源码与提示文字矛盾时以代码为准。",
+    "when": "当你问界面里某条“Tip:”是什么意思、说“give-me-tips”，或想了解提示对应的功能如何工作时触发。",
     "say": [
       {
-        "text": "give-me-tips,启动提示里说的重试失败那条,具体怎么判断的?",
-        "note": "会先查提示列表再验证代码。"
+        "text": "刚才终端里那条 “Tip:” 讲的是什么？",
+        "note": "Claude 会先查列表，再结合你的配置解释。"
       },
       {
-        "text": "我能看到哪些提示?为什么有些提示不显示?",
-        "note": "Claude 会读设置并说明个人可见范围。"
+        "text": "给我讲讲 give-me-tips 是怎么验证提示的。",
+        "note": "它会说明查询实时列表和源码比对的流程。"
+      },
+      {
+        "text": "Fable 5 拒绝后的那条提示，背后的机制是什么？",
+        "note": "会走专门的 fallback-architect 流程讲解。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2a2952cd7c58505d508f45d89a577249186ba833c79bd58368e37dcfb9f61f2d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-02T06:01:59.644Z",
+    "generated_at": "2026-08-03T06:23:03.755Z",
     "lint_pass": true,
-    "what_en": "After installation, when the user asks about a senpi tip (Tip: line), Claude runs `senpi --list-tips` to get the live tip list, checks the user's settings to see which tips are actually visible, then reads the feature code and explains in depth with file paths.",
-    "when_en": "Triggers when the user mentions a \"Tip:\" line, says give-me-tips, or asks what a tip means / how it works / which tips are visible.",
+    "what_en": "On install, Claude queries `senpi --list-tips`, reads your settings/history to see which tips YOU can see, then verifies the feature code before explaining; it cites file paths, and code wins over tip text.",
+    "when_en": "Triggered when you ask about a “Tip:” line, say “give-me-tips”, or ask how a tipped feature works.",
     "say_en": [
       {
-        "text": "Explain that 'Fable 5 refused' Tip: line - what mechanism is behind it?",
-        "note": "Claude reads the code and explains refusal detection."
+        "text": "What does that “Tip:” line in the terminal mean?",
+        "note": "Claude will check the list and tailor to your config."
       },
       {
-        "text": "give-me-tips, how does the retry-failure startup tip decide what to do?",
-        "note": "It lists tips first, then verifies the code."
+        "text": "Explain how give-me-tips verifies a tip.",
+        "note": "It will describe the live-list lookup and code comparison."
       },
       {
-        "text": "Which tips can I see and why are some missing?",
-        "note": "Claude checks settings and explains your visible set."
+        "text": "What mechanics hide behind the Fable 5 refusal tip?",
+        "note": "It walks through the fallback-architect pipeline."
       }
     ]
   }
