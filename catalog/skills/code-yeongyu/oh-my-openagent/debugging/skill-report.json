@@ -5,7 +5,7 @@
     "name": "debugging",
     "description": "MUST USE for any real runtime debugging across ANY language or binary — crashes, silent failures, wrong responses, stuck processes, memory leaks, async misbehavior, unexplained timing, reverse engineering. Runs a hypothesis-driven loop: form ≥3 hypotheses, investigate in parallel, after 2 failed rounds spawn Oracles from orthogonal angles, confirm root cause, lock with a failing test, fix minimally, QA by actually USING the system, scrub artifacts. The actual HOW lives in `references/` — READ THEM. Triggers: 'debug this', 'why is X not working', 'hanging', 'attach a debugger', 'reverse engineer', 'pwndbg', 'gdb', 'lldb', 'node inspect', 'pdb', 'dlv', 'delve', 'rust-gdb', 'set a breakpoint', 'context window exploded', 'why is the response empty', 'why is this happening', 'trace this bug', 'reproduce and fix', 'silent failure', 'HTTP 200 but empty', 'why did it stop', 'inspect the binary', 'playwright', 'flaky test', 'fails intermittently', 'passes in isolation', 'only fails in CI'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/debugging",
-    "upstream_commit": "967615cbf8865af47bb5fb1e931bb995872f5871",
+    "upstream_commit": "e002fb5809f16dd5f687876ee1ef90517e9f6c24",
     "content_hash": "sha256:7443c1ef7dcda504f7800d0969d6554307a41271e9ed8280008aaef0395fab3a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67081,
+    "stars_github": 67174,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-03T06:16:03.744Z",
+    "fetched_at": "2026-08-04T05:43:27.748Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-03T14:05:17+09:00",
+    "upstream_commit_at": "2026-08-04T12:08:49+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-03T06:16:03.744Z",
+    "generated_at": "2026-08-04T05:43:27.748Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -127,26 +127,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会按一套系统化流程排查程序故障：先阅读配套调试手册，再基于实际运行现象提出至少3个假设并并行验证；失败两次后更换角度继续；确认原因后用失败测试锁定，做最小修复，并实际运行系统验证；最后清理所有调试残留。所有判断以运行时观测为准，不凭读代码猜测。",
-    "when": "当你说“debug this”“why is X not working”等调试指令，或描述程序崩溃、无响应、静默失败、内存泄漏等运行异常时触发。",
+    "what": "它会按假设驱动的流程调试：先同时列出至少三个可能原因并行排查；两轮失败后换角度生成新的调查方向；定位根因后用失败测试锁定，做最小修复，实际运行系统验证，并清理调试产生的文件。调试前先阅读对应运行时和工具的参考文档。",
+    "when": "遇到任何真实的运行时问题（崩溃、静默失败、卡住、内存泄漏等）时触发；或当你说出『debug this』『why is X not working』『reverse engineer』等关键词时也会触发。",
     "say": [
       {
-        "text": "帮我调试这个 Node 服务，它返回空响应",
-        "note": "Claude 会先读 Node 调试参考，再进入排查流程。"
+        "text": "程序崩溃了，帮我用调试流程找根因。",
+        "note": "Claude 会开始按流程排查。"
       },
       {
-        "text": "用 gdb 附加到这个进程，找出崩溃原因",
-        "note": "Claude 会先读原生二进制调试参考，再附加调试器。"
+        "text": "这个接口偶尔返回空，排查静默失败。",
+        "note": "触发技能，并行调查多个假设。"
       },
       {
-        "text": "这个测试只在 CI 失败，帮我排查",
-        "note": "Claude 会先读间歇失败排查参考，再验证假设。"
+        "text": "用 gdb 附加到这个进程，看看卡在哪。",
+        "note": "Claude 会先读运行时参考再操作。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:7443c1ef7dcda504f7800d0969d6554307a41271e9ed8280008aaef0395fab3a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-03T06:22:42.903Z",
-    "lint_pass": true
+    "generated_at": "2026-08-04T05:55:06.637Z",
+    "lint_pass": true,
+    "what_en": "Runs a hypothesis-driven loop: ≥3 hypotheses in parallel, after 2 failed rounds spawns new angles, confirms root cause, locks with a failing test, fixes minimally, QA by using the system, cleans artifacts. Reads runtime/tool references first.",
+    "when_en": "Triggers on any real runtime debugging (crashes, silent failures, hangs, memory leaks, etc.) or when you say keywords like 'debug this', 'why is X not working', 'reverse engineer', etc.",
+    "say_en": [
+      {
+        "text": "The program crashed, use your debugging flow to find the root cause.",
+        "note": "Claude will start the process."
+      },
+      {
+        "text": "This endpoint sometimes returns empty; debug the silent failure.",
+        "note": "Triggers the skill, parallel hypotheses."
+      },
+      {
+        "text": "Attach gdb to this process and see where it hangs.",
+        "note": "Claude reads the runtime reference first."
+      }
+    ]
   }
 }

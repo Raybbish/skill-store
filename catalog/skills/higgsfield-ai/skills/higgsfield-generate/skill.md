@@ -12,13 +12,12 @@ description: |
   sketch", "create a 3D model/GLB", "create a sound effect",
   "make music", "text-to-audio", "create an ad", "make a UGC
   video", "unboxing", "presenter video", "import product from
-  URL", or "analyze video virality". Supports image-to-3D
-  (`multi_image_to_3d`),
-  text-to-audio/music (`seed_audio`), workflow generation
-  (`draw_to_video`, `reframe`), Marketing Studio, and
-  Virality Predictor (`brain_activity`).
+  URL", or "analyze video virality". Supports generic generation,
+  workflows, Marketing Studio, and Virality Predictor.
   Chain with higgsfield-soul-id for face/identity consistency.
-  NOT for: Soul training, photoshoots, cards, explainers (use
+  NOT for: Soul training, brand systems/brandbooks (use
+  higgsfield-brandkit), photoshoots, cards, YouTube thumbnails
+  (use higgsfield-youtube-thumbnail), explainers (use
   higgsfield-video-explainer), playable games/assets (use
   higgsfield-game-generation), or TTS.
 argument-hint: "[prompt-or-analysis-request] [--model <name>] [--image|--video <path-or-id>]"
@@ -76,6 +75,8 @@ If the user says "analyze this video", "score this ad", "evaluate the hook", or 
    - **Seed Audio 1.0** → default audio model for text-to-audio, voice, sound effects, ambience, foley, and music-like audio unless the user names Sonilo/Mirelo.
 
    **Image:**
+   - Complete brand identity, logo system, palette, typography, brandbook, packaging system, signage, or coordinated branded asset suite → use `higgsfield-brandkit` instead.
+   - YouTube thumbnail, Shorts cover, or Instagram video cover → use `higgsfield-youtube-thumbnail` instead.
    - Brand product visual (Pinterest pin, lifestyle, hero banner, ad pack, virtual try-on) → use `higgsfield-product-photoshoot` instead. NOT this skill.
    - Generated product concept / packaging / can / bottle with brand name or label text → GPT Image 2.
    - Branded ad image with avatar + product (Marketing Studio shape) → Marketing Studio Image (see Marketing Studio below)

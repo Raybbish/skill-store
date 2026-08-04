@@ -5,7 +5,7 @@
     "name": "security-research",
     "description": "Team Mode security research skill. Orchestrates 3 vulnerability hunters and 2 PoC engineers to audit a codebase in parallel, prove exploitability, classify root causes, and calibrate severity by actual exploitability. Use for security review, vulnerability research, exploitability audit, pre-release security check, threat model validation, and `/security-research`. Triggers: 'security-research', 'security research', 'security review', 'vulnerability audit', 'exploitability audit', '보안 리뷰', '취약점 감사'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/security-research",
-    "upstream_commit": "967615cbf8865af47bb5fb1e931bb995872f5871",
+    "upstream_commit": "e002fb5809f16dd5f687876ee1ef90517e9f6c24",
     "content_hash": "sha256:c4d006d309db6170594aa2b436d3cf6a0f7273b495939aa9c28308d51a9572c5",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67081,
+    "stars_github": 67174,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-03T06:16:03.744Z",
+    "fetched_at": "2026-08-04T05:43:27.748Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-03T14:05:17+09:00",
+    "upstream_commit_at": "2026-08-04T12:08:49+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-03T06:16:03.744Z",
+    "generated_at": "2026-08-04T05:43:27.748Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,26 +89,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在团队模式下，Claude 会组建 5 人安全审计团队（3 名漏洞猎手、2 名 PoC 工程师）并行审查代码库，用攻击路径验证漏洞是否真实可利用，按 CWE 分类根因，输出严重等级、PoC 和修复建议；缺团队工具时提示先开启 team_mode。",
-    "when": "当用户说出“security-research”“security research”等关键词，或要求做安全审查、漏洞审计等，或使用 /security-research 命令时触发。",
+    "what": "装上后,当进行安全审查时,Claude 会组织一个5人虚拟团队(3名漏洞猎人、2名攻击验证工程师)并行检查代码:先找可疑漏洞,再尝试用最小示例证明能否被利用,最后按实际可利用性定严重性并给出报告(通过/通过但有发现/阻止发布)。",
+    "when": "当你说出“security research”“security review”等关键词,或要求做漏洞审计时触发;需已启用 team mode 并有明确审查目标。",
     "say": [
       {
-        "text": "帮我安全审查当前仓库，找出真实可利用的漏洞。",
-        "note": "猎手会先并行绘制攻击面，再做可利用性验证。"
+        "text": "对当前仓库做 security review。",
+        "note": "启动5人并行安全审计。"
       },
       {
-        "text": "审计 main..feature 这个 diff，把最可疑的漏洞做成 PoC。",
-        "note": "PoC 工程师会复现或证伪候选发现。"
+        "text": "用 vulnerability audit 检查这个PR的diff。",
+        "note": "先找候选漏洞,再验证可利用性。"
       },
       {
-        "text": "对这份 PR 做发布前安全检查，按 CVSS 打分并给修复建议。",
-        "note": "报告会给出 PASS/BLOCK 结论和残余风险。"
+        "text": "发布前安全检查,验证威胁模型。",
+        "note": "生成含结论和残余风险的报告。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c4d006d309db6170594aa2b436d3cf6a0f7273b495939aa9c28308d51a9572c5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-03T06:25:56.804Z",
-    "lint_pass": true
+    "generated_at": "2026-08-04T05:58:18.221Z",
+    "lint_pass": true,
+    "what_en": "After install, for security reviews Claude runs 5 agents (3 hunters, 2 PoC engineers): find candidate flaws, prove exploitability with minimal PoCs, rate severity by real exploitability, issue a PASS / PASS WITH FINDINGS / BLOCK report.",
+    "when_en": "Triggers when you say \"security research\" or \"security review\", or ask for a vulnerability audit. Requires team mode enabled and a clear target.",
+    "say_en": [
+      {
+        "text": "Run a security review on the current repo.",
+        "note": "Starts the 5-agent parallel audit."
+      },
+      {
+        "text": "Use vulnerability audit on this PR's diff.",
+        "note": "Hunts candidates, then validates exploitability."
+      },
+      {
+        "text": "Do a pre-release security check of the threat model.",
+        "note": "Outputs verdict and residual-risk report."
+      }
+    ]
   }
 }
