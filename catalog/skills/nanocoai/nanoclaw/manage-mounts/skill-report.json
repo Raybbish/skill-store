@@ -5,7 +5,7 @@
     "name": "manage-mounts",
     "description": "Configure which host directories agent containers can access. View, add, or remove mount allowlist entries. Triggers on \"mounts\", \"mount allowlist\", \"agent access to directories\", \"container mounts\".",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/manage-mounts",
-    "upstream_commit": "86017fffd09377467d9d8633ed27111ea1b1760a",
+    "upstream_commit": "8d04fde18fe071ce0b4870dc3094b66e2a29dcfe",
     "content_hash": "sha256:0dddca0c1e5768b6a50e258950e80c53ad13d08ccc74b89a823519ca033aec07",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30423,
+    "stars_github": 30433,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-04T05:43:40.101Z",
+    "fetched_at": "2026-08-05T05:42:18.204Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-03T19:22:47+03:00",
+    "upstream_commit_at": "2026-08-04T11:14:32+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-04T05:43:40.101Z",
+    "generated_at": "2026-08-05T05:42:18.204Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,22 +89,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 能查看、添加、移除或清空挂载白名单（~/.config/nanoclaw/mount-allowlist.json），即允许 agent 容器访问的主机目录列表。它会显示每个目录是只读还是读写；添加时验证路径存在并询问读写权限，移除时先展示现有条目让用户选择。",
-    "when": "当用户提到 “mounts”“mount allowlist”“container mounts” 等关键词，或要求配置 agent 容器能访问哪些主机目录时触发。",
+    "what": "这个技能让 Claude 管理主机目录访问列表：查看允许容器访问的目录及读写权限，添加或移除目录。修改后新容器自动生效，无需重启服务。",
+    "when": "当你说出“mounts”、“mount allowlist”等触发词，或要求配置代理容器对目录的访问权限时触发。",
     "say": [
       {
-        "text": "帮我看看当前挂载白名单里有哪些目录？",
-        "note": "显示现有允许列表及读写权限。"
+        "text": "查看当前挂载白名单。",
+        "note": "它会读取配置文件并显示目录和读写权限。"
       },
       {
-        "text": "把 /tmp/data 从白名单里移除。",
-        "note": "展示当前配置并确认删除。"
+        "text": "添加 /data 为容器的可读目录。",
+        "note": "需确认路径存在，默认只读。"
+      },
+      {
+        "text": "把 /tmp 从挂载白名单里移除。",
+        "note": "它会更新配置，下次生成的容器不再访问。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0dddca0c1e5768b6a50e258950e80c53ad13d08ccc74b89a823519ca033aec07",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-04T06:12:51.795Z",
-    "lint_pass": true
+    "generated_at": "2026-08-05T05:59:13.220Z",
+    "lint_pass": true,
+    "what_en": "Manage the mount allowlist for agent containers: view allowed host directories with read-only/read-write status, add or remove entries. New config applies to newly spawned containers automatically; no service restart needed.",
+    "when_en": "Triggers on keywords like 'mounts' or 'mount allowlist', or when the user asks to configure container directory access.",
+    "say_en": [
+      {
+        "text": "Show the current mount allowlist.",
+        "note": "Reads the config and displays directories and permissions."
+      },
+      {
+        "text": "Add /data as a read-only directory for containers.",
+        "note": "Validates path; default is read-only."
+      },
+      {
+        "text": "Remove /tmp from the mount allowlist.",
+        "note": "Updates config; new containers won't access it."
+      }
+    ]
   }
 }

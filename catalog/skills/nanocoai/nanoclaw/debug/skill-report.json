@@ -5,7 +5,7 @@
     "name": "debug",
     "description": "Debug container agent issues. Use when things aren't working, container fails, authentication problems, or to understand how the container system works. Covers logs, session DBs, mounts, and common issues.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/debug",
-    "upstream_commit": "86017fffd09377467d9d8633ed27111ea1b1760a",
+    "upstream_commit": "8d04fde18fe071ce0b4870dc3094b66e2a29dcfe",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30423,
+    "stars_github": 30433,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-04T05:43:40.101Z",
+    "fetched_at": "2026-08-05T05:42:18.204Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-03T19:22:47+03:00",
+    "upstream_commit_at": "2026-08-04T11:14:32+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-04T05:43:40.101Z",
+    "generated_at": "2026-08-05T05:42:18.204Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会先查日志和两个会话数据库,判断消息是否到达容器、回复是否生成,再定位重复实例、认证失败、挂载错误等常见故障,并给出修复命令。",
-    "when": "当容器不工作、容器失败、认证出问题,或你想了解容器系统如何工作时触发。",
+    "what": "遇到容器代理故障时,Claude 会按指南排查:查看日志、查询会话数据库、检查挂载配置,并定位常见问题(如重复实例、认证失败、容器未启动)的根因,给出修复步骤。",
+    "when": "当容器运行异常、失败或出现认证问题等,或想弄懂其工作原理时。",
     "say": [
       {
-        "text": "容器起不来,帮我查下 nanoclaw 日志和会话数据库。",
-        "note": "Claude 会检查日志和数据库状态。"
+        "text": "容器启动就退出,帮我查下原因。",
+        "note": "Claude 会查日志和会话DB,定位退出码。"
       },
       {
-        "text": "消息发不出去,看看是不是有重复服务实例在跑。",
-        "note": "Claude 会检查进程并给出停用命令。"
+        "text": "看看 inbound 和 outbound 数据库里有没有消息记录。",
+        "note": "判断消息是否到达容器、是否生成回复。"
       },
       {
-        "text": "帮我把这个 agent 组的容器全部重启。",
-        "note": "会执行 ncl groups restart。"
+        "text": "为什么消息已投递但没送达?查一下适配器。",
+        "note": "对应常见问题1:重复实例导致消息丢失。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-04T06:12:37.683Z",
+    "generated_at": "2026-08-05T05:59:12.516Z",
     "lint_pass": true,
-    "what_en": "Claude first checks logs and the two session DBs to see if messages reached the container and if replies were produced, then identifies common failures (duplicate instances, auth errors, mount issues) and offers fixes.",
-    "when_en": "Triggers when a container isn't working, fails, has auth problems, or when you want to understand how the container system works.",
+    "what_en": "On container agent issues, Claude inspects logs, queries session DBs, checks mount configurations, identifies root causes of common problems (duplicate instances, auth failures, container not replying), and suggests fixes.",
+    "when_en": "Triggered when containers misbehave, fail, or show auth errors, or when you want to understand how the container system works.",
     "say_en": [
       {
-        "text": "Container won't start; check the nanoclaw logs and session DBs.",
-        "note": "Claude inspects logs and DB status."
+        "text": "The container exits right after start; find out why.",
+        "note": "Claude checks logs and session DBs for the exit code."
       },
       {
-        "text": "Messages aren't going out; check for duplicate service instances.",
-        "note": "Claude checks processes and suggests stopping the stale one."
+        "text": "Check the inbound and outbound DBs for message records.",
+        "note": "Shows whether messages arrived and replies were generated."
       },
       {
-        "text": "Restart all containers for this agent group.",
-        "note": "Runs ncl groups restart."
+        "text": "Messages show delivered but were never sent; check the adapter.",
+        "note": "Addresses duplicate-instance message loss."
       }
     ]
   }

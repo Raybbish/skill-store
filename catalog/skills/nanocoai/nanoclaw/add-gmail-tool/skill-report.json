@@ -5,7 +5,7 @@
     "name": "add-gmail-tool",
     "description": "Add Gmail as an MCP tool (read, search, send, label, draft) using OneCLI-managed OAuth. The agent gets Gmail tools in every enabled group; OneCLI injects real tokens at request time so no raw credentials are ever in the container or on disk in usable form.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-gmail-tool",
-    "upstream_commit": "86017fffd09377467d9d8633ed27111ea1b1760a",
+    "upstream_commit": "8d04fde18fe071ce0b4870dc3094b66e2a29dcfe",
     "content_hash": "sha256:8cfe0a3a982e42c030d6a8c9f2f2df7b7b5157eb286a7c107f82d29d9731f587",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30423,
+    "stars_github": 30433,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-04T05:43:40.101Z",
+    "fetched_at": "2026-08-05T05:42:18.204Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-03T19:22:47+03:00",
+    "upstream_commit_at": "2026-08-04T11:14:32+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-04T05:43:40.101Z",
+    "generated_at": "2026-08-05T05:42:18.204Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -95,38 +95,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 获得一组 Gmail 工具,可以搜索、读取、发送、草拟、删除、打标签邮件,还能管理标签和过滤器。实际 OAuth 令牌由 OneCLI 在请求时注入,容器内只有占位凭据。",
-    "when": "当用户让 Claude 处理 Gmail 相关任务,比如搜索或读取邮件、发信、管理标签等,就会调用对应工具;首次调用可能需等 MCP 服务器启动和令牌交换。",
+    "what": "把 Gmail 接进 Claude:之后它能搜索、阅读、发送和起草邮件,还能管理标签和过滤器。真实密钥由 OneCLI 保管,运行时才注入,环境里不存真实凭证。",
+    "when": "这技能要人工装一次;装好后,你在对话里让 Claude 搜邮件、发信、整理标签等,就会调用 Gmail 工具。第一次调用要等一两秒。",
     "say": [
       {
-        "text": "列出我的 Gmail 标签。"
+        "text": "搜索我的收件箱,找上个月的发票。",
+        "note": "Claude 会调用 Gmail 搜索工具查收件箱。"
       },
       {
-        "text": "搜索收件箱里上个月的发票。"
+        "text": "列出我的 Gmail 标签。",
+        "note": "Claude 会调用标签工具,返回你的标签列表。"
       },
       {
-        "text": "给 Alex 发一封邮件,主题是“项目进度”。"
+        "text": "帮我给李雷发一封邮件,约下周三下午开会。",
+        "note": "Claude 会调用发送邮件工具。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:8cfe0a3a982e42c030d6a8c9f2f2df7b7b5157eb286a7c107f82d29d9731f587",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-04T06:10:23.676Z",
+    "generated_at": "2026-08-05T05:57:43.192Z",
     "lint_pass": true,
-    "what_en": "After install, Claude gains Gmail tools for search, read, send, draft, delete, label, and manage labels/filters. OneCLI injects the real OAuth token at request time; the container only holds placeholder credentials.",
-    "when_en": "When the user asks Claude to do a Gmail task, e.g. search/read emails, send a message, or manage labels; the first call may need a moment for MCP startup and token exchange.",
+    "what_en": "Adds Gmail to Claude via an MCP server: search, read, draft and send emails, manage labels and filters. OneCLI holds the real OAuth tokens; the container only sees stubs and tokens get injected at request time.",
+    "when_en": "Triggers when the user asks Claude for Gmail actions — search, read, send, draft, or label. First call may take a couple of seconds while the MCP server starts and OneCLI exchanges tokens.",
     "say_en": [
       {
-        "text": "List my Gmail labels.",
-        "note": "Claude calls the Gmail label tool and shows your labels."
-      },
-      {
         "text": "Search my inbox for invoices from last month.",
-        "note": "Claude uses the search tool to return matching emails."
+        "note": "Claude calls the Gmail search tool."
       },
       {
-        "text": "Send an email to Alex with subject 'Project update'.",
-        "note": "Claude drafts and sends it via the Gmail send tool."
+        "text": "List my Gmail labels.",
+        "note": "Claude calls the label list tool and returns your labels."
+      },
+      {
+        "text": "Send an email to Li Lei about meeting next Wednesday afternoon.",
+        "note": "Claude calls the send-email tool."
       }
     ]
   }
