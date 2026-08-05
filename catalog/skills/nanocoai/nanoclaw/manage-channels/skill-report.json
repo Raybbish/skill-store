@@ -5,7 +5,7 @@
     "name": "manage-channels",
     "description": "Wire channels to agent groups, manage isolation levels, add new channel groups. Use after adding a channel, during setup, or standalone to reconfigure.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/manage-channels",
-    "upstream_commit": "4446b5bde12613ec58289b5a9ac2f5dde947d7e3",
+    "upstream_commit": "86017fffd09377467d9d8633ed27111ea1b1760a",
     "content_hash": "sha256:84f94509f9eaffd09819cfa53071015d7bea46a1eaa5e2e276c81cc12d4470ce",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30405,
+    "stars_github": 30423,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-02T05:51:48.065Z",
+    "fetched_at": "2026-08-04T05:43:40.101Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-01T23:45:44+03:00",
+    "upstream_commit_at": "2026-08-03T19:22:47+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-02T05:51:48.065Z",
+    "generated_at": "2026-08-04T05:43:40.101Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会先读取数据库和配置，把当前渠道分为已接线、已配置未接线、未配置三类；然后用命令把消息渠道（如 Telegram、Slack、WhatsApp）连接到指定的代理组，并设置会话模式、隔离级别和触发方式，最后给出配置摘要。",
-    "when": "在添加新消息渠道后、初始设置期间，或想重新配置渠道与代理组的连接时触发。若实例尚无 owner，会先建议运行 /init-first-agent。",
+    "what": "Claude 会先查看当前渠道与智能体组的连接情况,再按你选择的隔离方式把消息渠道接到指定智能体组,或新增渠道分组;也能调整接线、显示配置摘要,并提醒未完成的首个智能体初始化。",
+    "when": "在搭建系统、刚添加新渠道后,或单独想重新配置渠道接线时触发;例如你要求把某个平台群聊接给某个智能体。",
     "say": [
       {
-        "text": "查一下当前哪些渠道已接线、哪些没接",
-        "note": "展示渠道分类和用户权限"
+        "text": "把 Slack 的 #general 接到我的主 agent 组,会话共享。",
+        "note": "会按你的选择创建接线,并把该频道设为可寻址目标。"
       },
       {
-        "text": "把 Slack 渠道改为按名称模式触发，模式是 (?i)^@bot\\b",
-        "note": "修改该接线的 engage 模式"
+        "text": "给 Telegram 新群开独立 agent,文件夹用 ops。",
+        "note": "会创建独立 agent 组并完成配对接线。"
+      },
+      {
+        "text": "帮我列出已接通、已配置未接通和未配置的渠道。",
+        "note": "Claude 会读取数据库并给出配置摘要。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:84f94509f9eaffd09819cfa53071015d7bea46a1eaa5e2e276c81cc12d4470ce",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-02T06:11:32.243Z",
+    "generated_at": "2026-08-04T06:12:39.809Z",
     "lint_pass": true,
-    "what_en": "Claude reads the DB/config, classifies channels as wired/unwired/not-configured, wires channels to agent groups, sets session mode/isolation/trigger, and shows a summary.",
-    "when_en": "Triggers after adding a channel, during initial setup, or when reconfiguring channel-group wiring. If no owner exists, it suggests /init-first-agent first.",
+    "what_en": "Claude inspects current channel-to-agent wiring, then connects or reconnects messaging channels to agent groups with chosen isolation, adds channel groups, shows config summaries, and flags missing first-agent setup.",
+    "when_en": "Triggered during setup, right after adding a channel, or on demand to reconfigure channel wiring.",
     "say_en": [
       {
-        "text": "Wire Telegram group 12345 to agent group A with agent-shared session mode.",
-        "note": "Creates wiring and updates the DB."
+        "text": "Connect Slack #general to my main agent group with shared session.",
+        "note": "Creates the wiring and makes the channel addressable by name."
       },
       {
-        "text": "Show which channels are wired and which are not.",
-        "note": "Displays channel categories and user roles."
+        "text": "Add a new Telegram group with a separate agent in folder ops.",
+        "note": "Pairs the group and creates a new agent group."
       },
       {
-        "text": "Change Slack wiring to pattern mode with pattern (?i)^@bot\\b.",
-        "note": "Updates the engage mode for that wiring."
+        "text": "List wired, configured-but-unwired, and unconfigured channels.",
+        "note": "Reads the DB and shows a config summary."
       }
     ]
   }

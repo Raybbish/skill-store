@@ -5,7 +5,7 @@
     "name": "add-codex",
     "description": "Use Codex (OpenAI's codex app-server) as a full agent provider — planning, tool orchestration, MCP tools, server-side history, session resume — alongside or instead of Claude. ChatGPT subscription or OpenAI API key, vault-only via OneCLI. Per-group via `ncl groups config update --provider codex`. Distinct from using OpenAI as an MCP tool (where Claude remains the planner).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-codex",
-    "upstream_commit": "4446b5bde12613ec58289b5a9ac2f5dde947d7e3",
+    "upstream_commit": "86017fffd09377467d9d8633ed27111ea1b1760a",
     "content_hash": "sha256:c0e6141e30c2677590e3755a77f575049d57dae06e19c7c68a8b2cb577d90882",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30405,
+    "stars_github": 30423,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-02T05:51:48.065Z",
+    "fetched_at": "2026-08-04T05:43:40.101Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-01T23:45:44+03:00",
+    "upstream_commit_at": "2026-08-03T19:22:47+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-02T05:51:48.065Z",
+    "generated_at": "2026-08-04T05:43:40.101Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，群组可以选择 OpenAI 的 Codex 作为智能体后端，由它负责规划、调用 MCP 工具、管理对话历史与恢复会话，可替代 Claude 或与它并用；切换需手动配置。",
-    "when": "当你在主机上执行 `ncl groups config update --provider codex` 切换到某个群组并重启后，该群组的对话由 Codex 接管；若把默认 provider 设为 codex，新建群组也会自动使用它。",
+    "what": "装上后，NanoClaw 的群组可以把 agent 后端从 Claude 换成 OpenAI 的 Codex（也可并存）。Codex 作为子进程通过 stdio 用 JSON-RPC 通信，支持流式输出、MCP 工具、服务端历史/续聊；密钥只存在 vault，不写入 .env 或容器。",
+    "when": "当操作员在宿主上执行 `ncl groups config update --provider codex` 并重启该组时，该组由 Codex 接管（需先安装并完成 vault 认证；默认仍为 claude，要显式切换）。",
     "say": [
       {
-        "text": "恢复我上次的会话",
-        "note": "Codex 会从服务端续接历史"
+        "text": "安装 add-codex 技能，把 Codex 配成可用的 agent 后端。",
+        "note": "会执行安装脚本并注册 provider。"
       },
       {
-        "text": "用 MCP 工具查一下这个主题",
-        "note": "Codex 会编排工具并返回结果"
+        "text": "把群组 42 的 provider 切到 codex 并重启。",
+        "note": "该组后续对话由 Codex 处理。"
       },
       {
-        "text": "帮我规划这个项目",
-        "note": "Codex 会承担规划工作"
+        "text": "用我的 OpenAI API key 完成 Codex 认证。",
+        "note": "会走 vault 认证流程，不暴露密钥。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c0e6141e30c2677590e3755a77f575049d57dae06e19c7c68a8b2cb577d90882",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-02T06:07:34.413Z",
+    "generated_at": "2026-08-04T06:10:08.784Z",
     "lint_pass": true,
-    "what_en": "After install, groups can select OpenAI's Codex as the agent backend instead of or alongside Claude. Codex handles planning, MCP tool orchestration, server-side conversation history, and session resume. Switching is a manual per-group configuration.",
-    "when_en": "When you run `ncl groups config update --provider codex` for a group and restart it, Codex starts handling that group's conversations. If the instance default is set to codex, newly created groups also use it automatically.",
+    "what_en": "After install, NanoClaw groups can switch their agent backend from Claude to OpenAI's Codex. Codex runs as a child process over stdio (JSON-RPC) with streaming, MCP tools, server-side history/resume. Credentials live only in the vault.",
+    "when_en": "Triggers when an operator runs `ncl groups config update --provider codex` on the host and restarts the group, after the provider is installed and authenticated. New groups stay on claude unless explicitly switched.",
     "say_en": [
       {
-        "text": "Resume my last session",
-        "note": "Codex continues from server history."
+        "text": "Install the add-codex skill and make Codex an available agent backend.",
+        "note": "Runs the setup and registers the provider."
       },
       {
-        "text": "Look up this topic with MCP tools",
-        "note": "Codex orchestrates tools and returns the result."
+        "text": "Switch group 42's provider to codex and restart it.",
+        "note": "That group's future turns use Codex."
       },
       {
-        "text": "Help me plan this project",
-        "note": "Codex takes over planning."
+        "text": "Authenticate Codex with my OpenAI API key.",
+        "note": "Runs the vault auth flow without exposing the key."
       }
     ]
   }
