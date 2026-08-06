@@ -5,7 +5,7 @@
     "name": "histolab",
     "description": "Lightweight WSI tile extraction and preprocessing. Use for basic slide processing, tissue detection, tile extraction, and stain normalization for H&E images. Best for simple pipelines, dataset preparation, and quick tile-based analysis. For advanced spatial proteomics, multiplexed imaging, or deep learning pipelines use pathml.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/histolab",
-    "upstream_commit": "ad21a3868923628330734375dddbf7b86ea84222",
+    "upstream_commit": "d767725c6e93b1d02a220e6be75b261a9833ede5",
     "content_hash": "sha256:5a1b2e631685bef6f667e29fdc3657c0bb3b7cc9bf776bb2cb755d3d50165492",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32287,
+    "stars_github": 32552,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-01T05:51:18.019Z",
+    "fetched_at": "2026-08-04T05:43:36.846Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-31T11:01:54-07:00",
+    "upstream_commit_at": "2026-08-03T10:27:02Z",
     "repo_skill_count": 158,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-01T05:51:18.019Z",
+    "generated_at": "2026-08-04T05:43:36.846Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -102,41 +102,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上这个技能后，Claude 能用 histolab 库处理数字病理全切片图像：自动检测组织区域、从超大扫描图中切出小图块、对 H&E 染色图像做染色归一化，并生成缩略图或评分报告。",
-    "when": "当你说到“组织检测”“切图块”“染色归一化”等关键词，或要求处理病理切片时触发。",
+    "what": "Claude 会根据 histolab 库帮你处理病理全切片图像：加载切片、识别组织区域、切成小图块（随机/网格/按评分），并统一染色颜色。",
+    "when": "当你想处理病理全切片图像，比如做组织检测、提取图块、染色归一化等操作时触发。",
     "say": [
       {
-        "text": "用GridTiler把这个切片的组织区域全部切成512×512的图块",
-        "note": "会先预览图块位置再提取"
+        "text": "帮我把这张切片随机切成100个512×512的小图块",
+        "note": "用 RandomTiler 提取，结果存到输出文件夹。"
       },
       {
-        "text": "用Macenko染色归一化处理这张HE切片",
-        "note": "需要你提供参考染色图"
+        "text": "用网格方式把整个组织区域都切成图块",
+        "note": "用 GridTiler 做全覆盖提取。"
       },
       {
-        "text": "帮我用NucleiScorer选出核密度最高的50个图块",
-        "note": "会生成带评分报告的图块"
+        "text": "按细胞核密度给图块打分，取前50个保存"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5a1b2e631685bef6f667e29fdc3657c0bb3b7cc9bf776bb2cb755d3d50165492",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-01T06:09:58.275Z",
+    "generated_at": "2026-08-04T06:08:01.048Z",
     "lint_pass": true,
-    "what_en": "Enables Claude to process whole-slide pathology images with histolab: detect tissue, extract tiles, normalize H&E stains, and produce thumbnails or scored reports.",
-    "when_en": "Triggers when you mention keywords like \"tissue detection\", \"tile extraction\", or \"stain normalization\", or ask to process pathology slides.",
+    "what_en": "Claude will help you process whole-slide pathology images using histolab: load slides, detect tissue regions, extract tiles (random/grid/scored), and normalize staining.",
+    "when_en": "Triggered when you want to process whole-slide images, e.g., tissue detection, tile extraction, stain normalization, or dataset preparation.",
     "say_en": [
       {
-        "text": "Extract all tissue as 512x512 tiles with GridTiler.",
-        "note": "Tile locations are previewed before extraction."
+        "text": "Help me randomly extract 100 512x512 tiles from this slide.",
+        "note": "Uses RandomTiler, saves to output folder."
       },
       {
-        "text": "Normalize this H&E slide with Macenko stain normalization.",
-        "note": "Provide a reference stain image first."
+        "text": "Tile the entire tissue region in a grid pattern.",
+        "note": "Runs GridTiler for full coverage."
       },
       {
-        "text": "Pick the 50 highest-density tiles with NucleiScorer.",
-        "note": "Outputs a scored tile report."
+        "text": "Score tiles by nuclei density and keep the top 50.",
+        "note": "Uses ScoreTiler with NucleiScorer."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "b072d279110bdda2c6ac2525d0d24dc54d16148a",
+    "upstream_commit": "19abf74feb0eb1b82f37e70a2dd68a519cf88a08",
     "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
     "license": "MIT",
     "hosting": "mirrored",
@@ -20,11 +20,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67012,
+    "stars_github": 67254,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-02T05:51:36.316Z",
+    "fetched_at": "2026-08-05T05:42:08.191Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-01T09:26:37Z",
+    "upstream_commit_at": "2026-08-05T07:40:58+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-02T05:51:36.316Z",
+    "generated_at": "2026-08-05T05:42:08.191Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -111,26 +111,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,当你想按代码结构(而不是纯文本)查找或改写代码时,Claude 会改用 ast-grep(sg) 工具。它可以按函数、调用、类、import 等形状找代码,也能批量改写,比如把 console.log 换成 logger.info、去掉 as any、把 require() 改成 import、找空 catch 块等。它自带一个 helper 脚本,会先校验模式、默认先模拟再真正修改。",
-    "when": "当你提出的问题跟代码结构有关,例如“找出所有带 Request 参数的函数”“把所有 console.log(x) 改成 logger.info(x)”,或要求扫描/应用 YAML 规则时;涉及字符串内容、注释、文件名等纯文本问题时则用 grep/rg。",
+    "what": "装上后,Claude 会改用 ast-grep 按代码结构查找和改写代码(能认出函数、调用、类等形状),而不是按文本搜索;它会先显示预览,再按你的确认修改文件。",
+    "when": "当你要求按代码形态查找/改写时触发,例如:找出某类函数或调用、批量替换 console.log、去掉 as any 等;纯文本/注释内容用 rg/grep。",
     "say": [
       {
+        "text": "把项目里所有 console.log(x) 改成 logger.info(x)",
+        "note": "先预览,确认后才真正改写文件。"
+      },
+      {
         "text": "找出所有接收 Request 参数的函数",
-        "note": "会按语法树搜索,而不是按文字匹配"
+        "note": "按函数结构匹配,列出文件和行号。"
       },
       {
-        "text": "把仓库里所有 console.log(x) 改成 logger.info(x)",
-        "note": "先给预览,确认后才真正改写"
-      },
-      {
-        "text": "去掉所有 as any 类型断言",
-        "note": "按结构匹配并批量移除"
+        "text": "扫描当前目录的 YAML 规则并报告违规",
+        "note": "运行 scan,输出违规位置和数量。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-02T06:00:37.453Z",
-    "lint_pass": false
+    "generated_at": "2026-08-05T05:47:32.918Z",
+    "lint_pass": true,
+    "what_en": "After installation, Claude will use ast-grep to search and rewrite code by its structure (functions, calls, classes, etc.) rather than by text; it previews changes and only modifies files after you confirm.",
+    "when_en": "Triggers when you ask for structural code matching/rewriting, e.g. finding functions/calls of a given shape, rewriting console.log calls, stripping as any, etc.; plain text/comments go to rg/grep.",
+    "say_en": [
+      {
+        "text": "Rewrite every console.log(x) to logger.info(x) in the project",
+        "note": "Shows a preview first; writes only after confirmation."
+      },
+      {
+        "text": "Find all functions that take a Request parameter",
+        "note": "Matches by function shape and lists files and lines."
+      },
+      {
+        "text": "Run the YAML rules in the current directory and report violations",
+        "note": "Runs scan and reports locations and counts."
+      }
+    ]
   }
 }

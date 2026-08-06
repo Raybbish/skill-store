@@ -5,7 +5,7 @@
     "name": "migrate-memory",
     "description": "Migrate legacy NanoClaw and Claude-native memory into the shared memory tree and provider-neutral standing instructions. Run after an update reports the shared-memory breaking change, or when a group still has .seed.md, legacy CLAUDE.md/CLAUDE.local.md, Claude auto-memory, or an unindexed imported-agent-memory.md. Triggers on \"migrate memory\", \"legacy memory\", \"the agent forgot everything after the switch\".",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-memory",
-    "upstream_commit": "4446b5bde12613ec58289b5a9ac2f5dde947d7e3",
+    "upstream_commit": "8d04fde18fe071ce0b4870dc3094b66e2a29dcfe",
     "content_hash": "sha256:ba9cb7b92eda7782af38e71cf907be7138cb7144db36650088599c920e1f0a65",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30405,
+    "stars_github": 30433,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-02T05:51:48.065Z",
+    "fetched_at": "2026-08-05T05:42:18.204Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-01T23:45:44+03:00",
+    "upstream_commit_at": "2026-08-04T11:14:32+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-02T05:51:48.065Z",
+    "generated_at": "2026-08-05T05:42:18.204Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会把旧版 NanoClaw 和 Claude 自带记忆文件整理进统一的共享内存位置，重新分类和索引，可疑链接会先隔离，最后给出改动报告供你确认。",
-    "when": "当更新后提示共享内存不兼容，或发现组里还有 .seed.md、CLAUDE.md 等旧版记忆文件时触发；用户说“migrate memory”“legacy memory”等也会触发。",
+    "what": "装上后,驱动它的编码工具会把旧版 NanoClaw 和 Claude 的记忆文件迁入新的共享记忆目录。流程包括:先找出受影响的群组并暂停任务,把旧文件移入暂存区,再分类整理成统一格式,最后验证迁移并让操作者确认。",
+    "when": "当系统更新后报告共享记忆不兼容,或检测到旧版记忆文件(如 .seed.md、CLAUDE.md、Claude 自动记忆)时触发。也可以直接说“migrate memory”等指令唤起。",
     "say": [
       {
-        "text": "请迁移旧版记忆。",
-        "note": "技能会开始扫描并整理旧记忆文件。"
+        "text": "我更新后代理忘了一切,请迁移我的旧版记忆。",
+        "note": "会触发技能开始扫描并迁移。"
       },
       {
-        "text": "升级后它忘了一切，请处理。",
-        "note": "技能会检查并迁移遗留记忆，恢复可用信息。"
-      },
-      {
-        "text": "把 CLAUDE.md 迁移到新内存系统。",
-        "note": "技能会将旧文件移到统一位置并分类。"
+        "text": "发现 .seed.md,请按流程处理。",
+        "note": "技能会先显示计划,获得批准后才移动。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ba9cb7b92eda7782af38e71cf907be7138cb7144db36650088599c920e1f0a65",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-02T06:12:09.266Z",
+    "generated_at": "2026-08-05T05:59:30.269Z",
     "lint_pass": true,
-    "what_en": "After installation, when legacy NanoClaw or Claude-native memory files are detected, Claude moves them into a unified shared memory tree, reorganizes and indexes them, quarantines ambiguous links, and produces a change report for approval.",
-    "when_en": "Triggers after an update reports the shared-memory breaking change, or when legacy files like .seed.md, CLAUDE.md, auto-memory, or unindexed imported-agent-memory.md remain. Also on phrases like 'migrate memory', 'legacy memory', etc.",
+    "what_en": "This skill makes the coding harness that runs it (e.g. Claude Code) migrate legacy NanoClaw and Claude-native memory into the shared memory tree. It pauses affected groups, stages files, organizes them into the standard format, and verifies the result with operator approval.",
+    "when_en": "Triggered when an update reports the shared-memory breaking change, when legacy memory files (.seed.md, CLAUDE.md, Claude auto-memory) are detected, or on phrases like \"migrate memory\".",
     "say_en": [
       {
-        "text": "Please migrate the legacy memory.",
-        "note": "It will scan and organize old memory files."
+        "text": "After the update my agent forgot everything—please migrate my old memory.",
+        "note": "Starts the migration workflow."
       },
       {
-        "text": "It forgot everything after the upgrade; please handle it.",
-        "note": "It checks and migrates legacy memory to restore usable info."
+        "text": "Merge the behavioral rules from CLAUDE.md into instructions.prepend.md.",
+        "note": "The file is staged and classified for merging."
       },
       {
-        "text": "Migrate CLAUDE.md to the new memory system.",
-        "note": "Moves it to the unified location and categorizes it."
+        "text": "There is a .seed.md—please handle it.",
+        "note": "Shows a plan and waits for approval before moving."
       }
     ]
   }
