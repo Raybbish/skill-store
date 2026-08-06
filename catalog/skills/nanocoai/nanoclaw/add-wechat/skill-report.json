@@ -5,7 +5,7 @@
     "name": "add-wechat",
     "description": "Add WeChat (personal) channel integration via Tencent's official iLink Bot API. Uses long-polling and QR scan — no webhook, no ToS risk, no paid token.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-wechat",
-    "upstream_commit": "8d04fde18fe071ce0b4870dc3094b66e2a29dcfe",
+    "upstream_commit": "358f1a8166134794f185a4410a767823aa035e0d",
     "content_hash": "sha256:604f4f7966c47970e2c94403f4ddd5ad2d92ff2db89894dc9f8f2d474d963908",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30433,
+    "stars_github": 30453,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:18.204Z",
+    "fetched_at": "2026-08-06T05:43:26.035Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-04T11:14:32+03:00",
+    "upstream_commit_at": "2026-08-05T14:24:37+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:18.204Z",
+    "generated_at": "2026-08-06T05:43:26.035Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,33 +92,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,NanoClaw 会新增微信个人号通道:用你自己的微信扫码登录,通过长轮询实时接收消息,并把消息转给已配置的 agent 回复。整个过程不需要 webhook,也不用付费 token。",
-    "when": "安装完成、启用 WECHAT_ENABLED=true 并重启服务、扫码登录之后,微信收到新消息时触发;首次收到消息会创建消息组,运行接线脚本后才能回复。",
+    "what": "装上后,NanoClaw 会多出一个微信渠道:启动时用手机扫码登录个人微信,把新收到的微信消息绑定到助手组后,Claude 才能回复私聊和群聊;按设置,陌生人来消息可先弹审批卡,批准后才回复。",
+    "when": "当你想给 NanoClaw 接入个人微信渠道时运行此技能;安装并扫码登录后,绑定账号一收到微信消息,Claude 就会参与处理。",
     "say": [
       {
-        "text": "配置 iLink Bot API 微信通道,接线到 agent 组。",
-        "note": "运行接线脚本,把微信消息组连到指定 agent。"
+        "text": "把刚收到的微信私聊接到助手组"
+      },
+      {
+        "text": "微信来陌生人消息,先发审批卡再回复"
+      },
+      {
+        "text": "群聊消息用共享会话处理",
+        "note": "保持默认 shared 模式,群内共享同一会话"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:604f4f7966c47970e2c94403f4ddd5ad2d92ff2db89894dc9f8f2d474d963908",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:58:44.394Z",
+    "generated_at": "2026-08-06T06:06:13.014Z",
     "lint_pass": true,
-    "what_en": "After installation, NanoClaw gains a personal WeChat channel: log in by scanning a QR code with your own WeChat, receive messages in real time via long-polling, and route them to a configured agent for replies. No webhook or paid token required.",
-    "when_en": "Triggers after WECHAT_ENABLED=true, service restart, and QR scan. On a new WeChat message it fires; the first message auto-creates a messaging group, and replies require the wiring script.",
+    "what_en": "Adds a WeChat channel to NanoClaw using Tencent's official iLink Bot API. After a QR-code login, Claude can receive and reply to WeChat DMs and group chats. A wiring step is needed before it responds. Unknown senders can be gated.",
+    "when_en": "When you want to connect a personal WeChat account to NanoClaw. It takes effect after WECHAT_ENABLED=true, a restart, and a successful QR scan; Claude then handles incoming WeChat messages.",
     "say_en": [
       {
-        "text": "Add personal WeChat to NanoClaw, enable WECHAT_ENABLED and scan the QR.",
-        "note": "Copies the adapter, installs deps, prompts for QR scan."
+        "text": "Wire the latest WeChat DM to the default agent group.",
+        "note": "Runs wire-dm to bind the unwired messaging group."
       },
       {
-        "text": "Set up the iLink Bot API WeChat channel and wire it to an agent group.",
-        "note": "Runs the wiring helper to connect the group."
+        "text": "Ask for approval before replying to unknown WeChat senders.",
+        "note": "Sets the sender policy to request_approval."
       },
       {
-        "text": "Set the WeChat channel sender policy to request_approval.",
-        "note": "Stranger DMs trigger an admin approval card."
+        "text": "Use a shared session for group chat messages.",
+        "note": "Keeps the default shared session mode per group."
       }
     ]
   }
