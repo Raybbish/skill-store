@@ -5,7 +5,7 @@
     "name": "init-deep",
     "description": "(builtin) Initialize hierarchical AGENTS.md knowledge base",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/skills/init-deep",
-    "upstream_commit": "123e3b230c30e8b3682b2dec5daa8fefc37ca7ee",
+    "upstream_commit": "77e46979752ce3c6015eb29de7ba42b51d2762c4",
     "content_hash": "sha256:01134971bc02331ac881d7685b06f46af3dbf6506b599b97173ac1003a9602a6",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67315,
+    "stars_github": 67388,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-06T05:43:13.702Z",
+    "fetched_at": "2026-08-07T04:51:50.467Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-06T13:28:35+09:00",
+    "upstream_commit_at": "2026-08-07T13:35:25+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-06T05:43:13.702Z",
+    "generated_at": "2026-08-07T04:51:50.467Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,37 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "运行 /init-deep 时,Claude 会分析项目结构、入口文件和代码依赖,按复杂度给目录打分,在根目录和合乎条件的子目录生成分层 AGENTS.md,记下项目约定、禁止写法与常用命令。",
-    "when": "输入 /init-deep 时触发:默认在已有文档上更新、按需新建;加 --create-new 会删掉旧文档重新生成;加 --max-depth=数字 可限制目录深度,默认 3 层。",
+    "what": "它会扫描项目目录和现有 AGENTS.md,并行派出探索代理并用 LSP/codegraph 生成代码地图;再按评分规则决定哪些子目录要建 AGENTS.md,先写根文件,再并行写子文件,最后去重、修剪、验证。",
+    "when": "当用户输入 /init-deep(可带 --create-new、--max-depth 等参数),或要求初始化分层 AGENTS.md 知识库时触发。",
     "say": [
       {
-        "text": "运行 /init-deep,给当前项目建立分层 AGENTS.md。",
-        "note": "Claude 会先扫描项目,再生成文档。"
+        "text": "运行 /init-deep,按当前结构更新 AGENTS.md。",
+        "note": "会修改现有文件,并按需新建缺失的 AGENTS.md。"
       },
       {
-        "text": "用 /init-deep --max-depth=2 只处理两层目录。",
-        "note": "不加参数时默认深度为 3 层。"
+        "text": "运行 /init-deep --create-new,删除现有文件后从零重建。",
+        "note": "会先读取现有内容保留上下文,再删除并重新生成。"
+      },
+      {
+        "text": "运行 /init-deep --max-depth=2,只处理两层目录深度。",
+        "note": "默认深度为 3,此参数把它限制为 2。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:01134971bc02331ac881d7685b06f46af3dbf6506b599b97173ac1003a9602a6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-06T05:55:43.774Z",
+    "generated_at": "2026-08-07T05:05:56.791Z",
     "lint_pass": true,
-    "what_en": "Makes Claude analyze structure, entry points, and dependencies; score directories by complexity; and write hierarchical AGENTS.md files at root and selected subdirectories with conventions, anti-patterns, and commands.",
-    "when_en": "Triggers when the user types the /init-deep slash command; optional flags --create-new (wipe and regenerate) and --max-depth=N (default 3).",
+    "what_en": "Scans project and existing AGENTS.md, launches explore agents, uses LSP/codegraph for a code map, scores directories, writes root then subdirectory AGENTS.md files, then dedupes/trims/validates.",
+    "when_en": "Triggered by /init-deep (optionally with --create-new, --max-depth, etc.) or when asked to initialize a hierarchical AGENTS.md knowledge base.",
     "say_en": [
       {
-        "text": "Run /init-deep to create hierarchical AGENTS.md for this project.",
-        "note": "Claude scans the project first, then writes docs."
+        "text": "Run /init-deep to update the AGENTS.md files.",
+        "note": "Updates existing files and creates new ones where needed."
       },
       {
-        "text": "Run /init-deep --create-new to regenerate all AGENTS.md files.",
-        "note": "Reads old docs, removes them, rewrites from scratch."
+        "text": "Run /init-deep --create-new to rebuild everything from scratch.",
+        "note": "Reads context, then deletes and regenerates everything."
       },
       {
-        "text": "Run /init-deep --max-depth=2 to process only two directory levels.",
-        "note": "Default maximum depth is 3."
+        "text": "Run /init-deep --max-depth=2 to limit depth to two levels.",
+        "note": "Default max depth is 3."
       }
     ]
   }

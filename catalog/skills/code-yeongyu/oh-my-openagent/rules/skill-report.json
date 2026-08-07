@@ -5,7 +5,7 @@
     "name": "rules",
     "description": "Use when the user asks about Codex Rules behavior, injected project rules, supported rule file locations, matching, or environment configuration.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/rules/skills/rules",
-    "upstream_commit": "123e3b230c30e8b3682b2dec5daa8fefc37ca7ee",
+    "upstream_commit": "77e46979752ce3c6015eb29de7ba42b51d2762c4",
     "content_hash": "sha256:d1be6608ef039637f477896f92640ee7c27c83b51b7759baa353fad1f0c74c52",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67315,
+    "stars_github": 67388,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-06T05:43:13.702Z",
+    "fetched_at": "2026-08-07T04:51:50.467Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-06T13:28:35+09:00",
+    "upstream_commit_at": "2026-08-07T13:35:25+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-06T05:43:13.702Z",
+    "generated_at": "2026-08-07T04:51:50.467Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,25 +87,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "启用后自动生效:读取 CONTEXT.md、.claude/rules 等文件,在会话开始和每次提问时注入静态说明;默认在代码修改后注入匹配的规则,并去重注入动态工具输出,不改写工具输出。",
-    "when": "插件启用后自动生效;当用户询问 Codex Rules 行为、注入的项目规则、规则文件位置等,或涉及环境配置时,此技能介入。",
+    "what": "启用后会自动把项目级规则和匹配当前文件的规则加入对话，在会话开始、用户提交消息和代码修改后触发，按会话去重，不改写工具输出。",
+    "when": "会话开始、用户提交消息时注入静态项目规则；代码修改后注入匹配的文件规则。",
     "say": [
       {
-        "text": "Codex Rules 会注入哪些项目规则文件?"
+        "text": "当前项目有哪些生效规则？",
+        "note": "Claude会列出已注入的规则。"
       },
       {
-        "text": "怎么设置 CODEX_RULES_MAX_RULE_CHARS 来限制规则长度?",
-        "note": "回答环境变量用法。"
+        "text": "这个文件适用哪些规则？",
+        "note": "Claude会按文件匹配规则。"
       },
       {
-        "text": "关闭 Codex Rules 的环境变量是什么?",
-        "note": "它会告知 CODEX_RULES_DISABLED=1。"
+        "text": "如何设置规则文件的位置？",
+        "note": "Claude会说明支持的项目源。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d1be6608ef039637f477896f92640ee7c27c83b51b7759baa353fad1f0c74c52",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-06T05:56:05.321Z",
-    "lint_pass": true
+    "generated_at": "2026-08-07T05:06:32.362Z",
+    "lint_pass": true,
+    "what_en": "After enabling, it auto-injects project-level rules and file-matched rules into the conversation, at session start, on user prompts, and after code patches; dedups per session and never rewrites tool output.",
+    "when_en": "Static project rules are injected at session start and on user prompt submission; file-specific matching rules are injected after code modifications.",
+    "say_en": [
+      {
+        "text": "What rules are active in this project?",
+        "note": "Claude lists the injected rules."
+      },
+      {
+        "text": "Which rules apply to this file?",
+        "note": "Claude matches rules to the file."
+      },
+      {
+        "text": "How do I configure rule file locations?",
+        "note": "Claude explains supported sources."
+      }
+    ]
   }
 }
