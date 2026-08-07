@@ -5,8 +5,8 @@
     "name": "story-review",
     "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/story-review、/审查、「审查一下」「帮我审一下」。",
     "upstream": "https://github.com/worldwonderer/oh-story-claudecode/tree/main/skills/story-review",
-    "upstream_commit": "48a4789d1f542eb672addf8ccb5dbdc20e63be46",
-    "content_hash": "sha256:128c3dbc6fba3c53804c9ab3aab59f6d62b41fc29055c82238375c22f5c3684b",
+    "upstream_commit": "0d81366c73325b27d27bc8f0fad4619c155772e4",
+    "content_hash": "sha256:4deb3ad0bc928578f1a5eb253f1b5ff6c0246842620c36dcf4fc45ece3e5d927",
     "license": "MIT",
     "hosting": "indexed",
     "category": "product",
@@ -14,18 +14,16 @@
     "publisher": "worldwonderer",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": [
-      "automation"
-    ]
+    "tags": []
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5057,
+    "stars_github": 5116,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:43.632Z",
+    "fetched_at": "2026-08-06T05:43:54.245Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-04T09:03:32-07:00",
+    "upstream_commit_at": "2026-08-05T19:32:40-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -35,29 +33,31 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:43.632Z",
+    "generated_at": "2026-08-06T05:43:54.245Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 35638,
-        "chars": 19794,
-        "tokens": 10567
+        "bytes": 37697,
+        "chars": 20715,
+        "tokens": 11258
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md",
           "references/plot-core-methods.md",
+          "references/tracking-transaction.md",
           "scripts/check-ai-patterns.js",
           "scripts/check-degeneration.js",
-          "scripts/normalize-punctuation.js"
+          "scripts/normalize-punctuation.js",
+          "scripts/tracking_commit.py"
         ],
-        "text_files": 5,
-        "bytes": 143410,
-        "chars": 97398,
-        "tokens": 38694
+        "text_files": 7,
+        "bytes": 211363,
+        "chars": 156656,
+        "tokens": 52931
       },
       "package_total_text": {
         "files": [
@@ -72,73 +72,75 @@
           "references/rubrics/fanqie.md",
           "references/rubrics/qidian.md",
           "references/rubrics/zhihu.md",
+          "references/tracking-transaction.md",
           "scripts/check-ai-patterns.js",
           "scripts/check-degeneration.js",
-          "scripts/normalize-punctuation.js"
+          "scripts/normalize-punctuation.js",
+          "scripts/tracking_commit.py"
         ],
-        "text_files": 14,
-        "bytes": 236055,
-        "chars": 137129,
-        "tokens": 69744
+        "text_files": 16,
+        "bytes": 305268,
+        "chars": 196947,
+        "tokens": 84394
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "换个角度审查用户故事，挑出遗漏与风险",
+    "tagline": "让多个审查角度自动挑出需求描述里的盲点",
     "scene_tags": [
       "需求评审",
-      "迭代规划"
+      "用户故事打磨"
     ],
-    "fit_line": "适合你,如果 你正需要从多角度验证用户故事的完整性与合理性。",
-    "tagline_en": "Review user stories from multiple angles to spot gaps and risks",
+    "fit_line": "适合你,如果你写用户故事,想在上线前被多角度审视",
+    "tagline_en": "Review your requirements from multiple viewpoints to catch blind spots",
     "scene_tags_en": [
-      "requirements review",
-      "iteration planning"
+      "requirement review",
+      "refining user story"
     ],
-    "fit_line_en": "For you if you need to validate user stories with diverse perspectives during backlog refinement.",
+    "fit_line_en": "For you if you write user stories and want them stress-tested before coding.",
     "source": "llm",
-    "content_hash": "sha256:128c3dbc6fba3c53804c9ab3aab59f6d62b41fc29055c82238375c22f5c3684b",
+    "content_hash": "sha256:4deb3ad0bc928578f1a5eb253f1b5ff6c0246842620c36dcf4fc45ece3e5d927",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:47:10.486Z",
+    "generated_at": "2026-08-06T05:52:21.352Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后,让 Claude 审查小说文本时,它会找出结构、角色、文字、设定问题,并给出可执行修改建议。它会按 full、lean、solo 模式决定是否并行调用多个专门审查 Agent,不可用时自动降级为直接审查。最终输出带 S1-S4 严重度分级的报告,含位置、证据和修改建议。",
-    "when": "当用户输入 `/story-review`、`/审查` 等命令,或说「审查一下」等请求时触发。",
+    "what": "它会作为小说审查协调员，并行启用结构、角色、文字、设定等多个专业视角找问题，并按 S1–S4 严重度给出可执行的修改建议。缺少组件或子代理失败时，自动改为单人基础审查，不影响出报告。",
+    "when": "当你说出“/story-review”“审查一下”“帮我审一下”等指令时接管。默认进入 full 模式；带 lean/solo 参数则按对应模式执行。",
     "say": [
       {
-        "text": "帮我审一下最近写的这一章。",
-        "note": "Claude 会按默认 full 模式开始收集内容并审查。"
+        "text": "帮我审一下我写的第三章，重点看节奏和对话。",
+        "note": "触发多视角审查，输出分级问题清单。"
       },
       {
-        "text": "用 lean 模式审查第 2 章。",
-        "note": "只调用架构和一致性两个审查视角。"
+        "text": "/story-review lean 审一下大纲，只看结构和设定。",
+        "note": "用精简模式，跳过文字自然度审查。"
       },
       {
-        "text": "按番茄平台的评分标准审这一章。",
-        "note": "会优先读取番茄平台标准,读不到时用内置摘要。"
+        "text": "审查一下 200-300 章，把伏笔兑现情况一起查。",
+        "note": "分批审查会继承已埋钩子的状态。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:128c3dbc6fba3c53804c9ab3aab59f6d62b41fc29055c82238375c22f5c3684b",
+    "content_hash": "sha256:4deb3ad0bc928578f1a5eb253f1b5ff6c0246842620c36dcf4fc45ece3e5d927",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T06:03:11.913Z",
+    "generated_at": "2026-08-06T06:09:24.111Z",
     "lint_pass": true,
-    "what_en": "When installed, Claude, asked to review a story, spots structure/character/prose/setting issues and proposes fixes. It spawns reviewer agents (full/lean) or falls back to solo, then emits severity-graded findings with locations, evidence, fixes.",
-    "when_en": "Triggers when the user asks for a story review, e.g. typing /story-review, /审查, or saying \"审查一下\" (review it).",
+    "what_en": "It acts as a fiction-review coordinator, checking text from multiple angles (structure, character, writing, setting) and returning actionable fixes rated S1–S4. When components or sub-agents are missing, it falls back to solo review and still delivers a report.",
+    "when_en": "Triggered by /story-review or similar review requests. Defaults to full mode; lean/solo parameters switch modes.",
     "say_en": [
       {
-        "text": "Please review the latest chapter I wrote.",
-        "note": "Claude starts in default full mode, collecting content and reviewing."
+        "text": "Please review chapter 3, focusing on pacing and dialogue.",
+        "note": "Runs multi-perspective review."
       },
       {
-        "text": "Review chapter 2 using lean mode.",
-        "note": "Only uses the architecture and consistency review perspectives."
+        "text": "/story-review lean: check the outline for structure and setting only.",
+        "note": "Skips prose naturalness check."
       },
       {
-        "text": "Review this chapter using the Fanqie platform rubric.",
-        "note": "Loads the Fanqie rubric, or embedded fallback summary."
+        "text": "Review chapters 200-300 and check foreshadowing payoffs.",
+        "note": "Batch review inherits open hooks."
       }
     ]
   }

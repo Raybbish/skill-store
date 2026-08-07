@@ -5,7 +5,7 @@
     "name": "add-github",
     "description": "Add GitHub channel integration via Chat SDK. PR and issue comment threads as conversations.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-github",
-    "upstream_commit": "8d04fde18fe071ce0b4870dc3094b66e2a29dcfe",
+    "upstream_commit": "358f1a8166134794f185a4410a767823aa035e0d",
     "content_hash": "sha256:eabf783c1b4a191db6a35e3c4400267851ca9eae8eb9c8c469f769169ee5f75c",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30433,
+    "stars_github": 30453,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:18.204Z",
+    "fetched_at": "2026-08-06T05:43:26.035Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-04T11:14:32+03:00",
+    "upstream_commit_at": "2026-08-05T14:24:37+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:18.204Z",
+    "generated_at": "2026-08-06T05:43:26.035Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,22 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 可通过 GitHub 渠道参与 PR 和 issue 评论:当有人 @ 机器人账号时,它会在评论区回复;首次被 @ 后,该线程的后续评论也会自动回应。该技能会复制适配器、注册并配置环境变量。",
-    "when": "正确配置 bot 账号、token、webhook 后,当有人在 PR 或 issue 评论中 @ 机器人账号(需与 GITHUB_BOT_USERNAME 完全一致)时触发;之后该评论线程被订阅,所有后续评论都会响应。",
+    "what": "装上后，Claude 会通过 Chat SDK 桥接 GitHub，参与 PR 和 issue 的评论线程。被 @ 时回复；首次 @ 后，该线程的后续评论也都会回复。",
+    "when": "当收到已配置仓库的 Webhook 评论事件，且评论中 @ 了与 GITHUB_BOT_USERNAME 完全一致的机器人用户名时触发；首次 @ 后，该线程后续评论也会触发。",
     "say": [
       {
-        "text": "按 add-github 技能给我的项目加上 GitHub 渠道",
-        "note": "会复制适配器并注册"
+        "text": "帮我添加 GitHub 频道集成。",
+        "note": "开始执行复制适配器、注册等步骤。"
       },
       {
-        "text": "重新执行 add-github,确认 GitHub 渠道已注册",
-        "note": "会运行构建和注册测试"
+        "text": "仓库是私有的，请继续配置 GitHub。"
+      },
+      {
+        "text": "接入 GitHub，仓库是公开的。",
+        "note": "使用 strict 策略并提示添加成员。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:eabf783c1b4a191db6a35e3c4400267851ca9eae8eb9c8c469f769169ee5f75c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:57:01.658Z",
-    "lint_pass": true
+    "generated_at": "2026-08-06T06:03:44.057Z",
+    "lint_pass": true,
+    "what_en": "With this skill, Claude bridges GitHub through the Chat SDK. It joins PR and issue comment threads, replies when @-mentioned, and keeps responding to follow-up comments after the first mention.",
+    "when_en": "Triggered when a webhook event arrives for a comment in a configured repo's PR or issue and the comment mentions the exact bot username. After the first mention, the thread is subscribed and subsequent comments also trigger.",
+    "say_en": [
+      {
+        "text": "Add the GitHub channel integration for me.",
+        "note": "Runs the apply steps: copy adapter, register, install."
+      },
+      {
+        "text": "The repo is private; continue configuring GitHub.",
+        "note": "Sets unknown_sender_policy to public for private repo."
+      },
+      {
+        "text": "Integrate GitHub; the repo is public.",
+        "note": "Uses strict policy and prompts to add members."
+      }
+    ]
   }
 }
