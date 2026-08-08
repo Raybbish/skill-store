@@ -5,11 +5,11 @@
     "name": "story-review",
     "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/story-review、/审查、「审查一下」「帮我审一下」。",
     "upstream": "https://github.com/worldwonderer/oh-story-claudecode/tree/main/skills/story-review",
-    "upstream_commit": "0ca649b09d7c72a5cc63cad5bfb937a01125d3c5",
-    "content_hash": "sha256:56732c599563053439ab8ef49730b169324368fabf0a1a3ebe329e7fbdc32809",
+    "upstream_commit": "70a834e88d1103f494f45667bab4b31472a83b58",
+    "content_hash": "sha256:b3ea64bbee755b3a49b147c1a351825b2a83486661c0cc70b966cbe41361932a",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "writing",
+    "category": "product",
     "version": "1.1.0",
     "publisher": "worldwonderer",
     "publisher_verified": false,
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5167,
+    "stars_github": 5219,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-07T04:52:29.914Z",
+    "fetched_at": "2026-08-08T04:09:51.514Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-06T18:43:44-07:00",
+    "upstream_commit_at": "2026-08-07T19:20:00-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-07T04:52:29.914Z",
+    "generated_at": "2026-08-08T04:09:51.514Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -79,55 +79,71 @@
           "scripts/tracking_commit.py"
         ],
         "text_files": 16,
-        "bytes": 306727,
-        "chars": 197686,
-        "tokens": 84825
+        "bytes": 305290,
+        "chars": 197169,
+        "tokens": 84318
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "从多角度审查故事并给出修改建议",
+    "tagline": "从多个对立视角审视故事，提前揪出潜在缺陷。",
     "scene_tags": [
-      "故事创作",
-      "稿件修改",
-      "作品打磨"
+      "用户故事评审",
+      "需求复盘",
+      "上线前把关"
     ],
-    "fit_line": "适合你，如果你正在写故事，需要多角度客观意见来完善作品。",
-    "tagline_en": "Review your story from multiple angles and offer revision advice.",
+    "fit_line": "适合你,如果你常写用户故事,希望在交付前被多角度犀利挑刺。",
+    "tagline_en": "Stress-test your stories from multiple adversarial angles before shipping.",
     "scene_tags_en": [
-      "story writing",
-      "manuscript revision",
-      "polishing work"
+      "user story review",
+      "requirement alignment",
+      "pre-ship check"
     ],
-    "fit_line_en": "For you if you are writing a story and need diverse objective opinions to refine it.",
+    "fit_line_en": "For you if you write user stories often and want sharp multi-perspective critique before handoff.",
     "source": "llm",
-    "content_hash": "sha256:56732c599563053439ab8ef49730b169324368fabf0a1a3ebe329e7fbdc32809",
+    "content_hash": "sha256:b3ea64bbee755b3a49b147c1a351825b2a83486661c0cc70b966cbe41361932a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-07T05:02:53.773Z",
+    "generated_at": "2026-08-08T04:16:50.962Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 变成小说审查协调器，检查结构、角色、文字、设定问题并给出可执行修改建议。full/lean 模式并行派出多个子代理审查；子代理缺失或启动失败时自动降级 solo，由当前会话直接审查。",
-    "when": "当你说出 /story-review、/审查、「审查一下」「帮我审一下」等指令，或要求审查小说章节/文件时触发；未指定模式时默认执行 full 审查。",
+    "what": "用户请它审查小说时，Claude会先做预检、读取审查标准，再从结构、角色、文字、设定等多个视角查找问题，最后输出带严重级别和可执行修改建议的审查报告；它只报告，不直接改稿。",
+    "when": "当你说“审查一下”“帮我审一下”或使用 /story-review 等指令时触发；未指定模式时默认按 full 模式运行。",
     "say": [
       {
-        "text": "帮我审一下第三章，看看结构有没有问题。",
-        "note": "进入 full 模式，并行派出 4 个审查代理。"
+        "text": "审查一下我最新章节，重点找结构和节奏问题。",
+        "note": "会返回一份带严重级别和修改建议的报告。"
       },
       {
-        "text": "用 lean 模式审查最近改的这段。",
-        "note": "只查结构与设定一致性，不查文字自然度。"
+        "text": "帮我审一下前五章，看角色语气是否各有特色。",
+        "note": "会从角色视角检查语言风格一致性。"
       },
       {
-        "text": "/story-review solo 审一下这段对话。",
-        "note": "不派子代理，在当前会话直接审查。"
+        "text": "用 lean 模式审这一章，只查设定是否自洽。",
+        "note": "只会启用结构和一致性两个审查视角。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:56732c599563053439ab8ef49730b169324368fabf0a1a3ebe329e7fbdc32809",
+    "content_hash": "sha256:b3ea64bbee755b3a49b147c1a351825b2a83486661c0cc70b966cbe41361932a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-07T05:22:48.200Z",
-    "lint_pass": true
+    "generated_at": "2026-08-08T04:43:48.042Z",
+    "lint_pass": true,
+    "what_en": "When asked to review a story, Claude runs preflight checks, loads review criteria, then inspects the text from multiple adversarial perspectives (structure, characters, prose, setting). It outputs a report with severity levels and actionable fixes; it reports issues without editing files.",
+    "when_en": "Triggered by /story-review, /审查, or phrases like '审查一下' / '帮我审一下'; defaults to full mode when no mode is specified.",
+    "say_en": [
+      {
+        "text": "Review my latest chapter, focusing on structure and pacing.",
+        "note": "Returns a report with S1–S4 severity levels."
+      },
+      {
+        "text": "Review the first five chapters and check if each character's voice is distinct.",
+        "note": "Checks character language consistency."
+      },
+      {
+        "text": "Run a lean review on this chapter, only checking setting consistency.",
+        "note": "Only uses structure and consistency perspectives."
+      }
+    ]
   }
 }

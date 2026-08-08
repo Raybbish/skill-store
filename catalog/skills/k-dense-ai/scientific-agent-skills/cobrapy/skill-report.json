@@ -5,7 +5,7 @@
     "name": "cobrapy",
     "description": "Constraint-based metabolic modeling (COBRA). FBA, FVA, gene knockouts, flux sampling, SBML models, for systems biology and metabolic engineering analysis.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/cobrapy",
-    "upstream_commit": "d767725c6e93b1d02a220e6be75b261a9833ede5",
+    "upstream_commit": "991bd993aca4e90891d1f9908ba82ef45d77b6f0",
     "content_hash": "sha256:fac9eef60884579d933aeef91af588d3796cf7c38137efc0aff66bfb9c5d0cff",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32552,
+    "stars_github": 32934,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-04T05:43:36.846Z",
+    "fetched_at": "2026-08-08T04:09:18.811Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-03T10:27:02Z",
-    "repo_skill_count": 158,
+    "upstream_commit_at": "2026-08-07T13:35:13-07:00",
+    "repo_skill_count": 160,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-04T05:43:36.846Z",
+    "generated_at": "2026-08-08T04:09:18.811Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,37 +92,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能用 cobrapy 分析代谢模型:运行 FBA、FVA 等模拟,做基因敲除、通量采样,读取和保存 SBML/JSON/YAML 模型,并支持培养基优化等。它需要 Python 3.9 以上环境。",
-    "when": "当你要求加载或构建代谢模型、运行 FBA/FVA 等通量分析,或做基因敲除等操作时触发。模型可从本地文件或 BiGG/BioModels 在线获取。",
+    "what": "Claude使用COBRApy库读取和构建代谢模型（SBML/JSON/YAML），执行FBA、FVA、基因敲除、通量采样等分析，计算最小培养基并修补模型，输出数值结果。",
+    "when": "当用户要求加载或构建代谢模型、做通量分析（FBA/FVA）、进行基因敲除模拟时触发。",
     "say": [
       {
-        "text": "对 iJO1366 做单基因敲除筛选,列出必需基因。",
-        "note": "返回各基因缺失后的生长情况。"
+        "text": "加载textbook模型，做FBA，输出最大生长速率。",
+        "note": "运行model.optimize并显示目标值。"
       },
       {
-        "text": "算一下 textbook 模型在目标生长率下的最小培养基。",
-        "note": "返回最少需要的培养基成分。"
+        "text": "对textbook模型做单基因敲除筛选，列出必需基因。"
+      },
+      {
+        "text": "计算最小培养基，要求支持50%最大生长。",
+        "note": "使用minimal_medium并设目标生长。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:fac9eef60884579d933aeef91af588d3796cf7c38137efc0aff66bfb9c5d0cff",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-04T06:04:39.949Z",
+    "generated_at": "2026-08-08T04:36:01.904Z",
     "lint_pass": true,
-    "what_en": "Enables Claude to use cobrapy for constraint-based analysis of metabolic models: FBA, FVA, gene/reaction knockouts, flux sampling, SBML/JSON/YAML model I/O, and media optimization. Requires Python 3.9+.",
-    "when_en": "Triggers when you ask to load or build a metabolic model, run FBA/FVA flux analyses, or perform gene knockouts. Models can come from local files or online via BiGG/BioModels.",
+    "what_en": "Claude uses the COBRApy library to load and build metabolic models (SBML/JSON/YAML), run FBA, pFBA, FVA, gene/deletion screens, flux sampling, minimal media calculations, and gap-filling, returning numerical results.",
+    "when_en": "Triggered when the user asks to load or build metabolic models, run flux analyses such as FBA/FVA, perform gene or reaction knockout simulations, or design growth media.",
     "say_en": [
       {
-        "text": "Load the textbook model with load_model, run FBA, and print the growth rate.",
-        "note": "Returns the optimal growth rate and flux distribution."
+        "text": "Load the textbook model, run FBA, and show the maximum growth rate.",
+        "note": "Runs model.optimize and prints the objective value."
       },
       {
-        "text": "Run a single-gene deletion screen on iJO1366 and list essential genes.",
-        "note": "Reports growth for each gene deletion."
+        "text": "Perform single-gene deletion screening on the textbook model and list essential genes.",
+        "note": "Uses single_gene_deletion and filters growth below 0.01."
       },
       {
-        "text": "Compute a minimal medium for the textbook model at a target growth rate.",
-        "note": "Returns the minimal media components."
+        "text": "Compute a minimal medium that supports 50% of maximal growth.",
+        "note": "Uses minimal_medium with minimize_components=True."
       }
     ]
   }

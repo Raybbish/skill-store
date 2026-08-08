@@ -5,7 +5,7 @@
     "name": "security-research",
     "description": "Team Mode security research skill. Orchestrates 3 vulnerability hunters and 2 PoC engineers to audit a codebase in parallel, prove exploitability, classify root causes, and calibrate severity by actual exploitability. Use for security review, vulnerability research, exploitability audit, pre-release security check, threat model validation, and `/security-research`. Triggers: 'security-research', 'security research', 'security review', 'vulnerability audit', 'exploitability audit', '보안 리뷰', '취약점 감사'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/security-research",
-    "upstream_commit": "77e46979752ce3c6015eb29de7ba42b51d2762c4",
+    "upstream_commit": "fd79bf49bd45e2053658c7d52c512d7330037e34",
     "content_hash": "sha256:c4d006d309db6170594aa2b436d3cf6a0f7273b495939aa9c28308d51a9572c5",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67388,
+    "stars_github": 67464,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-07T04:51:50.467Z",
+    "fetched_at": "2026-08-08T04:09:10.146Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-07T13:35:25+09:00",
+    "upstream_commit_at": "2026-08-07T18:40:56+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-07T04:51:50.467Z",
+    "generated_at": "2026-08-08T04:09:10.146Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在团队模式下，Claude会组建一个5人安全研究团队（3名漏洞猎人、2名PoC工程师），并行审计代码库，找出候选漏洞并用最小PoC验证其是否真实可利用，再按可利用性评估严重性，最后产出安全报告。",
-    "when": "当你说出“security research”等触发词，或要求做安全审计、发布前安全检查时触发。需要先开启团队模式。",
+    "what": "装上后,Claude 会临时组建一个 5 人“安全小组”(3 人找漏洞、2 人写验证代码),并行检查代码,把真正能利用的问题和一般风险分开,最后给出「通过/通过但有发现/阻止」结论和修复建议。",
+    "when": "当你说「security-research」「security review」等关键词,或要求做安全审查、漏洞研究、发布前安全检查,或输入 `/security-research` 时触发。前提:已开启团队模式、处于主会话、有明确审查对象。",
     "say": [
       {
-        "text": "帮我对当前仓库做一次安全审计。",
-        "note": "Claude会组建团队并行分析。"
+        "text": "审计当前仓库的代码,找出可被利用的漏洞。",
+        "note": "会启动 5 人小组并行检查当前分支。"
       },
       {
-        "text": "检查这次代码变更有没有可利用的漏洞。",
-        "note": "集中审计diff和改动文件。"
+        "text": "重点检查登录鉴权和文件上传接口,证明哪里真能被利用。",
+        "note": "3 个猎手分工扫描,2 名工程师尝试复现。"
       },
       {
-        "text": "用 /security-research 跑一遍发布前检查。",
-        "note": "走完整流程并输出报告。"
+        "text": "对这次 PR 的 diff 做发布前安全审查。",
+        "note": "只审计改动范围,输出严重级别和建议。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c4d006d309db6170594aa2b436d3cf6a0f7273b495939aa9c28308d51a9572c5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-07T05:06:44.315Z",
+    "generated_at": "2026-08-08T04:23:27.644Z",
     "lint_pass": true,
-    "what_en": "In team mode, Claude assembles a 5-member security research team (3 vulnerability hunters, 2 PoC engineers) to audit the codebase in parallel, find candidate vulnerabilities, verify them with minimal PoCs, rate severity by real exploitability, and produce a security report.",
-    "when_en": "Triggers when you say keywords such as 'security research' or ask for a security audit or pre-release check. Requires team mode enabled.",
+    "what_en": "Claude spawns a 5-member team (3 hunters, 2 PoC engineers) to audit code in parallel, separate real exploitable issues from generic ones, and deliver a PASS / PASS WITH FINDINGS / BLOCK verdict with fixes.",
+    "when_en": "Triggers on 'security-research', 'security review', security-review or vulnerability-audit requests, or '/security-research'. Needs team mode, main session, a concrete target.",
     "say_en": [
       {
-        "text": "Run a security audit on this repo.",
-        "note": "Claude forms a team and scans in parallel."
+        "text": "Audit the current repository for exploitable vulnerabilities.",
+        "note": "Starts the 5-member parallel audit on the current branch."
       },
       {
-        "text": "Check these code changes for exploitable bugs.",
-        "note": "Focuses on the diff and changed files."
+        "text": "Check the auth and file-upload paths; prove what is actually exploitable.",
+        "note": "Hunters scan their areas; PoC engineers try to reproduce."
       },
       {
-        "text": "Use /security-research for a pre-release check.",
-        "note": "Runs the full workflow and outputs a report."
+        "text": "Run a pre-release security review on this PR's diff.",
+        "note": "Only the changed scope is audited, then rated with fixes."
       }
     ]
   }

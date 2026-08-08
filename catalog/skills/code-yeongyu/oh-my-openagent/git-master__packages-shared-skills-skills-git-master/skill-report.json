@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "MUST USE whenever a task needs a commit or git-history investigation. Covers atomic commits, staging, commit-message style, rebase, squash, fixup/autosquash, blame, bisect, reflog, git log -S/-G, and questions like who wrote this or when was this added. Do not use for ordinary code edits unless the user asks for git work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "77e46979752ce3c6015eb29de7ba42b51d2762c4",
+    "upstream_commit": "fd79bf49bd45e2053658c7d52c512d7330037e34",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67388,
+    "stars_github": 67464,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-07T04:51:50.467Z",
+    "fetched_at": "2026-08-08T04:09:10.146Z",
     "first_seen_at": "2026-07-15T03:55:58.117Z",
-    "upstream_commit_at": "2026-08-07T13:35:25+09:00",
+    "upstream_commit_at": "2026-08-07T18:40:56+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-07T04:51:50.467Z",
+    "generated_at": "2026-08-08T04:09:10.146Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,41 +93,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,只在涉及 Git 提交或历史调查的任务时,Claude 会先检查仓库状态,再按你的请求拆分提交、执行变基、定位代码改动来源,并给出命令证据。",
-    "when": "当任务需要提交代码或调查 Git 历史时触发(例如查某行是谁改的、某个改动何时引入);普通代码编辑不会触发,除非你明确要求。",
+    "what": "装上后,涉及 Git 提交或历史查询时,Claude 会先分类(提交/改写/查询),只提交你指定的改动并拆分无关部分;查历史用 git log、blame 等并附证据;改写前检查分支与脏文件,不擅自提交、推送或改写。",
+    "when": "当任务需要 Git 提交或历史调查时触发,包括提交、查询历史、改写历史等;普通代码编辑不触发,除非你明确要求做 Git 操作。",
     "say": [
       {
-        "text": "帮我把这些改动提交,按功能分多个提交。",
-        "note": "会查看diff,按逻辑拆分并逐个提交。"
+        "text": "帮我把工作区的改动按功能拆成两个提交。",
+        "note": "会先看 diff,再按原子分组提交。"
       },
       {
-        "text": "查一下这个文件里这行是谁改的。",
-        "note": "会运行git blame并给出提交哈希和作者。"
+        "text": "查一下 src/app.js 第 15 行是谁写的,什么时候加的。",
+        "note": "用 git blame 查询并附提交证据。"
       },
       {
-        "text": "把最近三个提交合并成一个。",
-        "note": "会执行rebase并保留消息风格。"
+        "text": "把最近三个提交合并成一个,消息写 '修复登录 bug'。",
+        "note": "会用 rebase 改写,先确认分支状态。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-07T05:04:56.499Z",
+    "generated_at": "2026-08-08T04:21:05.903Z",
     "lint_pass": true,
-    "what_en": "Once installed, only for Git commit or history-investigation tasks, Claude first checks repository state, then splits commits, runs rebases, traces where code changes came from, and shows command evidence.",
-    "when_en": "Triggers when the task needs to commit code or investigate Git history (e.g., who changed a line, when a change was added). Ordinary code edits won't trigger it unless you explicitly ask.",
+    "what_en": "For git tasks, Claude classifies (commit/rewrite/query), commits only requested changes, splits unrelated ones; uses git log/blame etc.; checks branch/dirty files before rewriting; never commits/pushes/rewrites unasked.",
+    "when_en": "Triggers when a task needs Git commit/history work, including commits, history queries, rewriting, etc.; ordinary code edits don't trigger unless explicitly asked for Git work.",
     "say_en": [
       {
-        "text": "Commit these changes as separate commits by feature.",
-        "note": "Inspects diff and commits each logical group."
+        "text": "Split my working tree changes into two commits by feature.",
+        "note": "It will inspect the diff and group atomically."
       },
       {
-        "text": "Who last changed this line in this file?",
-        "note": "Runs git blame and shows commit hash and author."
+        "text": "Check who wrote line 15 of src/app.js and when it was added.",
+        "note": "Uses git blame and cites evidence."
       },
       {
-        "text": "Squash the last three commits into one.",
-        "note": "Runs rebase and keeps the message style."
+        "text": "Squash the last three commits into one with message 'Fix login bug'.",
+        "note": "Uses rebase after verifying branch safety."
       }
     ]
   }
