@@ -5,7 +5,7 @@
     "name": "get-available-resources",
     "description": "Detect host inventory and effective CPU, memory, disk, scheduler, container, and accelerator limits when a user asks for resource-aware planning or before a clearly resource-sensitive local workload. Produces a redacted JSON snapshot and conservative planning helpers without stress tests or assuming visible host hardware is usable.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/get-available-resources",
-    "upstream_commit": "d767725c6e93b1d02a220e6be75b261a9833ede5",
+    "upstream_commit": "991bd993aca4e90891d1f9908ba82ef45d77b6f0",
     "content_hash": "sha256:555ed7d7b44931c68ba98234ba31b49b322a454463fad29212d887be4b87df28",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32552,
+    "stars_github": 32934,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-04T05:43:36.846Z",
+    "fetched_at": "2026-08-08T04:09:18.811Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-03T10:27:02Z",
-    "repo_skill_count": 158,
+    "upstream_commit_at": "2026-08-07T13:35:13-07:00",
+    "repo_skill_count": 160,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-04T05:43:36.846Z",
+    "generated_at": "2026-08-08T04:09:18.811Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -103,41 +103,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在计算密集型任务开始前,自动检测CPU核心、内存、磁盘和GPU等资源,生成一个`.claude_resources.json`文件,包含资源信息和并行处理、内存策略、GPU加速等推荐,并据此调整计算方案。",
-    "when": "当用户提出计算密集型任务(如大数据量分析、模型训练、并行处理大量文件),或明确要求做资源感知规划时触发。",
+    "what": "开始资源敏感的计算前,Claude 会检测 CPU、GPU、内存、磁盘和操作系统,生成 .claude_resources.json 快照,并给出并行、内存、GPU 加速、大数据处理等建议。",
+    "when": "当用户要求资源感知规划,或任务明显依赖本地算力(如分析大数据、训练模型、大规模并行)时,Claude 会在开始前触发检测。",
     "say": [
       {
-        "text": "帮我检测一下当前机器的CPU和内存,再决定怎么处理这个50GB基因组数据。",
-        "note": "会生成资源快照并提供大数据处理建议。"
+        "text": "先检测一下系统资源,再决定怎么处理这批数据。",
+        "note": "Claude 会运行检测脚本并生成资源报告。"
       },
       {
-        "text": "我要训练神经网络,先看看有没有GPU和可用的加速后端。"
+        "text": "我要训练神经网络,先看看有没有可用 GPU。",
+        "note": "检测 GPU 后建议对应加速库。"
       },
       {
-        "text": "并行处理10000个文件,根据资源给出最优worker数。",
-        "note": "根据核心数推荐joblib/Dask等设置。"
+        "text": "分析 50GB 基因组数据前,先评估内存和磁盘空间。",
+        "note": "按检测结果给出去内存或并行方案。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:555ed7d7b44931c68ba98234ba31b49b322a454463fad29212d887be4b87df28",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-04T06:07:13.723Z",
-    "lint_pass": true,
-    "what_en": "Before computationally intensive tasks, automatically detects CPU, memory, disk, and GPU resources, writes a `.claude_resources.json` snapshot with resource data and recommendations for parallel processing, memory strategy, and GPU acceleration, then adjusts the computation plan accordingly.",
-    "when_en": "Triggers when a user proposes computationally intensive work such as large-scale data analysis, model training, or parallel processing, or explicitly asks for resource-aware planning.",
-    "say_en": [
-      {
-        "text": "Check the machine's CPU and memory first, then decide how to handle this 50GB genomics dataset.",
-        "note": "Generates a resource snapshot and big-data advice."
-      },
-      {
-        "text": "I want to train a neural network—first see if a GPU and available acceleration backends exist.",
-        "note": "Detects NVIDIA/AMD/Apple Silicon and suggests libraries."
-      },
-      {
-        "text": "Process 10,000 files in parallel; give me the optimal worker count based on resources.",
-        "note": "Recommends joblib/Dask settings from core count."
-      }
-    ]
+    "generated_at": "2026-08-08T04:38:39.130Z",
+    "lint_pass": true
   }
 }
