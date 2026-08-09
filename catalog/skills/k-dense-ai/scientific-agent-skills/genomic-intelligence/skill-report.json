@@ -5,7 +5,7 @@
     "name": "genomic-intelligence",
     "description": "Predict regulatory features, gene structure, and expression directly from DNA sequence using Genomic Intelligence's hosted transformer DNA language models — no local GPU or model weights. Six tasks over a REST API and a hosted MCP server (keyless public demo): promoter regions, splice donor/acceptor sites, enhancer activity, chromatin state, sequence-to-expression (log TPM), and de-novo gene annotation, plus a composite find-genes-then-predict-expression workflow. Use when the user has a gene symbol, a genomic region, or a DNA/FASTA sequence and wants any of these predictions, mentions Genomic Intelligence, genomicintelligence.ai, api.genomicintelligence.ai, or mcp.genomicintelligence.ai.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/genomic-intelligence",
-    "upstream_commit": "991bd993aca4e90891d1f9908ba82ef45d77b6f0",
+    "upstream_commit": "9b1d761c67c310e6538f1d5d88759b2bcfc65ce2",
     "content_hash": "sha256:f91a4d61a67035de699e3c03f5d68d558f12d1ccadd807599144e1935b0a32b3",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32934,
+    "stars_github": 33012,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-08T04:09:18.811Z",
+    "fetched_at": "2026-08-09T04:15:10.436Z",
     "first_seen_at": "2026-07-26T05:55:43.975Z",
-    "upstream_commit_at": "2026-08-07T13:35:13-07:00",
-    "repo_skill_count": 160,
+    "upstream_commit_at": "2026-08-08T22:15:30Z",
+    "repo_skill_count": 161,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-08T04:09:18.811Z",
+    "generated_at": "2026-08-09T04:15:10.436Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,40 +98,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "提供 DNA 序列、基因名或基因组区域后，Claude 会调用远程模型返回启动子、剪接位点、表达量(log TPM)等预测；也支持从头基因注释和先找基因再预测表达的流程。无需本地 GPU 或权重。",
-    "when": "当用户提供基因符号、基因组区域或 DNA/FASTA 序列并请求预测，或提到 Genomic Intelligence、相关域名等关键词时触发。",
+    "what": "装上后,给Claude一个基因名、基因组位置或DNA/FASTA序列,它会调用Genomic Intelligence的托管模型,返回启动子、剪接位点、表达量等预测,还能从头注释基因。所有计算在远端,本机无需GPU或模型文件。",
+    "when": "当用户提供基因符号、基因组区域或DNA/FASTA序列并请求相关预测,或提到 Genomic Intelligence、genomicintelligence.ai 等域名时触发。",
     "say": [
       {
-        "text": "预测 BRCA1 基因的启动子区域",
-        "note": "返回该区域的启动子预测。"
+        "text": "帮我预测 BRCA1 基因的启动子区域。",
+        "note": "Claude会获取基因序列并运行promoter任务。"
       },
       {
-        "text": "这段序列的剪接供体和受体位点在哪？",
-        "note": "调用 splice 任务识别剪接位点。"
+        "text": "预测 TP53 在 K562 细胞中的表达量。"
       },
       {
-        "text": "预测 HBB 基因在 K562 细胞中的表达量"
+        "text": "找出这个区域里的基因,并预测各自的表达量。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f91a4d61a67035de699e3c03f5d68d558f12d1ccadd807599144e1935b0a32b3",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-08T04:39:19.219Z",
+    "generated_at": "2026-08-09T04:32:39.454Z",
     "lint_pass": true,
-    "what_en": "Given a gene symbol, region, or DNA/FASTA sequence, Claude calls GI's hosted models to predict promoters, splice sites, expression, gene annotation, and a find-genes-then-predict workflow. No local GPU/weights.",
-    "when_en": "Triggers when the user provides a gene symbol, a genomic region, or a DNA/FASTA sequence and asks for a prediction, or mentions Genomic Intelligence or related domain names.",
+    "what_en": "When installed, Claude uses Genomic Intelligence's hosted DNA models to predict promoters, splice sites, expression, and de-novo gene annotations from a gene symbol, region, or FASTA. No local GPU or model files.",
+    "when_en": "Triggers when the user provides a gene symbol, genomic region, or DNA/FASTA sequence and asks for predictions, or mentions Genomic Intelligence (or its domains).",
     "say_en": [
       {
-        "text": "Predict the promoter regions of the BRCA1 gene.",
-        "note": "Returns promoter predictions for that region."
+        "text": "Predict promoter regions for BRCA1.",
+        "note": "Claude fetches the gene and runs the promoter task."
       },
       {
-        "text": "Where are the splice donor and acceptor sites in this sequence?",
-        "note": "Runs the splice task to identify sites."
+        "text": "Predict TP53 expression in K562 cells.",
+        "note": "Claude builds the TSS-centred window and returns log(TPM+1)."
       },
       {
-        "text": "Predict expression of the HBB gene in K562 cells.",
-        "note": "Fetches the TSS-centered 9,198 bp window first."
+        "text": "Find genes in this region and predict their expression.",
+        "note": "Uses the composite find-and-predict workflow."
       }
     ]
   }

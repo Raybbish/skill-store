@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "fd79bf49bd45e2053658c7d52c512d7330037e34",
+    "upstream_commit": "7782795357d68facebc7368e8c3c2c673745b9ba",
     "content_hash": "sha256:21a6cd7b8d7d869c283bb62d8abce2fb3ecc9fed0200d828789a7ebbfd581707",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67464,
+    "stars_github": 67521,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-08T04:09:10.146Z",
+    "fetched_at": "2026-08-09T04:15:01.626Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-07T18:40:56+09:00",
+    "upstream_commit_at": "2026-08-09T00:02:09+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-08T04:09:10.146Z",
+    "generated_at": "2026-08-09T04:15:01.626Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -113,41 +113,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按代码结构(而非文本)查找和改写代码:支持 25 种语言,能找形状相同的函数/调用/导入,批量替换写法(如 console.log 改为 logger.info),并运行 YAML 规则。改写前会先预览。",
-    "when": "当用户要求按代码结构查找或改写(如“找所有 X”“把 Y 改成 Z”、运行规则扫描)时触发;若目标是文本(字符串、注释、文件名)则不触发。",
+    "what": "装上后,Claude 可以按代码结构(语法树形状)而不是纯文本来搜索和改写代码:查找所有形如 X 的函数/调用/类/导入,批量替换代码(如 console.log→logger.info),或运行 YAML 规则做静态检查。",
+    "when": "当你的问题涉及代码结构而非文本内容,例如“找出所有空 catch 块”“把 require( 改成 import”“去掉所有 as any”这类按形状查找/批量改写时触发。",
     "say": [
       {
-        "text": "找到所有接收 Request 参数的函数。",
-        "note": "Claude 会按结构匹配搜索并列出结果。"
+        "text": "找出所有空 catch 块并列出文件位置。",
+        "note": "使用结构匹配搜索定位。"
       },
       {
-        "text": "把所有 console.log(x) 改成 logger.info(x)。",
-        "note": "Claude 会先预览改动,经你确认后再应用。"
-      },
-      {
-        "text": "扫描 src 目录,运行规则文件检查违例。",
-        "note": "Claude 会运行 scan 并汇总报告。"
+        "text": "运行 rules/ 目录下的 YAML 扫描规则。",
+        "note": "执行 sg scan。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:21a6cd7b8d7d869c283bb62d8abce2fb3ecc9fed0200d828789a7ebbfd581707",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-08T04:20:29.418Z",
+    "generated_at": "2026-08-09T04:21:41.158Z",
     "lint_pass": true,
-    "what_en": "With this skill, Claude uses ast-grep for AST-aware search and rewrite across 25 languages. It matches code shape, rewrites patterns (e.g., console.log to logger.info), and runs YAML rules. It validates first and previews before applying.",
-    "when_en": "Triggers for structural code lookup or rewrite (e.g., find functions like X, replace console.log with logger.info) or running lint rules. Not for text searches (string contents, comments, filenames).",
+    "what_en": "Enables Claude to search and rewrite code by structure (AST shape) rather than raw text: find functions/calls/classes/imports matching a shape, batch-rewrite patterns like console.log→logger.info, and run YAML rules for static checks.",
+    "when_en": "Triggers when the question is about code structure rather than text bytes, e.g. 'find all empty catch blocks', 'replace require() with import', 'strip all as any'.",
     "say_en": [
       {
-        "text": "Find every function that takes a Request parameter.",
-        "note": "Claude will search structurally and list the results."
+        "text": "Find all empty catch blocks and list their file locations.",
+        "note": "Uses structural matching to locate them."
       },
       {
-        "text": "Rewrite all console.log(x) to logger.info(x).",
-        "note": "Claude will preview before applying."
+        "text": "Rewrite console.log(x) to logger.info(x) across the repo, preview first then apply.",
+        "note": "Dry-run then apply."
       },
       {
-        "text": "Scan src and run the rule files for violations.",
-        "note": "Claude will run scan and report issues."
+        "text": "Run the YAML scan rules under rules/.",
+        "note": "Executes sg scan."
       }
     ]
   }

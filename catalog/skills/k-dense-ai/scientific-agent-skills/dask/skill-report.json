@@ -5,7 +5,7 @@
     "name": "dask",
     "description": "Distributed computing for larger-than-RAM pandas/NumPy workflows. Use when you need to scale existing pandas/NumPy code beyond memory or across clusters. Best for parallel file processing, distributed ML, integration with existing pandas code. For out-of-core analytics on single machine use vaex; for in-memory speed use polars.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/dask",
-    "upstream_commit": "991bd993aca4e90891d1f9908ba82ef45d77b6f0",
+    "upstream_commit": "9b1d761c67c310e6538f1d5d88759b2bcfc65ce2",
     "content_hash": "sha256:793b28286d4851227c14c20bad7993a0ec330ca385093036f037942cd7744f9c",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32934,
+    "stars_github": 33012,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-08T04:09:18.811Z",
+    "fetched_at": "2026-08-09T04:15:10.436Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-07T13:35:13-07:00",
-    "repo_skill_count": 160,
+    "upstream_commit_at": "2026-08-08T22:15:30Z",
+    "repo_skill_count": 161,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-08T04:09:18.811Z",
+    "generated_at": "2026-08-09T04:15:10.436Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -102,37 +102,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会用 Dask 编写 Python 代码,把超过内存的数据拆成小块并行处理;DataFrame、Array 等操作先搭建任务图,调用 compute() 才真正算出结果,还能在多核或集群上运行。",
-    "when": "当数据超出内存、需要把现有 pandas/NumPy 代码扩展到集群,或要并行处理多个文件时触发。",
+    "what": "Claude会用Dask库处理超内存的大数据:把表格、数组或文本拆成小块并行计算,写出分步执行、最后汇总的Python代码。",
+    "when": "当你要处理超过内存的数据、把pandas/NumPy代码并行化或跨机器运行,或一次读取多个CSV/Parquet文件时触发。",
     "say": [
       {
-        "text": "我的数据太大装不进内存,帮我用 Dask 读 CSV 并算分组均值。",
-        "note": "会生成 Dask 代码,最后用 compute() 出结果。"
+        "text": "我有50GB的CSV,用Dask按类别汇总销售额。"
       },
       {
-        "text": "把这段 pandas 脚本改成 Dask 版本,保持同样逻辑。",
-        "note": "Claude 会改写为惰性执行并加 compute()。"
+        "text": "把这段pandas代码改成Dask,数据放不进内存了。",
+        "note": "Claude会改写为lazy操作并加compute。"
+      },
+      {
+        "text": "用Dask数组对Zarr数据集做标准化,再存回去。",
+        "note": "Claude会给出带chunk的dask.array代码。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:793b28286d4851227c14c20bad7993a0ec330ca385093036f037942cd7744f9c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-08T04:36:17.606Z",
+    "generated_at": "2026-08-09T04:30:35.297Z",
     "lint_pass": true,
-    "what_en": "Claude writes Python/Dask code that chunks out-of-memory data for parallel processing; DataFrame and Array operations build a task graph, then compute() actually executes, across cores or a cluster.",
-    "when_en": "Triggered when data exceeds available RAM, when existing pandas/NumPy code needs to scale beyond memory or across clusters, or when processing multiple files in parallel.",
+    "what_en": "Claude will use the Dask library for data too large for memory: split tables, arrays, or text into chunks, compute in parallel, and produce Python code that executes lazily and collects results.",
+    "when_en": "Triggers when you need to process data exceeding RAM, parallelize or cluster-scale pandas/NumPy code, or read many CSV/Parquet files at once.",
     "say_en": [
       {
-        "text": "My data is too big for RAM; use Dask to read CSVs and compute group means.",
-        "note": "Generates Dask code that finishes with compute()."
+        "text": "I have a 50GB CSV; use Dask to sum sales by category.",
+        "note": "Claude reads with dask.dataframe and groupbys in parallel."
       },
       {
-        "text": "Convert this pandas script to Dask while keeping the same logic.",
-        "note": "Claude rewrites it as lazy execution with compute()."
+        "text": "Rewrite this pandas code with Dask; the data doesn't fit in memory.",
+        "note": "Claude turns it into lazy operations plus compute()."
       },
       {
-        "text": "Use Dask Bag on these JSON logs, keeping status=valid records.",
-        "note": "Streams the data, then converts to a DataFrame."
+        "text": "Use a Dask array to normalize this Zarr dataset and save it back.",
+        "note": "Claude provides chunked dask.array code."
       }
     ]
   }

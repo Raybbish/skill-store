@@ -5,8 +5,8 @@
     "name": "notebooklm",
     "description": "Complete API for Google NotebookLM - full programmatic access including features not in the web UI. Create notebooks, add sources, generate all artifact types, download in multiple formats. Activates on explicit /notebooklm or intent like \"create a podcast about X\"",
     "upstream": "https://github.com/teng-lin/notebooklm-py/tree/main/",
-    "upstream_commit": "695b2f11955575d1b3795660b5d014cddb6f541a",
-    "content_hash": "sha256:aea2ad76450f50e30244467808692b5b4d6347c9e056cbbf5df8d7ff49487784",
+    "upstream_commit": "87227de10e0ca2d1ebca6f0af4d40f02b067bf59",
+    "content_hash": "sha256:66a52b1b1b50e5a072fc3adf5e012228a0c4f41d1ed95dd72f727729f7300f24",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 18539,
+    "stars_github": 18564,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-08T04:09:33.454Z",
+    "fetched_at": "2026-08-09T04:15:26.635Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-07T17:41:44-04:00",
+    "upstream_commit_at": "2026-08-08T13:56:14-04:00",
     "repo_skill_count": 1
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-08T04:09:33.454Z",
+    "generated_at": "2026-08-09T04:15:26.635Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -123,6 +123,7 @@
           "docs/adr/0030-one-recovery-ladder.md",
           "docs/adr/0031-credential-tier-auth-model.md",
           "docs/adr/0032-auth-domain-types.md",
+          "docs/adr/0033-auth-consolidation-policy.md",
           "docs/adr/README.md",
           "docs/architecture.md",
           "docs/auth-cookie-lifecycle.md",
@@ -161,6 +162,7 @@
           "scripts/_onetime_retarget_cassette_hosts.py",
           "scripts/_strip_audit_refs.py",
           "scripts/api-compat-allowlist.json",
+          "scripts/audit_auth_patch_sites.py",
           "scripts/audit_public_api_compat.py",
           "scripts/audit_test_suite.py",
           "scripts/capture_mobile_grpc.js",
@@ -244,7 +246,6 @@
           "src/notebooklm/_auth/cookie_types.py",
           "src/notebooklm/_auth/cookies.py",
           "src/notebooklm/_auth/extraction.py",
-          "src/notebooklm/_auth/headers.py",
           "src/notebooklm/_auth/headless_reauth.py",
           "src/notebooklm/_auth/keepalive.py",
           "src/notebooklm/_auth/login_wait_trace.py",
@@ -1018,8 +1019,10 @@
           "tests/unit/test_artifacts_row_adapter.py",
           "tests/unit/test_atomic_io.py",
           "tests/unit/test_atomic_update_json.py",
+          "tests/unit/test_audit_auth_patch_sites.py",
           "tests/unit/test_auth_account.py",
           "tests/unit/test_auth_account_coverage.py",
+          "tests/unit/test_auth_account_promotion.py",
           "tests/unit/test_auth_cold_start_recovery.py",
           "tests/unit/test_auth_cookie_header_routing.py",
           "tests/unit/test_auth_cookie_policy.py",
@@ -1032,6 +1035,8 @@
           "tests/unit/test_auth_instance_invariant.py",
           "tests/unit/test_auth_issue_2061.py",
           "tests/unit/test_auth_keepalive.py",
+          "tests/unit/test_auth_load_composition.py",
+          "tests/unit/test_auth_lock_path_derivation.py",
           "tests/unit/test_auth_master_token.py",
           "tests/unit/test_auth_psidts_recovery.py",
           "tests/unit/test_auth_refresh.py",
@@ -1263,70 +1268,71 @@
           "tests/unit/test_youtube_extraction.py",
           "tests/vcr_config.py"
         ],
-        "text_files": 1205,
-        "bytes": 17619052,
-        "chars": 17585052,
-        "tokens": 3062990
+        "text_files": 1210,
+        "bytes": 17876610,
+        "chars": 17841758,
+        "tokens": 3114128
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "让 Google 的 AI 笔记工具变成可编程接口,自动生成播客、摘要等内容。",
+    "tagline": "转换资料为播客和笔记",
     "scene_tags": [
-      "生成播客",
-      "自动摘要",
-      "批量建笔记"
+      "资料总结",
+      "播客制作",
+      "笔记整理"
     ],
-    "fit_line": "适合你,如果想用编程方式自动生成 AI 播客与摘要内容。",
+    "fit_line": "适合你,如果想把大量资料自动变成音频和笔记",
+    "tagline_en": "Turn your documents into podcasts and study notes automatically",
     "scene_tags_en": [
-      "generate podcasts",
-      "auto summarize",
-      "bulk create notes"
+      "document summarization",
+      "podcast creation",
+      "note organization"
     ],
-    "fit_line_en": "For you if you want to programmatically generate AI podcasts and summaries from your content.",
+    "fit_line_en": "For you if you want to automatically convert large amounts of material into audio and notes.",
     "source": "llm",
-    "content_hash": "sha256:aea2ad76450f50e30244467808692b5b4d6347c9e056cbbf5df8d7ff49487784",
+    "content_hash": "sha256:66a52b1b1b50e5a072fc3adf5e012228a0c4f41d1ed95dd72f727729f7300f24",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-08T04:16:12.858Z",
+    "generated_at": "2026-08-09T04:20:41.595Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 可以直接操作 NotebookLM：新建笔记本、添加网址或文件等资料，把内容生成播客、测验、闪卡等，并下载多种格式。使用前需先登录授权。",
-    "when": "当你说“/notebooklm”“use notebooklm”或直接提到 NotebookLM 时；或当你想创建播客、总结网址/文档、生成测验等与 NotebookLM 相关的请求时，会自动激活。",
+    "what": "装上后,Claude 能操作 Google NotebookLM:创建笔记本、添加网页/PDF 等来源、与内容对话、生成播客/测验/闪卡等,并下载多种格式。",
+    "when": "当用户直接说“/notebooklm”或提到该工具,或表达“把 X 做成播客”“总结这些文档”等意图时触发。",
     "say": [
       {
-        "text": "帮我把这几篇论文做成一个播客",
-        "note": "会新建笔记本并生成音频概览。"
+        "text": "用 NotebookLM 把这几篇网页生成一个播客。",
+        "note": "它会调用 NotebookLM 创建笔记本并生成播客。"
       },
       {
-        "text": "把这份 PDF 里的内容生成一套测验题",
-        "note": "会生成测验题，可下载为 Markdown 等格式。"
+        "text": "把我上传的 PDF 总结成要点。",
+        "note": "会添加来源并让 NotebookLM 输出总结。"
       },
       {
-        "text": "给这个笔记本添加这个网址，并总结要点",
-        "note": "会添加来源并输出摘要。"
+        "text": "根据我的笔记生成一套测验题。",
+        "note": "会生成测验并提示下载格式。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:aea2ad76450f50e30244467808692b5b4d6347c9e056cbbf5df8d7ff49487784",
+    "content_hash": "sha256:66a52b1b1b50e5a072fc3adf5e012228a0c4f41d1ed95dd72f727729f7300f24",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-08T04:41:17.646Z",
+    "generated_at": "2026-08-09T04:33:02.602Z",
     "lint_pass": true,
-    "what_en": "With this skill, Claude can operate NotebookLM directly: create notebooks, add sources (URLs, files, etc.), turn content into podcasts, quizzes, flashcards, and download results in multiple formats. Login is required first.",
-    "when_en": "Activates when you say '/notebooklm', 'use notebooklm', or mention NotebookLM by name; also when you ask to create a podcast, summarize URLs/documents, make a quiz, etc.",
+    "what_en": "After installation, Claude can operate Google NotebookLM via a tool: create notebooks, add web/PDF sources, chat with content, generate podcasts/quizzes/flashcards, and download in multiple formats.",
+    "when_en": "Activates when the user says '/notebooklm' or names the tool, or expresses intent like 'turn X into a podcast' or 'summarize these documents'.",
     "say_en": [
       {
-        "text": "Turn these papers into a podcast.",
-        "note": "Creates a notebook and generates an audio overview."
+        "text": "Turn these web pages into a podcast with NotebookLM.",
+        "note": "It creates a notebook and generates an audio overview."
       },
       {
-        "text": "Make a quiz from the content in this PDF.",
-        "note": "Generates a quiz, downloadable in formats like Markdown."
+        "text": "Summarize the PDF I uploaded.",
+        "note": "Adds the source and asks NotebookLM for a summary."
       },
       {
-        "text": "Add this URL to the notebook and summarize key points.",
-        "note": "Adds the source and produces a summary."
+        "text": "Generate a quiz from my notes.",
+        "note": "Creates a quiz and offers download formats."
       }
     ]
   }

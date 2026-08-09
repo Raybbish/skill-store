@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "MUST USE whenever a task needs a commit or git-history investigation. Covers atomic commits, staging, commit-message style, rebase, squash, fixup/autosquash, blame, bisect, reflog, git log -S/-G, and questions like who wrote this or when was this added. Do not use for ordinary code edits unless the user asks for git work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "fd79bf49bd45e2053658c7d52c512d7330037e34",
+    "upstream_commit": "7782795357d68facebc7368e8c3c2c673745b9ba",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67464,
+    "stars_github": 67521,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-08T04:09:10.146Z",
+    "fetched_at": "2026-08-09T04:15:01.626Z",
     "first_seen_at": "2026-07-15T03:55:58.117Z",
-    "upstream_commit_at": "2026-08-07T18:40:56+09:00",
+    "upstream_commit_at": "2026-08-09T00:02:09+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-08T04:09:10.146Z",
+    "generated_at": "2026-08-09T04:15:01.626Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,41 +93,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,涉及 Git 提交或历史查询时,Claude 会先分类(提交/改写/查询),只提交你指定的改动并拆分无关部分;查历史用 git log、blame 等并附证据;改写前检查分支与脏文件,不擅自提交、推送或改写。",
-    "when": "当任务需要 Git 提交或历史调查时触发,包括提交、查询历史、改写历史等;普通代码编辑不触发,除非你明确要求做 Git 操作。",
+    "what": "需要提交或查历史时会先检查仓库现状，只提交你要求的部分，照仓库原有风格写提交说明；遇到“谁改的、什么时候加的”这类问题，用 git 命令查证后给出带证据的答案；重写历史前会先征求你的确认，不碰受保护的分支。",
+    "when": "当你要提交代码、处理暂存内容，或问“这行是谁写的”“这个功能什么时候加的”等 git 历史问题时触发；普通改代码不触发，除非你明确要求做 git 操作。",
     "say": [
       {
-        "text": "帮我把工作区的改动按功能拆成两个提交。",
-        "note": "会先看 diff,再按原子分组提交。"
+        "text": "把这几个文件的改动分成两个提交，先提交 A 和 B，再提交 C。",
+        "note": "会按你说的分组，分两次提交。"
       },
       {
-        "text": "查一下 src/app.js 第 15 行是谁写的,什么时候加的。",
-        "note": "用 git blame 查询并附提交证据。"
+        "text": "查一下这行是谁最后改的，是什么时候。",
+        "note": "用 git blame 定位并给出证据。"
       },
       {
-        "text": "把最近三个提交合并成一个,消息写 '修复登录 bug'。",
-        "note": "会用 rebase 改写,先确认分支状态。"
+        "text": "把最近三个提交压成一个。",
+        "note": "会走 rebase 压缩，并且先确认再动手。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-08T04:21:05.903Z",
+    "generated_at": "2026-08-09T04:22:37.746Z",
     "lint_pass": true,
-    "what_en": "For git tasks, Claude classifies (commit/rewrite/query), commits only requested changes, splits unrelated ones; uses git log/blame etc.; checks branch/dirty files before rewriting; never commits/pushes/rewrites unasked.",
-    "when_en": "Triggers when a task needs Git commit/history work, including commits, history queries, rewriting, etc.; ordinary code edits don't trigger unless explicitly asked for Git work.",
+    "what_en": "When the user commits or asks about git history, Claude first inspects the repo state, commits only the requested changes with the repo's dominant message style, answers history questions with evidence from commands like blame/bisect, and asks before rewriting shared branches.",
+    "when_en": "Triggered when the task needs a commit, staging, or git-history investigation such as who wrote something or when it was added. Not triggered for ordinary code edits unless the user explicitly asks for git work.",
     "say_en": [
       {
-        "text": "Split my working tree changes into two commits by feature.",
-        "note": "It will inspect the diff and group atomically."
+        "text": "Split these changes into two commits—first A and B, then C.",
+        "note": "Commits are grouped as you asked."
       },
       {
-        "text": "Check who wrote line 15 of src/app.js and when it was added.",
-        "note": "Uses git blame and cites evidence."
+        "text": "Who last changed this line and when?",
+        "note": "Uses git blame and shows evidence."
       },
       {
-        "text": "Squash the last three commits into one with message 'Fix login bug'.",
-        "note": "Uses rebase after verifying branch safety."
+        "text": "Squash the last three commits into one.",
+        "note": "Goes through rebase and confirms first."
       }
     ]
   }

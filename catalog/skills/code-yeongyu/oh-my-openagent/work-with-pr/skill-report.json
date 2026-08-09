@@ -5,7 +5,7 @@
     "name": "work-with-pr",
     "description": "Full PR lifecycle in a fresh task-owned git worktree: implement via the ulw-loop skill with mandatory evidence-bound manual QA → reviewer-readable English PR → verification loop (CI + Cubic, where Cubic is skipped only when its quota is exhausted) → merge by default → worktree cleanup. Decomposes one task into the smallest atomic, independently-mergeable PRs and builds the independent ones concurrently via one worktree per PR driven by parallel subagents or a team. Unbounded loop: any failing gate sends you back to fix-and-re-QA inside that PR's worktree. Use whenever implementation work needs to land as a PR. Triggers: 'create a PR', 'implement and PR', 'work on this and make a PR', 'implement issue', 'land this as a PR', 'split into atomic PRs', 'parallel PRs', 'work-with-pr', 'PR workflow', 'implement end to end', even when user just says 'implement X' if the context implies PR delivery.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/work-with-pr",
-    "upstream_commit": "fd79bf49bd45e2053658c7d52c512d7330037e34",
+    "upstream_commit": "7782795357d68facebc7368e8c3c2c673745b9ba",
     "content_hash": "sha256:9f16561199518df9355475dc4de0b66ec12f8e257d270f3b39148230ba0a672f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67464,
+    "stars_github": 67521,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-08T04:09:10.146Z",
+    "fetched_at": "2026-08-09T04:15:01.626Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-07T18:40:56+09:00",
+    "upstream_commit_at": "2026-08-09T00:02:09+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-08T04:09:10.146Z",
+    "generated_at": "2026-08-09T04:15:01.626Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，当接到开发任务时，Claude 会先把它拆成多个小型可独立合并的 PR，在独立工作目录中逐个实现，用真实环境手动验证并留档，然后创建英文 PR，等 CI 和自动审查通过后自动合并。",
-    "when": "当你说“create a PR”“implement issue”等要求，或语境表明要把任务以 PR 交付（哪怕只说“implement X”）时触发。",
+    "what": "Claude 会把实现任务拆成多个最小的可独立合并 PR,每个 PR 用独立 git worktree,通过 ulw-loop 实现并强制有证据的手工 QA,然后创建英文 PR,进入 CI 和 Cubic 验证循环;全通过后默认自动合并并清理 worktree,失败则回到该 PR 修复后重新验证。",
+    "when": "当用户要求实现工作以 PR 形式落地时触发,典型话术如 'create a PR'、'implement and PR'、'split into atomic PRs' 等;即使用户只说 'implement X',只要上下文暗示要 PR 交付也触发。",
     "say": [
       {
-        "text": "把这个 issue 实现并创建一个 PR",
-        "note": "会先拆成小 PR 再逐个落地"
+        "text": "实现这个issue并创建一个PR",
+        "note": "Claude会走完整PR生命周期并默认自动合并"
       },
       {
-        "text": "把这项功能拆成几个独立的小 PR 并行做",
-        "note": "Claude 会为每个 PR 建独立工作区并发推进"
+        "text": "把任务拆成多个原子PR并行提交",
+        "note": "每个PR有独立worktree和验证流程"
       },
       {
-        "text": "实现并提交这个 PR，验证通过后合并",
-        "note": "默认自动合并，失败会回到修复循环"
+        "text": "如果CI或Cubic失败,修好再继续",
+        "note": "回到对应PR的worktree修复并重新QA"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f16561199518df9355475dc4de0b66ec12f8e257d270f3b39148230ba0a672f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-08T04:24:56.185Z",
-    "lint_pass": true,
-    "what_en": "Once installed, Claude decomposes a task into small independently mergeable PRs, implements each in a separate worktree with evidence-bound manual QA, creates English PRs, and auto-merges after CI and Cubic review pass.",
-    "when_en": "Triggers when you say \"create a PR\", \"implement issue\", or similar requests, or when the context implies delivering work as a PR (even just \"implement X\").",
+    "generated_at": "2026-08-09T04:25:44.868Z",
+    "lint_pass": false,
+    "what_en": "Claude breaks a task into minimal PRs, each in its own worktree, using ulw-loop with evidence-bound manual QA, writes an English PR, then verifies via CI + Cubic (skip Cubic only on quota exhaustion), auto-merges, cleans up. Failing gates loop back to fix and re-QA.",
+    "when_en": "Triggered when the user asks for implementation work to land as a PR, e.g. 'create a PR', 'implement and PR', 'split into atomic PRs', etc. Even a bare 'implement X' triggers it if the context implies PR delivery.",
     "say_en": [
       {
         "text": "Implement this issue and create a PR.",
-        "note": "It will break it down into small PRs first."
+        "note": "Runs the full PR lifecycle; merge by default."
       },
       {
-        "text": "Split this feature into a few independent small PRs and work in parallel.",
-        "note": "Claude uses one worktree per PR and runs them in parallel."
+        "text": "Split the task into atomic PRs and do them in parallel.",
+        "note": "Each PR gets its own worktree and verification."
       },
       {
-        "text": "Implement and submit this PR, then merge after checks pass.",
-        "note": "Auto-merge by default; failures loop back to fixes."
+        "text": "If CI or Cubic fails, fix it and continue.",
+        "note": "Routes back to that PR's worktree to fix and re-QA."
       }
     ]
   }

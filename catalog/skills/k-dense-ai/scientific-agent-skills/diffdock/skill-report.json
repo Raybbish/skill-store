@@ -5,7 +5,7 @@
     "name": "diffdock",
     "description": "DiffDock and DiffDock-L molecular docking. Use for protein-small-molecule pose prediction from PDB or sequence plus SMILES/SDF/MOL2, batch docking, virtual screening, and pose-confidence interpretation. Not for binding affinity prediction.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/diffdock",
-    "upstream_commit": "991bd993aca4e90891d1f9908ba82ef45d77b6f0",
+    "upstream_commit": "9b1d761c67c310e6538f1d5d88759b2bcfc65ce2",
     "content_hash": "sha256:0d34cf7713c21a0e1a4197a494392b92a82dbc8cb8d0ce41f08590e43d027f95",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32934,
+    "stars_github": 33012,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-08T04:09:18.811Z",
+    "fetched_at": "2026-08-09T04:15:10.436Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-07T13:35:13-07:00",
-    "repo_skill_count": 160,
+    "upstream_commit_at": "2026-08-08T22:15:30Z",
+    "repo_skill_count": 161,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-08T04:09:18.811Z",
+    "generated_at": "2026-08-09T04:15:10.436Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,37 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能调用 DiffDock 做蛋白质-小分子对接:根据蛋白质结构或序列与配体 SMILES/SDF/MOL2 预测结合构象,输出带置信度的多个候选姿态,也能批量对接、虚拟筛选;不预测结合亲和力。",
-    "when": "当用户要求“做分子对接”“预测结合位姿”“虚拟筛选”等,或给出 PDB/序列加配体描述时触发;涉及亲和力预测时不适用。",
+    "what": "装上后,Claude 会用 DiffDock 根据蛋白质结构(PDB)或序列,将小分子配体(SMILES/SDF/MOL2)对接出 3D 结合姿态,并给出置信度分数;支持批量对接与虚拟筛选,但不预测结合亲和力。",
+    "when": "当用户明确要求进行蛋白质-小分子对接(如“对接这个配体”“预测结合姿态”“跑虚拟筛选”)时触发;也适用于批量处理和置信度解读。",
     "say": [
       {
-        "text": "用这个 CSV 批量对接多个复合物,输出前 5 个姿态",
-        "note": "会执行批量对接并分析结果"
+        "text": "用这个 SDF 配体和这个 PDB 蛋白做一次分子对接,输出前 3 个姿态。",
+        "note": "会运行单复合物对接。"
       },
       {
-        "text": "帮我做虚拟筛选,用预计算 ESM 嵌入加速",
-        "note": "大库筛选用预嵌入能明显提速"
+        "text": "把这批化合物的 SMILES 和蛋白列表做成 CSV,批量虚拟筛选。",
+        "note": "生成批量输入并运行。"
+      },
+      {
+        "text": "解释一下刚才对接结果的置信度分数,并列出头部姿态。",
+        "note": "调用分析脚本。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0d34cf7713c21a0e1a4197a494392b92a82dbc8cb8d0ce41f08590e43d027f95",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-08T04:36:44.137Z",
+    "generated_at": "2026-08-09T04:31:24.205Z",
     "lint_pass": true,
-    "what_en": "Claude can use DiffDock for protein-small-molecule docking: predict binding poses from PDB/sequence plus SMILES/SDF/MOL2, output multiple ranked poses with confidence scores, batch docking, and virtual screening. It does not predict binding affinity.",
-    "when_en": "Triggers when the user asks for molecular docking, binding-pose prediction, virtual screening, or provides PDB/sequence with ligand description; not for binding-affinity prediction.",
+    "what_en": "After installation, Claude uses DiffDock to dock small-molecule ligands (SMILES/SDF/MOL2) into proteins from PDB structure or sequence, predicting 3D binding poses with confidence scores; supports batch docking and virtual screening, but not binding affinity prediction.",
+    "when_en": "Triggers when the user asks for protein-ligand docking such as \"dock this ligand\", \"predict binding pose\", or \"run virtual screening\", and for batch processing or confidence interpretation.",
     "say_en": [
       {
-        "text": "Dock aspirin to this protein; ligand SMILES is CC(=O)Oc1ccccc1C(=O)O",
-        "note": "Runs single-complex docking"
+        "text": "Dock this SDF ligand to this PDB protein and output the top 3 poses.",
+        "note": "Runs single-complex docking."
       },
       {
-        "text": "Batch-dock these complexes from the CSV and show top 5 poses",
-        "note": "Executes batch docking and analysis"
+        "text": "Make a CSV with these compound SMILES and protein list, then run batch virtual screening.",
+        "note": "Generates batch input and runs."
       },
       {
-        "text": "Run virtual screening using precomputed ESM embeddings",
-        "note": "Speeds up large-library screening"
+        "text": "Explain the confidence scores from the docking results and list the top poses.",
+        "note": "Calls the analysis script."
       }
     ]
   }
