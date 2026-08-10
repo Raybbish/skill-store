@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Intelligent refactor command. Triggers: refactor, refactoring, cleanup, restructure, extract, simplify, modernize.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "19abf74feb0eb1b82f37e70a2dd68a519cf88a08",
+    "upstream_commit": "7782795357d68facebc7368e8c3c2c673745b9ba",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67254,
+    "stars_github": 67521,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:08.191Z",
+    "fetched_at": "2026-08-09T04:15:01.626Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-05T07:40:58+09:00",
+    "upstream_commit_at": "2026-08-09T00:02:09+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:08.191Z",
+    "generated_at": "2026-08-09T04:15:01.626Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当用户要求重构代码时，Claude 会先确认目标并分析整个代码库，制定分步计划，然后逐步修改代码，每一步后都运行测试，确保不破坏现有功能，最后输出变更摘要。",
-    "when": "当要求重构代码，或提到 refactor、cleanup、extract 等触发词时触发。",
+    "what": "Claude 会把重构请求拆成六个阶段：先确认目标和范围，再并行分析代码、绘制依赖图，评估测试覆盖，生成详细计划，然后逐步修改并每步运行测试验证，最后跑全量测试并输出变更总结。",
+    "when": "当用户说出 refactor、cleanup、restructure 等触发词，或提出化简、抽取逻辑、升级代码等重构请求时触发；若目标含糊，它会先追问。",
     "say": [
       {
-        "text": "请重构 src/auth/handler.ts 这个文件。",
-        "note": "指定文件，触发完整重构流程。"
+        "text": "把所有用废弃 API 的函数抽到新模块，范围设为 project。",
+        "note": "它先评估影响面再执行。"
       },
       {
-        "text": "帮我把公共代码提取成单独模块。",
-        "note": "触发 extract 模式，先分析依赖。"
-      },
-      {
-        "text": "用安全策略重构整个项目，并保持测试通过。",
-        "note": "指定 scope 和 strategy，执行全项目重构。"
+        "text": "重构 src/api 模块，目标是把错误处理抽成中间件，范围 module。",
+        "note": "它会在每步后跑测试验证。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:50:00.568Z",
+    "generated_at": "2026-08-09T04:24:00.899Z",
     "lint_pass": true,
-    "what_en": "On a refactoring request, Claude analyzes the codebase, plans, then refactors step-by-step, verifying with tests after each change, and outputs a summary.",
-    "when_en": "Triggered when you ask to refactor code or mention keywords like refactor, cleanup, extract.",
+    "what_en": "Claude will run a phased refactor flow: confirm goal and scope, analyze code and map dependencies, assess test coverage, generate a plan, apply changes step-by-step with tests after each step, then run full verification and summarize.",
+    "when_en": "Triggers when you use trigger words like refactor, cleanup, restructure, etc., or ask for simplifying, extracting, or modernizing code. If the goal is vague, it asks clarifying questions first.",
     "say_en": [
       {
-        "text": "Refactor the file src/auth/handler.ts.",
-        "note": "Specifies the file, starts full refactor flow."
+        "text": "Refactor the AuthService class in src/auth/handler.ts with safe strategy.",
+        "note": "It will map the code first, then execute."
       },
       {
-        "text": "Extract the common code into a separate module.",
-        "note": "Triggers extraction, analyzes dependencies first."
+        "text": "Extract all functions using the deprecated API into a new module, scope project.",
+        "note": "It assesses impact before changing."
       },
       {
-        "text": "Refactor the whole project with safe strategy, keep tests passing.",
-        "note": "Sets scope and strategy, runs project-wide refactor."
+        "text": "Refactor src/api to extract error handling into middleware, scope module.",
+        "note": "It verifies with tests after each step."
       }
     ]
   }

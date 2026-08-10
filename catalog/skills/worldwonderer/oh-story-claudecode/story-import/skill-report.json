@@ -5,8 +5,8 @@
     "name": "story-import",
     "description": "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容 story-long-write / story-short-write 后续写作流程；内部复用 story-long-analyze / story-short-analyze 的拆解管道，按篇幅自动分流。触发方式：/story-import、「导入小说」「反向解析」「导入」「把我的书导进来」。",
     "upstream": "https://github.com/worldwonderer/oh-story-claudecode/tree/main/skills/story-import",
-    "upstream_commit": "48a4789d1f542eb672addf8ccb5dbdc20e63be46",
-    "content_hash": "sha256:07555b2b7cc01ebb74134ca2dee06c1b247d6ce65d4527d82565f78e5f5108e0",
+    "upstream_commit": "70a834e88d1103f494f45667bab4b31472a83b58",
+    "content_hash": "sha256:7578157cad4178ada129fc6adacfc1572011e4d8c9466ff9fb311f9240d82810",
     "license": "MIT",
     "hosting": "indexed",
     "category": "writing",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5057,
+    "stars_github": 5219,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:43.632Z",
+    "fetched_at": "2026-08-08T04:09:51.514Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-04T09:03:32-07:00",
+    "upstream_commit_at": "2026-08-07T19:20:00-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -33,16 +33,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:43.632Z",
+    "generated_at": "2026-08-08T04:09:51.514Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 36149,
-        "chars": 18881,
-        "tokens": 11171
+        "bytes": 44198,
+        "chars": 22824,
+        "tokens": 13741
       },
       "activation_with_declared_refs": {
         "files": [
@@ -52,12 +52,14 @@
           "references/length-routing.md",
           "references/state-tracking.md",
           "references/structure-mapping-long.md",
-          "references/structure-mapping-short.md"
+          "references/structure-mapping-short.md",
+          "references/tracking-transaction.md",
+          "scripts/tracking_commit.py"
         ],
-        "text_files": 7,
-        "bytes": 88021,
-        "chars": 43452,
-        "tokens": 28169
+        "text_files": 9,
+        "bytes": 160440,
+        "chars": 104270,
+        "tokens": 43933
       },
       "package_total_text": {
         "files": [
@@ -67,73 +69,75 @@
           "references/length-routing.md",
           "references/state-tracking.md",
           "references/structure-mapping-long.md",
-          "references/structure-mapping-short.md"
+          "references/structure-mapping-short.md",
+          "references/tracking-transaction.md",
+          "scripts/tracking_commit.py"
         ],
-        "text_files": 7,
-        "bytes": 88021,
-        "chars": 43452,
-        "tokens": 28169
+        "text_files": 9,
+        "bytes": 160440,
+        "chars": 104270,
+        "tokens": 43933
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "将已有小说快速导入标准写作流程",
+    "tagline": "导入已有小说并拆解为可续写的创作项目",
     "scene_tags": [
-      "小说写作",
-      "故事创作",
-      "导入已有作品"
+      "小说导入",
+      "稿件整理",
+      "续写准备"
     ],
-    "fit_line": "适合你，如果你有写好的小说想继续完善或纳入写作工具链",
-    "tagline_en": "Import existing novels into a structured writing workflow",
+    "fit_line": "适合你，如果手里有写好的小说，想把它纳入标准创作流程继续写。",
+    "tagline_en": "Import existing novels and rebuild a structured writing project",
     "scene_tags_en": [
-      "novel writing",
-      "story creation",
-      "import existing work"
+      "novel import",
+      "manuscript organizing",
+      "preparing to continue"
     ],
-    "fit_line_en": "For you if you have a written novel you want to refine or integrate into a writing toolchain",
+    "fit_line_en": "For you if you have an existing novel and want to bring it into a proper writing workflow.",
     "source": "llm",
-    "content_hash": "sha256:07555b2b7cc01ebb74134ca2dee06c1b247d6ce65d4527d82565f78e5f5108e0",
+    "content_hash": "sha256:7578157cad4178ada129fc6adacfc1572011e4d8c9466ff9fb311f9240d82810",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-26T06:01:54.363Z",
+    "generated_at": "2026-08-08T04:16:33.269Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "把已写好的小说（半成品或完本）反向解析为可续写的标准项目结构，自动按长篇/短篇分流，调用拆解管道生成拆文库，并迁移出设定、大纲、正文、追踪等文件。",
-    "when": "当用户使用 /story-import、说出“导入小说”“反向解析”等触发词，或提供文件路径/粘贴正文时触发。",
+    "what": "你把已有小说(文件或全文)交给 Claude 后,它会拆解分析并重建标准项目结构——设定、大纲、正文、追踪——让你能直接续写;长篇短篇走不同流程。",
+    "when": "当你说“导入小说”“反向解析”“把我的书导进来”等指令,或运行 /story-import 时触发;需要提供小说文件路径或粘贴文本。",
     "say": [
       {
-        "text": "导入《XX》这本小说，做成可续写的写作工程",
-        "note": "走完整导入流程，生成可续写的项目结构。"
+        "text": "把我的书导进来",
+        "note": "触发导入流程,先确认书名和写作目标。"
       },
       {
-        "text": "我只想要拆文库分析，不用迁移成项目结构",
-        "note": "直接调用拆解管道，到拆文库为止。"
+        "text": "反向解析这本小说,我要能接着续写",
+        "note": "走完整迁移,生成可续写的项目结构。"
       },
       {
-        "text": "已有小说要续写，该先跑 setup 还是 import？",
-        "note": "先回答流程顺序，再收集原文。"
+        "text": "只导入拆一下,不做项目迁移",
+        "note": "只做拆解分析,不生成续写工程。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:07555b2b7cc01ebb74134ca2dee06c1b247d6ce65d4527d82565f78e5f5108e0",
+    "content_hash": "sha256:7578157cad4178ada129fc6adacfc1572011e4d8c9466ff9fb311f9240d82810",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T06:01:45.882Z",
+    "generated_at": "2026-08-08T04:44:15.661Z",
     "lint_pass": true,
-    "what_en": "Reverse-imports an existing novel (partial or complete) into a standard writable project structure; auto-routes by length, runs the analysis pipeline to produce a 拆文库, then migrates settings, outline, text, and tracking files.",
-    "when_en": "Triggered by /story-import, by trigger phrases such as “导入小说” / “反向解析”, or when the user provides a file path or pastes novel text.",
+    "what_en": "After you give Claude an existing story (file or pasted text), it analyzes and rebuilds it into a standard project structure — settings, outline, chapters, tracking — so you can continue writing. Long and short works use separate pipelines.",
+    "when_en": "When the user says 'Import novel', 'Reverse-parse', 'Import my book', or runs /story-import; a source file path or pasted text is required.",
     "say_en": [
       {
-        "text": "Import this novel and make it a writable project.",
-        "note": "Runs full import and builds continuation-ready structure."
+        "text": "Import my book.",
+        "note": "Starts the import flow, then confirms title and goal."
       },
       {
-        "text": "I only want the analysis output, no project migration.",
-        "note": "Calls the analyze pipeline and stops at 拆文库."
+        "text": "Reverse-parse this novel; I want to continue writing it.",
+        "note": "Runs the full migration into a project structure."
       },
       {
-        "text": "Should I run story-setup or story-import first?",
-        "note": "Answers the workflow order, then asks for the source."
+        "text": "Import and analyze only, no project migration.",
+        "note": "Runs the analysis without making a continuable workspace."
       }
     ]
   }
