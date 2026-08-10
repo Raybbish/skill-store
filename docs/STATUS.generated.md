@@ -1,7 +1,7 @@
 <!-- 自动生成,勿手改。运行: npm run status -->
 # 项目状态(自动快照)
 
-_生成于 2026-08-09 03:09 UTC · 分支 `main` · 工作区干净_
+_生成于 2026-08-10 03:20 UTC · 分支 `main` · 工作区干净_
 
 ## Catalog
 - **skill 总数:13883**
@@ -11,5 +11,5 @@ _生成于 2026-08-09 03:09 UTC · 分支 `main` · 工作区干净_
 
 ## 最近提交
 ```
-1769d893 chore: refresh status snapshot [skip ci]
+a21608e1 chore(code-search): advance sweep cursor [skip ci]
 ```
