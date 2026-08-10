@@ -101,41 +101,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会把你给的工件(代码、配置、提示词等)当作优化对象,围绕你设定的目标自动开展多轮实验:提出改进假设、在隔离环境里测试、记录哪些有效哪些无效,并只采纳通过测试验证的改进。最终给你改进后的最佳工件和一份尝试过程报告。",
-    "when": "当你想多轮实验迭代改进某个工件(如代码、模型、管道)并避免过拟合时触发,例如提升评估分数、改进智能体、优化管道。即使没提Arbor,描述反复实验-评估循环、竞争想法或开发/测试差距也会触发。",
+    "what": "装上后,Claude 会自动迭代改进代码、训练配方、agent 框架、数据管道或提示词:建立假设树、派子代理在隔离 git 工作区实验,用独立测试评估器把关合并,结束时给出改进版与实验报告。",
+    "when": "当用户要迭代优化某个工件(如提升模型评估分数、改进 agent/harness、调优数据管道、在基准上超过基线),或描述反复实验-评估循环、担心开发/测试差距时触发,即使没提“Arbor”。",
     "say": [
       {
-        "text": "用Arbor把我的模型在开发集上的准确率从60%提高到70%,用测试集做验证",
-        "note": "Claude会初始化任务元组并开始迭代循环"
+        "text": "把这份训练代码的评估分数从70%提升到85%,在dev/test上分开评估。",
+        "note": "会启动多轮实验并维护假设树。"
       },
       {
-        "text": "用这个技能优化我的数据清理管道,目标是减少后续模型的损失",
-        "note": "会为管道建立开发/测试评估器"
+        "text": "改进这个 agent 框架的准确率,设12次实验预算并避免过拟合。",
+        "note": "会自动规划假设树并派子代理跑实验。"
       },
       {
-        "text": "对我的智能体框架做多轮改进,防止过拟合开发集,每次实验记录假设",
-        "note": "每个假设会被记录到假设树中"
+        "text": "在这个基准上搜索多种方案,比基线更高就用留出测试集把关。",
+        "note": "会以合并门控决定是否采纳新方案。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:96b754e3d8a417a25ccdc4479474622fb65270920f774ae679b7951062d1fcfe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-09T04:30:39.992Z",
-    "lint_pass": false,
-    "what_en": "Claude treats your artifact as the optimization target, runs repeated experiment-evaluate cycles, tests hypotheses in isolation, merges only test-validated changes, and returns the best improved version and a report.",
-    "when_en": "Triggered when a user wants to iteratively improve an artifact without overfitting. Also triggers on repeated experiment-evaluate loops or dev/test gap worries, even without saying 'Arbor'.",
+    "generated_at": "2026-08-10T04:44:42.979Z",
+    "lint_pass": true,
+    "what_en": "Claude autonomously iterates on an artifact (code, recipe, harness, pipeline, prompt): keeps a hypothesis tree, runs subagents in isolated git worktrees, gates merges via a held-out test evaluator, and outputs a report.",
+    "when_en": "When someone wants to optimize a concrete artifact (eval score, agent/harness, pipeline, benchmark) or describes repeated experiment-and-evaluate loops with dev/test worries — even without saying 'Arbor'.",
     "say_en": [
       {
-        "text": "Use Arbor to raise my model's dev accuracy from 60% to 70%, test-validated.",
-        "note": "Claude sets up the task tuple and starts the loop."
+        "text": "Improve this code's eval score from 70% to 85%, using separate dev/test splits.",
+        "note": "Claude will start a multi-round run and maintain a hypothesis tree."
       },
       {
-        "text": "Optimize my data-cleaning pipeline to reduce downstream model loss.",
-        "note": "It sets up dev/test evaluators for the pipeline."
+        "text": "Improve this agent framework's accuracy, budget 12 experiments, no overfit.",
+        "note": "It will plan a hypothesis tree and dispatch subagents to run experiments."
       },
       {
-        "text": "Improve my agent harness over rounds, avoid dev overfit; log each hypothesis.",
-        "note": "Each hypothesis is recorded in the hypothesis tree."
+        "text": "Search approaches on this benchmark, gate wins with a held-out test set.",
+        "note": "Merge gate decides whether a candidate becomes the new best."
       }
     ]
   }

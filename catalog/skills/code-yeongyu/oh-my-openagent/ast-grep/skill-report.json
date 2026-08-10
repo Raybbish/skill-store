@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "7782795357d68facebc7368e8c3c2c673745b9ba",
+    "upstream_commit": "ea2b38717861ffbb624e433131e6989172dabfe6",
     "content_hash": "sha256:21a6cd7b8d7d869c283bb62d8abce2fb3ecc9fed0200d828789a7ebbfd581707",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67521,
+    "stars_github": 67577,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-09T04:15:01.626Z",
+    "fetched_at": "2026-08-10T04:25:59.945Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-09T00:02:09+09:00",
+    "upstream_commit_at": "2026-08-10T13:04:32+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-09T04:15:01.626Z",
+    "generated_at": "2026-08-10T04:25:59.945Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -113,37 +113,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 可以按代码结构(语法树形状)而不是纯文本来搜索和改写代码:查找所有形如 X 的函数/调用/类/导入,批量替换代码(如 console.log→logger.info),或运行 YAML 规则做静态检查。",
-    "when": "当你的问题涉及代码结构而非文本内容,例如“找出所有空 catch 块”“把 require( 改成 import”“去掉所有 as any”这类按形状查找/批量改写时触发。",
+    "what": "装上后，Claude 能按代码结构（语法树）而不是文本搜索和改写代码，支持 25 种语言。可以找出特定形状的函数、调用、类或导入，执行批量替换（如 console.log→logger.info），并支持预览后应用。",
+    "when": "当用户要求按代码结构查找或改写代码（如查找特定形状的函数、重写 console.log、去除 as any 等）时触发。纯文本搜索（字符串、注释、文件名）不触发。",
     "say": [
       {
-        "text": "找出所有空 catch 块并列出文件位置。",
-        "note": "使用结构匹配搜索定位。"
+        "text": "把项目里所有 console.log(x) 改成 logger.info(x)",
+        "note": "会先预览再应用"
       },
       {
-        "text": "运行 rules/ 目录下的 YAML 扫描规则。",
-        "note": "执行 sg scan。"
+        "text": "找到所有接收 Request 参数的函数",
+        "note": "按参数形状匹配"
+      },
+      {
+        "text": "去掉所有 as any 类型断言",
+        "note": "批量重写"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:21a6cd7b8d7d869c283bb62d8abce2fb3ecc9fed0200d828789a7ebbfd581707",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-09T04:21:41.158Z",
+    "generated_at": "2026-08-10T04:35:07.368Z",
     "lint_pass": true,
-    "what_en": "Enables Claude to search and rewrite code by structure (AST shape) rather than raw text: find functions/calls/classes/imports matching a shape, batch-rewrite patterns like console.log→logger.info, and run YAML rules for static checks.",
-    "when_en": "Triggers when the question is about code structure rather than text bytes, e.g. 'find all empty catch blocks', 'replace require() with import', 'strip all as any'.",
+    "what_en": "After installation, Claude can search and rewrite code based on syntax tree structure (AST) rather than plain text, across 25 languages. It can find functions, calls, classes, or imports matching a shape, apply deterministic transforms (e.g., console.log → logger.info), and preview before applying.",
+    "when_en": "Triggers when the user asks to find or rewrite code based on structure (e.g., find functions of a shape, rewrite console.log, strip as any). Not triggered for plain-text search (string contents, comments, filenames).",
     "say_en": [
       {
-        "text": "Find all empty catch blocks and list their file locations.",
-        "note": "Uses structural matching to locate them."
+        "text": "Replace all console.log(x) with logger.info(x) in the project.",
+        "note": "Preview then apply."
       },
       {
-        "text": "Rewrite console.log(x) to logger.info(x) across the repo, preview first then apply.",
-        "note": "Dry-run then apply."
+        "text": "Find all functions that take a Request parameter.",
+        "note": "Match by parameter shape."
       },
       {
-        "text": "Run the YAML scan rules under rules/.",
-        "note": "Executes sg scan."
+        "text": "Strip all `as any` type assertions.",
+        "note": "Batch rewrite."
       }
     ]
   }

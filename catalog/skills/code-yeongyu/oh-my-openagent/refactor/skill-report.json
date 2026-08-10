@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Intelligent refactor command. Triggers: refactor, refactoring, cleanup, restructure, extract, simplify, modernize.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "7782795357d68facebc7368e8c3c2c673745b9ba",
+    "upstream_commit": "ea2b38717861ffbb624e433131e6989172dabfe6",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67521,
+    "stars_github": 67577,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-09T04:15:01.626Z",
+    "fetched_at": "2026-08-10T04:25:59.945Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-09T00:02:09+09:00",
+    "upstream_commit_at": "2026-08-10T13:04:32+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-09T04:15:01.626Z",
+    "generated_at": "2026-08-10T04:25:59.945Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把重构请求拆成六个阶段：先确认目标和范围，再并行分析代码、绘制依赖图，评估测试覆盖，生成详细计划，然后逐步修改并每步运行测试验证，最后跑全量测试并输出变更总结。",
-    "when": "当用户说出 refactor、cleanup、restructure 等触发词，或提出化简、抽取逻辑、升级代码等重构请求时触发；若目标含糊，它会先追问。",
+    "what": "装上后,Claude 在重构代码时会先弄清你的意图,扫描整个代码库,评估测试覆盖,制定详细计划,再分步修改并每步运行测试验证,最后做完整回归检查,确保不破坏现有功能。",
+    "when": "当你提到 refactor、cleanup、restructure 等关键词时触发。",
     "say": [
       {
-        "text": "把所有用废弃 API 的函数抽到新模块，范围设为 project。",
-        "note": "它先评估影响面再执行。"
+        "text": "用 /refactor 重构 src/auth/handler.ts",
+        "note": "Claude 会先分析该文件再动手。"
       },
       {
-        "text": "重构 src/api 模块，目标是把错误处理抽成中间件，范围 module。",
-        "note": "它会在每步后跑测试验证。"
+        "text": "把 AuthService 类里的验证逻辑提取到独立模块",
+        "note": "Claude 会先找依赖再重构。"
+      },
+      {
+        "text": "清理所有使用废弃 API 的代码",
+        "note": "Claude 会评估影响范围后逐步清理。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-09T04:24:00.899Z",
+    "generated_at": "2026-08-10T04:38:19.444Z",
     "lint_pass": true,
-    "what_en": "Claude will run a phased refactor flow: confirm goal and scope, analyze code and map dependencies, assess test coverage, generate a plan, apply changes step-by-step with tests after each step, then run full verification and summarize.",
-    "when_en": "Triggers when you use trigger words like refactor, cleanup, restructure, etc., or ask for simplifying, extracting, or modernizing code. If the goal is vague, it asks clarifying questions first.",
+    "what_en": "After install, when refactoring, Claude clarifies intent, maps the codebase, checks test coverage, plans, applies changes stepwise with tests, and runs a final regression check.",
+    "when_en": "Triggers when you mention keywords like refactor, cleanup, restructure, etc.",
     "say_en": [
       {
-        "text": "Refactor the AuthService class in src/auth/handler.ts with safe strategy.",
-        "note": "It will map the code first, then execute."
+        "text": "Run /refactor on src/auth/handler.ts",
+        "note": "Claude will analyze the file before changing it."
       },
       {
-        "text": "Extract all functions using the deprecated API into a new module, scope project.",
-        "note": "It assesses impact before changing."
+        "text": "Extract the validation logic in AuthService into a separate module",
+        "note": "It maps dependencies first, then refactors."
       },
       {
-        "text": "Refactor src/api to extract error handling into middleware, scope module.",
-        "note": "It verifies with tests after each step."
+        "text": "Clean up all code using deprecated APIs",
+        "note": "It assesses impact before making changes."
       }
     ]
   }

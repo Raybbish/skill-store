@@ -4,7 +4,7 @@ description: 'Guided journey from a website with traffic it under-converts to a 
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Grow a Website
@@ -33,7 +33,7 @@ Take a site that already has traffic and under-monetizes it, and turn it into a 
 1. **Resume first.** Before anything else, read `docs/GROW-WEBSITE-PLAN.md` and every artifact in the Journey Map. If the tracker exists, summarize the journey state in 3-5 lines and ask which phase to enter. Done when the user has confirmed an entry point. A journey with a tracker is resumed, never restarted.
 2. **Intake on first run only.** No tracker: run the Intake below, then create `docs/GROW-WEBSITE-PLAN.md` with every phase statused `pending | in-progress | awaiting-evidence | done | deferred: reason | skipped: reason`. Done when the tracker exists and the user has confirmed the phase plan.
 3. **Phase entry.** Announce: what the phase does, the decision it forces, the artifact it produces, rough effort. Offer proceed / skip / defer — phases marked GATE may be deferred, never skipped. Mark the phase `in-progress` on proceed. Done when the user chose.
-4. **Skill invocation and fallback.** Invoke the phase's skill by its slug. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
+4. **Skill invocation and fallback.** Load the phase's skill and use it: each phase's Invoke line names the skill by slug — use that skill to run the phase. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
 5. **In-phase decisions.** Ask every question under "Decide with the user" — with concrete options and your recommendation. Record the choice in the tracker's Key Decisions. A decision made silently is a defect.
 6. **Phase exit.** Present the draft artifact content for sign-off before writing. On approval: write or extend the docs/ files, update the tracker (status, Key Decisions, Next Actions). Done when the files are written and the phase row shows `done`.
 7. **Artifact discipline.** Read before writing; create a file only if missing, otherwise extend — add or update your sections, preserve everyone else's. Files are UPPERCASE in `docs/`. Every recommendation lands as a checkbox or a table row with owner and priority. See [references/artifact-templates.md](references/artifact-templates.md) when creating a docs/ file for the first time — create it from the full skeleton (all section headings), then fill the sections your phase names.
@@ -67,7 +67,7 @@ them (UX), what stops them (objections). Build an Objection / Counter-Objection 
 own words, place each counter at its point of friction, and inventory proof you have but do not show.
 Queue bold experiments — not button colors — scored by ICE.
 
-**Invoke:** `cro-methodology` with the primary conversion action, traffic numbers, and any research (exit surveys, support tickets, chat logs, reviews) from intake. Ask for a funnel map, an O/CO table sourced from real visitor language, an audit of the worst high-traffic page scored 0-10, and 3-5 ICE-scored experiment ideas with a hypothesis for the top two.
+**Invoke:** Use the `cro-methodology` skill with the primary conversion action, traffic numbers, and any research (exit surveys, support tickets, chat logs, reviews) from intake. Ask for a funnel map, an O/CO table sourced from real visitor language, an audit of the worst high-traffic page scored 0-10, and 3-5 ICE-scored experiment ideas with a hypothesis for the top two.
 
 **Decide with the user:** (1) Which page is the blocked artery to attack first — highest traffic times worst conversion? (2) Is there enough research to source objections, or do we run exit surveys first (status awaiting-evidence)? (3) Which two experiments enter the queue — recommend the highest ICE that could plausibly double conversion, not a meek tweak.
 
@@ -85,7 +85,7 @@ Credibility, Connection); a questionnaire that captures the email before the que
 scored questions in 2-7 categories; a results page with dynamic content per tier that creates
 tension between where the visitor is and could be; a follow-up engine segmented by score.
 
-**Invoke:** `scorecard-marketing` with the audience and the primary conversion action. Ask for the concept hook (pressure-test several), the scored questions and their categories, the tiered results copy, the pre-question capture form, and tier-segmented follow-up emails.
+**Invoke:** Use the `scorecard-marketing` skill with the audience and the primary conversion action. Ask for the concept hook (pressure-test several), the scored questions and their categories, the tiered results copy, the pre-question capture form, and tier-segmented follow-up emails.
 
 **Decide with the user:** (1) The concept hook — pick a "moving toward" framing that taps the strongest dormant desire over a fear-based one. (2) How many tiers and where the score cutoffs sit. (3) Does an adequate capture funnel already exist, in which case skip?
 
@@ -103,7 +103,7 @@ sell to the internal); a Guide with empathy and authority; a 3-4 step Plan; a di
 Call to Action; the stakes of Failure; a picture of Success. Produce a one-liner: "We help [character]
 who struggle with [problem] to [solution] so they can [result]." Clear beats clever.
 
-**Invoke:** `storybrand-messaging` with the objections and proof inventory from Phase 1 — they are the raw material for the Problem and the Guide's authority — plus any existing positioning. Ask for a full brand script, a homepage hero rewrite, and 2-3 one-liner options.
+**Invoke:** Use the `storybrand-messaging` skill with the objections and proof inventory from Phase 1 — they are the raw material for the Problem and the Guide's authority — plus any existing positioning. Ask for a full brand script, a homepage hero rewrite, and 2-3 one-liner options.
 
 **Decide with the user:** (1) Which internal problem to lead with. (2) Which one-liner a stranger could repeat after hearing it once. (3) The direct plus transitional CTA wording.
 
@@ -121,7 +121,7 @@ arrive in 30 minutes, still hot"; "saves 16 hours a month"). Lead with the count
 not the expected one. Wrap the transformation in one specific customer's story: if I look at the one,
 I will act.
 
-**Invoke:** `made-to-stick` with the Key Messages and page copy from Phase 3. Ask for a Curse-of-Knowledge audit flagging every abstract claim, concrete rewrites with real numbers, and one flagship case study turned into a sticky story.
+**Invoke:** Use the `made-to-stick` skill with the Key Messages and page copy from Phase 3. Ask for a Curse-of-Knowledge audit flagging every abstract claim, concrete rewrites with real numbers, and one flagship case study turned into a sticky story.
 
 **Decide with the user:** (1) Which claims to make concrete first — the highest-traffic pages. (2) Which case study becomes the flagship story.
 
@@ -139,7 +139,7 @@ the most weight. Specific numbers beat vague claims ("2,347 founders" over "thou
 proof beats celebrity proof; admitting a small weakness before your strengths raises trust. Stack
 several principles on the highest-value pages. Real numbers, real deadlines, real scarcity only.
 
-**Invoke:** `influence-psychology` with the O/CO table and proof inventory from Phase 1. Ask for a principle-by-principle audit, a redesigned trust-signal section that stacks social proof plus authority plus genuine scarcity, and a micro-commitment rewrite of the signup flow — flagging anything that crosses into manipulation.
+**Invoke:** Use the `influence-psychology` skill with the O/CO table and proof inventory from Phase 1. Ask for a principle-by-principle audit, a redesigned trust-signal section that stacks social proof plus authority plus genuine scarcity, and a micro-commitment rewrite of the signup flow — flagging anything that crosses into manipulation.
 
 **Decide with the user:** (1) Which principles to prioritize by the objections research surfaced. (2) Which proof is real and displayable now versus which must be gathered. (3) Remove any fake scarcity currently on the site — confirm.
 
@@ -158,7 +158,7 @@ low-value/high-cost, stack high-value/low-cost); add named bonuses that each kil
 a risk-reversing guarantee; add ethical scarcity; name it with MAGIC. A strong guarantee reduces
 refunds; raising price can raise conversion.
 
-**Invoke:** `hundred-million-offers` with the current offer and price, and whether visitors call it "too expensive." Ask for a Value-Equation score, an obstacle list with a solution for each, named bonuses, a guarantee, and MAGIC name options.
+**Invoke:** Use the `hundred-million-offers` skill with the current offer and price, and whether visitors call it "too expensive." Ask for a Value-Equation score, an obstacle list with a solution for each, named bonuses, a guarantee, and MAGIC name options.
 
 **Decide with the user:** (1) Is "too expensive" a price problem or a value-perception problem? (2) Which bonuses and which guarantee to commit to. (3) Price and tier structure. (4) Queue the new offer as a bold experiment — a new offer is exactly what CRO says is worth testing.
 
@@ -177,7 +177,7 @@ promotions with the Rule of 100. Public ("Powered by [you]", behavioral residue)
 Stories must pass the Trojan Horse test. Only ~7% of word-of-mouth is online — design things worth
 talking about, not just share buttons.
 
-**Invoke:** `contagious` with the scorecard results page from Phase 2 and the site's highest-value asset. Ask for a STEPPS audit scored out of 10, a shareable redesign of the results page with a share card that passes the Trojan Horse test, and Public / behavioral-residue features.
+**Invoke:** Use the `contagious` skill with the scorecard results page from Phase 2 and the site's highest-value asset. Ask for a STEPPS audit scored out of 10, a shareable redesign of the results page with a share card that passes the Trojan Horse test, and Public / behavioral-residue features.
 
 **Decide with the user:** (1) Which asset is the shareable one. (2) Which two or three STEPPS drivers to engineer in. (3) The share incentive — must be a real benefit, never a fabricated reward.
 
@@ -195,7 +195,7 @@ Referrals). The AFTER column is usually where the money hides — retention cost
 acquisition, and a 5% retention gain lifts profit 25-95%. The number-one reason customers do not
 refer is that nobody asked.
 
-**Invoke:** `one-page-marketing` as an audit tying Phases 1-7 together — the scorecard fills Capture, the offer fills Convert, Contagious powers Referrals. Ask for the 9-square plan scored 0-10 per square, flagging empty AFTER squares, and a lead-nurture sequence at a 3-to-1 value-to-ask ratio.
+**Invoke:** Use the `one-page-marketing` skill as an audit tying Phases 1-7 together — the scorecard fills Capture, the offer fills Convert, Contagious powers Referrals. Ask for the 9-square plan scored 0-10 per square, flagging empty AFTER squares, and a lead-nurture sequence at a 3-to-1 value-to-ask ratio.
 
 **Decide with the user:** (1) Which empty squares to fill first — usually Experience, Lifetime Value, Referrals. (2) The ascension model for best customers. (3) Retention and LTV targets to track.
 
@@ -212,7 +212,7 @@ refer is that nobody asked.
 | hooked-ux | return visits should become a habit loop | Extends docs/PRODUCT.md |
 | ux-heuristics | friction, not persuasion, blocks the funnel | Extends docs/WEBSITE.md |
 
-Optional phases follow the same operating rules; insert where the Add-when condition first becomes true.
+Optional phases follow the same operating rules — load and use each listed skill exactly as a core phase would; insert where the Add-when condition first becomes true.
 
 ## Common Mistakes
 
@@ -237,5 +237,5 @@ Exit checklist:
 
 Close the tracker: every phase `done` or `skipped: reason`, and any open Next Actions carried into the artifacts they belong to. Then route forward:
 
-- When the growth loops belong inside the product, continue with `grow-app`.
-- When the site is beyond saving and a rebuild is cheaper, continue with `create-website`.
+- When the growth loops belong inside the product, continue with the `grow-app` skill.
+- When the site is beyond saving and a rebuild is cheaper, continue with the `create-website` skill.

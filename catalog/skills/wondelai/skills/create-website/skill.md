@@ -4,7 +4,7 @@ description: 'Guided journey from a blank page to a live, high-converting websit
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Create a Website
@@ -35,7 +35,7 @@ A blank page becomes a live, high-converting website through ten phases run in o
 1. **Resume first.** Before anything else, read `docs/CREATE-WEBSITE-PLAN.md` and every artifact in the Journey Map. If the tracker exists, summarize the journey state in 3-5 lines and ask which phase to enter. Done when the user has confirmed an entry point. A journey with a tracker is resumed, never restarted.
 2. **Intake on first run only.** No tracker: run the Intake below, then create `docs/CREATE-WEBSITE-PLAN.md` with every phase statused `pending | in-progress | awaiting-evidence | done | deferred: reason | skipped: reason`. Done when the tracker exists and the user has confirmed the phase plan.
 3. **Phase entry.** Announce: what the phase does, the decision it forces, the artifact it produces, rough effort. Offer proceed / skip / defer — phases marked GATE may be deferred, never skipped. Mark the phase `in-progress` on proceed. Done when the user chose.
-4. **Skill invocation and fallback.** Invoke the phase's skill by its slug. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
+4. **Skill invocation and fallback.** Load the phase's skill and use it: each phase's Invoke line names the skill by slug — use that skill to run the phase. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
 5. **In-phase decisions.** Ask every question under "Decide with the user" — with concrete options and your recommendation. Record the choice in the tracker's Key Decisions. A decision made silently is a defect.
 6. **Phase exit.** Present the draft artifact content for sign-off before writing. On approval: write or extend the docs/ files, update the tracker (status, Key Decisions, Next Actions). Done when the files are written and the phase row shows `done`.
 7. **Artifact discipline.** Read before writing; create a file only if missing, otherwise extend — add or update your sections, preserve everyone else's. Files are UPPERCASE in `docs/`. Every recommendation lands as a checkbox or a table row with owner and priority. See [references/artifact-templates.md](references/artifact-templates.md) when creating a docs/ file for the first time — create it from the full skeleton (all section headings), then fill the sections your phase names.
@@ -65,7 +65,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 
 **Brief (fallback):** PVP Index — score candidate niches on Personal fulfillment, Value to the market, and Profitability, then pick *one*. "Speak to everyone, speak to no one." Write a USP that passes the swap test: if a competitor's name fits your tagline, it is too generic. Map the Before and During squares to concrete pages, each with one job.
 
-**Invoke:** `one-page-marketing` with the product and target from intake. Ask for (a) PVP scores for 2-3 niches, (b) a one-paragraph avatar, (c) a swap-test USP, (d) the Before/During squares mapped to homepage, landing, and lead-capture pages.
+**Invoke:** Use the `one-page-marketing` skill with the product and target from intake. Ask for (a) PVP scores for 2-3 niches, (b) a one-paragraph avatar, (c) a swap-test USP, (d) the Before/During squares mapped to homepage, landing, and lead-capture pages.
 
 **Decide with the user:** Which niche to dominate (recommend the highest PVP score)? What is the single primary conversion goal — trial, demo, purchase, or quiz lead?
 
@@ -79,7 +79,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 
 **Brief (fallback):** SB7 — a Character who wants something, a Problem (external/internal/philosophical), a Guide with empathy and authority, a Plan, a call to Action, the stakes of Failure, a vivid Success. Name the internal problem (how it *feels*), not just the external one. One-liner: "We help [character] who struggle with [problem] to [solution] so they can [result]."
 
-**Invoke:** `storybrand-messaging` with the avatar and USP from MARKETING.md. Ask for a full BrandScript, homepage copy following the StoryBrand wireframe (header, stakes, value, guide, plan, CTA), and five one-liner variations ranked by repeatability.
+**Invoke:** Use the `storybrand-messaging` skill with the avatar and USP from MARKETING.md. Ask for a full BrandScript, homepage copy following the StoryBrand wireframe (header, stakes, value, guide, plan, CTA), and five one-liner variations ranked by repeatability.
 
 **Decide with the user:** Which one-liner is most repeatable after a single hearing? Confirm the customer, not the brand, is the hero — no opening "We…".
 
@@ -93,7 +93,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 
 **Brief (fallback):** SUCCESs — Simple, Unexpected, Concrete, Credible, Emotional, Story. Fight the Curse of Knowledge. Highest leverage is Concrete: replace every abstraction with a picture ("report generation from 4 hours to 10 minutes"). Add one unexpected hook, one Sinatra-test proof, and one named-customer story.
 
-**Invoke:** `made-to-stick` with the copy in WEBSITE.md `## Page Briefs` and the messages in POSITIONING.md. Ask for a SUCCESs score, concrete rewrites of every abstract benefit, one unexpected hero hook, and a short customer story.
+**Invoke:** Use the `made-to-stick` skill with the copy in WEBSITE.md `## Page Briefs` and the messages in POSITIONING.md. Ask for a SUCCESs score, concrete rewrites of every abstract benefit, one unexpected hero hook, and a short customer story.
 
 **Decide with the user:** Approve the sticky rewrites and pick the hero hook. Which numbers and claims are true and citable (this feeds Rule 8)?
 
@@ -107,7 +107,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 
 **Brief (fallback):** Every pixel intentional. Start with the signature moment (usually the hero), not the header: dramatic scale (min 10:1 display-to-body), an asymmetric composition, a choreographed load with ~80ms staggered word reveals. Custom cubic-beziers (expo-out `0.16,1,0.3,1`), animate only `transform`/`opacity`, warm off-blacks (`#0a0a0a`) not pure black. Custom cursor only if the user opts in.
 
-**Invoke:** `top-design` with POSITIONING.md and the WEBSITE.md page briefs. Ask for the signature hero design, a custom color system (no AI purple-to-blue gradient), and a scored audit across typography, composition, motion, color, and details.
+**Invoke:** Use the `top-design` skill with POSITIONING.md and the WEBSITE.md page briefs. Ask for the signature hero design, a custom color system (no AI purple-to-blue gradient), and a scored audit across typography, composition, motion, color, and details.
 
 **Decide with the user:** What is the signature moment worth screenshotting? Approve the color system. Custom cursor — yes, or native (recommend native unless craft is the product)?
 
@@ -121,7 +121,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 
 **Brief (fallback):** Clear-goblet principle — type serves content. "Type for a moment" (headlines) versus "type to live with" (body). Three measures beat typeface choice: 16-18px body, 45-75ch measure (66 optimal, `max-width: 65ch`), line height 1.5-1.7 body / 1.1-1.25 headings. One to two families. Under 200KB payload, WOFF2, variable fonts, `clamp()` fluid scale, preload + `font-display: swap`.
 
-**Invoke:** `web-typography` with DESIGN.md `## Design Direction`. Ask for a display+body pairing, full CSS (clamp scale, per-context line heights, 65ch measure), and a font-loading plan under 200KB with zero layout shift.
+**Invoke:** Use the `web-typography` skill with DESIGN.md `## Design Direction`. Ask for a display+body pairing, full CSS (clamp scale, per-context line heights, 65ch measure), and a font-loading plan under 200KB with zero layout shift.
 
 **Decide with the user:** Approve the pairing; confirm the performance budget (recommend a single variable font to cut the file count).
 
@@ -135,7 +135,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 
 **Brief (fallback):** Design in grayscale first, add color last. Systems over talent: constrained scales for spacing (4, 8, 16, 24, 32, 48, 64), type, color, and shadow. Hierarchy from combining levers (large OR bold OR dark), saving all three for one element. Space between groups exceeds space within. Near-black (`#111827`) not pure `#000`, tinted grays. Two-layer shadows mapped to elevation. Run the blur test.
 
-**Invoke:** `refactoring-ui` with DESIGN.md. Ask for a grayscale hierarchy audit, a constrained token set (spacing, a 9-shade palette with tinted grays, a type scale, a shadow scale), and refactored button/form/card components with one primary action per section.
+**Invoke:** Use the `refactoring-ui` skill with DESIGN.md. Ask for a grayscale hierarchy audit, a constrained token set (spacing, a 9-shade palette with tinted grays, a type scale, a shadow scale), and refactored button/form/card components with one primary action per section.
 
 **Decide with the user:** Approve the token scales; confirm the primary/secondary/tertiary button hierarchy.
 
@@ -149,7 +149,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 
 **Brief (fallback):** Pages must be self-evident; users scan, satisfice, and muddle through. Trunk Test — dropped onto any page cold, can they answer what site, what page, what sections, and where to go next? Run "get rid of half the words." Plain-language CTAs. Inline validation on blur, mark optional not required fields, 44x44px tap targets, visible system status ("Saving…"/"Saved", skeletons, confirmations).
 
-**Invoke:** `ux-heuristics` with WEBSITE.md and DESIGN.md. Ask for a usability audit against Krug's laws and Nielsen's 10 heuristics, each issue rated 0-4, plus rewritten error messages and CTA labels.
+**Invoke:** Use the `ux-heuristics` skill with WEBSITE.md and DESIGN.md. Ask for a usability audit against Krug's laws and Nielsen's 10 heuristics, each issue rated 0-4, plus rewritten error messages and CTA labels.
 
 **Decide with the user:** Approve the prioritized fix list starting with catastrophic (4) issues; confirm which fixes ship before launch versus later.
 
@@ -163,7 +163,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 
 **Brief (fallback):** Don't guess — discover. Build an Objection/Counter table for the Big 5 (Trust, Price, Fit, Timing, Effort); place each counter at the point of friction, never buried in an FAQ; use "CO Only" for objections a visitor won't admit. Proof hierarchy: specific results with context > named testimonials > case studies > bare logos. Proof sandwich; specific numbers ("47,832" not "about 50,000").
 
-**Invoke:** `cro-methodology` with WEBSITE.md and the proof assets from intake. Ask for a Big-5 Objection/Counter table with placements, a persuasion-asset audit ranked by the proof hierarchy, a wish list of missing proof, and A/B test hypotheses.
+**Invoke:** Use the `cro-methodology` skill with WEBSITE.md and the proof assets from intake. Ask for a Big-5 Objection/Counter table with placements, a persuasion-asset audit ranked by the proof hierarchy, a wish list of missing proof, and A/B test hypotheses.
 
 **Decide with the user:** Which counters ship now versus await proof you must acquire? Confirm no counter invents evidence (Rule 8).
 
@@ -177,7 +177,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 
 **Brief (fallback):** Everything is downstream from lead generation; a quiz converts 30-50% versus 3-10% for a static PDF. Four steps: a landing page (concept hook + the 3 Cs — Clarity, Credibility, Connection), a questionnaire that captures the email *before* the questions, a tiered results page, and a segmented follow-up. "Moving toward" hooks beat fear-based ones. Keep it to 8-15 questions for cold traffic.
 
-**Invoke:** `scorecard-marketing` with the primary goal and avatar. Ask for a concept hook and landing page, 10-12 scored questions in 3-4 categories, three result tiers with dynamic copy and a CTA each, and a follow-up sequence segmented by tier.
+**Invoke:** Use the `scorecard-marketing` skill with the primary goal and avatar. Ask for a concept hook and landing page, 10-12 scored questions in 3-4 categories, three result tiers with dynamic copy and a CTA each, and a follow-up sequence segmented by tier.
 
 **Decide with the user:** Does the site need a lead-nurture motion? If one direct CTA suffices, skip this phase. Otherwise approve the concept hook.
 
@@ -191,7 +191,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 
 **Brief (fallback):** "Start with the customer experience and work backwards." Experience it cold as a stranger. State the One Thing in a single sentence. Count steps-to-value (three, not nine). Walk the slow paths — empty form, error state, failed payment, mobile cold-start. Check the back of the fence — 404, error copy, confirmation email. The verdict is binary: insanely great, or not done. Focusing is saying no.
 
-**Invoke:** `steve-jobs-design-review` with the live site or full page set. Ask for a cold first impression, the One Thing, a steps-to-value count, a walk of the failure/empty states and the back of the fence, a binary verdict, and a ranked cut list plus fix list.
+**Invoke:** Use the `steve-jobs-design-review` skill with the live site or full page set. Ask for a cold first impression, the One Thing, a steps-to-value count, a walk of the failure/empty states and the back of the fence, a binary verdict, and a ranked cut list plus fix list.
 
 **Decide with the user:** Act on the cut list — what to delete to protect the single primary goal? If the verdict is NOT DONE, which fixes are blocking launch?
 
@@ -209,7 +209,7 @@ Done when `docs/CREATE-WEBSITE-PLAN.md` exists with every phase statused and the
 | design-everyday-things | Forms or flows confuse users despite clean visuals | Extends docs/DESIGN.md |
 | microinteractions | The site needs interaction polish beyond static design | Extends docs/DESIGN.md |
 
-Optional phases follow the same operating rules; insert where the Add-when condition first becomes true.
+Optional phases follow the same operating rules — load and use each listed skill exactly as a core phase would; insert where the Add-when condition first becomes true.
 
 ## Common Mistakes
 
@@ -231,4 +231,4 @@ Exit checklist:
 - [ ] The Steve Jobs review returned INSANELY GREAT — not "pretty good" — and the cut list is applied
 - [ ] Every scarcity claim, testimonial, and guarantee on the page is true
 
-Close the tracker: every phase `done` or `skipped: reason`, with any remaining Next Actions carried into the artifacts as checkboxes. Then route forward: when the site is live and conversion data starts arriving, continue with `improve-website` to turn today's assumptions into tested wins. When the website sells a product that now needs building, continue with `create-app`.
+Close the tracker: every phase `done` or `skipped: reason`, with any remaining Next Actions carried into the artifacts as checkboxes. Then route forward: when the site is live and conversion data starts arriving, continue with the `improve-website` skill to turn today's assumptions into tested wins. When the website sells a product that now needs building, continue with the `create-app` skill.

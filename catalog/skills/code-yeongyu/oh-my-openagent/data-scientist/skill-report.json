@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Expert data processing specialist with intelligent DuckDB/Polars selection for maximum performance. Always includes numpy, never uses pandas, runs everything through uv. Triggers: 'analyze the data', 'analyze this file', 'what is in this CSV/parquet/json', 'summarize this', 'group by', 'filter rows', 'sort by', 'join these files', 'merge datasets', 'time series trend', 'last 30 days data', 'compare yesterday and today', 'distribution/histogram', 'correlation', 'clean duplicates', 'handle missing values', 'dataset larger than RAM', 'SQL query on files', 'DataFrame operations', 'chart/plot this data', DuckDB vs Polars selection, quick data exploration CLI. NOT for plain text/code inspection, configs, or tiny inline math.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "7782795357d68facebc7368e8c3c2c673745b9ba",
+    "upstream_commit": "ea2b38717861ffbb624e433131e6989172dabfe6",
     "content_hash": "sha256:e39ae723a946f2b155d695273288a77539d00adbfb1c8954bd676c6b016ae85e",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67521,
+    "stars_github": 67577,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-09T04:15:01.626Z",
+    "fetched_at": "2026-08-10T04:25:59.945Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-08-09T00:02:09+09:00",
+    "upstream_commit_at": "2026-08-10T13:04:32+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-09T04:15:01.626Z",
+    "generated_at": "2026-08-10T04:25:59.945Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -106,41 +106,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "处理数据时,Claude 自动选 DuckDB 或 Polars,用 uv 运行,始终带 numpy、不用 pandas;直接查 CSV/Parquet/JSON 文件,结果经 Arrow 转 Polars,并汇报耗时与行数。",
-    "when": "当你说“分析数据”、“这个文件里有什么”、“汇总”等,或提出统计、时间趋势、合并文件等需求时触发;不用于纯文本/代码检查、配置或简单计算。",
+    "what": "处理数据任务时，会按操作类型在 DuckDB 与 Polars 之间选工具；一律用 uv 运行并带上 numpy，不用 pandas，优先直接查文件、延迟计算，完成后报告处理时间与行数。",
+    "when": "当用户要求分析数据或查看文件内容、做分组或过滤等数据处理、提到 CSV/Parquet 等数据文件时触发；不用于纯文本查看、配置文件或小型内联计算。",
     "say": [
       {
-        "text": "分析这个 CSV 文件,按类别汇总销售额。",
-        "note": "触发数据处理流程。"
+        "text": "分析这个 CSV 文件，按类别统计总金额"
       },
       {
-        "text": "比较昨天和今天的数据有什么不同。",
-        "note": "触发时间序列对比。"
+        "text": "对比昨天和今天的数据，找出差异",
+        "note": "会按时间序列比较并给出统计结果。"
       },
       {
-        "text": "数据集太大内存装不下,怎么办?",
-        "note": "触发大数据处理策略。"
+        "text": "这个文件太大，内存装不下，帮我做分组聚合",
+        "note": "会改用 Polars 流式或 DuckDB 外存处理。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e39ae723a946f2b155d695273288a77539d00adbfb1c8954bd676c6b016ae85e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-09T04:22:39.532Z",
+    "generated_at": "2026-08-10T04:35:30.040Z",
     "lint_pass": true,
-    "what_en": "When installed, Claude auto-selects DuckDB or Polars for data processing, runs via uv with numpy, never pandas. It queries CSV/Parquet/JSON files directly, converts results to Polars via Arrow, and reports time and row counts.",
-    "when_en": "Triggers when you say 'analyze the data', 'what is in this file', 'summarize', etc., or ask for statistics, time trends, merging files. Not for plain text/code inspection, configs, or tiny inline math.",
+    "what_en": "On data tasks, selects DuckDB or Polars by operation type; always runs via uv with numpy, never uses pandas, prefers direct file queries and lazy evaluation, and reports processing time and row counts.",
+    "when_en": "Triggers on data analysis/file inspection requests, grouping/filtering operations, or CSV/Parquet file mentions; not for plain-text viewing, configs, or small inline math.",
     "say_en": [
       {
-        "text": "Analyze this CSV and summarize sales by category.",
-        "note": "Triggers the data processing pipeline."
+        "text": "Analyze this CSV file and total amounts by category.",
+        "note": "Queries the file with DuckDB, then uses Polars."
       },
       {
-        "text": "Compare yesterday's and today's data for differences.",
-        "note": "Triggers time-series comparison."
+        "text": "Compare yesterday's and today's data and show differences.",
+        "note": "Runs a time-series comparison and reports statistics."
       },
       {
-        "text": "The dataset is too large for memory; what to do?",
-        "note": "Triggers big-data handling strategy."
+        "text": "This dataset is too large for RAM; aggregate it by group.",
+        "note": "Switches to Polars streaming or DuckDB out-of-core execution."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "7782795357d68facebc7368e8c3c2c673745b9ba",
+    "upstream_commit": "ea2b38717861ffbb624e433131e6989172dabfe6",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67521,
+    "stars_github": 67577,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-09T04:15:01.626Z",
+    "fetched_at": "2026-08-10T04:25:59.945Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-09T00:02:09+09:00",
+    "upstream_commit_at": "2026-08-10T13:04:32+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-09T04:15:01.626Z",
+    "generated_at": "2026-08-10T04:25:59.945Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,33 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 在每次成功编辑代码后会自动检查注释；若发现注释有问题，会先修复或解释该注释，再继续后续操作。",
-    "when": "当 Claude 用 apply_patch、write、edit 等编辑工具成功修改代码后触发；非编辑操作不会触发。",
+    "what": "装上后,Claude 会在每次修改代码后自动检查注释。若发现格式问题,会暂停并先修复或解释再继续。",
+    "when": "在成功执行 apply_patch、write、edit 等编辑操作后触发;也用于回应评论检查器发出的反馈。",
     "say": [
       {
-        "text": "修复刚才编辑中标记的注释问题。",
-        "note": "Claude将按警告修改注释。"
+        "text": "收到注释检查警告了,请按提示修复代码。",
+        "note": "会立即处理警告"
       },
       {
-        "text": "解释一下这条注释为什么被标注。",
-        "note": "Claude会说明原因并给出处理建议。"
+        "text": "这个警告说注释不符合规范,解释一下为什么这样写。",
+        "note": "会要求你说明理由"
+      },
+      {
+        "text": "帮我重新执行刚才的编辑,看看评论检查是否通过。",
+        "note": "会重跑检查"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-09T04:21:52.222Z",
+    "generated_at": "2026-08-10T04:35:15.248Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude automatically checks comments after each successful code edit; if a comment is flagged, it must fix or explain it before continuing.",
-    "when_en": "Triggered after successful edits via tools like apply_patch, write, or edit; non-edit actions do not trigger it.",
+    "what_en": "After installation, it automatically checks comments following each successful edit. If a comment-checker warning appears, progress is blocked until the flagged comment is fixed or explained.",
+    "when_en": "Triggered after successful edit operations such as apply_patch, write, and edit, and when Codex must respond to comment-checker feedback.",
     "say_en": [
       {
-        "text": "Fix the comment issue flagged in the last edit.",
-        "note": "Claude will update the comment per the warning."
+        "text": "I got a comment-checker warning. Please fix the flagged code.",
+        "note": "It will address the warning immediately."
       },
       {
-        "text": "Explain why this comment was flagged.",
-        "note": "Claude will state the reason and suggest a fix."
+        "text": "This warning says a comment is non-compliant. Explain why I wrote it that way.",
+        "note": "It will ask you to justify the comment."
+      },
+      {
+        "text": "Re-run my last edit to see if the comment check passes now.",
+        "note": "It will re-run the check."
       }
     ]
   }
