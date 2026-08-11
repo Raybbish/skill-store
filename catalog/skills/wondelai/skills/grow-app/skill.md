@@ -4,7 +4,7 @@ description: 'Guided journey from an app people sign up for and then quietly aba
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Grow an App
@@ -35,7 +35,7 @@ Phases 1-2 seal the loop and the funnel; 3-5 steer with evidence; 6 is the instr
 1. **Resume first.** Before anything else, read `docs/GROW-APP-PLAN.md` and every artifact in the Journey Map. If the tracker exists, summarize the journey state in 3-5 lines and ask which phase to enter. Done when the user has confirmed an entry point. A journey with a tracker is resumed, never restarted.
 2. **Intake on first run only.** No tracker: run the Intake below, then create `docs/GROW-APP-PLAN.md` with every phase statused `pending | in-progress | awaiting-evidence | done | deferred: reason | skipped: reason`. Done when the tracker exists and the user has confirmed the phase plan.
 3. **Phase entry.** Announce: what the phase does, the decision it forces, the artifact it produces, rough effort. Offer proceed / skip / defer — phases marked GATE may be deferred, never skipped. Mark the phase `in-progress` on proceed. Done when the user chose.
-4. **Skill invocation and fallback.** Invoke the phase's skill by its slug. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
+4. **Skill invocation and fallback.** Load the phase's skill and use it: each phase's Invoke line names the skill by slug — use that skill to run the phase. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
 5. **In-phase decisions.** Ask every question under "Decide with the user" — with concrete options and your recommendation. Record the choice in the tracker's Key Decisions. A decision made silently is a defect.
 6. **Phase exit.** Present the draft artifact content for sign-off before writing. On approval: write or extend the docs/ files, update the tracker (status, Key Decisions, Next Actions). Done when the files are written and the phase row shows `done`.
 7. **Artifact discipline.** Read before writing; create a file only if missing, otherwise extend — add or update your sections, preserve everyone else's. Files are UPPERCASE in `docs/`. Every recommendation lands as a checkbox or a table row with owner and priority. See [references/artifact-templates.md](references/artifact-templates.md) when creating a docs/ file for the first time — create it from the full skeleton (all section headings), then fill the sections your phase names.
@@ -65,7 +65,7 @@ Done when `docs/GROW-APP-PLAN.md` exists with every phase statused and the user 
 
 **Brief (fallback):** The Hook Model runs Trigger → Action → Variable Reward → Investment. Migrate external triggers (push, email) to internal ones (an emotion — boredom, FOMO, anxiety). Make the action trivially simple. Make the reward variable across tribe/hunt/self. Sequence investment *after* the reward so it raises switching cost and loads the next trigger. A loop with one weak phase stalls, not half-works.
 
-**Invoke:** `hooked-ux` with the core loop and how daily-active users return today. Ask it to (a) map the loop across all four phases, rate each 0-10, and name the weakest, and (b) design honest variable-reward concepts powered by data you already have, each checked against the Manipulation Matrix.
+**Invoke:** Use the `hooked-ux` skill with the core loop and how daily-active users return today. Ask it to (a) map the loop across all four phases, rate each 0-10, and name the weakest, and (b) design honest variable-reward concepts powered by data you already have, each checked against the Manipulation Matrix.
 
 **Decide with the user:**
 - Which internal trigger (emotion) should pull users back — confirm one.
@@ -82,7 +82,7 @@ Done when `docs/GROW-APP-PLAN.md` exists with every phase statused and the user 
 
 **Brief (fallback):** B=MAP — behavior fires only when Motivation, Ability, and a Prompt converge. Motivation is unreliable; raise Ability instead. Simplicity is capped by the *scarcest* of six resources: time, money, physical effort, mental effort, social deviance, non-routineness. Shrink the target to a Starter Step that delivers value in under 30s, anchor it to an existing routine, and celebrate the win immediately.
 
-**Invoke:** `improve-retention` with the real activation flow step by step and the day-1/7/30 drop-offs. Ask for a B=MAP friction audit rating all six Ability-Chain factors, the scarcest resource named, a Starter Step redesign, and event-based prompt rules.
+**Invoke:** Use the `improve-retention` skill with the real activation flow step by step and the day-1/7/30 drop-offs. Ask for a B=MAP friction audit rating all six Ability-Chain factors, the scarcest resource named, a Starter Step redesign, and event-based prompt rules.
 
 **Decide with the user:**
 - Which is the scarcest Ability resource for the first action — fix that link first, not the obvious one.
@@ -99,7 +99,7 @@ Done when `docs/GROW-APP-PLAN.md` exists with every phase statused and the user 
 
 **Brief (fallback):** Aim for at least one customer touchpoint per week. Build an Opportunity Solution Tree: outcome at the top → customer opportunities (needs/pains in the customer's words) → candidate solutions/experiments. Never leap outcome→solution. Interviews are story-based ("tell me about the last time you…"), captured as one-page snapshots. Test the riskiest leap-of-faith assumption first, cheaply.
 
-**Invoke:** `continuous-discovery` with the retention outcome and known churn patterns. Ask for an Opportunity Solution Tree, a current-state experience map of how churned users try to succeed today, a weekly story-based interview snapshot template, and an assumption map for the next planned feature.
+**Invoke:** Use the `continuous-discovery` skill with the retention outcome and known churn patterns. Ask for an Opportunity Solution Tree, a current-state experience map of how churned users try to succeed today, a weekly story-based interview snapshot template, and an assumption map for the next planned feature.
 
 **Decide with the user:**
 - The single outcome at the top of the tree.
@@ -117,7 +117,7 @@ Done when `docs/GROW-APP-PLAN.md` exists with every phase statused and the user 
 
 **Brief (fallback):** Outcomes over outputs — value is the behavior change, not the deliverable. Write a hypothesis: "We believe [outcome] will happen if [persona] achieves [action] with [feature]," with the metric and threshold committed *before* the test. Match fidelity to risk (a paper prototype with five users finds ~85% of usability issues); reserve A/B tests for tuning a proven concept. When invalidated, remove from the backlog — don't defer.
 
-**Invoke:** `lean-ux` with the biggest current design debate or a top discovery opportunity. Ask for three hypothesis statements in the standard format, the lowest-fidelity experiment that could validate the top one, and its pre-committed metric, threshold, and timebox.
+**Invoke:** Use the `lean-ux` skill with the biggest current design debate or a top discovery opportunity. Ask for three hypothesis statements in the standard format, the lowest-fidelity experiment that could validate the top one, and its pre-committed metric, threshold, and timebox.
 
 **Decide with the user:**
 - Which hypothesis to test first.
@@ -134,7 +134,7 @@ Done when `docs/GROW-APP-PLAN.md` exists with every phase statused and the user 
 
 **Brief (fallback):** Empowered teams get problems, not backlogs, and answer for outcomes. Dual-track: discovery (what's worth building — addressing value, usability, feasibility, viability) runs continuously alongside delivery. Expect 10-20 discovery iterations per shipped feature. Give the team a product vision and an outcome-based roadmap so it can decide autonomously.
 
-**Invoke:** `inspired-product` with the top three backlog requests and the current roadmap. Ask for an opportunity assessment of each (objective, target user, problem, success measure, alternatives) and a one-paragraph vision plus a quarter of outcome-based roadmap items.
+**Invoke:** Use the `inspired-product` skill with the top three backlog requests and the current roadmap. Ask for an opportunity assessment of each (objective, target user, problem, success measure, alternatives) and a one-paragraph vision plus a quarter of outcome-based roadmap items.
 
 **Decide with the user:**
 - Which backlog request has the strongest evidence — and which to kill before it reaches a sprint.
@@ -151,7 +151,7 @@ Done when `docs/GROW-APP-PLAN.md` exists with every phase statused and the user 
 
 **Brief (fallback):** A good metric is comparative, a ratio/rate (not a cumulative total), and behavior-changing. Business model dictates which metrics matter; stage dictates sequencing (Empathy → Stickiness → Virality → Revenue → Scale). Weak retention = Stickiness stage, so retention is the OMTM — working a later stage first is the canonical mistake. Draw a line in the sand (target, date, miss response), pair the OMTM with a counter-metric, and cohort the data.
 
-**Invoke:** `lean-analytics` with the current dashboard/metrics and the business model. Ask it to flag vanity metrics, pick the Stickiness-stage OMTM plus a counter-metric, design a one-screen dashboard (OMTM big, ≤6 supporting), and a cohorted retention view.
+**Invoke:** Use the `lean-analytics` skill with the current dashboard/metrics and the business model. Ask it to flag vanity metrics, pick the Stickiness-stage OMTM plus a counter-metric, design a one-screen dashboard (OMTM big, ≤6 supporting), and a cohorted retention view.
 
 **Decide with the user:**
 - The OMTM and its counter-metric.
@@ -168,7 +168,7 @@ Done when `docs/GROW-APP-PLAN.md` exists with every phase statused and the user 
 
 **Brief (fallback):** Every microinteraction has Trigger → Rules → Feedback → Loops & Modes. Feedback is immediate (<100ms for direct manipulation) and proportionate; animate the element the user touched over a separate toast. Map every state: empty, loading, partial, error, disabled, double-tap. Invest in one or two signature moments that pass the removal test; use long loops to retire hints for power users.
 
-**Invoke:** `microinteractions` with the five most-used interactions. Ask for a Trigger/Rules/Feedback/Loops audit of each, the sub-100ms feedback and missing edge-case states, and one signature moment implemented in real code.
+**Invoke:** Use the `microinteractions` skill with the five most-used interactions. Ask for a Trigger/Rules/Feedback/Loops audit of each, the sub-100ms feedback and missing edge-case states, and one signature moment implemented in real code.
 
 **Decide with the user:**
 - Which five interactions to audit.
@@ -185,7 +185,7 @@ Done when `docs/GROW-APP-PLAN.md` exists with every phase statused and the user 
 
 **Brief (fallback):** For any task needing cognitive effort, "if-then" rewards crush intrinsic motivation. Lasting engagement is Autonomy (choice over what/when/how/with whom), Mastery (visible progress, flow-calibrated challenge), and Purpose (why it matters). Autonomy killers: forced tutorials, unskippable steps, mandatory notifications. Reserve rewards for meaningful milestones; prefer "now-that" recognition over "if-then" bargains.
 
-**Invoke:** `drive-motivation` with the app's gamification, streaks, points, and notification patterns. Ask for an AMP audit rated 0-10, every autonomy violation flagged, the point at which streaks tipped into loss aversion, and a progression redesign around real mastery and purpose.
+**Invoke:** Use the `drive-motivation` skill with the app's gamification, streaks, points, and notification patterns. Ask for an AMP audit rated 0-10, every autonomy violation flagged, the point at which streaks tipped into loss aversion, and a progression redesign around real mastery and purpose.
 
 **Decide with the user:**
 - Which autonomy violations to remove (forced/unskippable steps).
@@ -206,7 +206,7 @@ Done when `docs/GROW-APP-PLAN.md` exists with every phase statused and the user 
 | crossing-the-chasm | growth stalls at the early-adopter boundary | Extends docs/STRATEGY.md |
 | jobs-to-be-done | usage patterns say the app is hired for a different job | Extends docs/CUSTOMER.md |
 
-Optional phases follow the same operating rules; insert where the Add-when condition first becomes true. The acquisition-leaning ones — cold-start-problem, contagious, crossing-the-chasm — stay locked behind Rule 8 until retention clears the bar.
+Optional phases follow the same operating rules — load and use each listed skill exactly as a core phase would; insert where the Add-when condition first becomes true. The acquisition-leaning ones — cold-start-problem, contagious, crossing-the-chasm — stay locked behind Rule 8 until retention clears the bar.
 
 ## Common Mistakes
 
@@ -228,5 +228,5 @@ Optional phases follow the same operating rules; insert where the Add-when condi
 
 Close the tracker: every phase `done` or `skipped`, with Next Actions carried into PRODUCT.md, METRICS.md, and EXPERIMENTS.md. Then route forward:
 
-- When engagement mechanics cannot fix a product held back by broken UX or performance, continue with `improve-app`.
-- When the app is sticking and the business around it must keep pace — revenue, channels, operations — continue with `grow-business`.
+- When engagement mechanics cannot fix a product held back by broken UX or performance, continue with the `improve-app` skill.
+- When the app is sticking and the business around it must keep pace — revenue, channels, operations — continue with the `grow-business` skill.

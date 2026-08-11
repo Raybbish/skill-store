@@ -5,7 +5,7 @@
     "name": "add-gcal-tool",
     "description": "Add Google Calendar as an MCP tool (list calendars, list/search/create events, free/busy queries) using OneCLI-managed OAuth. Multi-calendar and multi-account supported. Mirrors /add-gmail-tool's stub pattern — no raw credentials ever reach the container; OneCLI injects real tokens at request time.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-gcal-tool",
-    "upstream_commit": "8d04fde18fe071ce0b4870dc3094b66e2a29dcfe",
+    "upstream_commit": "358f1a8166134794f185a4410a767823aa035e0d",
     "content_hash": "sha256:c54ad5d722aa6e9d3f988ba42e6c2acfdd494510eb01c68b92582194f35d1130",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30433,
+    "stars_github": 30453,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:18.204Z",
+    "fetched_at": "2026-08-06T05:43:26.035Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-04T11:14:32+03:00",
+    "upstream_commit_at": "2026-08-05T14:24:37+03:00",
     "repo_skill_count": 54,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:18.204Z",
+    "generated_at": "2026-08-06T05:43:26.035Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,40 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 获得 Google 日历的 MCP 工具:能列出日历、查看与创建日程、查询忙闲。支持多日历多账号。OAuth 由 OneCLI 托管,容器内不接触原始令牌。",
-    "when": "当用户要求把 Google 日历加为 Claude 的 MCP 工具,或要求配置/接入日历账号时触发。",
+    "what": "装上后,Claude 能直接读取和操作你的 Google 日历:列出日历、搜索或创建事件、查询忙闲。支持多个日历和多个 Google 账户。真实令牌由 OneCLI 在请求时注入,原始密钥不会进入运行环境。",
+    "when": "当你要求 Claude 查看或修改 Google 日历时触发,例如问「我下周一有什么安排」或「帮我建个日程」。首次调用会有 2-3 秒延迟,用于启动服务和令牌交换。",
     "say": [
       {
-        "text": "列出我的日历"
+        "text": "列出我下周的日历事件",
+        "note": "Claude 会查询并返回你的日程列表。"
       },
       {
-        "text": "我下周一有什么日程?",
-        "note": "查询周一的日程安排。"
+        "text": "帮我在明天下午 3 点安排一个会议",
+        "note": "Claude 会调用创建事件工具写入日历。"
       },
       {
-        "text": "帮我在周五上午10点创建会议",
-        "note": "新建一个日历事件。"
+        "text": "查一下我周五上午有没有空",
+        "note": "Claude 会查询忙闲状态后回答。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c54ad5d722aa6e9d3f988ba42e6c2acfdd494510eb01c68b92582194f35d1130",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:56:59.245Z",
+    "generated_at": "2026-08-06T06:03:36.411Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude gets Google Calendar MCP tools: list calendars, view/create events, check free/busy. Multi-calendar and multi-account are supported. OAuth is managed by OneCLI; raw credentials never reach the container.",
-    "when_en": "Triggers when the user asks to add Google Calendar as an MCP tool for Claude, or to configure/connect a calendar account.",
+    "what_en": "Once installed, Claude can read and operate your Google Calendar: list calendars, search or create events, check free/busy. Multiple calendars and accounts are supported. Real tokens are injected by OneCLI at request time; raw credentials never enter the container.",
+    "when_en": "When you ask Claude to view or modify your Google Calendar, e.g. asking about next Monday's schedule or to create an event. The first call takes 2-3 seconds for startup and token exchange.",
     "say_en": [
       {
-        "text": "List my calendars",
-        "note": "Claude calls list-calendars and returns the calendar list."
+        "text": "List my calendar events for next week.",
+        "note": "Claude will query and return your schedule."
       },
       {
-        "text": "What's on my calendar next Monday?",
-        "note": "Fetches that day's events."
+        "text": "Create a meeting at 3 PM tomorrow.",
+        "note": "Claude will use the create-event tool."
       },
       {
-        "text": "Create a meeting at 10am on Friday",
-        "note": "Adds a new calendar event."
+        "text": "Am I free Friday morning?",
+        "note": "Claude will check free/busy and answer."
       }
     ]
   }

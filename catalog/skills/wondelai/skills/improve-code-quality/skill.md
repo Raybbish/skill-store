@@ -4,7 +4,7 @@ description: 'Guided journey from a working-but-untested vibe-coded prototype to
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Improve Code Quality
@@ -42,7 +42,7 @@ before tests, scaling before sizing) is the exact failure mode this ordering exi
 1. **Resume first.** Before anything else, read `docs/IMPROVE-CODE-QUALITY-PLAN.md` and every artifact in the Journey Map. If the tracker exists, summarize the journey state in 3-5 lines and ask which phase to enter. Done when the user has confirmed an entry point. A journey with a tracker is resumed, never restarted.
 2. **Intake on first run only.** No tracker: run the Intake below, then create `docs/IMPROVE-CODE-QUALITY-PLAN.md` with every phase statused `pending | in-progress | awaiting-evidence | done | deferred: reason | skipped: reason`. Done when the tracker exists and the user has confirmed the phase plan.
 3. **Phase entry.** Announce: what the phase does, the decision it forces, the artifact it produces, rough effort. Offer proceed / skip / defer — phases marked GATE may be deferred, never skipped. Mark the phase `in-progress` on proceed. Done when the user chose.
-4. **Skill invocation and fallback.** Invoke the phase's skill by its slug. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
+4. **Skill invocation and fallback.** Load the phase's skill and use it: each phase's Invoke line names the skill by slug — use that skill to run the phase. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
 5. **In-phase decisions.** Ask every question under "Decide with the user" — with concrete options and your recommendation. Record the choice in the tracker's Key Decisions. A decision made silently is a defect.
 6. **Phase exit.** Present the draft artifact content for sign-off before writing. On approval: write or extend the docs/ files, update the tracker (status, Key Decisions, Next Actions). Done when the files are written and the phase row shows `done`.
 7. **Artifact discipline.** Read before writing; create a file only if missing, otherwise extend — add or update your sections, preserve everyone else's. Files are UPPERCASE in `docs/`. Every recommendation lands as a checkbox or a table row with owner and priority. See [references/artifact-templates.md](references/artifact-templates.md) when creating a docs/ file for the first time — create it from the full skeleton (all section headings), then fill the sections your phase names.
@@ -79,7 +79,7 @@ buried call), then write characterization tests that photograph actual behavior 
 wrong, read the failure, pin the real value. When full coverage isn't feasible in time, Sprout/Wrap
 the new code and track the untested host as debt.
 
-**Invoke:** `working-with-legacy-code` with the starting module chosen at intake. Ask for an effect
+**Invoke:** Use the `working-with-legacy-code` skill with the starting module chosen at intake. Ask for an effect
 sketch from the entry method, the seams, and the smallest characterization-test set that pins current
 signup / billing / core behavior.
 
@@ -100,7 +100,7 @@ value, never both. Error handling: prefer exceptions to return codes, catch spec
 return or pass null (use an empty collection, Optional, or Null Object), and put operation + state
 context in every thrown error.
 
-**Invoke:** `clean-code` with a target module. Ask for a 0-10 score across the six disciplines plus the top ten fixes in priority order, and an error-handling audit (bare catches, null returns, contextless errors).
+**Invoke:** Use the `clean-code` skill with a target module. Ask for a 0-10 score across the six disciplines plus the top ten fixes in priority order, and an error-handling audit (bare catches, null returns, contextless errors).
 
 **Decide with the user:** Which fixes to apply now versus log as debt, the naming / error-handling conventions the team adopts going forward, and whether the clean-code score becomes a CI gate.
 
@@ -119,7 +119,7 @@ Conditional with Polymorphism, Introduce Parameter Object. Workflow: tests green
 tests green, commit; a red test means revert, not debug. Preparatory Refactoring (make the change
 easy, then make the easy change) and the Rule of Three guard against premature abstraction.
 
-**Invoke:** `refactoring-patterns` with a smelly function and the Phase 1 tests. Ask it to name each smell, cite the transformation, and apply one at a time with tests run between each.
+**Invoke:** Use the `refactoring-patterns` skill with a smelly function and the Phase 1 tests. Ask it to name each smell, cite the transformation, and apply one at a time with tests run between each.
 
 **Decide with the user:** Scope — which smells to address this pass, whether an upcoming feature warrants a Preparatory Refactoring at its insertion point first, and whether the refactored module joins the CI gate list in TESTING.md.
 
@@ -138,7 +138,7 @@ share state. Watch information leakage (one decision reflected in many modules) 
 decomposition (organizing by order-of-execution, not by knowledge). This is the tactical→strategic
 flip: invest 10-20% to keep the design clean.
 
-**Invoke:** `software-design-philosophy` with the module set touched so far. Ask which classes are shallow, where information leaks across boundaries, and how to consolidate into deeper modules with simpler interfaces.
+**Invoke:** Use the `software-design-philosophy` skill with the module set touched so far. Ask which classes are shallow, where information leaks across boundaries, and how to consolidate into deeper modules with simpler interfaces.
 
 **Decide with the user:** Which consolidations to make now versus defer, guarding against over-merging unrelated concerns.
 
@@ -157,7 +157,7 @@ owns a repository interface; the Postgres/Stripe implementation lives in an oute
 the mid-level tools. Microservices sharing one data model are a distributed monolith — apply the rule
 inside the service first.
 
-**Invoke:** `clean-architecture` with the current module map and the stack from intake. Ask it to map the dependency graph, list every violation where business logic imports the ORM or framework, and show the extraction to framework-free Use Cases behind owned interfaces.
+**Invoke:** Use the `clean-architecture` skill with the current module map and the stack from intake. Ask it to map the dependency graph, list every violation where business logic imports the ORM or framework, and show the extraction to framework-free Use Cases behind owned interfaces.
 
 **Decide with the user:** How far to push the boundary this pass, which vendors (payments, storage) to wrap behind owned interfaces first, and whether any planned service split waits until the in-service boundary holds (avoid a distributed monolith).
 
@@ -176,7 +176,7 @@ a tracked ticket — never an untracked `// TODO`. Reversibility: wrap third-par
 own interfaces. Tracer bullets: build the next feature as one thin real end-to-end slice, not layer
 by layer.
 
-**Invoke:** `pragmatic-programmer` across the codebase. Ask it to flag duplicated knowledge (ignoring coincidental duplication) and any broken windows or untracked TODOs that need boarding up.
+**Invoke:** Use the `pragmatic-programmer` skill across the codebase. Ask it to flag duplicated knowledge (ignoring coincidental duplication) and any broken windows or untracked TODOs that need boarding up.
 
 **Decide with the user:** The debt budget per iteration and the broken-windows policy — what gets fixed now versus ticketed.
 
@@ -195,7 +195,7 @@ half-open recovery); Bulkheads to isolate resource pools; Retry with exponential
 Steady State cleanup of accumulating cruft. Decouple deploy from release with feature flags and
 expand-contract migrations. Add deep health checks, RED metrics, symptom-based alerts.
 
-**Invoke:** `release-it` with the outbound dependencies from intake. Ask for an audit of calls with no timeout, circuit-breaker + bulkhead placement, and a deep health check + RED metrics + alert design.
+**Invoke:** Use the `release-it` skill with the outbound dependencies from intake. Ask for an audit of calls with no timeout, circuit-breaker + bulkhead placement, and a deep health check + RED metrics + alert design.
 
 **Decide with the user:** Breaker thresholds, which dependencies get dedicated pools, and the alert symptoms and thresholds (error rate, latency).
 
@@ -214,7 +214,7 @@ invalidation) for read-heavy paths, then read replicas, and shard only as a last
 message queue to decouple slow work from the request path. Reach for known designs (rate limiter →
 token bucket returning `429 Retry-After`).
 
-**Invoke:** `system-design` with the load reality from intake. Ask for average and peak QPS, yearly storage, which component bottlenecks first, and a priority-ordered list of cache / queue / replica moves without over-engineering.
+**Invoke:** Use the `system-design` skill with the load reality from intake. Ask for average and peak QPS, yearly storage, which component bottlenecks first, and a priority-ordered list of cache / queue / replica moves without over-engineering.
 
 **Decide with the user:** Which scaling moves to make now versus defer, tied to the actual numbers (don't build for 50k users while at 50), and name the first slow workload to move behind a message queue, if any.
 
@@ -233,7 +233,7 @@ Replication lag means read-your-writes and monotonic-reads must be deliberate on
 Match data model to access pattern; polyglot persistence is often correct; separate system-of-record
 from derived data (CDC / event sourcing) rather than dual writes.
 
-**Invoke:** `ddia-systems` with the database from intake and the replica plan from Phase 8. Ask it to find write-skew-prone read-then-write paths, state the actual default isolation level and its anomalies, and fix the risky paths.
+**Invoke:** Use the `ddia-systems` skill with the database from intake and the replica plan from Phase 8. Ask it to find write-skew-prone read-then-write paths, state the actual default isolation level and its anomalies, and fix the risky paths.
 
 **Decide with the user:** Which paths need locking versus a serializable transaction, and whether a new workload (search, feed) justifies a second datastore kept in sync by CDC.
 
@@ -247,7 +247,7 @@ from derived data (CDC / event sourcing) rather than dual writes.
 |---|---|---|
 | domain-driven-design | Business logic tangles because the code speaks no domain language | Extends docs/ARCHITECTURE.md (`## Bounded Contexts & Context Map`, `## Domain Glossary (Ubiquitous Language)`) |
 
-Optional phases follow the same operating rules; insert where the Add-when condition first becomes true — here, right after Phase 5 once the boundary exists.
+Optional phases follow the same operating rules — load and use each listed skill exactly as a core phase would; insert where the Add-when condition first becomes true — here, right after Phase 5 once the boundary exists.
 
 ## Common Mistakes
 
@@ -272,4 +272,4 @@ Exit checklist — every box tied to an artifact:
 - [ ] Database isolation level known and read-then-write paths locked (ARCHITECTURE.md Data & Storage Decisions).
 - [ ] No untracked hacks remain; every deferred item is a Debt Ledger row with priority (TECH-DEBT.md).
 
-Close the tracker: every phase `done` or `skipped: reason`, with remaining Next Actions carried into the TECH-DEBT.md Debt Ledger so nothing is lost. Then route forward: when the codebase is old and large rather than young and messy, continue with `remove-technical-debt`; when the next system deserves deliberate structure from day one, continue with `design-code-architecture`.
+Close the tracker: every phase `done` or `skipped: reason`, with remaining Next Actions carried into the TECH-DEBT.md Debt Ledger so nothing is lost. Then route forward: when the codebase is old and large rather than young and messy, continue with the `remove-technical-debt` skill; when the next system deserves deliberate structure from day one, continue with the `design-code-architecture` skill.

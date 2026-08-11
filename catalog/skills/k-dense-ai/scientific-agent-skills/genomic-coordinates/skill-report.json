@@ -5,7 +5,7 @@
     "name": "genomic-coordinates",
     "description": "Convert genomic intervals between coordinate conventions, normalise and compare variant representations, and detect assembly or contig-naming mismatches before they corrupt an analysis. Use whenever coordinates cross a format, tool, or assembly boundary - converting between BED, GFF/GTF, VCF, SAM/BAM, WIG, PSL, genePred, Picard interval_list, or region strings; reconciling 0-based half-open with 1-based inclusive; left-aligning or trimming indels; checking whether two variant records describe the same change; mapping genomic to transcript, CDS, or protein positions; auditing a BED/GTF/VCF for convention violations; or diagnosing GRCh37 vs hg19 vs GRCh38 vs T2T, chr-prefix, and liftover problems. Triggers include \"off by one\", \"0-based\", \"1-based\", \"half-open\", \"coordinate system\", \"left-align\", \"normalize variant\", \"bcftools norm\", \"chr prefix\", \"wrong genome build\", \"liftover\", \"REF mismatch\", and \"HGVS\".",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/genomic-coordinates",
-    "upstream_commit": "d767725c6e93b1d02a220e6be75b261a9833ede5",
+    "upstream_commit": "9b1d761c67c310e6538f1d5d88759b2bcfc65ce2",
     "content_hash": "sha256:a789fb55c3ae7c9b40e27715273e247c4671bc823e70eacf6874ccaf76f49775",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32552,
+    "stars_github": 33012,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-04T05:43:36.846Z",
+    "fetched_at": "2026-08-09T04:15:10.436Z",
     "first_seen_at": "2026-07-27T06:23:54.150Z",
-    "upstream_commit_at": "2026-08-03T10:27:02Z",
-    "repo_skill_count": 158,
+    "upstream_commit_at": "2026-08-08T22:15:30Z",
+    "repo_skill_count": 161,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-04T05:43:36.846Z",
+    "generated_at": "2026-08-09T04:15:10.436Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -101,37 +101,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会转换不同文件格式间的基因组坐标、标准化和比较变异写法、检查参考基因组版本与 contig 命名是否匹配,并审计 BED/GTF/VCF 文件的坐标系错误。",
-    "when": "当坐标跨越文件格式、工具或参考基因组版本边界,比如转换坐标体系、左对齐变异、核对基因组版本,或你说出“off by one”“liftover”等说法时触发。",
+    "what": "装上后,Claude 可以帮你转换基因组坐标(如 BED、VCF、GFF 等格式互换),把变异记录标准化并对齐,还能检查文件属于哪个参考基因组、有没有命名或长度不匹配,以及审计文件是否符合自身格式规范。所有操作都基于自带脚本完成,无需联网。",
+    "when": "当你说出“0-based”“liftover”“chr prefix”等关键词,或要求转换坐标、标准化变异、检查参考基因组时触发。",
     "say": [
       {
-        "text": "把 BED 的 chr1 999-1000 转成 GFF 坐标。",
-        "note": "会调用转换脚本并告诉你转换方向。"
-      },
-      {
-        "text": "用 ref.fa 把 chr1:7:CAC:C 标准化并左对齐。",
-        "note": "会先核对参考序列再标准化。"
+        "text": "检查这两个变异记录是否表示同一改变,用 ref.fa 做参考。",
+        "note": "会标准化并比较它们。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a789fb55c3ae7c9b40e27715273e247c4671bc823e70eacf6874ccaf76f49775",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-04T06:07:19.291Z",
+    "generated_at": "2026-08-09T04:32:07.519Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude converts genomic intervals between coordinate conventions, normalises and compares variant representations, checks for assembly or contig-naming mismatches, and audits BED/GTF/VCF files for convention violations.",
-    "when_en": "Triggers when coordinates cross a format/tool/assembly boundary: coordinate conversion, variant left-alignment, genome-build checks, file audits; or phrases like 'off by one', 'liftover'.",
+    "what_en": "After installation, Claude can convert genomic coordinates between formats such as BED, VCF and GFF/GTF; normalize and compare variant records; identify which reference genome a file belongs to; and audit files for convention violations. It runs local Python scripts, no network needed.",
+    "when_en": "Triggered when coordinates cross a format, tool, or assembly boundary — e.g. converting coordinate systems, normalizing variants, or checking genome builds. Keywords like '0-based', 'liftover', 'chr prefix' also activate it.",
     "say_en": [
       {
-        "text": "Convert BED chr1 999-1000 to GFF coordinates.",
-        "note": "Calls the conversion script and reports direction."
+        "text": "Convert this BED file to GFF3 with 1-based inclusive coordinates.",
+        "note": "Runs the conversion script."
       },
       {
-        "text": "Left-align and normalize chr1:7:CAC:C against ref.fa.",
-        "note": "Checks REF against FASTA first, then normalizes."
+        "text": "Check if these two variant records describe the same change, using ref.fa.",
+        "note": "Normalizes and compares them."
       },
       {
-        "text": "Check if variants.vcf and annotation.gtf use the same reference genome.",
-        "note": "Reports contig naming and length mismatches."
+        "text": "Is this VCF GRCh37 or GRCh38? Can it be joined with this GTF?",
+        "note": "Checks contigs and assembly compatibility."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "remove-ai-slops",
     "description": "Remove AI-generated code smells (slop) from branch changes or an explicit file list. Locks behavior with regression tests FIRST, then runs categorized cleanup via parallel `deep` agents in batches of 5, then verifies with quality gates. Covers 10 slop categories including performance equivalences, excessive complexity (object annotations, if/elif variant chains), and oversized modules (250+ pure LOC with mandatory modular refactoring). MUST USE when the user asks to \"remove slop\", \"clean AI code\", \"deslop\", \"clean up AI-generated code\", \"remove AI slop\", or wants to clean up AI-generated patterns from recent changes. Triggers - \"remove ai slops\", \"clean ai code\", \"deslop\", \"cleanup AI generated\", \"remove AI slop\", \"clean up AI-generated code\", \"strip slop\", \"ai-slop cleanup\".",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/remove-ai-slops",
-    "upstream_commit": "19abf74feb0eb1b82f37e70a2dd68a519cf88a08",
+    "upstream_commit": "ea2b38717861ffbb624e433131e6989172dabfe6",
     "content_hash": "sha256:e240b09e4c816cf9e62eda9e86ba0c6e76003950a5f361907ed817f3215b3156",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67254,
+    "stars_github": 67577,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:08.191Z",
+    "fetched_at": "2026-08-10T04:25:59.945Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-05T07:40:58+09:00",
+    "upstream_commit_at": "2026-08-10T13:04:32+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:08.191Z",
+    "generated_at": "2026-08-10T04:25:59.945Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,37 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "先用测试固定当前行为，再按类别清理 AI 代码的冗余（如多余注释、过度防御、超大文件等），最后运行质量检查；不过关就回滚或直接修正。",
-    "when": "当你说 “remove slop”“clean AI code”“deslop” 等关键词，或要求清理最近改动里的 AI 生成代码时，该技能会触发。",
+    "what": "清理 AI 生成的代码痕迹。先写回归测试锁定行为，再按 10 类 slop 分批并行清理（每批 5 个文件），最后用质量门禁验证，失败会回退或直接修改。涵盖性能等价、过度复杂、超大模块（250 行以上强制拆分）等类别。",
+    "when": "当你说出“remove slop”、“clean AI code”、“deslop”等触发词，或要求清理最近改动中的 AI 生成代码时触发。",
     "say": [
       {
-        "text": "对这次分支改动执行 remove slop。",
-        "note": "触发技能，清理分支中的 AI 代码异味。"
+        "text": "把这个分支里的 AI 生成痕迹清理掉。",
+        "note": "会先锁定行为再动手。"
       },
       {
-        "text": "把这些提交里的 AI 生成代码 deslop 一下。",
-        "note": "针对近期改动进行清理。"
+        "text": "对这几个文件做一次 deslop。",
+        "note": "按你给的文件列表处理。"
+      },
+      {
+        "text": "把这段 if/elif 链改成 match/case。",
+        "note": "属于过度复杂类别，会自动加测试。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e240b09e4c816cf9e62eda9e86ba0c6e76003950a5f361907ed817f3215b3156",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:50:59.462Z",
+    "generated_at": "2026-08-10T04:38:03.497Z",
     "lint_pass": true,
-    "what_en": "Locks behavior with regression tests, cleans AI code smells from changes or listed files, verifies via quality gates, and reverts/direct-edits on failure.",
-    "when_en": "Triggers when the user says 'remove slop', 'clean AI code', 'deslop', or asks to clean AI-generated patterns in recent changes.",
+    "what_en": "Cleans AI slop from branch changes or listed files. Locks behavior with regression tests first, then runs categorized parallel cleanup (batches of 5), then verifies with quality gates. Covers 10 categories incl. performance equivalences, excessive complexity, oversized modules.",
+    "when_en": "Triggers when the user asks to remove slop, clean AI code, deslop, clean up AI-generated code, remove AI slop, or clean AI patterns from recent changes.",
     "say_en": [
       {
-        "text": "Remove slop from this branch's changes.",
-        "note": "Triggers cleanup of AI code smells."
+        "text": "Clean up AI-generated traces in this branch.",
+        "note": "Locks behavior before editing."
       },
       {
-        "text": "Clean AI code in src/foo.py and src/bar.py.",
-        "note": "Targets specific files."
+        "text": "Run deslop on these files.",
+        "note": "Uses the explicit file list as scope."
       },
       {
-        "text": "Deslop the AI-generated code in these commits.",
-        "note": "Cleans recent changes."
+        "text": "Refactor this if/elif chain to match/case.",
+        "note": "Part of excessive complexity cleanup."
       }
     ]
   }
