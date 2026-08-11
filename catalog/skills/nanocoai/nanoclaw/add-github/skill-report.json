@@ -5,7 +5,7 @@
     "name": "add-github",
     "description": "Add GitHub channel integration via Chat SDK. PR and issue comment threads as conversations.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-github",
-    "upstream_commit": "743e32df4e6c05f3725c17cb2ec11f2b65079eec",
+    "upstream_commit": "86e353564d2c0f6173fbb4b95f061c822ff6b601",
     "content_hash": "sha256:eabf783c1b4a191db6a35e3c4400267851ca9eae8eb9c8c469f769169ee5f75c",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30460,
+    "stars_github": 30485,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-07T04:52:02.506Z",
+    "fetched_at": "2026-08-11T04:15:57.111Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-06T15:28:16+02:00",
+    "upstream_commit_at": "2026-08-10T23:27:47+03:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-07T04:52:02.506Z",
+    "generated_at": "2026-08-11T04:15:57.111Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,36 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会通过 Chat SDK 接入 GitHub,能参与 PR 和 issue 的评论讨论。配置完成后,当有人 @ 机器人时会回复,之后该讨论串的后续评论也会继续回应。",
-    "when": "在 GitHub 仓库配置好 webhook 后,当有人在 PR 或 issue 评论中 @ 机器人账号时触发;首次 @ 后,同一讨论串的后续评论也会自动回复。",
+    "what": "装上后,Claude 通过专门的 GitHub 机器人账号出现在 PR 和 issue 评论里。别人在评论里 @ 机器人,Claude 就回复;首次 @ 后持续关注该线程,回应后续评论。每个 PR/issue 是独立会话。",
+    "when": "收到 GitHub 的 PR/issue 评论事件,且评论里精确 @ 到机器人账号时触发;首次 @ 后该线程被订阅,后续评论也会触发。严格模式下仅已登记成员能触发。",
     "say": [
       {
-        "text": "我的仓库是私有的,请用 public 策略接线 GitHub",
-        "note": "会按私有仓库策略创建频道并接线"
+        "text": "帮我把 GitHub 渠道接进来,机器人账号用 my-org-bot",
+        "note": "触发 add-github,开始复制适配器、配置凭据"
       },
       {
-        "text": "帮我运行构建和注册测试,验证 GitHub 适配器装好了"
+        "text": "配置 GitHub 渠道,监控 acme/backend,私有仓库",
+        "note": "私有仓库会用宽松策略,不额外限制评论者"
+      },
+      {
+        "text": "给 GitHub 渠道加上严格模式,只让已登记成员触发",
+        "note": "对应公共仓库的 strict 策略,需添加成员白名单"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:eabf783c1b4a191db6a35e3c4400267851ca9eae8eb9c8c469f769169ee5f75c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-07T05:14:35.651Z",
+    "generated_at": "2026-08-11T04:49:28.822Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude connects to GitHub via Chat SDK and can participate in PR and issue comment threads. Once configured, it replies when @-mentioned and follows the rest of that thread.",
-    "when_en": "Triggers when someone @-mentions the bot account in a PR or issue comment, after the repo webhook is configured. After the first mention, it also responds to subsequent comments in that thread.",
+    "what_en": "Once installed, Claude participates in GitHub PR/issue comments via a dedicated bot account: it replies when @-mentioned and keeps following the thread after the first mention. Each PR/issue is its own conversation.",
+    "when_en": "Triggers via webhook when someone exactly @-mentions the bot account in a PR/issue comment; after the first mention the thread stays subscribed. In strict mode only registered members can trigger.",
     "say_en": [
       {
-        "text": "Set up GitHub integration; I'll paste the token, webhook secret, and bot username.",
-        "note": "Prompts for each value and writes them to .env"
+        "text": "Add the GitHub channel for me, bot account my-org-bot",
+        "note": "Starts setup: copies adapter and guides credentials."
       },
       {
-        "text": "My repo is private; wire GitHub with a public unknown-sender policy.",
-        "note": "Creates the channel using the private-repo policy"
+        "text": "Configure the GitHub channel for acme/backend, private repo",
+        "note": "Private repos use the permissive unknown-sender policy."
       },
       {
-        "text": "Run the build and registration test to verify the GitHub adapter.",
-        "note": "Executes the build and github-registration vitest test"
+        "text": "Add the GitHub channel in strict mode, only registered members trigger it",
+        "note": "Strict mode for public repos; guides adding members."
       }
     ]
   }

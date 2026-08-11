@@ -5,7 +5,7 @@
     "name": "ultrawork",
     "description": "Binding ultrawork mode directive for omo-senpi. When a prompt contains ultrawork or ulw, the omo input hook injects the full directive as a hidden custom message (customType omo-ultrawork:directive, display false) ahead of the user's text, which is left untouched; a prompt queued while the agent is streaming instead carries the directive appended inside that same message. The directive is present in the conversation context; on the idle path it is not shown in the visible prompt, while a queued prompt carries the directive visibly (exactly as before this change). When the directive is already present in the conversation, do not read this file again - this file is that same directive. Read this file only when ultrawork mode is requested and the directive is not already present in the conversation.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/ultrawork",
-    "upstream_commit": "ea2b38717861ffbb624e433131e6989172dabfe6",
+    "upstream_commit": "bceb9cf76431ef5225ac06294677dcb1118c1e26",
     "content_hash": "sha256:c13ddc4cb0fc20067d4f31d528893425c6b8bb42c6da736035baf5dcd27095c4",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67577,
+    "stars_github": 67647,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-10T04:25:59.945Z",
+    "fetched_at": "2026-08-11T04:15:46.168Z",
     "first_seen_at": "2026-07-24T05:45:08.162Z",
-    "upstream_commit_at": "2026-08-10T13:04:32+09:00",
+    "upstream_commit_at": "2026-08-11T13:05:27+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-10T04:25:59.945Z",
+    "generated_at": "2026-08-11T04:15:46.168Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,33 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你说出“ultrawork”或“ulw”时,Claude会进入严格编码模式:先记录目标与计划,用“先写失败测试再实现”的方式开发,并在真实环境验证、保存证据。回复首行会显示“ULTRAWORK MODE ENABLED!”。",
-    "when": "当提示词里出现“ultrawork”或“ulw”时触发;若对话中已有该模式指令,则不会重复加载。",
+    "what": "当输入里出现“ultrawork”或“ulw”时，Claude 会进入严格编码模式：先显示“ULTRAWORK MODE ENABLED!”，再记录记忆、先写失败测试再实现、按任务轻重分级处理，并用真实环境证据验证结果。",
+    "when": "当输入中出现“ultrawork”或“ulw”时触发，技能会把指令注入对话，Claude 随即按该模式工作；指令已在对话中时不会重复读取。",
     "say": [
       {
-        "text": "用ultrawork模式实现用户登录功能",
-        "note": "Claude会先建失败测试,再实现并通过验证。"
+        "text": "进入 ultrawork 模式，修复登录接口的 500 错误",
+        "note": "Claude 会先登记目标并写失败测试，再修复并验证。"
       },
       {
-        "text": "开启ulw模式,修复这个内存泄漏bug",
-        "note": "它会先重现问题,再修复并用真实场景证明。"
+        "text": "用 ulw 模式给订单模块加一个导出功能",
+        "note": "会按 HEAVY 流程处理，包含边界测试和真实环境验证。"
+      },
+      {
+        "text": "用 ultrawork 模式为这个 bug 先写一个失败测试",
+        "note": "它会先建立失败证明，再实现让测试转绿。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c13ddc4cb0fc20067d4f31d528893425c6b8bb42c6da736035baf5dcd27095c4",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-10T04:39:10.170Z",
+    "generated_at": "2026-08-11T04:34:10.228Z",
     "lint_pass": true,
-    "what_en": "When you say 'ultrawork' or 'ulw', Claude enters a strict coding mode: it records goals and plans, develops test-first (failing then passing), verifies in a real environment, and saves evidence. Its first response line shows 'ULTRAWORK MODE ENABLED!'.",
-    "when_en": "Triggers when a prompt contains 'ultrawork' or 'ulw'; if the directive is already in the conversation, it is not loaded again.",
+    "what_en": "When triggered by 'ultrawork' or 'ulw', Claude runs a strict coding workflow: prints 'ULTRAWORK MODE ENABLED!', records memory, writes failing tests first, sizes the task (LIGHT/HEAVY), and verifies against real surfaces.",
+    "when_en": "Triggers when the user's prompt contains 'ultrawork' or 'ulw' (or requests the mode); the directive is injected ahead of the user text. If already present in conversation, the file is not read again.",
     "say_en": [
       {
-        "text": "Use ultrawork mode to implement the user login feature.",
-        "note": "Claude creates a failing test first, then implements and verifies."
+        "text": "Enter ultrawork mode and fix the 500 error on login.",
+        "note": "Claude registers the goal, writes a failing test, then fixes and verifies."
       },
       {
-        "text": "Enable ulw mode and fix this memory leak bug.",
-        "note": "It reproduces the failure, fixes it, and proves it on a real surface."
+        "text": "Use ulw mode to add an export feature to orders.",
+        "note": "Follows the HEAVY flow with edge tests and real-surface QA."
+      },
+      {
+        "text": "In ultrawork mode, write a failing test for this bug first.",
+        "note": "It captures the red proof before implementing to green."
       }
     ]
   }

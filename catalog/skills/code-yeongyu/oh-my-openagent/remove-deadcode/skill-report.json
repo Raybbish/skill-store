@@ -5,7 +5,7 @@
     "name": "remove-deadcode",
     "description": "Remove unused code from this project with ultrawork mode, LSP-verified safety, atomic commits. Triggers: remove dead code, dead code, cleanup, remove unused.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/remove-deadcode",
-    "upstream_commit": "ea2b38717861ffbb624e433131e6989172dabfe6",
+    "upstream_commit": "bceb9cf76431ef5225ac06294677dcb1118c1e26",
     "content_hash": "sha256:5e87c2118e567b4a1ddcb9d423ec86110488347fce8b2acaa7d1d0a3bd47ebf1",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67577,
+    "stars_github": 67647,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-10T04:25:59.945Z",
+    "fetched_at": "2026-08-11T04:15:46.168Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-10T13:04:32+09:00",
+    "upstream_commit_at": "2026-08-11T13:05:27+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-10T04:25:59.945Z",
+    "generated_at": "2026-08-11T04:15:46.168Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会扫描项目找出未使用的代码,验证确认无用后,派多个代理并行分批删除,每批单独提交,最后运行检查确保项目正常。不删除入口文件、测试文件等受保护代码。",
-    "when": "当你说“移除死代码”“清理”“删除未使用代码”等,要求清理项目中无用代码时触发。",
+    "what": "扫描项目里没用到的代码(变量、导入、类型、文件等),确认它们没被别处引用后,交给多个并行代理分批删除并提交,最后跑类型检查、测试和构建;入口、测试、配置文件等受保护内容不会删。",
+    "when": "当你说“删除死代码”“清理”“remove unused”等触发词,或把范围指向某个文件/目录/符号时。",
     "say": [
       {
-        "text": "清理这个项目里的无用代码",
-        "note": "Claude 会扫描并移除确认无用的代码。"
+        "text": "删掉这个项目里的死代码",
+        "note": "会先扫描验证,再分批删除并提交。"
       },
       {
-        "text": "删除 src 下没被用到的函数和类型",
-        "note": "Claude 会只扫描 src 目录并移除无用代码。"
+        "text": "只清理 src/utils 这个目录里的无用代码",
+        "note": "扫描范围会限制在该目录。"
       },
       {
-        "text": "只清理 utils 目录里的死代码",
-        "note": "Claude 会只在 utils 内查找并删除死代码。"
+        "text": "找出未使用的参数,在名字前加下划线",
+        "note": "对应协议里的 PREFIX _ 处理。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5e87c2118e567b4a1ddcb9d423ec86110488347fce8b2acaa7d1d0a3bd47ebf1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-10T04:38:47.709Z",
+    "generated_at": "2026-08-11T04:33:16.956Z",
     "lint_pass": true,
-    "what_en": "Once enabled, Claude scans for unused code, verifies via LSP, then dispatches parallel agents to remove it in separate atomic commits. Afterwards it runs typecheck and build. Entry points, tests, and public exports are never removed.",
-    "when_en": "Triggered by phrases like 'remove dead code', 'cleanup', 'remove unused', or similar requests to clear unused code from the project.",
+    "what_en": "Scans for unused code (variables, imports, types, files), checks that nothing references them, then has parallel agents delete and commit in batches, then runs typecheck, tests, build. Entry points and test/config files are kept.",
+    "when_en": "Triggered by requests like 'remove dead code', 'cleanup', 'remove unused', or when you scope the scan to a file, directory, or symbol.",
     "say_en": [
       {
-        "text": "Clean up unused code in this project.",
-        "note": "Claude will scan and remove confirmed dead code."
+        "text": "Remove dead code from this project.",
+        "note": "It scans and verifies, then deletes in parallel and commits."
       },
       {
-        "text": "Delete unused functions and types in src.",
-        "note": "Claude will scan src only and remove unused code."
+        "text": "Only clean up unused code in the src/utils directory.",
+        "note": "The scan is scoped to that directory."
       },
       {
-        "text": "Only clean dead code in the utils directory.",
-        "note": "Claude will limit its search to utils and delete dead code."
+        "text": "Find unused parameters and prefix them with an underscore.",
+        "note": "This uses the PREFIX _ action from the protocol."
       }
     ]
   }
