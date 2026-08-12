@@ -4,7 +4,7 @@ description: 'Guided journey from a stalled, plateaued business to one with an h
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Improve a Business
@@ -33,7 +33,7 @@ An interactive, resumable journey for a business that already runs but has stopp
 1. **Resume first.** Before anything else, read `docs/IMPROVE-BUSINESS-PLAN.md` and every artifact in the Journey Map. If the tracker exists, summarize the journey state in 3-5 lines and ask which phase to enter. Done when the user has confirmed an entry point. A journey with a tracker is resumed, never restarted.
 2. **Intake on first run only.** No tracker: run the Intake below, then create `docs/IMPROVE-BUSINESS-PLAN.md` with every phase statused `pending | in-progress | awaiting-evidence | done | deferred: reason | skipped: reason`. Done when the tracker exists and the user has confirmed the phase plan.
 3. **Phase entry.** Announce: what the phase does, the decision it forces, the artifact it produces, rough effort. Offer proceed / skip / defer — phases marked GATE may be deferred, never skipped. Mark the phase `in-progress` on proceed. Done when the user chose.
-4. **Skill invocation and fallback.** Invoke the phase's skill by its slug. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
+4. **Skill invocation and fallback.** Load the phase's skill and use it: each phase's Invoke line names the skill by slug — use that skill to run the phase. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
 5. **In-phase decisions.** Ask every question under "Decide with the user" — with concrete options and your recommendation. Record the choice in the tracker's Key Decisions. A decision made silently is a defect.
 6. **Phase exit.** Present the draft artifact content for sign-off before writing. On approval: write or extend the docs/ files, update the tracker (status, Key Decisions, Next Actions). Done when the files are written and the phase row shows `done`.
 7. **Artifact discipline.** Read before writing; create a file only if missing, otherwise extend — add or update your sections, preserve everyone else's. Files are UPPERCASE in `docs/`. Every recommendation lands as a checkbox or a table row with owner and priority. See [references/artifact-templates.md](references/artifact-templates.md) when creating a docs/ file for the first time — create it from the full skeleton (all section headings), then fill the sections your phase names.
@@ -67,7 +67,7 @@ guiding policy, and coherent actions. Bad strategy is fluff, goals dressed as st
 binding link; investing in strong links is wasted until the weak one is fixed. Set a proximate
 objective close enough that the team can see how to hit it, and force a no-list.
 
-**Invoke:** `good-strategy-bad-strategy` with the current annual plan, OKRs, or deck pasted in. Ask
+**Invoke:** Use the `good-strategy-bad-strategy` skill with the current annual plan, OKRs, or deck pasted in. Ask
 it to (a) audit the plan as strategy and score it 0-10, (b) write a proper kernel, (c) name the
 binding chain-link constraint and one proximate objective for the quarter.
 
@@ -86,7 +86,7 @@ one owner, SMART, binary (done or not, no partial credit) — aimed at the proxi
 Install the Level 10 Meeting: same day and time, 90 minutes, fixed agenda ending in 60 minutes of
 IDS (Identify, Discuss, Solve) driven to root cause. Never cancel it.
 
-**Invoke:** `traction-eos` with STRATEGY.md's guiding policy and proximate objective. Ask for (a)
+**Invoke:** Use the `traction-eos` skill with STRATEGY.md's guiding policy and proximate objective. Ask for (a)
 5-7 quarterly Rocks with owners and binary criteria, flagging any that are business-as-usual, (b) a
 Level 10 agenda with time boxes, (c) an IDS pass on the top recurring issue.
 
@@ -106,7 +106,7 @@ bottleneck — multiply downward. High-leverage tools: subordinate-owned 1:1s at
 task-relevant maturity (TRM), and delegation-with-monitoring — delegate what you know best, monitor
 at task level, sample deeper when TRM is low, lighter as it rises.
 
-**Invoke:** `high-output-management` with the operator's last two weeks of calendar and the tasks
+**Invoke:** Use the `high-output-management` skill with the operator's last two weeks of calendar and the tasks
 they keep grabbing back. Ask for a leverage audit, a redesigned week built around forecasted key
 events, and a 1:1 plus delegation system for direct reports.
 
@@ -126,7 +126,7 @@ cognitive load: at most one complicated domain per team; never split a single do
 teams. Shed domains or remove extraneous load before adding headcount. Define each interaction mode:
 collaboration, X-as-a-service, or facilitating.
 
-**Invoke:** `team-topologies` with each current team and what it does day to day. Ask it to classify
+**Invoke:** Use the `team-topologies` skill with each current team and what it does day to day. Ask it to classify
 teams, flag anti-patterns (shared-services ticket queue, teams split by function not value stream),
 diagnose cognitive load, and propose value-stream-aligned boundaries with explicit interaction
 modes.
@@ -147,7 +147,7 @@ Autonomy (task, time, technique, team), Mastery (visible progress at a challenge
 anxiety), and Purpose (serving something larger than the quarter). Pay enough to take money off the
 table, then stop using it as the lever; replace if-then bonuses with now-that recognition.
 
-**Invoke:** `drive-motivation` with how incentives, reviews, and goals currently run. Ask for an AMP
+**Invoke:** Use the `drive-motivation` skill with how incentives, reviews, and goals currently run. Ask for an AMP
 audit scored 0-10, the places controlling if-then rewards crowd out motivation, and specific
 autonomy / mastery / purpose fixes including a shift to now-that recognition.
 
@@ -168,7 +168,7 @@ riskiest part of the business right now, guard it with a counter-metric so it ca
 draw a line in the sand: a target, a date, and a pre-committed miss response decided before results
 arrive.
 
-**Invoke:** `lean-analytics` with the current dashboard and the business model and stage. Ask it to
+**Invoke:** Use the `lean-analytics` skill with the current dashboard and the business model and stage. Ask it to
 purge vanity metrics into actionable ratios, name the OMTM plus counter-metric, and build cohort
 retention tables to test the stickiness gate.
 
@@ -189,7 +189,7 @@ questions ("how am I supposed to do that?"), labeling ("it sounds like…"), and
 Black Swans — secret constraints, hidden motivations, unknown context — behind any competing bid; it
 is rarely the real story.
 
-**Invoke:** `negotiation` with the specific renewal or vendor contract (numbers, the threat, your
+**Invoke:** Use the `negotiation` skill with the specific renewal or vendor contract (numbers, the threat, your
 instinct). Ask for an accusation audit, five calibrated questions to surface the Black Swan, and an
 Ackerman plan with a non-monetary concession — never concede without getting something back.
 
@@ -210,7 +210,7 @@ filler / killer; never give the leader away in the cheapest tier or bundle a kil
 buyers reject the package. Validate with acceptable / expensive / prohibitive probes before shipping
 any change.
 
-**Invoke:** `monetizing-innovation` with current pricing, tiers, win rates, and deal data, plus the
+**Invoke:** Use the `monetizing-innovation` skill with current pricing, tiers, win rates, and deal data, plus the
 WTP signals from Phase 7. Ask it to diagnose the monetization failure, run leader-filler-killer on
 the tiers, and design a WTP conversation to run before any price change ships.
 
@@ -230,7 +230,7 @@ the tiers, and design a WTP conversation to run before any price change ships.
 | obviously-awesome | the market misunderstands what the business is | Extends docs/POSITIONING.md |
 | 37signals-way | the org overplans and underships | Extends docs/OPERATIONS.md |
 
-Optional phases follow the same operating rules; insert where the Add-when condition first becomes true.
+Optional phases follow the same operating rules — load and use each listed skill exactly as a core phase would; insert where the Add-when condition first becomes true.
 
 ## Common Mistakes
 
@@ -254,5 +254,5 @@ Exit checklist:
 
 Close the tracker: every phase `done` or `skipped: reason`, and carry each open Next Action into the relevant artifact as a checkbox or table row with an owner. Then route forward:
 
-- When the fundamentals work again and the goal shifts to expansion, continue with `grow-business`.
-- When the product itself is what drags the business down, continue with `improve-app`.
+- When the fundamentals work again and the goal shifts to expansion, continue with the `grow-business` skill.
+- When the product itself is what drags the business down, continue with the `improve-app` skill.

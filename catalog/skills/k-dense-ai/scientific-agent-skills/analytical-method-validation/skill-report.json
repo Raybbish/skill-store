@@ -5,7 +5,7 @@
     "name": "analytical-method-validation",
     "description": "Plan, execute, and document validation, verification, and transfer of analytical procedures under the governing framework - ICH Q2(R2) and Q14, USP <1220>/<1225>/<1226>, ICH M10 bioanalytical, CLSI EP, or ISO/IEC 17025. Use for HPLC, LC-MS/MS, GC, CE, ICP-MS, dissolution, qNMR, qPCR, NIR, and ligand binding or cell-based assays whenever the question is whether a procedure is fit for its intended purpose. Triggers include \"method validation\", \"analytical method validation\", \"AMV\", \"validation protocol\", \"acceptance criteria\", \"linearity\", \"reportable range\", \"accuracy and precision\", \"repeatability\", \"intermediate precision\", \"recovery\", \"LOD\", \"LOQ\", \"detection limit\", \"quantitation limit\", \"specificity\", \"robustness\", \"method transfer\", \"method comparison\", \"Deming\", \"Passing-Bablok\", \"Bland-Altman\", \"equivalence testing\", \"OOS investigation\", \"ICH Q2\", \"Q2(R2)\", \"Q14\", \"USP 1225\", \"ICH M10\", \"incurred sample reanalysis\", \"ISR\", \"CLSI EP\", and any request to show that an assay works.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/analytical-method-validation",
-    "upstream_commit": "d767725c6e93b1d02a220e6be75b261a9833ede5",
+    "upstream_commit": "5ad4aae76bc40257b914367afacc6fd686a282d5",
     "content_hash": "sha256:60e63ff7cfb52ab90dc1f707ea943743e984e07ad13637f6acd5a0cdfa05bdea",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32552,
+    "stars_github": 33257,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-04T05:43:36.846Z",
+    "fetched_at": "2026-08-12T04:44:20.776Z",
     "first_seen_at": "2026-07-28T05:42:12.243Z",
-    "upstream_commit_at": "2026-08-03T10:27:02Z",
-    "repo_skill_count": 158,
+    "upstream_commit_at": "2026-08-11T17:44:32-07:00",
+    "repo_skill_count": 161,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-04T05:43:36.846Z",
+    "generated_at": "2026-08-12T04:44:20.776Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -112,42 +112,24 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后,Claude 会用自带脚本规划方法验证方案、计算线性/准确度/精密度等统计量、检查 ICH M10 生物分析运行等,输出表格/TSV/JSON;脚本只报告结果,不下结论,也不提供付费标准正文。",
-    "when": "当你提到「method validation」「ICH Q2」「USP 1225」等关键词,或判断某分析程序是否适用、制定验证方案、评估验证数据等时触发。",
+    "what": "装好后，Claude 会依据所选法规框架（如 ICH Q2(R2)、ICH M10、USP、CLSI、ISO 17025）规划验证方案、计算统计量并整理文档。它能评估线性、准确度精密度、检测限定量限，检查生物分析运行，或做方法等效比较。每个脚本只出报告，不下结论。",
+    "when": "当你询问某检测方法是否适用，或提到方法验证、验证方案、接受标准、线性、LOD/LOQ、方法转移、方法比较、ICH Q2、USP 1225、ICH M10 等关键词，或要求证明某个测定有效时触发。",
     "say": [
       {
-        "text": "按 ICH Q2(R2) 帮我制定 HPLC 含量测定方法的验证方案。",
-        "note": "会调用 plan_validation.py 生成协议。"
+        "text": "按 ICH Q2(R2) 为 HPLC 含量测定生成验证方案，先留空接受标准。",
+        "note": "会运行 plan_validation 产出协议骨架。"
       },
       {
-        "text": "用 check_response.py 评估这份校准曲线数据是否线性。",
-        "note": "脚本会输出失拟检验和回算误差。"
+        "text": "用 Passing-Bablok 比较新旧方法，等价边界设为 2%。"
       },
       {
-        "text": "比较两个实验室的结果是否等效,边际设为 2%。",
-        "note": "用 compare_methods.py 做TOST检验。"
+        "text": "这份色谱法生物分析数据符合 ICH M10 运行要求吗？"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:60e63ff7cfb52ab90dc1f707ea943743e984e07ad13637f6acd5a0cdfa05bdea",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-04T06:04:09.328Z",
-    "lint_pass": true,
-    "what_en": "After install, Claude can use bundled scripts to plan validation studies, compute linearity/accuracy/precision/DL/QL, and check ICH M10 runs, etc.; output is table/TSV/JSON. Scripts only report, never conclude, skip paywalled text.",
-    "when_en": "Triggers when you mention keywords like \"method validation\", \"ICH Q2\", \"USP 1225\", or ask whether a procedure is fit for its purpose, request a validation protocol, or evaluate validation data.",
-    "say_en": [
-      {
-        "text": "Help me create a validation protocol for an HPLC assay under ICH Q2(R2).",
-        "note": "Claude will call plan_validation.py to generate the protocol."
-      },
-      {
-        "text": "Use check_response.py to evaluate whether this calibration curve is linear.",
-        "note": "The script outputs lack-of-fit and back-calculated errors."
-      },
-      {
-        "text": "Compare whether two labs' results are equivalent, with a 2% margin.",
-        "note": "Claude uses compare_methods.py for a TOST test."
-      }
-    ]
+    "generated_at": "2026-08-12T05:00:50.269Z",
+    "lint_pass": true
   }
 }

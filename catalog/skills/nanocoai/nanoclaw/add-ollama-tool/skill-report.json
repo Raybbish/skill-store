@@ -5,7 +5,7 @@
     "name": "add-ollama-tool",
     "description": "Add Ollama MCP server so the container agent can call local models and optionally manage the Ollama model library.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-tool",
-    "upstream_commit": "8d04fde18fe071ce0b4870dc3094b66e2a29dcfe",
+    "upstream_commit": "639577c30456980de542d9cdce106455799d350e",
     "content_hash": "sha256:d8474643a5cf86e8446bf461282f88444a9d0a87b7d7844c025ec229ec594779",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,12 +23,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30433,
+    "stars_github": 30488,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:18.204Z",
+    "fetched_at": "2026-08-12T04:44:23.959Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-04T11:14:32+03:00",
-    "repo_skill_count": 54,
+    "upstream_commit_at": "2026-08-11T18:39:44+02:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:18.204Z",
+    "generated_at": "2026-08-12T04:44:23.959Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,41 +98,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 多了一批叫 Ollama 的工具,能查看本地已安装的模型、让某个模型回答问题;若开启管理开关,还能下载、删除模型、查看正在运行的模型和详情。",
-    "when": "安装后这些工具常驻;当你要求用 Ollama 或本地模型回答问题、列出模型,或让模型做推理时,Claude 就会调用它们。",
+    "what": "安装后，Claude 可通过 Ollama MCP 服务器调用本地模型：列出已安装模型、向指定模型发送提示词获取回复；若启用管理工具，还能拉取、删除、查看模型信息及列出运行中的模型。",
+    "when": "当用户要求使用 Ollama 本地模型进行推理、列出模型，或管理模型库（如拉取、删除）时触发。",
     "say": [
       {
-        "text": "用 Ollama 告诉我法国的首都。",
-        "note": "Claude 会列出模型,选一个生成回答。"
+        "text": "用 Ollama 告诉我法国的首都",
+        "note": "Claude 会列出可用模型，再调用生成工具回答。"
       },
       {
-        "text": "列出当前装了哪些 Ollama 模型。",
-        "note": "调用列表工具,显示模型名、大小等信息。"
+        "text": "拉取 gemma3:1b 模型",
+        "note": "Claude 会调用拉取模型工具下载并安装该模型。"
       },
       {
-        "text": "拉取 gemma3:1b 这个模型。",
-        "note": "需开启管理开关;否则只暴露列表和生成。"
+        "text": "当前有哪些 Ollama 模型在运行？"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d8474643a5cf86e8446bf461282f88444a9d0a87b7d7844c025ec229ec594779",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:58:08.631Z",
+    "generated_at": "2026-08-12T05:07:13.349Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude gains a set of Ollama tools: it can list locally installed models, send a prompt to a chosen model and return the response. If the admin flag is enabled, it can also pull, delete, show, and list running models.",
-    "when_en": "The tools are always available after installation. Claude uses them whenever you ask to use Ollama or a local model, to list models, or to generate a response from a local model.",
+    "what_en": "After installation, Claude can use the Ollama MCP server to call local models: list installed models, send prompts to a specified model and get replies; if admin tools are enabled, it can also pull, delete, show model info, and list running models.",
+    "when_en": "Triggered when the user asks to use Ollama local models for inference, list models, or manage the model library (e.g., pull, delete).",
     "say_en": [
       {
         "text": "Use Ollama to tell me the capital of France.",
-        "note": "Claude lists models, picks one, and generates an answer."
-      },
-      {
-        "text": "List the installed Ollama models.",
-        "note": "Calls the list tool to show model details."
+        "note": "Claude lists models and uses the generate tool to answer."
       },
       {
         "text": "Pull the gemma3:1b model.",
-        "note": "Requires admin flag; otherwise only list and generate are exposed."
+        "note": "Claude calls the pull model tool to download and install it."
+      },
+      {
+        "text": "Which Ollama models are currently running?",
+        "note": "Claude calls ollama_list_running to check models in memory."
       }
     ]
   }

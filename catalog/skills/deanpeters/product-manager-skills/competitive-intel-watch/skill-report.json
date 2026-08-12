@@ -5,7 +5,7 @@
     "name": "competitive-intel-watch",
     "description": "Scheduled delta monitoring against a prior competitive snapshot. Use when tracking competitors on a cadence: material shifts only, cited evidence, battle-card update flags, runs unattended.",
     "upstream": "https://github.com/deanpeters/Product-Manager-Skills/tree/main/skills/competitive-intel-watch",
-    "upstream_commit": "99710188c134acf590a02c0e4ee1f431e60004cf",
+    "upstream_commit": "e58cff6818f50142bcd64558bfad5bf7a99c6f9b",
     "content_hash": "sha256:c296a80a59a53308f2f0f9f606aa8037dced90a8db50b4eaa5d80b4daa89c2c7",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5819,
+    "stars_github": 6390,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-18T05:20:05.361Z",
+    "fetched_at": "2026-08-11T04:16:14.715Z",
     "first_seen_at": "2026-07-18T05:20:05.361Z",
-    "upstream_commit_at": "2026-07-17T09:14:53-04:00",
-    "repo_skill_count": 70,
+    "upstream_commit_at": "2026-08-10T12:15:49-04:00",
+    "repo_skill_count": 77,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-18T05:20:05.361Z",
+    "generated_at": "2026-08-11T04:16:14.715Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -96,33 +96,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会定期对比上一份竞品快照，只报告有实质变化的内容（如定价、产品发布、高管变动等），并标注需要更新的战卡或定位文档。如果没有变化，也会明确告知。",
-    "when": "当你提供上一份竞品快照并指定关注点（如定价变动）时触发。如果没有快照，它会先创建一份基线快照。",
+    "what": "装上后,Claude 会拿你之前给的竞争快照作基线,定期扫描对手变化,只挑值得行动的重大变动(如定价、发布、人事、融资等),附证据(网址+日期),并标明哪些战卡或定位部分需要更新。没有明显变化时就明确说'本周期无重大变化',可无人值守按计划跑。",
+    "when": "当你给它上一份竞争快照并要它按周期对比跟踪,或要求检查自上次以来的实质变化时触发;没有快照时会先建立基线。",
     "say": [
       {
-        "text": "对比上季度的竞品快照，告诉我实际变化。",
-        "note": "Claude 会读取快照并搜索变化。"
+        "text": "这是上季度的竞争快照,对比它,列出所有重大变化及证据。",
+        "note": "技能会按材料性门槛筛选,输出带日期和链接的变更日志。"
       },
       {
-        "text": "设置月度竞品监控，战卡过时自动标记。",
-        "note": "Claude 会按计划运行并输出更新标记。"
+        "text": "以后每月自动跑一次竞争监测,空结果也算,并标记要更新的战卡。",
+        "note": "设成定期无人值守运行,有变化才报警。"
+      },
+      {
+        "text": "这轮只盯定价和产品下架,其余变化不用报。",
+        "note": "通过关注点调整过滤范围,低于门槛的只进观察清单。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c296a80a59a53308f2f0f9f606aa8037dced90a8db50b4eaa5d80b4daa89c2c7",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-18T05:23:54.008Z",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-11T04:35:40.027Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude will periodically compare against a prior competitive snapshot, reporting only material changes (e.g., pricing, launches, leadership moves) with evidence and flags for updating battle cards or positioning. An empty changelog is a valid result.",
-    "when_en": "Triggered when you provide a prior snapshot and optionally specify focus areas (e.g., pricing moves). Without a snapshot, it creates a baseline first.",
+    "what_en": "Given a prior snapshot, Claude scans for material shifts since then, reports only changes with dated evidence, and flags which battle-card/positioning sections need updating. Runs unattended; empty changelog is a valid, useful result.",
+    "when_en": "Triggers when a prior competitive snapshot is supplied and a cadence-based delta watch is requested. Without a snapshot, it builds a baseline first then stops.",
     "say_en": [
       {
-        "text": "Run this against last quarter's snapshot and tell me what actually changed.",
-        "note": "Claude reads the snapshot and searches for changes."
+        "text": "Here's last quarter's snapshot. Diff it and list all material changes with evidence.",
+        "note": "Filters by the materiality bar and outputs a dated changelog."
       },
       {
-        "text": "Set up a monthly competitor watch that flags when our battle card goes stale.",
-        "note": "Claude runs on schedule and outputs update flags."
+        "text": "Run a monthly competitor watch automatically; empty result is fine, flag battle-card updates.",
+        "note": "Scheduled unattended run; only changes are reported."
+      },
+      {
+        "text": "This cycle, watch only pricing and product removals; skip the rest.",
+        "note": "Adjusts focus; below-bar signals go to the watchlist."
       }
     ]
   }

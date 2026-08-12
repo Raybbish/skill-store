@@ -1,6 +1,6 @@
 ---
 name: ss-resolve
-description: Compile a small, deterministic StyleSeed rule bundle for one agent, output grammar, surface adapter, domain, page type, brand recipe, and optional profile. Use before setup or build, when STYLESEED.md changes, when updating StyleSeed, or whenever an agent would otherwise load the full rule handbook.
+description: Compile a small, deterministic StyleSeed rule bundle for one agent, output grammar, surface adapter, domain, page type, brand recipe, palette recipe, and optional profile. Use before setup or build, when STYLESEED.md changes, when updating StyleSeed, or whenever an agent would otherwise load the full rule handbook.
 ---
 
 # Resolve effective StyleSeed context
@@ -32,14 +32,26 @@ node <installed-ss-resolve>/scripts/resolve-context.mjs \
   --domain saas \
   --page dashboard \
   --recipe enterprise-workbench \
+  --palette cobalt-instrument \
+  --key-color "#175CD3" \
+  --palette-character balanced \
+  --palette-mode light \
+  --palette-harmony auto \
+  --surface-temperature cool \
   --profile swiss
 ```
 
 Use `--list` to print supported IDs. `--recipe auto` maps the selected grammar to a maintained
-default; pass an explicit recipe when the product needs a different morphology. The default
+default; `--palette auto` maps that recipe to a contrast-verified semantic palette. Pass explicit
+values when the product needs a different morphology or color posture. The default
 output directory is `.styleseed/` in the
 project root. For a project-local reference grammar, pass `reference:<slug>` and ensure
 `.styleseed/rulesets/<slug>/RULESET.md` exists.
+
+When a key color is present in flags or the lock, the resolver uses the shared OKLCH generator and
+writes `.styleseed/palette.json` plus `.styleseed/palette.css`. The manifest records the generation
+inputs. The maintained recipe still supplies product posture and semantic restrictions; its fixed
+hex values become fallbacks rather than overriding the generated system.
 
 Do not load `llms-full.txt` after a bundle resolves successfully. Load a larger source document
 only when the bundle names an unresolved ambiguity that requires it.

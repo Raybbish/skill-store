@@ -103,6 +103,7 @@ If the user says "analyze this video", "score this ad", "evaluate the hook", or 
    - Fast batch / volume → Veo 3.1 Lite
    - Bold/stylized image-to-video from a required start image → Grok Video 1.5 (`grok_video_v15`). Requires one `--start-image` or `--image`, duration 2–15s, resolution `480p` or `720p`.
    - Multimodal reference-to-video with up to 7 images or one video reference → Gemini Omni Flash (`gemini_omni`); keep Seedance 2.0 as the default serious-video pick.
+   - Reference-driven generation, editing an existing video, or extending one → **Seedance 2.5** (`seedance_2_5`), whose modes are `t2v` / `omni_reference` / `video_edit` / `video_extension` and which takes image/video/audio reference arrays. It is NOT a newer Seedance 2.0: it caps at **720p**, so anything needing 1080p or 4K stays on Seedance 2.0.
 
    **Video analysis:**
    - Rate a finished video's hook, virality potential, attention, retention, or distraction risk → Virality Predictor (`brain_activity`). This is a video analysis model that returns a text score/report, not a generated media asset.
@@ -131,11 +132,11 @@ For workflow jobs, use `higgsfield generate workflow <workflow_name> ... --wait`
 
 | Flag | Purpose | Models that accept it |
 |---|---|---|
-| `--image <path-or-id>` | reference image | most image models, `grok_video_v15`, `multi_image_to_3d`, `seedance_2_0`, `veo3`, `marketing_studio_video` |
+| `--image <path-or-id>` | reference image | most image models, `grok_video_v15`, `multi_image_to_3d`, `seedance_2_0`, `seedance_2_5`, `veo3`, `marketing_studio_video` |
 | `--start-image <path-or-id>` | first frame for image-to-video transitions | `grok_video_v15`, `kling3_0`, `kling3_0_turbo`, `kling2_6`, `veo3_1`, `seedance_2_0`, `marketing_studio_video` |
 | `--end-image <path-or-id>` | last frame for transitions | `kling3_0`, `seedance_2_0`, `marketing_studio_video` |
-| `--video <path-or-id>` | reference or analyzed video | `seedance_2_0`, `brain_activity` |
-| `--audio <path-or-id>` | reference audio (lipsync, soundtrack match) | `seedance_2_0` (use this, NOT `--generate-audio`) |
+| `--video <path-or-id>` | reference or analyzed video | `seedance_2_0`, `seedance_2_5`, `brain_activity` |
+| `--audio <path-or-id>` | reference audio (lipsync, soundtrack match) | `seedance_2_0`, `seedance_2_5` (use this, NOT `--generate-audio`) |
 
 For reference-array models, the explicit flags are `--image-references`, `--video-references`, and `--audio-references`; `--image`, `--video`, and `--audio` are short aliases when the schema exposes those params.
 

@@ -4,7 +4,7 @@ description: 'Guided journey from raw idea to a validated, positioned, priced bu
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Create a Business
@@ -35,7 +35,7 @@ Take a raw idea to a business you can defend on every axis: who it is for, what 
 1. **Resume first.** Before anything else, read `docs/CREATE-BUSINESS-PLAN.md` and every artifact in the Journey Map. If the tracker exists, summarize the journey state in 3-5 lines and ask which phase to enter. Done when the user has confirmed an entry point. A journey with a tracker is resumed, never restarted.
 2. **Intake on first run only.** No tracker: run the Intake below, then create `docs/CREATE-BUSINESS-PLAN.md` with every phase statused `pending | in-progress | awaiting-evidence | done | deferred: reason | skipped: reason`. Done when the tracker exists and the user has confirmed the phase plan.
 3. **Phase entry.** Announce: what the phase does, the decision it forces, the artifact it produces, rough effort. Offer proceed / skip / defer — phases marked GATE may be deferred, never skipped. Mark the phase `in-progress` on proceed. Done when the user chose.
-4. **Skill invocation and fallback.** Invoke the phase's skill by its slug. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
+4. **Skill invocation and fallback.** Load the phase's skill and use it: each phase's Invoke line names the skill by slug — use that skill to run the phase. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
 5. **In-phase decisions.** Ask every question under "Decide with the user" — with concrete options and your recommendation. Record the choice in the tracker's Key Decisions. A decision made silently is a defect.
 6. **Phase exit.** Present the draft artifact content for sign-off before writing. On approval: write or extend the docs/ files, update the tracker (status, Key Decisions, Next Actions). Done when the files are written and the phase row shows `done`.
 7. **Artifact discipline.** Read before writing; create a file only if missing, otherwise extend — add or update your sections, preserve everyone else's. Files are UPPERCASE in `docs/`. Every recommendation lands as a checkbox or a table row with owner and priority. See [references/artifact-templates.md](references/artifact-templates.md) when creating a docs/ file for the first time — create it from the full skeleton (all section headings), then fill the sections your phase names.
@@ -63,7 +63,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 
 **Brief (fallback):** A job is progress in context, not a goal or a task — write it as `When [situation], I want to [motivation], so I can [outcome]`, solution-agnostic. Every job has functional, emotional, and social dimensions; the differentiated product usually lives in the last two. Real competition includes workarounds and non-consumption — name the hire you must beat.
 
-**Invoke:** `jobs-to-be-done` with the raw idea and customer guess from Intake. Ask for a When/I-want-to/so-I-can job statement, all three dimensions, and the full competing-alternatives set including non-consumption.
+**Invoke:** Use the `jobs-to-be-done` skill with the raw idea and customer guess from Intake. Ask for a When/I-want-to/so-I-can job statement, all three dimensions, and the full competing-alternatives set including non-consumption.
 
 **Decide with the user:** Which job statement is the real one, and which competing hire you must beat first. Recommend the tightest statement that still names an emotional or social dimension.
 
@@ -77,7 +77,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 
 **Brief (fallback):** Three rules — talk about their life not your idea; ask about specifics in the past not hypotheticals; talk less (they speak 80%). Compliments are not data; only commitments (time, reputation, money) count. A good question could destroy the imagined business.
 
-**Invoke:** `mom-test` with the job statement and competing alternatives from docs/CUSTOMER.md. Ask for (a) a 10-12 question interview guide obeying the three rules, then later (b) transcript scoring that flags leading questions and zombie leads. Hand the guide to the user and pause with status `awaiting-evidence`; record the approved guide in docs/CUSTOMER.md under a `### Interview Guide` subsection of `## Interview Evidence` so it survives the pause.
+**Invoke:** Use the `mom-test` skill with the job statement and competing alternatives from docs/CUSTOMER.md. Ask for (a) a 10-12 question interview guide obeying the three rules, then later (b) transcript scoring that flags leading questions and zombie leads. Hand the guide to the user and pause with status `awaiting-evidence`; record the approved guide in docs/CUSTOMER.md under a `### Interview Guide` subsection of `## Interview Evidence` so it survives the pause.
 
 **Decide with the user (on return):** Does the evidence confirm the job? Proceed (3+ concrete commitments), revise the job statement (loop to Phase 1), or stop (no pain found — a cheap win).
 
@@ -91,7 +91,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 
 **Brief (fallback):** Five days — Map, Sketch, Decide, Prototype, Test. Pick one target moment (the riskiest step); sketch alone (no group brainstorms); a single Decider breaks ties; build a facade, not working code; test with exactly five target customers. On Friday, shut up and let them struggle — explaining the prototype invalidates the test.
 
-**Invoke:** `design-sprint` with the validated job and riskiest open question. Ask for the Monday map with sprint questions and target moment, and a Friday five-act interview script that does not explain the prototype. Hand the recruiting brief to the user and pause `awaiting-evidence` for real sessions; record the approved script and brief under the sprint card in docs/EXPERIMENTS.md so they survive the pause.
+**Invoke:** Use the `design-sprint` skill with the validated job and riskiest open question. Ask for the Monday map with sprint questions and target moment, and a Friday five-act interview script that does not explain the prototype. Hand the recruiting brief to the user and pause `awaiting-evidence` for real sessions; record the approved script and brief under the sprint card in docs/EXPERIMENTS.md so they survive the pause.
 
 **Decide with the user:** What single assumption to test this week and who is the Decider. On return: does the concept survive — build, fix, or walk away (a one-week win)?
 
@@ -105,7 +105,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 
 **Brief (fallback):** Plan Build-Measure-Learn backward: decide what to learn, then the metric that proves it, then the minimum build. MVP types — smoke test, concierge, Wizard of Oz — each test a different leap-of-faith assumption; test the riskiest first. Measure actionable metrics, not vanity ones. Set pivot-or-persevere criteria before running. Pick one engine of growth: sticky, viral, or paid.
 
-**Invoke:** `lean-startup` with the feature wish list and surviving concept. Ask for the single riskiest leap-of-faith assumption, an MVP type with a Build-Measure-Learn experiment card, and pivot-or-persevere thresholds set in advance.
+**Invoke:** Use the `lean-startup` skill with the feature wish list and surviving concept. Ask for the single riskiest leap-of-faith assumption, an MVP type with a Build-Measure-Learn experiment card, and pivot-or-persevere thresholds set in advance.
 
 **Decide with the user:** Which MVP type, which single engine of growth to optimize first, and the pre-committed pivot/persevere thresholds. Recommend the sticky engine (retention above churn) before paid acquisition.
 
@@ -119,7 +119,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 
 **Brief (fallback):** A goal names ambition; a strategy explains how you win given the obstacles. The kernel: a diagnosis naming the single critical challenge; a guiding policy that is a genuine choice with losers (if a rival could paste it in, it is a platitude); coherent actions, each with an owner and date. Detect bad strategy by the four hallmarks — fluff, dodging the challenge, goals-as-strategy, dog's-dinner objective lists. Concentrate force on one pivot point.
 
-**Invoke:** `good-strategy-bad-strategy` with the validated demand evidence and any one-page plan. Ask for a four-hallmarks audit, then a kernel — a one-paragraph diagnosis, a guiding policy that rules whole classes of action out, three coherent actions with owners — plus an explicit no-list.
+**Invoke:** Use the `good-strategy-bad-strategy` skill with the validated demand evidence and any one-page plan. Ask for a four-hallmarks audit, then a kernel — a one-paragraph diagnosis, a guiding policy that rules whole classes of action out, three coherent actions with owners — plus an explicit no-list.
 
 **Decide with the user:** What is the single critical challenge (the diagnosis), and what does the guiding policy explicitly refuse to do? Recommend concentrating on one pivot point over spreading thin.
 
@@ -133,7 +133,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 
 **Brief (fallback):** Value innovation pursues differentiation and low cost at once. The ERRC grid — Eliminate, Reduce, Raise, Create — lifts buyer value while cutting cost. Plot a strategy canvas: a different offering diverges from the industry curve. Blue oceans convert non-customers (soon-to-be, refusing, unexplored), not rivals' customers — find the common barrier to remove. Do not eliminate factors customers genuinely value (trust, security, accuracy).
 
-**Invoke:** `blue-ocean-strategy` with the competing alternatives from CUSTOMER.md and the kernel from STRATEGY.md. Ask for a strategy canvas of current factors and an ERRC grid for a value-innovation move within resource limits.
+**Invoke:** Use the `blue-ocean-strategy` skill with the competing alternatives from CUSTOMER.md and the kernel from STRATEGY.md. Ask for a strategy canvas of current factors and an ERRC grid for a value-innovation move within resource limits.
 
 **Decide with the user:** Which factors to eliminate / reduce / raise / create, and which tier of non-customers to convert first. Confirm no trust, security, or accuracy factor is being cut.
 
@@ -147,7 +147,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 
 **Brief (fallback):** Positioning is context, not messaging — customers judge you relative to alternatives, so choose the comparison. Five steps: true competitive alternatives (often a spreadsheet or doing nothing); unique attributes (pass the "only we" test); value via the "so what?" test; best-fit customers (tight, by title and firm traits, never everyone); market category (existing / subcategory / new — a new one pays an education tax).
 
-**Invoke:** `obviously-awesome` with unique attributes from STRATEGY.md and CUSTOMER.md. Ask for the full five-step exercise and an internal positioning statement: "For [best-fit customer], we are the [category] that [key value]."
+**Invoke:** Use the `obviously-awesome` skill with unique attributes from STRATEGY.md and CUSTOMER.md. Ask for the full five-step exercise and an internal positioning statement: "For [best-fit customer], we are the [category] that [key value]."
 
 **Decide with the user:** Which market category to compete in (existing / subcategory / new) and who the best-fit customer is. Recommend existing or subcategory unless there is traction to spare for a new category.
 
@@ -161,7 +161,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 
 **Brief (fallback):** The offer is the number one lever. Value = (dream outcome × perceived likelihood) / (time delay × effort) — maximize the top, minimize the bottom. Assemble a Grand Slam Offer: core offer, named bonuses (each kills an objection, each with a defensible value), a risk-reversing guarantee, ethical scarcity. Name it with MAGIC. Keep every value honest and every guarantee honorable.
 
-**Invoke:** `hundred-million-offers` with the positioning and best-fit customer from POSITIONING.md. Ask for a Grand Slam Offer built on the Value Equation, three named bonuses each killing an objection, a guarantee, ethical scarcity, and a MAGIC name.
+**Invoke:** Use the `hundred-million-offers` skill with the positioning and best-fit customer from POSITIONING.md. Ask for a Grand Slam Offer built on the Value Equation, three named bonuses each killing an objection, a guarantee, ethical scarcity, and a MAGIC name.
 
 **Decide with the user:** Which dream outcome to anchor on and which objections the bonuses must kill. Confirm every dollar value and every scarcity claim is genuinely true — replace any tactic that would need invented evidence.
 
@@ -175,7 +175,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 
 **Brief (fallback):** Customers reveal a range: ask what feels acceptable, expensive, prohibitive; trust only the top-box purchase probability. Avoid the four failures — feature shock, minivation (near-100% win rate with no pushback), hidden gem, undead. Segment by value and willingness to pay, never demographics. Package leader / filler / killer; design the middle tier first; pull killer features into add-ons. Choose the price metric before the price level.
 
-**Invoke:** `monetizing-innovation` with the offer from OFFER.md and segments from CUSTOMER.md. Ask for a willingness-to-pay interview script (acceptable / expensive / prohibitive), a leader/filler/killer classification, good-better-best tiers, and a price metric. Hand the WTP script to the user and pause `awaiting-evidence` for real calls; record the approved script in docs/OFFER.md under a `### WTP Interview Script` subsection of `## Willingness-to-Pay Evidence` so it survives the pause.
+**Invoke:** Use the `monetizing-innovation` skill with the offer from OFFER.md and segments from CUSTOMER.md. Ask for a willingness-to-pay interview script (acceptable / expensive / prohibitive), a leader/filler/killer classification, good-better-best tiers, and a price metric. Hand the WTP script to the user and pause `awaiting-evidence` for real calls; record the approved script in docs/OFFER.md under a `### WTP Interview Script` subsection of `## Willingness-to-Pay Evidence` so it survives the pause.
 
 **Decide with the user:** Which price metric to charge on (per seat / per unit of value) and the good-better-best tier boundaries. Recommend a metric that tracks delivered value so revenue compounds.
 
@@ -189,7 +189,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 
 **Brief (fallback):** The chasm sits between visionary early adopters and pragmatist early majority — what wins one repels the other. Do not be everything to everyone: pick one narrow beachhead with urgent, expensive pain, reachable channels, customers who talk to each other, small enough to own yet big enough to matter. Assemble the whole product (integrations, onboarding, support, partners). References are the currency; shift positioning from "revolutionary" to "proven."
 
-**Invoke:** `crossing-the-chasm` with POSITIONING.md and STRATEGY.md. Ask to score candidate niches on pain, reachability, word-of-mouth, and dominability, then map the whole-product requirements a pragmatist needs before buying.
+**Invoke:** Use the `crossing-the-chasm` skill with POSITIONING.md and STRATEGY.md. Ask to score candidate niches on pain, reachability, word-of-mouth, and dominability, then map the whole-product requirements a pragmatist needs before buying.
 
 **Decide with the user:** Which single beachhead segment to own first. Recommend the highest-scoring niche small enough to dominate; resist chasing several at once.
 
@@ -208,7 +208,7 @@ Phase-skip heuristics: skip Phase 1 when a validated job statement with three di
 | predictable-revenue | B2B with a sales-led motion | Extends docs/MARKETING.md |
 | continuous-discovery | post-launch, to make discovery a weekly habit | Extends docs/CUSTOMER.md |
 
-Optional phases follow the same operating rules; insert where the Add-when condition first becomes true.
+Optional phases follow the same operating rules — load and use each listed skill exactly as a core phase would; insert where the Add-when condition first becomes true.
 
 ## Common Mistakes
 
@@ -231,4 +231,4 @@ Exit checklist — every box tied to an artifact that must exist:
 - [ ] POSITIONING.md one-liner passes the 30-second outsider test
 - [ ] OFFER.md holds a priced Grand Slam offer backed by willingness-to-pay evidence and a price metric
 
-Close the tracker: every phase `done` or `skipped: reason`, and any open Next Actions carried into the relevant artifacts. Forward routing: when the beachhead is chosen and first customers are paying, continue with `grow-business` to add revenue and customers. When the validated idea needs a software product built, continue with `create-app`.
+Close the tracker: every phase `done` or `skipped: reason`, and any open Next Actions carried into the relevant artifacts. Forward routing: when the beachhead is chosen and first customers are paying, continue with the `grow-business` skill to add revenue and customers. When the validated idea needs a software product built, continue with the `create-app` skill.

@@ -5,27 +5,29 @@
     "name": "ast-grep",
     "description": "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "19abf74feb0eb1b82f37e70a2dd68a519cf88a08",
-    "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
+    "upstream_commit": "c5cefab7fcbf9dbaff3ed22678429d17127808be",
+    "content_hash": "sha256:21a6cd7b8d7d869c283bb62d8abce2fb3ecc9fed0200d828789a7ebbfd581707",
     "license": "MIT",
-    "hosting": "mirrored",
-    "mirror_complete": false,
+    "hosting": "indexed",
     "category": "dev",
     "version": null,
     "publisher": "code-yeongyu",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": []
+    "tags": [
+      "refactoring",
+      "cli"
+    ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67254,
+    "stars_github": 67721,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:08.191Z",
+    "fetched_at": "2026-08-12T04:44:12.294Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-05T07:40:58+09:00",
-    "repo_skill_count": 48
+    "upstream_commit_at": "2026-08-12T12:53:25+09:00",
+    "repo_skill_count": 49
   },
   "context_size": {
     "version": "1",
@@ -34,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:08.191Z",
+    "generated_at": "2026-08-12T04:44:12.294Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,62 +92,62 @@
   },
   "eval": null,
   "copy": {
-    "tagline": "用语法树精准搜索和改写代码",
+    "tagline": "按代码结构搜索并批量改写代码",
     "scene_tags": [
-      "代码重构",
-      "批量修改",
-      "代码评审"
+      "大型重构",
+      "代码迁移",
+      "批量替换"
     ],
-    "fit_line": "适合你，如果需要在多语言项目中按代码结构而非文本进行搜索和替换",
-    "tagline_en": "Search and rewrite code by syntax tree precisely",
+    "fit_line": "适合你,如果经常需要跨文件修改同一类代码结构。",
+    "tagline_en": "Search code by syntax shape and rewrite it in bulk",
     "scene_tags_en": [
-      "code refactoring",
-      "batch modification",
-      "code review"
+      "large-scale refactoring",
+      "code migration",
+      "batch replacement"
     ],
-    "fit_line_en": "For you if you need to search and replace code by structure across multiple languages",
+    "fit_line_en": "For you if you often need to modify the same kind of code structure across files.",
     "source": "llm",
-    "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-11T07:47:41.880Z",
+    "content_hash": "sha256:21a6cd7b8d7d869c283bb62d8abce2fb3ecc9fed0200d828789a7ebbfd581707",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-07T04:55:56.801Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会改用 ast-grep 按代码结构查找和改写代码(能认出函数、调用、类等形状),而不是按文本搜索;它会先显示预览,再按你的确认修改文件。",
-    "when": "当你要求按代码形态查找/改写时触发,例如:找出某类函数或调用、批量替换 console.log、去掉 as any 等;纯文本/注释内容用 rg/grep。",
+    "what": "安装后，Claude 会用 ast-grep 工具按代码结构（而非纯文本）搜索和改写代码，支持 25 种语言。它能按语法形状查找函数、调用、类、导入等，做批量替换（如把 console.log 改成 logger.info），并在改写前先预览改动。",
+    "when": "当你想按代码结构查找或批量改写代码（比如找出所有带 Request 参数的函数、把 console.log 改写为 logger.info）时触发；纯文本搜索则用 grep/rg。",
     "say": [
       {
-        "text": "把项目里所有 console.log(x) 改成 logger.info(x)",
-        "note": "先预览,确认后才真正改写文件。"
+        "text": "把仓库里所有 console.log(x) 改成 logger.info(x)",
+        "note": "会先预览再应用"
       },
       {
-        "text": "找出所有接收 Request 参数的函数",
-        "note": "按函数结构匹配,列出文件和行号。"
+        "text": "找出所有空 catch 块",
+        "note": "返回文件位置列表"
       },
       {
-        "text": "扫描当前目录的 YAML 规则并报告违规",
-        "note": "运行 scan,输出违规位置和数量。"
+        "text": "把这个项目里的 require() 换成 import",
+        "note": "批量重写前先 dry-run"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:6cbf85ad7b0da06be14175b851f45a62fd17d7d9c2be0dd645537b7246cd5609",
+    "content_hash": "sha256:21a6cd7b8d7d869c283bb62d8abce2fb3ecc9fed0200d828789a7ebbfd581707",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:47:32.918Z",
+    "generated_at": "2026-08-12T04:53:57.859Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude will use ast-grep to search and rewrite code by its structure (functions, calls, classes, etc.) rather than by text; it previews changes and only modifies files after you confirm.",
-    "when_en": "Triggers when you ask for structural code matching/rewriting, e.g. finding functions/calls of a given shape, rewriting console.log calls, stripping as any, etc.; plain text/comments go to rg/grep.",
+    "what_en": "After installation, Claude uses ast-grep to search and rewrite code by code structure (not plain text), supporting 25 languages. It can find functions, calls, classes, imports by syntax shape, perform batch rewrites (e.g., console.log to logger.info), and preview changes before applying.",
+    "when_en": "Triggered when you want to find or batch-rewrite code by structure (e.g., find all functions taking a Request parameter, rewrite console.log to logger.info); use grep/rg for plain-text searches.",
     "say_en": [
       {
-        "text": "Rewrite every console.log(x) to logger.info(x) in the project",
-        "note": "Shows a preview first; writes only after confirmation."
+        "text": "Change all console.log(x) to logger.info(x) in the repo",
+        "note": "Previews before applying"
       },
       {
-        "text": "Find all functions that take a Request parameter",
-        "note": "Matches by function shape and lists files and lines."
+        "text": "Find all empty catch blocks",
+        "note": "Returns file locations"
       },
       {
-        "text": "Run the YAML rules in the current directory and report violations",
-        "note": "Runs scan and reports locations and counts."
+        "text": "Replace require() with import across this project",
+        "note": "Dry-run before batch rewrite"
       }
     ]
   }
