@@ -5,7 +5,7 @@
     "name": "ultimate-browsing",
     "description": "Escalation skill for blocked or hard-to-reach web access — load it when a normal browse/fetch is blocked (WAF, 403, Cloudflare, JS-only render, login-gated, or a platform a generic fetcher cannot read). Tiered router: TIER 1 insane-search (headless extraction + WAF bypass via curl_cffi TLS impersonation, yt-dlp, Jina Reader, public APIs, Playwright real-Chrome fallback); TIER 1.5 agent-reach (platform-native readers for Chinese and social platforms: Xiaohongshu, Douyin, Weibo, Bilibili, V2EX, WeChat, plus Twitter/Reddit/LinkedIn/GitHub); TIER 2 Chrome stealth (CloakBrowser stealth Chromium + agent-browser CDP for clicks, forms, screenshots, video, cookie login). Triggers: blocked site, bypass bot detection, cloudflare/WAF bypass, scrape, stealth browser, import cookies, fill form, screenshot, play youtube, xiaohongshu, douyin, weibo, bilibili, v2ex, wechat article, podcast transcript. NOT for simple searches (use web-search) or plain fetches (use webfetch).",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ultimate-browsing",
-    "upstream_commit": "bceb9cf76431ef5225ac06294677dcb1118c1e26",
+    "upstream_commit": "c5cefab7fcbf9dbaff3ed22678429d17127808be",
     "content_hash": "sha256:71981fabd086e6014286f1abb84d4b251eede4ecb726635237e731b0fed5bbed",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67647,
+    "stars_github": 67721,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-11T04:15:46.168Z",
+    "fetched_at": "2026-08-12T04:44:12.294Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T13:05:27+09:00",
-    "repo_skill_count": 48
+    "upstream_commit_at": "2026-08-12T12:53:25+09:00",
+    "repo_skill_count": 49
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-11T04:15:46.168Z",
+    "generated_at": "2026-08-12T04:44:12.294Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -156,41 +156,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,遇到被屏蔽或常规抓取不了的网页,Claude 会按层级处理:先无头提取并尝试绕过 WAF/Cloudflare;不行则用平台专用读取器(小红书、微博、B站等);再不行则启动隐身浏览器执行点击、填表、截图等操作。",
-    "when": "当普通抓取被拦截(WAF、403、Cloudflare 等)、目标是小红书/微博/B站等平台,或需要截图、填表、隐身访问时触发;普通搜索和简单抓取不触发。",
+    "what": "遇到被拦截或正常方式抓不到的网页时,自动按三层流程处理:先用无头提取并绕过 WAF,再用平台专用读取器读中文/社交平台,最后用隐蔽浏览器模拟点击、填表、截图和登录。",
+    "when": "当普通浏览/抓取被拦截(WAF、403、Cloudflare、需 JS 渲染、登录墙),或目标平台通用抓取器读不了时触发;简单搜索不触发。",
     "say": [
       {
-        "text": "这个网页被 Cloudflare 挡住了,能抓取内容吗?",
-        "note": "触发 Tier 1 绕过拦截提取。"
+        "text": "帮我绕过 Cloudflare 抓取这个页面,提取正文。",
+        "note": "会先走 Tier 1 无头提取。"
       },
       {
-        "text": "帮我看看这条微博的全文和评论",
-        "note": "走平台读取器抓取。"
+        "text": "读一下这篇小红书笔记的完整内容。",
+        "note": "走平台专用读取器。"
       },
       {
-        "text": "打开这个页面登录后截图给我",
-        "note": "启动隐身浏览器并操作。"
+        "text": "用隐蔽浏览器打开链接,截图并保存。",
+        "note": "会启动 CloakBrowser 执行。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:71981fabd086e6014286f1abb84d4b251eede4ecb726635237e731b0fed5bbed",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-11T04:33:33.766Z",
+    "generated_at": "2026-08-12T04:56:17.608Z",
     "lint_pass": true,
-    "what_en": "On blocked/hard-to-reach pages, Claude escalates: headless extraction with WAF/Cloudflare bypass, then platform-native readers (Xiaohongshu, Weibo, etc.), then stealth Chromium for clicks, forms, screenshots, cookie login.",
-    "when_en": "Triggers when a normal fetch is blocked (WAF, 403, Cloudflare), target is on a Chinese/social platform, or interaction is needed (screenshot, fill form, stealth). Not for simple searches or plain fetches.",
+    "what_en": "When a page is blocked or hard to reach, automatically route through three tiers: headless extraction with WAF bypass, platform-native readers for Chinese/social platforms, then a stealth browser for clicks, forms, screenshots, and login.",
+    "when_en": "Triggers when a normal browse/fetch is blocked (WAF, 403, Cloudflare, JS-only, login-gated) or the target platform is unreadable by a generic fetcher; not for simple searches.",
     "say_en": [
       {
-        "text": "This page is blocked by Cloudflare, can you get the content?",
-        "note": "Runs Tier 1 bypass extraction."
+        "text": "Bypass Cloudflare and fetch this page, extract the article text.",
+        "note": "Runs Tier 1 headless extraction."
       },
       {
-        "text": "Fetch the full text and comments of this Weibo post.",
-        "note": "Uses platform reader."
+        "text": "Read the full content of this Xiaohongshu note.",
+        "note": "Uses the platform-native reader."
       },
       {
-        "text": "Open this page, log in, and take a screenshot.",
-        "note": "Launches stealth browser."
+        "text": "Open this URL in the stealth browser, screenshot and save it.",
+        "note": "Launches CloakBrowser to do it."
       }
     ]
   }

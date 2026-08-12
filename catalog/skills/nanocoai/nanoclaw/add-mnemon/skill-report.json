@@ -5,7 +5,7 @@
     "name": "add-mnemon",
     "description": "Add persistent graph-based memory via mnemon. Agents recall past context before responding and remember insights after each turn.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-mnemon",
-    "upstream_commit": "86e353564d2c0f6173fbb4b95f061c822ff6b601",
+    "upstream_commit": "639577c30456980de542d9cdce106455799d350e",
     "content_hash": "sha256:8303cdc749ad97633e59dc46a9ef06d18ce83450676fbab277104db6431a700b",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,12 +22,13 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30485,
+    "stars_github": 30488,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-11T04:15:57.111Z",
+    "fetched_at": "2026-08-12T04:44:23.959Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-10T23:27:47+03:00",
-    "repo_skill_count": 50
+    "upstream_commit_at": "2026-08-11T18:39:44+02:00",
+    "repo_skill_count": 51,
+    "bulk_source": true
   },
   "context_size": {
     "version": "1",
@@ -36,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-11T04:15:57.111Z",
+    "generated_at": "2026-08-12T04:44:23.959Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,41 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 每次回复前会自动调出过去对话的相关内容,每轮结束后把新要点存进长期记忆;这些记忆会保留下来,重启后也不丢。",
-    "when": "仅在 --target claude-code 且代理组使用默认 Claude 提供方时生效;容器启动后,每轮回复前自动调取记忆,结束后自动保存。",
+    "what": "装上后，Claude 每次回复前会先调出相关历史记忆，并在每轮对话后把新信息存进记忆。记忆保存在 .claude/ 目录，重启容器后仍在。",
+    "when": "当代理容器使用默认 Claude provider 运行对话时，每次回复前会触发记忆召回，回复后触发记忆保存。若 provider 被设为其他值（如 opencode），本技能不生效。",
     "say": [
       {
-        "text": "你还记得我上次说的项目命名方案吗?",
-        "note": "Claude 会从记忆里调出之前相关对话。"
+        "text": "请记住我叫小明，最喜欢蓝色。",
+        "note": "Claude 会把这个信息存入长期记忆。"
       },
       {
-        "text": "根据之前讨论,下一步先做哪件事?",
-        "note": "触发记忆检索,按历史结论给出建议。"
+        "text": "上次我说过我家养了只猫，你还记得吗？",
+        "note": "新会话中问，测试能否自动回忆。"
       },
       {
-        "text": "把这次的结论记住,明天我再问你。",
-        "note": "本回合结束后会自动存入记忆。"
+        "text": "以后每周五提醒我开项目例会。",
+        "note": "让 Claude 把这件事记下来。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:8303cdc749ad97633e59dc46a9ef06d18ce83450676fbab277104db6431a700b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-11T04:49:41.902Z",
+    "generated_at": "2026-08-12T05:07:19.224Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude automatically recalls relevant past context before each reply and stores new insights after each turn. These memories persist and survive restarts.",
-    "when_en": "Only fires under --target claude-code for groups using default Claude provider. After container start, it recalls memory before each reply and saves after each turn.",
+    "what_en": "After installation, Claude recalls relevant past memories before each response and saves new insights after each turn. Memory is stored in .claude and survives container restarts.",
+    "when_en": "It activates when the agent container runs with the default Claude provider. It triggers memory recall before each reply and saves memory after each turn. It does not run for other providers such as opencode.",
     "say_en": [
       {
-        "text": "Do you remember the project naming ideas I mentioned last time?",
-        "note": "Claude recalls relevant prior conversation from memory."
+        "text": "Remember that my name is Xiaoming and my favorite color is blue.",
+        "note": "Claude will store this in long-term memory."
       },
       {
-        "text": "Based on our earlier discussion, what should we do first?",
-        "note": "Triggers memory retrieval and suggests next step from history."
+        "text": "I mentioned I have a cat last time. Do you remember?",
+        "note": "Ask in a new session to test recall."
       },
       {
-        "text": "Remember this conclusion for tomorrow when I ask again.",
-        "note": "It gets stored automatically after this turn."
+        "text": "Remind me to have the weekly project meeting every Friday.",
+        "note": "Let Claude keep track of this recurring item."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Intelligent refactor command. Triggers: refactor, refactoring, cleanup, restructure, extract, simplify, modernize.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "bceb9cf76431ef5225ac06294677dcb1118c1e26",
+    "upstream_commit": "c5cefab7fcbf9dbaff3ed22678429d17127808be",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67647,
+    "stars_github": 67721,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-11T04:15:46.168Z",
+    "fetched_at": "2026-08-12T04:44:12.294Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T13:05:27+09:00",
-    "repo_skill_count": 48
+    "upstream_commit_at": "2026-08-12T12:53:25+09:00",
+    "repo_skill_count": 49
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-11T04:15:46.168Z",
+    "generated_at": "2026-08-12T04:44:12.294Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,当你要重构代码时,Claude 会先弄清意图、建立代码地图、评估测试覆盖,再制定计划,然后用 LSP 和 AST-grep 逐步执行,每步都跑测试验证,最后跑完整测试套件、类型检查、lint 和构建,并给出改动总结。",
-    "when": "当你提到 refactor、cleanup、restructure 等关键词,或指定要重构的文件、符号或代码模式时触发;若请求模糊,它会先追问具体目标。",
+    "what": "当用户提出重构、清理或简化代码时,Claude 会先确认目标,再分析整个代码库,找出相关依赖,评估测试覆盖,制定分步计划;随后逐步修改,每步都运行测试,失败立即回退,最后做全项目回归并输出改动总结。",
+    "when": "当用户说“refactor、restructure、cleanup”等关键词,或输入 /refactor 命令时触发;若请求含糊(如“改进代码”),它先追问具体目标。",
     "say": [
       {
-        "text": "用安全策略重构这个模块,范围只限当前目录",
-        "note": "由你决定 --scope 或 --strategy"
+        "text": "重构 src/auth/handler.ts,把验证逻辑拆成独立模块。",
+        "note": "Claude 会先分析相关代码与测试再动手。"
       },
       {
-        "text": "把这段重复代码提取成独立函数,别破坏现有测试",
-        "note": "提取逻辑属于 extract 触发词"
+        "text": "/refactor 把所有用旧 API 的调用改成新接口。",
+        "note": "它会先定位所有受影响的文件。"
+      },
+      {
+        "text": "用保守策略重构整个项目,保持行为不变。",
+        "note": "会先评估测试覆盖,再开始重构。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-11T04:32:47.780Z",
+    "generated_at": "2026-08-12T04:56:04.830Z",
     "lint_pass": true,
-    "what_en": "When asked to refactor, Claude clarifies intent, maps the codebase, assesses test coverage, plans, then executes step-by-step with LSP/AST-grep, running tests after each change and a full suite at the end.",
-    "when_en": "Triggers on words like refactor, cleanup, restructure, or when a file/symbol/code pattern is specified. If the request is vague, it asks clarifying questions first.",
+    "what_en": "When asked to refactor, Claude clarifies the target, maps the codebase and test coverage, plans, then executes small verified steps with rollback, ending with a full regression check and a change summary.",
+    "when_en": "Triggered when the user says keywords like 'refactor', 'restructure', 'cleanup', or uses the /refactor command. Vague requests (e.g., 'improve code') are met with clarifying questions.",
     "say_en": [
       {
-        "text": "Refactor the AuthService in src/auth/handler.ts",
-        "note": "It analyzes dependencies first, verifying each step"
+        "text": "Refactor src/auth/handler.ts and extract the validation logic into a separate module.",
+        "note": "Claude analyzes related code and tests before editing."
       },
       {
-        "text": "Refactor this module with the safe strategy, scope to this directory",
-        "note": "You decide --scope or --strategy"
+        "text": "/refactor migrate all callers of the deprecated API to the new interface.",
+        "note": "It finds all affected files first."
       },
       {
-        "text": "Extract this repeated code into a standalone function without breaking tests",
-        "note": "Extraction falls under the extract trigger"
+        "text": "Refactor the whole project with a conservative strategy, keeping behavior unchanged.",
+        "note": "It checks test coverage first."
       }
     ]
   }
