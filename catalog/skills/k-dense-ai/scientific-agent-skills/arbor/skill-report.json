@@ -5,7 +5,7 @@
     "name": "arbor",
     "description": "Autonomously improve a real artifact (code, training recipe, agent harness, data pipeline, prompt) against an objective and an evaluator, using Hypothesis Tree Refinement (HTR) from the Arbor paper. Use this whenever someone wants to iteratively optimize something over many experiments without overfitting — e.g. \"get my model's eval score up\", \"improve this agent/harness\", \"tune this pipeline\", \"beat the baseline on this benchmark\", \"run a search over approaches and keep the best\", \"do an MLE-bench / Kaggle-style optimization\", or any long-horizon \"make this artifact better and don't just memorize the dev set\" task. Trigger it even when the user doesn't say \"Arbor\" or \"hypothesis tree\" but describes repeated experiment-and-evaluate loops, branching exploration of competing ideas, or worries about a dev/test gap. Runs Claude itself as the coordinator with subagent executors in isolated git worktrees; for the standalone `arbor` CLI tool see references/arbor-upstream.md.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arbor",
-    "upstream_commit": "d767725c6e93b1d02a220e6be75b261a9833ede5",
+    "upstream_commit": "d661d27ef4ddad5b9287bdd84887ace27e2320b8",
     "content_hash": "sha256:96b754e3d8a417a25ccdc4479474622fb65270920f774ae679b7951062d1fcfe",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 32552,
+    "stars_github": 33168,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-04T05:43:36.846Z",
+    "fetched_at": "2026-08-11T04:15:54.009Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-03T10:27:02Z",
-    "repo_skill_count": 158,
+    "upstream_commit_at": "2026-08-10T16:46:11-07:00",
+    "repo_skill_count": 161,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-04T05:43:36.846Z",
+    "generated_at": "2026-08-11T04:15:54.009Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -101,41 +101,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会把要改进的代码等工件放入自主循环：先定目标和评估器，再把改进思路拆成假设，派子代理在隔离工作区实验，把结果存成假设树，并用独立的测试评估器把关，最终产出改进后的工件、测试得分与过程报告。",
-    "when": "当用户想通过多轮实验迭代改进某个可修改的工件（如代码、训练配方、数据管道），并配有目标和评分方法时触发；即使用户没提“Arbor”，只要描述重复实验—评估循环、分支探索或担心开发/测试差距，也会接管。",
+    "what": "Claude 会把一个现有作品(代码、训练配置、提示词等)当作改进对象,以你设定的目标和评分命令为准,自动反复做实验。它会记录每个假设的成败,只有通过独立测试评估的版本才会被选为最佳,最后给你实验报告。",
+    "when": "当你要求对某个可修改的工件(如模型、agent 框架、数据管道)做多轮实验改进并给出可评分的目标时触发;也会在你描述反复「实验-评估」循环、担忧开发/测试差距时自动接管。",
     "say": [
       {
-        "text": "把我的智能体在基准上的准确率提上去，注意别在开发集上过拟合。",
-        "note": "Arbor 会启动假设树循环，用测试集把关。"
+        "text": "把这份训练脚本的 dev 损失降下来,用测试集做最终验收,别过拟合。",
+        "note": "会进入自主优化,先确认目标和评估器。"
       },
       {
-        "text": "改进这个数据处理流水线的输出质量，目标和评估脚本在说明文档里，跑多轮实验。",
-        "note": "它会拆假设并派子代理在隔离副本中实验。"
+        "text": "改进我的 agent 框架,跑 10 轮实验,保留通过测试的最好版本。",
+        "note": "会初始化假设树并按预算循环。"
       },
       {
-        "text": "这个训练脚本的损失太高，帮我优化超参数和架构，最多跑 15 轮实验。",
-        "note": "会按预算进行多轮实验并报告测试得分。"
+        "text": "这个 Kaggle 式任务,帮我搜多组方案,只保留测试集表现好的。",
+        "note": "会并行探索并执行测试合并门。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:96b754e3d8a417a25ccdc4479474622fb65270920f774ae679b7951062d1fcfe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-04T06:05:08.773Z",
-    "lint_pass": true,
-    "what_en": "Improves an artifact via experiments: defines objective and evaluators, forms hypotheses, tests each in isolated worktrees, keeps a hypothesis tree, and merges only changes passing a held-out test. Outputs an improved artifact and report.",
-    "when_en": "When a user wants iterative improvement of an artifact (code, recipe, pipeline, prompt), or mentions repeated experiment-evaluate loops, branching exploration, or dev/test gap (no need to say Arbor).",
+    "generated_at": "2026-08-11T04:42:03.207Z",
+    "lint_pass": false,
+    "what_en": "Claude autonomously improves an artifact (code, config, prompt) against your objective and evaluator, records hypotheses in a tree, and promotes only changes that pass a held-out test evaluator.",
+    "when_en": "Triggered when you want multi-round improvement of an artifact under an evaluator, or when you describe repeated experiment-evaluate loops and worry about a dev/test gap.",
     "say_en": [
       {
-        "text": "Improve my agent's accuracy on the benchmark, but don't overfit to the dev set.",
-        "note": "Arbor starts the hypothesis-tree loop, gating on test."
+        "text": "Improve this script's dev loss; accept only on a test split, don't overfit.",
+        "note": "Starts the optimization loop after confirming metrics."
       },
       {
-        "text": "Improve this data pipeline's output; see README for eval. Run several rounds.",
-        "note": "It splits hypotheses and tests them in isolated worktrees."
+        "text": "Improve my agent with 10 experiment cycles, keep the best test-passing version.",
+        "note": "Initializes a hypothesis tree and runs within budget."
       },
       {
-        "text": "Training loss is too high; tune hyperparameters/architecture, max 15 rounds.",
-        "note": "Runs budgeted experiments and reports test score."
+        "text": "For this Kaggle task, search approaches; keep the test-best one.",
+        "note": "Explores in parallel and applies the test merge gate."
       }
     ]
   }

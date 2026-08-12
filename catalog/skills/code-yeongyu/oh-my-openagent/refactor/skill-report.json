@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Intelligent refactor command. Triggers: refactor, refactoring, cleanup, restructure, extract, simplify, modernize.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "19abf74feb0eb1b82f37e70a2dd68a519cf88a08",
+    "upstream_commit": "bceb9cf76431ef5225ac06294677dcb1118c1e26",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67254,
+    "stars_github": 67647,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:08.191Z",
+    "fetched_at": "2026-08-11T04:15:46.168Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-05T07:40:58+09:00",
+    "upstream_commit_at": "2026-08-11T13:05:27+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:08.191Z",
+    "generated_at": "2026-08-11T04:15:46.168Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当用户要求重构代码时，Claude 会先确认目标并分析整个代码库，制定分步计划，然后逐步修改代码，每一步后都运行测试，确保不破坏现有功能，最后输出变更摘要。",
-    "when": "当要求重构代码，或提到 refactor、cleanup、extract 等触发词时触发。",
+    "what": "装上后,当你要重构代码时,Claude 会先弄清意图、建立代码地图、评估测试覆盖,再制定计划,然后用 LSP 和 AST-grep 逐步执行,每步都跑测试验证,最后跑完整测试套件、类型检查、lint 和构建,并给出改动总结。",
+    "when": "当你提到 refactor、cleanup、restructure 等关键词,或指定要重构的文件、符号或代码模式时触发;若请求模糊,它会先追问具体目标。",
     "say": [
       {
-        "text": "请重构 src/auth/handler.ts 这个文件。",
-        "note": "指定文件，触发完整重构流程。"
+        "text": "用安全策略重构这个模块,范围只限当前目录",
+        "note": "由你决定 --scope 或 --strategy"
       },
       {
-        "text": "帮我把公共代码提取成单独模块。",
-        "note": "触发 extract 模式，先分析依赖。"
-      },
-      {
-        "text": "用安全策略重构整个项目，并保持测试通过。",
-        "note": "指定 scope 和 strategy，执行全项目重构。"
+        "text": "把这段重复代码提取成独立函数,别破坏现有测试",
+        "note": "提取逻辑属于 extract 触发词"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:50:00.568Z",
+    "generated_at": "2026-08-11T04:32:47.780Z",
     "lint_pass": true,
-    "what_en": "On a refactoring request, Claude analyzes the codebase, plans, then refactors step-by-step, verifying with tests after each change, and outputs a summary.",
-    "when_en": "Triggered when you ask to refactor code or mention keywords like refactor, cleanup, extract.",
+    "what_en": "When asked to refactor, Claude clarifies intent, maps the codebase, assesses test coverage, plans, then executes step-by-step with LSP/AST-grep, running tests after each change and a full suite at the end.",
+    "when_en": "Triggers on words like refactor, cleanup, restructure, or when a file/symbol/code pattern is specified. If the request is vague, it asks clarifying questions first.",
     "say_en": [
       {
-        "text": "Refactor the file src/auth/handler.ts.",
-        "note": "Specifies the file, starts full refactor flow."
+        "text": "Refactor the AuthService in src/auth/handler.ts",
+        "note": "It analyzes dependencies first, verifying each step"
       },
       {
-        "text": "Extract the common code into a separate module.",
-        "note": "Triggers extraction, analyzes dependencies first."
+        "text": "Refactor this module with the safe strategy, scope to this directory",
+        "note": "You decide --scope or --strategy"
       },
       {
-        "text": "Refactor the whole project with safe strategy, keep tests passing.",
-        "note": "Sets scope and strategy, runs project-wide refactor."
+        "text": "Extract this repeated code into a standalone function without breaking tests",
+        "note": "Extraction falls under the extract trigger"
       }
     ]
   }

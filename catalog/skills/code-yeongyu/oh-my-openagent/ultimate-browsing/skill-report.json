@@ -5,30 +5,27 @@
     "name": "ultimate-browsing",
     "description": "Escalation skill for blocked or hard-to-reach web access — load it when a normal browse/fetch is blocked (WAF, 403, Cloudflare, JS-only render, login-gated, or a platform a generic fetcher cannot read). Tiered router: TIER 1 insane-search (headless extraction + WAF bypass via curl_cffi TLS impersonation, yt-dlp, Jina Reader, public APIs, Playwright real-Chrome fallback); TIER 1.5 agent-reach (platform-native readers for Chinese and social platforms: Xiaohongshu, Douyin, Weibo, Bilibili, V2EX, WeChat, plus Twitter/Reddit/LinkedIn/GitHub); TIER 2 Chrome stealth (CloakBrowser stealth Chromium + agent-browser CDP for clicks, forms, screenshots, video, cookie login). Triggers: blocked site, bypass bot detection, cloudflare/WAF bypass, scrape, stealth browser, import cookies, fill form, screenshot, play youtube, xiaohongshu, douyin, weibo, bilibili, v2ex, wechat article, podcast transcript. NOT for simple searches (use web-search) or plain fetches (use webfetch).",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ultimate-browsing",
-    "upstream_commit": "19abf74feb0eb1b82f37e70a2dd68a519cf88a08",
-    "content_hash": "sha256:1cb158f93fffc0fb8158e0934131b1312e50f899f77882b912795044a111bcc2",
+    "upstream_commit": "bceb9cf76431ef5225ac06294677dcb1118c1e26",
+    "content_hash": "sha256:71981fabd086e6014286f1abb84d4b251eede4ecb726635237e731b0fed5bbed",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
-    "category": "dev",
+    "category": "utility",
     "version": null,
     "publisher": "code-yeongyu",
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "automation",
-      "mcp",
-      "python",
-      "docker"
+      "automation"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67254,
+    "stars_github": 67647,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:08.191Z",
+    "fetched_at": "2026-08-11T04:15:46.168Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-05T07:40:58+09:00",
+    "upstream_commit_at": "2026-08-11T13:05:27+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -38,16 +35,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:08.191Z",
+    "generated_at": "2026-08-11T04:15:46.168Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 10251,
-        "chars": 10209,
-        "tokens": 2214
+        "bytes": 10752,
+        "chars": 10706,
+        "tokens": 2314
       },
       "activation_with_declared_refs": {
         "files": [
@@ -61,17 +58,20 @@
           "references/agent-reach/web.md",
           "references/chrome-stealth.md",
           "references/insane-search/README.md",
+          "references/insane-search/cache-archive.md",
+          "references/insane-search/jina.md",
           "scripts/extract_cookies.py"
         ],
-        "text_files": 11,
-        "bytes": 60704,
-        "chars": 51693,
-        "tokens": 15100
+        "text_files": 13,
+        "bytes": 69750,
+        "chars": 58111,
+        "tokens": 17716
       },
       "package_total_text": {
         "files": [
           "ATTRIBUTION.md",
           "SKILL.md",
+          "engine/AGENTS.md",
           "engine/__init__.py",
           "engine/__main__.py",
           "engine/bias_check.py",
@@ -81,11 +81,19 @@
           "engine/referers.py",
           "engine/result_schema.py",
           "engine/summary.py",
+          "engine/surrogate.py",
+          "engine/surrogates.yaml",
           "engine/templates/package.json",
           "engine/templates/playwright_mobile_chrome.js",
           "engine/templates/playwright_real_chrome.js",
+          "engine/tests/fixtures/amp_redirect_stub.html",
+          "engine/tests/fixtures/search_interstitial.html",
+          "engine/tests/fixtures/wayback_available.json",
+          "engine/tests/fixtures/wayback_snapshot.html",
           "engine/tests/test_fetch_chain.py",
           "engine/tests/test_playwright_templates.py",
+          "engine/tests/test_surrogate.py",
+          "engine/tests/test_surrogate_validators.py",
           "engine/url_transforms.py",
           "engine/validators.py",
           "engine/waf_detector.py",
@@ -118,50 +126,72 @@
           "scripts/tests/test_cookie_domain_filter.py",
           "scripts/tests/test_extract_cookies.py"
         ],
-        "text_files": 47,
-        "bytes": 216833,
-        "chars": 196479,
-        "tokens": 47316
+        "text_files": 56,
+        "bytes": 534459,
+        "chars": 512390,
+        "tokens": 133501
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "绕过网页封锁，抓取任何受限内容",
+    "tagline": "突破访问限制,读取被屏蔽的网页",
     "scene_tags": [
-      "网页抓取",
-      "反爬绕过",
-      "登录页面",
-      "社媒运营"
+      "访问被屏蔽网站",
+      "网页内容抓取",
+      "绕过登录验证"
     ],
-    "fit_line": "适合你，如果经常遇到网站封锁或需要抓取动态渲染的页面",
-    "tagline_en": "Bypass web blocks and scrape any restricted content",
+    "fit_line": "适合你,如果经常需要访问被限制的网站或抓取网页内容",
+    "tagline_en": "Access blocked sites and bypass online restrictions",
     "scene_tags_en": [
-      "web scraping",
-      "bypass bot detection",
-      "login-gated pages",
-      "social media"
+      "blocked websites",
+      "web content scraping",
+      "bypass login"
     ],
-    "fit_line_en": "For you if you often encounter blocked websites or need to scrape dynamically rendered pages",
+    "fit_line_en": "For you if you often need to access restricted websites or save web content",
     "source": "llm",
-    "content_hash": "sha256:1cb158f93fffc0fb8158e0934131b1312e50f899f77882b912795044a111bcc2",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-14T08:44:01.003Z",
+    "content_hash": "sha256:71981fabd086e6014286f1abb84d4b251eede4ecb726635237e731b0fed5bbed",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-10T04:30:01.843Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "遇到被屏蔽或普通抓取失败的网页时，Claude 会分三层依次处理：先无头抓取并绕过 WAF，再用平台专属读取器读中文/社交平台，最后用隐身 Chromium 模拟点击、填表、截图、播放视频和登录，输出正文、字幕、截图等。",
-    "when": "当普通浏览或抓取被拦截(如 WAF、403、Cloudflare)，或页面需要 JS 渲染、登录，或目标在中文/社交平台且通用抓取读不了时触发；简单搜索和普通抓取不使用。",
+    "what": "装上后,遇到被屏蔽或常规抓取不了的网页,Claude 会按层级处理:先无头提取并尝试绕过 WAF/Cloudflare;不行则用平台专用读取器(小红书、微博、B站等);再不行则启动隐身浏览器执行点击、填表、截图等操作。",
+    "when": "当普通抓取被拦截(WAF、403、Cloudflare 等)、目标是小红书/微博/B站等平台,或需要截图、填表、隐身访问时触发;普通搜索和简单抓取不触发。",
     "say": [
       {
-        "text": "用隐身浏览器打开这条小红书链接并截图",
-        "note": "会走 Chrome stealth 真实渲染页面。"
+        "text": "这个网页被 Cloudflare 挡住了,能抓取内容吗?",
+        "note": "触发 Tier 1 绕过拦截提取。"
+      },
+      {
+        "text": "帮我看看这条微博的全文和评论",
+        "note": "走平台读取器抓取。"
+      },
+      {
+        "text": "打开这个页面登录后截图给我",
+        "note": "启动隐身浏览器并操作。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:1cb158f93fffc0fb8158e0934131b1312e50f899f77882b912795044a111bcc2",
+    "content_hash": "sha256:71981fabd086e6014286f1abb84d4b251eede4ecb726635237e731b0fed5bbed",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:50:54.534Z",
-    "lint_pass": true
+    "generated_at": "2026-08-11T04:33:33.766Z",
+    "lint_pass": true,
+    "what_en": "On blocked/hard-to-reach pages, Claude escalates: headless extraction with WAF/Cloudflare bypass, then platform-native readers (Xiaohongshu, Weibo, etc.), then stealth Chromium for clicks, forms, screenshots, cookie login.",
+    "when_en": "Triggers when a normal fetch is blocked (WAF, 403, Cloudflare), target is on a Chinese/social platform, or interaction is needed (screenshot, fill form, stealth). Not for simple searches or plain fetches.",
+    "say_en": [
+      {
+        "text": "This page is blocked by Cloudflare, can you get the content?",
+        "note": "Runs Tier 1 bypass extraction."
+      },
+      {
+        "text": "Fetch the full text and comments of this Weibo post.",
+        "note": "Uses platform reader."
+      },
+      {
+        "text": "Open this page, log in, and take a screenshot.",
+        "note": "Launches stealth browser."
+      }
+    ]
   }
 }

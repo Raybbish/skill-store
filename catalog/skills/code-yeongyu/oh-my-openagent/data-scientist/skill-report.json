@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Expert data processing specialist with intelligent DuckDB/Polars selection for maximum performance. Always includes numpy, never uses pandas, runs everything through uv. Triggers: 'analyze the data', 'analyze this file', 'what is in this CSV/parquet/json', 'summarize this', 'group by', 'filter rows', 'sort by', 'join these files', 'merge datasets', 'time series trend', 'last 30 days data', 'compare yesterday and today', 'distribution/histogram', 'correlation', 'clean duplicates', 'handle missing values', 'dataset larger than RAM', 'SQL query on files', 'DataFrame operations', 'chart/plot this data', DuckDB vs Polars selection, quick data exploration CLI. NOT for plain text/code inspection, configs, or tiny inline math.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "19abf74feb0eb1b82f37e70a2dd68a519cf88a08",
+    "upstream_commit": "bceb9cf76431ef5225ac06294677dcb1118c1e26",
     "content_hash": "sha256:e39ae723a946f2b155d695273288a77539d00adbfb1c8954bd676c6b016ae85e",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67254,
+    "stars_github": 67647,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-05T05:42:08.191Z",
+    "fetched_at": "2026-08-11T04:15:46.168Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-08-05T07:40:58+09:00",
+    "upstream_commit_at": "2026-08-11T13:05:27+09:00",
     "repo_skill_count": 48
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:42:08.191Z",
+    "generated_at": "2026-08-11T04:15:46.168Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -106,37 +106,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 处理数据时会用 uv 运行 Python,始终带上 numpy 和 pyarrow;根据操作类型在 DuckDB 和 Polars 间选工具,不用 pandas。能直接查询 CSV 等文件,完成过滤、排序、分组、聚合,并报告处理时间和行数。",
-    "when": "当你说出“分析数据”“分析这个文件”“汇总一下”等,或要求分组、过滤、排序、合并文件、处理大数据时触发;纯文本、配置和小计算不触发。",
+    "what": "装上后,Claude 处理数据时自动在 DuckDB 与 Polars 间选型,通过 uv 运行,总是包含 numpy 和 pyarrow,绝不用 pandas;能直接查询文件,执行过滤、排序、聚合、连接,需要可视化时加入 matplotlib,并报告耗时与行数。",
+    "when": "当你说“分析这个文件”、“汇总一下”、“按类别分组”等,或要求对 CSV、Parquet、JSON 等数据文件做查询、过滤、清洗等操作时触发;不适用于纯文本、配置或简单心算。",
     "say": [
       {
-        "text": "分析这个 CSV 文件,按类别汇总总金额。",
-        "note": "会用 DuckDB 直接查询文件并返回结果。"
+        "text": "分析这个 CSV 文件,按类别统计销售额。",
+        "note": "它会选型并返回分组汇总结果。"
       },
       {
-        "text": "这个数据集超过内存了,帮我按月算趋势。",
-        "note": "会采用流式或外核方式处理大文件。"
+        "text": "对比昨天和今天的数据,找出差异最大的前10项。",
+        "note": "进行时间序列比较。"
+      },
+      {
+        "text": "这个数据集超过内存,用流式方式处理。",
+        "note": "采用 Polars 流式或 DuckDB 外核。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e39ae723a946f2b155d695273288a77539d00adbfb1c8954bd676c6b016ae85e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T05:47:28.288Z",
+    "generated_at": "2026-08-11T04:30:38.590Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude processes data using uv-run Python, always bundling numpy and pyarrow; it selects between DuckDB and Polars based on the operation and never uses pandas. It can query files like CSV directly, do filtering, sorting, grouping, aggregation, and reports timing and row counts.",
-    "when_en": "Triggered when you say things like 'analyze the data', 'analyze this file', 'summarize this', or ask for grouping, filtering, sorting, merging files, or handling large datasets; not for plain text, configs, or small calculations.",
+    "what_en": "After install, Claude auto-selects DuckDB or Polars, runs via uv, always includes numpy and pyarrow, never uses pandas. It can query files directly, filter, sort, aggregate, join, add matplotlib for plots, and reports time and row counts.",
+    "when_en": "Triggers on phrases like 'analyze this file', 'summarize this', 'group by', or requests to query/filter/clean CSV, Parquet, JSON files. Not for plain text, configs, or simple math.",
     "say_en": [
       {
-        "text": "Analyze this CSV and sum amounts by category.",
-        "note": "DuckDB queries the file directly and returns results."
+        "text": "Analyze this CSV and sum sales by category.",
+        "note": "It picks the engine and returns aggregated results."
       },
       {
-        "text": "Join orders.csv with customers.csv, then filter amount > 100.",
-        "note": "Uses a hybrid DuckDB/Polars approach."
+        "text": "Compare yesterday and today, show top 10 differences.",
+        "note": "Performs time-series comparison."
       },
       {
-        "text": "This dataset exceeds RAM; compute monthly trends.",
-        "note": "Switches to streaming or out-of-core processing."
+        "text": "This dataset is larger than RAM; process it streaming.",
+        "note": "Uses Polars streaming or DuckDB out-of-core."
       }
     ]
   }

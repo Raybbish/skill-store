@@ -4,7 +4,7 @@ description: 'Guided journey from a business with lucky months to a repeatable g
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Grow a Business
@@ -40,7 +40,7 @@ The tracker `docs/GROW-BUSINESS-PLAN.md` is private to this journey and never sh
 1. **Resume first.** Before anything else, read `docs/GROW-BUSINESS-PLAN.md` and every artifact in the Journey Map. If the tracker exists, summarize the journey state in 3-5 lines and ask which phase to enter. Done when the user has confirmed an entry point. A journey with a tracker is resumed, never restarted.
 2. **Intake on first run only.** No tracker: run the Intake below, then create `docs/GROW-BUSINESS-PLAN.md` with every phase statused `pending | in-progress | awaiting-evidence | done | deferred: reason | skipped: reason`. Done when the tracker exists and the user has confirmed the phase plan.
 3. **Phase entry.** Announce: what the phase does, the decision it forces, the artifact it produces, rough effort. Offer proceed / skip / defer — phases marked GATE may be deferred, never skipped. Mark the phase `in-progress` on proceed. Done when the user chose.
-4. **Skill invocation and fallback.** Invoke the phase's skill by its slug. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
+4. **Skill invocation and fallback.** Load the phase's skill and use it: each phase's Invoke line names the skill by slug — use that skill to run the phase. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
 5. **In-phase decisions.** Ask every question under "Decide with the user" — with concrete options and your recommendation. Record the choice in the tracker's Key Decisions. A decision made silently is a defect.
 6. **Phase exit.** Present the draft artifact content for sign-off before writing. On approval: write or extend the docs/ files, update the tracker (status, Key Decisions, Next Actions). Done when the files are written and the phase row shows `done`.
 7. **Artifact discipline.** Read before writing; create a file only if missing, otherwise extend — add or update your sections, preserve everyone else's. Files are UPPERCASE in `docs/`. Every recommendation lands as a checkbox or a table row with owner and priority. See [references/artifact-templates.md](references/artifact-templates.md) when creating a docs/ file for the first time — create it from the full skeleton (all section headings), then fill the sections your phase names.
@@ -72,7 +72,7 @@ Run the phases in order unless intake reordered them. Each phase's Invoke reads 
 
 **Brief (fallback):** A 3x3 grid across the customer journey — Before (target market, message, media), During (capture leads, nurture, convert), After (deliver the experience, increase lifetime value, orchestrate referrals). Marketing is a process, not an event; random tactics fail because they fill one square while eight stay empty. Score 0-10 on how completely and specifically all nine are filled. Run the PVP Index (Personal fulfillment, Value to market, Profitability) to pick one niche to dominate.
 
-**Invoke:** `one-page-marketing` with the intake facts (revenue, customers, current channels, candidate segments). Ask for (a) all nine squares filled and scored out of 10 with the single weakest square plus three fixes, and (b) a PVP Index across the candidate segments recommending one niche and writing its avatar.
+**Invoke:** Use the `one-page-marketing` skill with the intake facts (revenue, customers, current channels, candidate segments). Ask for (a) all nine squares filled and scored out of 10 with the single weakest square plus three fixes, and (b) a PVP Index across the candidate segments recommending one niche and writing its avatar.
 
 **Decide with the user:** Which niche to dominate first (the PVP winner — this becomes the Phase 6 beachhead candidate)? Which weakest square to attack first? Confirm the avatar is one named persona, not "everyone".
 
@@ -86,7 +86,7 @@ Run the phases in order unless intake reordered them. Each phase's Invoke reads 
 
 **Brief (fallback):** Value = (Dream Outcome x Perceived Likelihood) / (Time Delay x Effort and Sacrifice) — maximize the top, minimize the bottom. Assemble core product + named bonuses that each kill one objection + a risk-reversing guarantee + ethical (real) scarcity, until the stack dwarfs the price. Name it with MAGIC (Magnetic reason, Avatar, Goal, time Indicator, Container). Premium pricing attracts committed customers who churn less.
 
-**Invoke:** `hundred-million-offers` with the current offer and price from intake (and docs/OFFER.md if it exists). Ask for a score out of 10, the weakest Value-Equation lever, three objection-killing bonuses with defensible dollar values, a guarantee type, and a MAGIC name.
+**Invoke:** Use the `hundred-million-offers` skill with the current offer and price from intake (and docs/OFFER.md if it exists). Ask for a score out of 10, the weakest Value-Equation lever, three objection-killing bonuses with defensible dollar values, a guarantee type, and a MAGIC name.
 
 **Decide with the user:** Is "too expensive" a price problem or a value-construction problem? Raise the price and add a done-for-you bonus, or hold? Which three bonuses ship?
 
@@ -100,7 +100,7 @@ Run the phases in order unless intake reordered them. Each phase's Invoke reads 
 
 **Brief (fallback):** Lead types: Seeds (referrals — highest conversion, slow to build), Nets (inbound — medium), Spears (outbound — predictable, you control volume). Most under-invest in Spears. Specialize roles: SDRs prospect, AEs close, CSMs retain — never the same person prospecting and closing. Cold Calling 2.0: email above the decision-maker for a referral in, no pitch; response runs 9-15% vs 1-3%. Qualify with ANUM (Authority, Need, Urgency, Money). Run pipeline math backward from the revenue goal.
 
-**Invoke:** `predictable-revenue` with the revenue goal, average deal, and win rate from intake, plus the USP and niche from MARKETING.md. Ask for (a) backward pipeline math to emails and SDR count, (b) a four-touch Cold Calling 2.0 sequence, and (c) an ANUM SDR-to-AE handoff.
+**Invoke:** Use the `predictable-revenue` skill with the revenue goal, average deal, and win rate from intake, plus the USP and niche from MARKETING.md. Ask for (a) backward pipeline math to emails and SDR count, (b) a four-touch Cold Calling 2.0 sequence, and (c) an ANUM SDR-to-AE handoff.
 
 **Decide with the user:** Is the revenue goal reachable at current conversion, or adjust the goal or hire? Specialize roles now or stay generalist a while longer? What Seeds/Nets/Spears mix to target?
 
@@ -114,7 +114,7 @@ Run the phases in order unless intake reordered them. Each phase's Invoke reads 
 
 **Brief (fallback):** STEPPS — Social Currency (sharing makes them look good), Triggers (everyday cues that keep you top-of-mind), Emotion (high-arousal: awe, anger, excitement drive sharing; contentment suppresses it), Public (visible usage others imitate), Practical Value (useful enough to pass on), Stories (a narrative retold with the brand baked in). Only ~7% of word-of-mouth is online. Trojan Horse test: if the story survives without your brand named, it failed. Triggers and Practical Value are usually highest-leverage for an existing business.
 
-**Invoke:** `contagious` with a candidate campaign, feature, or the quarterly customer email, plus the niche and avatar from MARKETING.md. Ask for a STEPPS audit scored out of 10 and a redesign that engineers the two weakest-but-highest-leverage drivers.
+**Invoke:** Use the `contagious` skill with a candidate campaign, feature, or the quarterly customer email, plus the niche and avatar from MARKETING.md. Ask for a STEPPS audit scored out of 10 and a redesign that engineers the two weakest-but-highest-leverage drivers.
 
 **Decide with the user:** Which asset to engineer first? Which one or two STEPPS levers to strengthen (Triggers and Practical Value usually win)?
 
@@ -128,7 +128,7 @@ Run the phases in order unless intake reordered them. Each phase's Invoke reads 
 
 **Brief (fallback):** Seven principles layer: Reciprocity, Commitment and Consistency, Social Proof, Authority, Liking, Scarcity, Unity. Specifics matter: exact numbers beat vague ("2,347 firms" beats "thousands"), negative social proof backfires, admitting a weakness raises authority, newly-scarce beats always-scarce (loss framing). Persuasion helps people see value they would appreciate anyway; manipulation tricks them against their interest — the line the skill enforces.
 
-**Invoke:** `influence-psychology` with the pricing page, testimonial block, or checkout flow, plus the offer from docs/OFFER.md. Ask for an audit naming which of the seven principles are present and missing, a score out of 10, rewritten weak spots, and an ethics check on every tactic.
+**Invoke:** Use the `influence-psychology` skill with the pricing page, testimonial block, or checkout flow, plus the offer from docs/OFFER.md. Ask for an audit naming which of the seven principles are present and missing, a score out of 10, rewritten weak spots, and an ethics check on every tactic.
 
 **Decide with the user:** Which surface to fix first? Which principles to add where? Confirm every scarcity and proof claim is real — a tactic that fails the ethics check gets replaced with one using evidence you have, never faked.
 
@@ -142,7 +142,7 @@ Run the phases in order unless intake reordered them. Each phase's Invoke reads 
 
 **Brief (fallback):** Early adopters (visionaries) tolerate rough edges and buy the vision; the early majority (pragmatists) want proven solutions, references from peers, and a complete product. The D-Day strategy: dominate one narrow beachhead — urgent expensive pain, reachable channel, members who talk to each other — then expand from strength. Assemble the whole product (integrations, onboarding, migration, support), partnering for gaps. "Revolutionary" becomes "proven solution for [problem]"; "be first" becomes "join 500 firms like yours."
 
-**Invoke:** `crossing-the-chasm` with the PVP niche from MARKETING.md as the beachhead candidate. Ask for a go-to-market score out of 10, a whole-product gap analysis, and positioning rewritten for pragmatists using Moore's formula.
+**Invoke:** Use the `crossing-the-chasm` skill with the PVP niche from MARKETING.md as the beachhead candidate. Ask for a go-to-market score out of 10, a whole-product gap analysis, and positioning rewritten for pragmatists using Moore's formula.
 
 **Decide with the user:** Confirm the beachhead (urgent pain, reachable channel, members who talk to each other)? Which whole-product gaps to build vs partner for? Adopt the pragmatist repositioning?
 
@@ -156,7 +156,7 @@ Run the phases in order unless intake reordered them. Each phase's Invoke reads 
 
 **Brief (fallback):** Network effects are a liability before an asset; they grow by saturating one tiny complete network at a time, not by launching broadly. Atomic network: the smallest self-sustaining unit (one firm, one city) — over-deliver until dense, then replicate with a playbook. The hard side: the minority who do the disproportionate work and are hardest to keep — build for them first. Tipping playbook: invite-only mechanics and two-sided referral incentives import each new user along an existing relationship.
 
-**Invoke:** `cold-start-problem` with the product's multiplayer or shared dimension and the referral square from MARKETING.md. Ask for a defined atomic network, the hard side and what retains them, and a two-sided referral/invite loop with real (never faked) incentives, scored out of 10.
+**Invoke:** Use the `cold-start-problem` skill with the product's multiplayer or shared dimension and the referral square from MARKETING.md. Ask for a defined atomic network, the hard side and what retains them, and a two-sided referral/invite loop with real (never faked) incentives, scored out of 10.
 
 **Decide with the user:** Which atomic-network unit (firm / city / practice area)? Who is the hard side and why do they stay? What real incentive does each side of the referral get?
 
@@ -170,7 +170,7 @@ Run the phases in order unless intake reordered them. Each phase's Invoke reads 
 
 **Brief (fallback):** A good metric is comparative, a ratio or rate (not an ever-growing total), and behavior-changing — if it will not change a decision, stop measuring it. Cumulative up-and-to-the-right charts are the vanity tell. OMTM = intersection of business model (SaaS: churn, MRR, LTV:CAC, time-to-value) and stage (Empathy, Stickiness, Virality, Revenue, Scale). Pair it with a counter-metric so it cannot be gamed; draw a line in the sand — target, date, pre-committed miss-response. Cohort and segment, because blended averages hide the truth.
 
-**Invoke:** `lean-analytics` with the current metric list, business model, and stage. Ask for which metrics are vanity, the OMTM derived from model and stage, a counter-metric, and a one-screen dashboard (OMTM big, 4-6 supporting metrics small).
+**Invoke:** Use the `lean-analytics` skill with the current metric list, business model, and stage. Ask for which metrics are vanity, the OMTM derived from model and stage, a counter-metric, and a one-screen dashboard (OMTM big, 4-6 supporting metrics small).
 
 **Decide with the user:** Which stage are we in? What is the OMTM and its counter-metric? What line in the sand — target number, date, and what we do if we miss?
 
@@ -184,7 +184,7 @@ Run the phases in order unless intake reordered them. Each phase's Invoke reads 
 
 **Brief (fallback):** The path to yes runs through empathy and being understood, not logic or compromise — and never split the difference: no deal beats a bad deal, because a pressured discount trains every future customer to ask. Tactical empathy and labeling name the other side's concern first; calibrated questions ("how am I supposed to do that at that price?") make them solve your problem; the accusation audit preempts objections; the Ackerman method holds price in decreasing increments to precise non-round numbers, closing with a non-monetary concession.
 
-**Invoke:** `negotiation` with a specific upcoming high-stakes conversation (a renewal at risk, a procurement squeeze, an enterprise deal). Ask for an accusation audit, five calibrated questions, an Ackerman plan (target, decreasing increments, non-monetary concession), and Black-Swan hypotheses.
+**Invoke:** Use the `negotiation` skill with a specific upcoming high-stakes conversation (a renewal at risk, a procurement squeeze, an enterprise deal). Ask for an accusation audit, five calibrated questions, an Ackerman plan (target, decreasing increments, non-monetary concession), and Black-Swan hypotheses.
 
 **Decide with the user:** Which conversation to prepare? What is the Ackerman target and the walk-away? Which non-monetary concessions can substitute for a discount?
 
@@ -202,7 +202,7 @@ Run the phases in order unless intake reordered them. Each phase's Invoke reads 
 | scorecard-marketing | lead generation needs a quiz or assessment funnel | Extends docs/MARKETING.md |
 | made-to-stick | the referral message is forgettable | Extends docs/POSITIONING.md |
 
-Optional phases follow the same operating rules; insert where the Add-when condition first becomes true.
+Optional phases follow the same operating rules — load and use each listed skill exactly as a core phase would; insert where the Add-when condition first becomes true.
 
 ## Common Mistakes
 
@@ -227,5 +227,5 @@ Exit checklist:
 
 Close the tracker: every phase `done` or `skipped: reason`, and Next Actions carried into the artifacts as owned checkboxes. Growth without retention is a leaky bucket — before pouring more pipeline in, confirm Phase 8's stickiness metric is holding. Then route forward:
 
-- When growth stalls because the fundamentals underneath it are broken — retention, churn, operational drag — continue with `improve-business`.
-- When the product itself must carry the growth loops — in-app referrals, network features, instrumentation — continue with `grow-app`.
+- When growth stalls because the fundamentals underneath it are broken — retention, churn, operational drag — continue with the `improve-business` skill.
+- When the product itself must carry the growth loops — in-app referrals, network features, instrumentation — continue with the `grow-app` skill.

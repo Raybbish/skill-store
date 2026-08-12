@@ -5,7 +5,7 @@
     "name": "pricing-packaging-tracker",
     "description": "Track competitor pricing and packaging as a diffable time series. Use when monitoring tiers, gates, limits, and price moves on a monthly or quarterly cadence.",
     "upstream": "https://github.com/deanpeters/Product-Manager-Skills/tree/main/skills/pricing-packaging-tracker",
-    "upstream_commit": "99710188c134acf590a02c0e4ee1f431e60004cf",
+    "upstream_commit": "323b985b004ff263933f71005c17670916e43c82",
     "content_hash": "sha256:01b10314e06ee6d7975c235322b9a61731799f869d65988d03fbde0c0ee48807",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5819,
+    "stars_github": 6356,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-18T05:20:05.361Z",
+    "fetched_at": "2026-08-10T04:26:34.374Z",
     "first_seen_at": "2026-07-18T05:20:05.361Z",
-    "upstream_commit_at": "2026-07-17T09:14:53-04:00",
+    "upstream_commit_at": "2026-08-09T13:56:31-04:00",
     "repo_skill_count": 70,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-18T05:20:05.361Z",
+    "generated_at": "2026-08-10T04:26:34.374Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,33 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会按固定格式抓取竞争对手的定价页面，并与上次记录对比，输出一份只显示变化的报告，包括价格、功能门槛、套餐结构等变动。",
-    "when": "当你要求追踪特定竞争对手的定价和套餐，或询问本季度是否有竞品调整定价时触发。",
+    "what": "抓取竞争对手公开定价页,存入固定格式;与上次记录逐项对比,报告所有变动——层级、价格、功能门槛、套餐结构,并附证据链接与日期。若没有上次记录,先做全量快照供下次对比。",
+    "when": "当你需要按每月或每季度节奏监控竞品定价,关注层级、门槛、限额等变化时触发;直接报竞品名单或附上次抓取记录即可启动。",
     "say": [
       {
-        "text": "追踪竞品A和竞品B的定价变化，上次记录在附件里。",
-        "note": "Claude 会对比并输出变化报告。"
+        "text": "追踪 A、B、C 三家竞品的定价页,附上次 4 月的记录,做差异对比。",
+        "note": "进入 delta 模式,只报告变化项。"
       },
       {
-        "text": "本季度有没有竞品调整了套餐结构？",
-        "note": "Claude 会检查上次记录并报告变动。"
+        "text": "这季度我们追踪的五家对手里,有谁改了价格或套餐门槛?",
+        "note": "技能会抓取页面并输出本周期变化。"
+      },
+      {
+        "text": "先给这三家竞品各做一份定价基线快照。",
+        "note": "进入 baseline 模式,全量记录,下次再对比。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:01b10314e06ee6d7975c235322b9a61731799f869d65988d03fbde0c0ee48807",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-18T05:24:01.391Z",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-10T04:42:23.779Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude captures competitor pricing pages into a stable schema, diffs against the prior capture, and outputs a report of changes only — tier changes, price moves, feature-gate shifts, and packaging restructures with URLs and dates.",
-    "when_en": "Triggered when you ask to track specific competitors' pricing and packaging, or inquire about pricing changes in the current quarter.",
+    "what_en": "Captures competitors' public pricing pages into a fixed schema, diffs against the previous capture, and reports what moved — tiers, prices, gates, packaging — with URLs and dates. Without a prior capture it saves a full baseline instead.",
+    "when_en": "Triggers when you want to monitor competitor pricing monthly or quarterly — tiers, gates, limits, etc. Invoke by naming competitors or attaching a prior capture.",
     "say_en": [
       {
-        "text": "Track pricing changes for Competitor A and Competitor B, prior capture attached.",
-        "note": "Claude will diff and output a change report."
+        "text": "Track pricing pages for A, B, C and diff against April's capture.",
+        "note": "Runs delta mode — only changes reported."
       },
       {
-        "text": "Did any competitor change their packaging this quarter?",
-        "note": "Claude will check the last capture and report changes."
+        "text": "Did any tracked competitor change pricing or packaging this quarter?",
+        "note": "Fetches pages and reports this cycle's changes."
+      },
+      {
+        "text": "Build baseline pricing snapshots for these three competitors.",
+        "note": "Baseline mode; diffs begin next run."
       }
     ]
   }

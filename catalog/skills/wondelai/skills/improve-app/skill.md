@@ -4,7 +4,7 @@ description: 'Guided journey from a shipped app that works but feels rough to a 
 license: MIT
 metadata:
   author: wondelai
-  version: "2.0.0"
+  version: "2.0.1"
 ---
 
 # Improve an App
@@ -43,7 +43,7 @@ constituent skills carry the method — invoke them rather than improvising thei
 1. **Resume first.** Before anything else, read `docs/IMPROVE-APP-PLAN.md` and every artifact in the Journey Map. If the tracker exists, summarize the journey state in 3-5 lines and ask which phase to enter. Done when the user has confirmed an entry point. A journey with a tracker is resumed, never restarted.
 2. **Intake on first run only.** No tracker: run the Intake below, then create `docs/IMPROVE-APP-PLAN.md` with every phase statused `pending | in-progress | awaiting-evidence | done | deferred: reason | skipped: reason`. Done when the tracker exists and the user has confirmed the phase plan.
 3. **Phase entry.** Announce: what the phase does, the decision it forces, the artifact it produces, rough effort. Offer proceed / skip / defer — phases marked GATE may be deferred, never skipped. Mark the phase `in-progress` on proceed. Done when the user chose.
-4. **Skill invocation and fallback.** Invoke the phase's skill by its slug. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
+4. **Skill invocation and fallback.** Load the phase's skill and use it: each phase's Invoke line names the skill by slug — use that skill to run the phase. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
 5. **In-phase decisions.** Ask every question under "Decide with the user" — with concrete options and your recommendation. Record the choice in the tracker's Key Decisions. A decision made silently is a defect.
 6. **Phase exit.** Present the draft artifact content for sign-off before writing. On approval: write or extend the docs/ files, update the tracker (status, Key Decisions, Next Actions). Done when the files are written and the phase row shows `done`.
 7. **Artifact discipline.** Read before writing; create a file only if missing, otherwise extend — add or update your sections, preserve everyone else's. Files are UPPERCASE in `docs/`. Every recommendation lands as a checkbox or a table row with owner and priority. See [references/artifact-templates.md](references/artifact-templates.md) when creating a docs/ file for the first time — create it from the full skeleton (all section headings), then fill the sections your phase names.
@@ -75,7 +75,7 @@ the plan. Done when `docs/IMPROVE-APP-PLAN.md` exists with every phase statused 
 
 **Brief (fallback):** Customers hire a product to make progress in a circumstance. State the job as "When [situation], I want to [motivation], so I can [outcome]" — never naming the app; every job has three dimensions (functional, emotional, social), and omitting one loses why users stay. Track first use vs repeated use (Big Hire vs Little Hire), and map alternatives including non-consumption and improvised workarounds.
 
-**Invoke:** `jobs-to-be-done` with the app, its usage data, and the roughest flow from intake. Ask for the job statement, the three dimensions with where the app underdelivers on each, and the alternatives users switch to.
+**Invoke:** Use the `jobs-to-be-done` skill with the app, its usage data, and the roughest flow from intake. Ask for the job statement, the three dimensions with where the app underdelivers on each, and the alternatives users switch to.
 
 **Decide with the user:** (1) Confirm the job statement reads without the product name. (2) Which underdelivered dimension is worst — functional, emotional, or social? (3) Is the leak a Big Hire (onboarding) or Little Hire (daily use) failure?
 
@@ -89,7 +89,7 @@ the plan. Done when `docs/IMPROVE-APP-PLAN.md` exists with every phase statused 
 
 **Brief (fallback):** "Don't Make Me Think" — users scan, satisfice, and muddle through. Run a heuristic evaluation against Nielsen's 10 heuristics; rate each issue 0-4 and order by severity × how often users hit it, so catastrophes outrank cosmetics. Apply the Trunk Test to key screens (what app, what screen, my options, where am I, where's search?), cut half the words then half again, and fix forms with inline validation and error messages that say what, why, and how.
 
-**Invoke:** `ux-heuristics` on the highest-leak flow with the Phase 1 job and dimensions. Ask for a severity-rated evaluation, a Trunk Test result per key screen, and rewritten label, form, and error copy.
+**Invoke:** Use the `ux-heuristics` skill on the highest-leak flow with the Phase 1 job and dimensions. Ask for a severity-rated evaluation, a Trunk Test result per key screen, and rewritten label, form, and error copy.
 
 **Decide with the user:** Which severity-4 and -3 issues get fixed now versus backlogged? Confirm fixes run by severity × frequency, not by ease.
 
@@ -103,7 +103,7 @@ the plan. Done when `docs/IMPROVE-APP-PLAN.md` exists with every phase statused 
 
 **Brief (fallback):** There is no human error, only bad design. Bridge two gulfs: Execution ("how do I do this?") with clear signifiers and constraints (date picker over free text, Submit disabled until valid); Evaluation ("what happened?") with feedback under 0.1s and visible system state. Distinguish slips (right intent, wrong action) from mistakes (wrong intent); prefer undo over are-you-sure dialogs, and write error messages that say what went wrong and how to fix it, never blame.
 
-**Invoke:** `design-everyday-things` on the core flows (onboarding, the primary action, destructive actions). Ask for weak signifiers, where a constraint makes an error impossible, feedback gaps, and message rewrites.
+**Invoke:** Use the `design-everyday-things` skill on the core flows (onboarding, the primary action, destructive actions). Ask for weak signifiers, where a constraint makes an error impossible, feedback gaps, and message rewrites.
 
 **Decide with the user:** Where should a constraint replace an error message, and where should undo replace a confirmation dialog?
 
@@ -117,7 +117,7 @@ the plan. Done when `docs/IMPROVE-APP-PLAN.md` exists with every phase statused 
 
 **Brief (fallback):** Great UI is systems, not talent. Design in grayscale first: establish hierarchy with size, weight, and contrast before any color — combine levers, don't multiply (all three only for the one hero element). Enforce a spacing scale (4/8/16/24/32/48/64) where gaps between groups exceed gaps within them; constrain text to 45-75 chars and forms to 300-500px. Add color last: 5-9 shades per hue, grays tinted, not pure black.
 
-**Invoke:** `refactoring-ui` on the key screens with the Phase 2-3 findings and current design tokens. Ask for a grayscale hierarchy pass, spacing-scale corrections, a systematic palette, and the exact token/CSS changes.
+**Invoke:** Use the `refactoring-ui` skill on the key screens with the Phase 2-3 findings and current design tokens. Ask for a grayscale hierarchy pass, spacing-scale corrections, a systematic palette, and the exact token/CSS changes.
 
 **Decide with the user:** Fix within the current design system or introduce new tokens? Confirm color work waits until the grayscale layout reads.
 
@@ -131,7 +131,7 @@ the plan. Done when `docs/IMPROVE-APP-PLAN.md` exists with every phase statused 
 
 **Brief (fallback):** Every microinteraction has four parts — Trigger, Rules, Feedback, Loops & Modes. The common failure is missing or late feedback: direct manipulation needs a response under 100ms, usually by animating the element the user touched (a button depresses to "Saving…"), not a separate toast. Map every state — empty, loading, partial, full, error, disabled — and use the least feedback that communicates, scaled to the event's significance.
 
-**Invoke:** `microinteractions` on the most-used interactions (save, submit, toggle, delete, load). Ask for a Trigger/Rules/Feedback/Loops audit, the exact feedback each needs, a full state map, and one signature moment.
+**Invoke:** Use the `microinteractions` skill on the most-used interactions (save, submit, toggle, delete, load). Ask for a Trigger/Rules/Feedback/Loops audit, the exact feedback each needs, a full state map, and one signature moment.
 
 **Decide with the user:** (1) Which interactions to polish first. (2) The one signature moment worth extra craft — apply the removal test: would the product feel materially worse without it?
 
@@ -145,7 +145,7 @@ the plan. Done when `docs/IMPROVE-APP-PLAN.md` exists with every phase statused 
 
 **Brief (fallback):** Beat the Curse of Knowledge: once you know the product you can't imagine not knowing it. Score key in-app copy on SUCCESs (Simple, Unexpected, Concrete, Credible, Emotional, Stories). Concrete beats abstract: "Users open the app 8 times a day," not "increase engagement." Simple is the Commander's Intent — the one thing a screen must land; if a label needs a manual, rewrite the label.
 
-**Invoke:** `made-to-stick` with the onboarding copy, empty states, error strings, CTAs, and tooltips plus the Phase 1 job language. Ask for a SUCCESs score per surface with concrete de-jargoned rewrites and the Commander's Intent for each screen.
+**Invoke:** Use the `made-to-stick` skill with the onboarding copy, empty states, error strings, CTAs, and tooltips plus the Phase 1 job language. Ask for a SUCCESs score per surface with concrete de-jargoned rewrites and the Commander's Intent for each screen.
 
 **Decide with the user:** Which abstractions become which concrete specifics, and what is the one thing each screen must land?
 
@@ -159,7 +159,7 @@ the plan. Done when `docs/IMPROVE-APP-PLAN.md` exists with every phase statused 
 
 **Brief (fallback):** People decide with mental shortcuts — seven principles trigger "yes": reciprocity, commitment, social proof, authority, liking, scarcity, unity. Apply them where the user decides (paywall, upgrade, trial end); layer principles, keep every claim truthful, keep the decision reversible. Ethics gate: any fabricated proof, fake scarcity, or hidden-cost dark pattern is disqualifying — a tactic that only works if the user doesn't know the strategy is manipulation, not persuasion.
 
-**Invoke:** `influence-psychology` on the upsell surfaces from intake. Ask which principles fit each decision point, the honest copy for each, and a reversibility check — flag any cue that needs evidence you don't have.
+**Invoke:** Use the `influence-psychology` skill on the upsell surfaces from intake. Ask which principles fit each decision point, the honest copy for each, and a reversibility check — flag any cue that needs evidence you don't have.
 
 **Decide with the user:** (1) Which principle leads at each surface. (2) For each scarcity or social-proof cue: is it true today? If not, cut it or make it true before shipping.
 
@@ -173,7 +173,7 @@ the plan. Done when `docs/IMPROVE-APP-PLAN.md` exists with every phase statused 
 
 **Brief (fallback):** Latency, not bandwidth, is the bottleneck — most pain is too many round trips. Target the field metrics: INP under 200ms on key interactions (break long tasks, defer non-critical JS), LCP under 2.5s on entry views (preload the hero, raise fetchpriority), CLS under 0.1 (reserve space with explicit dimensions). Where real latency remains, hide it with skeleton screens and optimistic UI so the interface responds before the server does.
 
-**Invoke:** `high-perf-browser` on the slowest key interaction and entry view with a trace or Lighthouse run if available. Ask for the INP long tasks, the LCP element, layout-shift sources, and an impact-ordered fix list including where skeletons or optimistic UI apply.
+**Invoke:** Use the `high-perf-browser` skill on the slowest key interaction and entry view with a trace or Lighthouse run if available. Ask for the INP long tasks, the LCP element, layout-shift sources, and an impact-ordered fix list including where skeletons or optimistic UI apply.
 
 **Decide with the user:** Which interactions and views to measure first, and confirm the field-metric targets as the lines in the sand.
 
@@ -187,7 +187,7 @@ the plan. Done when `docs/IMPROVE-APP-PLAN.md` exists with every phase statused 
 
 **Brief (fallback):** Start from the customer experience and work back. Experience the product cold as a new user, name the One Thing it must do, count steps-to-value, and deliver a binary verdict with a ranked cut list and fix list. Focusing is saying no — every feature is a candidate for deletion. Audit the back of the fence: empty states, error copy, 404, billing, cancellation, receipt email — held to the hero-screen bar.
 
-**Invoke:** `steve-jobs-design-review` on the whole app after Phases 1-8. Ask for a cold walkthrough, the One Thing, the step count to core value, a binary verdict, a ranked cut and fix list, and a back-of-the-fence audit.
+**Invoke:** Use the `steve-jobs-design-review` skill on the whole app after Phases 1-8. Ask for a cold walkthrough, the One Thing, the step count to core value, a binary verdict, a ranked cut and fix list, and a back-of-the-fence audit.
 
 **Decide with the user:** (1) Accept the cut list — which features to actually remove. (2) Which back-of-the-fence fixes ship now versus later.
 
@@ -206,7 +206,7 @@ the plan. Done when `docs/IMPROVE-APP-PLAN.md` exists with every phase statused 
 | web-typography | the app is text-heavy and reading comfort drives the experience | Extends docs/DESIGN.md |
 | inspired-product | the backlog is a feature list with no outcomes behind it | Extends docs/PRODUCT.md |
 
-Optional phases follow the same operating rules; insert where the Add-when condition first becomes true.
+Optional phases follow the same operating rules — load and use each listed skill exactly as a core phase would; insert where the Add-when condition first becomes true.
 
 ## Common Mistakes
 
@@ -233,6 +233,6 @@ Close the tracker: every phase `done` / `skipped: reason` / `deferred: reason`, 
 the owning artifacts rather than left in the plan.
 
 Forward routing: when the experience holds up and the goal shifts to habit, retention, and growth loops,
-continue with `grow-app`. When the audits keep hitting code-level causes (slow queries, crashes, untestable
-modules), continue with `improve-code-quality` or `remove-technical-debt`. When the marketing site is the
-next weakest surface, continue with `improve-website`.
+continue with the `grow-app` skill. When the audits keep hitting code-level causes (slow queries, crashes, untestable
+modules), continue with the `improve-code-quality` or `remove-technical-debt` skill. When the marketing site is the
+next weakest surface, continue with the `improve-website` skill.

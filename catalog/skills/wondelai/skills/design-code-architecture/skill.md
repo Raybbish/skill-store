@@ -4,7 +4,7 @@ description: 'Guided journey from an app idea to a deliberate architecture: boun
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Design Code Architecture
@@ -33,7 +33,7 @@ Design the architecture for a new app: get the small number of expensive-to-reve
 1. **Resume first.** Before anything else, read `docs/DESIGN-CODE-ARCHITECTURE-PLAN.md` and every artifact in the Journey Map. If the tracker exists, summarize the journey state in 3-5 lines and ask which phase to enter. Done when the user has confirmed an entry point. A journey with a tracker is resumed, never restarted.
 2. **Intake on first run only.** No tracker: run the Intake below, then create `docs/DESIGN-CODE-ARCHITECTURE-PLAN.md` with every phase statused `pending | in-progress | awaiting-evidence | done | deferred: reason | skipped: reason`. Done when the tracker exists and the user has confirmed the phase plan.
 3. **Phase entry.** Announce: what the phase does, the decision it forces, the artifact it produces, rough effort. Offer proceed / skip / defer — phases marked GATE may be deferred, never skipped. Mark the phase `in-progress` on proceed. Done when the user chose.
-4. **Skill invocation and fallback.** Invoke the phase's skill by its slug. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
+4. **Skill invocation and fallback.** Load the phase's skill and use it: each phase's Invoke line names the skill by slug — use that skill to run the phase. If it is not available, offer: `npx skills add wondelai/skills/<slug> --global`. If the user declines, run the phase from its Brief — the minimum viable method. State which mode you are in.
 5. **In-phase decisions.** Ask every question under "Decide with the user" — with concrete options and your recommendation. Record the choice in the tracker's Key Decisions. A decision made silently is a defect.
 6. **Phase exit.** Present the draft artifact content for sign-off before writing. On approval: write or extend the docs/ files, update the tracker (status, Key Decisions, Next Actions). Done when the files are written and the phase row shows `done`.
 7. **Artifact discipline.** Read before writing; create a file only if missing, otherwise extend — add or update your sections, preserve everyone else's. Files are UPPERCASE in `docs/`. Every recommendation lands as a checkbox or a table row with owner and priority. See [references/artifact-templates.md](references/artifact-templates.md) when creating a docs/ file for the first time — create it from the full skeleton (all section headings), then fill the sections your phase names.
@@ -67,7 +67,7 @@ The phases form a dependency chain that mirrors the system: Domain-Driven Design
 
 **Brief (fallback):** The Dependency Rule — source-code dependencies point inward: Frameworks → Interface Adapters → Use Cases → Entities; nothing inner names anything outer. Database, web, and vendors are details, plugins to your rules. Enforce with Dependency Inversion: a use case owns a repository interface; the Postgres/Stripe implementation lives in an outer adapter. Draw full boundaries only at real volatility (DB, external services, delivery); collapse layers elsewhere — direction matters, not folder count.
 
-**Invoke:** `clean-architecture` with a concrete first feature and the stack from intake. Ask it to layer that feature (entities, a use case with request/response models, repository + gateway interfaces, the HTTP controller and DB adapter in the outer ring), and to flag which boundaries are ceremony versus earning their cost at real volatility.
+**Invoke:** Use the `clean-architecture` skill with a concrete first feature and the stack from intake. Ask it to layer that feature (entities, a use case with request/response models, repository + gateway interfaces, the HTTP controller and DB adapter in the outer ring), and to flag which boundaries are ceremony versus earning their cost at real volatility.
 
 **Decide with the user:** (1) Modular monolith versus services — default to a modular monolith with clean internal boundaries; a microservice with a shared data model is a distributed monolith, strictly worse. (2) Which volatility points get full boundaries with interfaces now versus collapsed layers.
 
@@ -81,7 +81,7 @@ The phases form a dependency chain that mirrors the system: Domain-Driven Design
 
 **Brief (fallback):** The model is the code — build a Ubiquitous Language so team words are code words. Name after domain concepts (`Order.place()`, not `OrderManager.process()`); a name that resists is a design signal, not an annoyance. Bounded contexts: a region where a word means exactly one thing ("Customer" differs in billing versus support) — these are your future service seams. Aggregates: a small root cluster enforcing invariants, immediately consistent inside and eventually consistent outside; reference other aggregates by ID. Push behavior into entities — no anemic data bags.
 
-**Invoke:** `domain-driven-design` with the domain vocabulary and the Phase 1 layer map. Ask for the bounded-context map built from the words the team actually uses, the core aggregates with their invariants, and a subdomain classification (core / supporting / generic).
+**Invoke:** Use the `domain-driven-design` skill with the domain vocabulary and the Phase 1 layer map. Ask for the bounded-context map built from the words the team actually uses, the core aggregates with their invariants, and a subdomain classification (core / supporting / generic).
 
 **Decide with the user:** (1) Where the same word legitimately means different things across contexts — do NOT unify into one omniscient model. (2) Which subdomain is core (invest deep modeling) versus generic (buy or use OSS — auth, email, payments).
 
@@ -95,7 +95,7 @@ The phases form a dependency chain that mirrors the system: Domain-Driven Design
 
 **Brief (fallback):** Start with requirements, not solutions. Back-of-envelope: QPS = daily-active-users × actions/day ÷ 86,400, peak 2-5× average; storage = records/day × size × retention. For hundreds-to-thousands of users, a single indexed DB plus a read-path cache carries you a long time. Scale in order: vertical first, then cache-aside (TTL + explicit invalidation), then read replicas, and shard last, only with evidence. Reach for a message queue to decouple slow/spiky work, a CDN for global static assets. Premature sharding and premature service-splitting are named mistakes.
 
-**Invoke:** `system-design` with the load reality from intake. Ask for average and peak QPS, yearly storage, which component bottlenecks first, and a plain list of the techniques (sharding, replicas, CDN, queues, multi-region) you do NOT need yet.
+**Invoke:** Use the `system-design` skill with the load reality from intake. Ask for average and peak QPS, yearly storage, which component bottlenecks first, and a plain list of the techniques (sharding, replicas, CDN, queues, multi-region) you do NOT need yet.
 
 **Decide with the user:** Which scaling moves to make now versus defer — tied to the numbers (don't build for 50k users while at 50) — and the first slow workload, if any, to move behind a message queue.
 
@@ -109,7 +109,7 @@ The phases form a dependency chain that mirrors the system: Domain-Driven Design
 
 **Brief (fallback):** Data outlives code. Match model to access pattern — relational for many-to-many and ad-hoc queries, document for self-contained aggregates with locality, graph for recursive traversals; storage engines trade reads against writes (LSM write-throughput versus B-tree read-latency). Most databases default to read-committed or snapshot, NOT serializable — naive read-then-write triggers write skew (two buyers taking the last unit). Lock explicitly (`SELECT ... FOR UPDATE`) or use a serializable transaction where invariants demand it. Single-leader + read replicas is the read-heavy default; replication lag forces deliberate read-your-writes. Separate system-of-record from rebuildable derived data.
 
-**Invoke:** `ddia-systems` with the workloads implied by the Phase 2 aggregates and the Phase 3 replica plan. Ask for a per-workload model + storage-engine fit, the actual default isolation level and its anomalies, and which read-then-write paths need locking.
+**Invoke:** Use the `ddia-systems` skill with the workloads implied by the Phase 2 aggregates and the Phase 3 replica plan. Ask for a per-workload model + storage-engine fit, the actual default isolation level and its anomalies, and which read-then-write paths need locking.
 
 **Decide with the user:** (1) One datastore versus polyglot persistence, per workload fit. (2) Which paths get a lock or serializable transaction versus tolerate eventual consistency; whether a second read pattern (search, analytics) justifies derived data kept in sync by CDC.
 
@@ -123,7 +123,7 @@ The phases form a dependency chain that mirrors the system: Domain-Driven Design
 
 **Brief (fallback):** Complexity is the enemy; the test for every decision is whether it makes the whole system simpler. Module depth = functionality ÷ interface complexity — deep modules hide power behind small interfaces; shallow ones (classitis) add interface cost without hiding complexity. Clean layering and deep modules are allies; clean layering and classitis are not. Information leakage — one design decision reflected in many modules — is a top red flag; encapsulate each piece of knowledge once. Strategic over tactical: invest 10-20% to keep the design clean; startup shortcuts compound into debt as the team grows.
 
-**Invoke:** `software-design-philosophy` with the module set proposed in Phases 1-2. Ask which modules are shallow pass-throughs to consolidate, where knowledge leaks across boundaries, and whether any planned boundary is ceremony rather than depth.
+**Invoke:** Use the `software-design-philosophy` skill with the module set proposed in Phases 1-2. Ask which modules are shallow pass-throughs to consolidate, where knowledge leaks across boundaries, and whether any planned boundary is ceremony rather than depth.
 
 **Decide with the user:** Which shallow modules to consolidate into deeper ones now, guarding against over-merging genuinely unrelated concerns; the design conventions the team adopts (naming, where behavior lives, one file per piece of knowledge).
 
@@ -137,7 +137,7 @@ The phases form a dependency chain that mirrors the system: Domain-Driven Design
 
 **Brief (fallback):** The software that passes QA is not what survives production. Integration points are the number-one killer and a slow response is worse than none — a hanging dependency exhausts threads and pools with nothing in the logs. Non-negotiable: connect + read timeouts on every outbound call; a circuit breaker on critical ones (trips open, fails fast, half-open recovery); bulkheads to isolate pools per dependency; retry with backoff + jitter. Paginate every list endpoint (unbounded result sets crash under real data); schedule steady-state cleanup. Decouple deploy from release with feature flags and backward-compatible expand-contract migrations.
 
-**Invoke:** `release-it` with the outbound dependencies from intake. Ask for timeout values and breaker thresholds per dependency, bulkhead placement, a graceful-degradation path per integration, and the deep-health-check + RED-metrics + expand-contract-migration essentials.
+**Invoke:** Use the `release-it` skill with the outbound dependencies from intake. Ask for timeout values and breaker thresholds per dependency, bulkhead placement, a graceful-degradation path per integration, and the deep-health-check + RED-metrics + expand-contract-migration essentials.
 
 **Decide with the user:** Breaker thresholds, which dependencies get dedicated pools, how core flows degrade when a non-critical dependency is down, and the rollback path you trust. Resist chaos engineering / multi-region failover for the first thousand users.
 
@@ -151,7 +151,7 @@ The phases form a dependency chain that mirrors the system: Domain-Driven Design
 
 **Brief (fallback):** Tracer bullet — build one thin but fully real vertical slice (HTTP → use case → repository → DB → back), kept as production code, for end-to-end feedback on day two and proof the boundaries link before you flesh them out. Reversibility: abstract every vendor behind your own interface (forking-road test — could you swap DB or LLM provider in a week?). Orthogonality: a dramatic change to one requirement should touch one module. DRY for knowledge, not coincidence — merge duplicated rules, leave look-alikes alone. Broken Window: fix the first hack or board it up with a tracked ticket.
 
-**Invoke:** `pragmatic-programmer` with the Phase 1 boundaries. Ask for the thinnest end-to-end tracer bullet that exercises every layer, an adapter interface for each vendor, and an audit of where one change would touch many modules or a vendor API would leak into business logic.
+**Invoke:** Use the `pragmatic-programmer` skill with the Phase 1 boundaries. Ask for the thinnest end-to-end tracer bullet that exercises every layer, an adapter interface for each vendor, and an audit of where one change would touch many modules or a vendor API would leak into business logic.
 
 **Decide with the user:** Which slice is the tracer bullet (one authenticated core action, minimal functionality); the broken-windows policy and debt budget per iteration; which vendors get an owned interface first.
 
@@ -165,7 +165,7 @@ The phases form a dependency chain that mirrors the system: Domain-Driven Design
 
 **Brief (fallback):** Build less — the best products do fewer things well; half a product beats a half-assed one. Fix an appetite (the time this work is genuinely worth) and cut scope to fit, rather than estimating an open-ended architecture that balloons. YAGNI: every speculative abstraction (generic plugin system, event sourcing, configurable multi-tenancy for zero users) is a decision deferred to an imaginary future at the cost of present complexity. Make tiny reversible decisions; say no by default so the great decisions breathe. Never cut the small set of expensive-to-reverse decisions.
 
-**Invoke:** `37signals-way` with the full architecture plan from Phases 1-7. Ask it to shape the work into a fixed appetite, separate essential-for-launch from gold-plating, name the rabbit holes, and list the speculative abstractions to delete or replace with the simplest thing that could work.
+**Invoke:** Use the `37signals-way` skill with the full architecture plan from Phases 1-7. Ask it to shape the work into a fixed appetite, separate essential-for-launch from gold-plating, name the rabbit holes, and list the speculative abstractions to delete or replace with the simplest thing that could work.
 
 **Decide with the user:** The appetite for v1 architecture work; which abstractions to cut now, defer with a revisit trigger, or replace with the simplest thing; confirm no expensive-to-reverse decision is being cut just to save time.
 
@@ -179,7 +179,7 @@ The phases form a dependency chain that mirrors the system: Domain-Driven Design
 |---|---|---|
 | team-topologies | More than one team will own the system, so module boundaries must align with team boundaries (Conway) | Extends docs/OPERATIONS.md (`## Team Structure`) |
 
-Optional phases follow the same operating rules; insert where the Add-when condition first becomes true — here, right after Phase 2, once the bounded contexts that team boundaries must mirror exist.
+Optional phases follow the same operating rules — load and use each listed skill exactly as a core phase would; insert where the Add-when condition first becomes true — here, right after Phase 2, once the bounded contexts that team boundaries must mirror exist.
 
 ## Common Mistakes
 
@@ -204,4 +204,4 @@ Exit checklist — every box tied to an artifact:
 - [ ] A tracer-bullet slice proves the boundaries connect end-to-end and is the first CI gate (TESTING.md).
 - [ ] v1 scope is fixed to an appetite with speculative abstractions cut or deferred with a trigger (TECH-DEBT.md Debt Ledger).
 
-Close the tracker: every phase `done` or `skipped: reason`, with remaining Next Actions carried into the ARCHITECTURE.md Decision Log and TECH-DEBT.md so nothing is lost. Then route forward: when the architecture serves a product that still needs validating and building, continue with `create-app`; when an existing prototype must be brought up to this structure, continue with `improve-code-quality`.
+Close the tracker: every phase `done` or `skipped: reason`, with remaining Next Actions carried into the ARCHITECTURE.md Decision Log and TECH-DEBT.md so nothing is lost. Then route forward: when the architecture serves a product that still needs validating and building, continue with the `create-app` skill; when an existing prototype must be brought up to this structure, continue with the `improve-code-quality` skill.
