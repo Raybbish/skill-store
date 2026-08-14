@@ -5,7 +5,7 @@
     "name": "migrate-nanoclaw",
     "description": "Extracts user customizations from a fork, generates a replayable migration guide, and upgrades to upstream by reapplying customizations on a clean base. Replaces merge-based upgrades with intent-based migration.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-nanoclaw",
-    "upstream_commit": "639577c30456980de542d9cdce106455799d350e",
+    "upstream_commit": "48347e113e5fa08ae7d6bd80fb5183e3272e94d6",
     "content_hash": "sha256:2c5804692181fa6a84009b85afc2804465cef19af4ddb6dc86a4a3ac56fbc2c2",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30488,
+    "stars_github": 30510,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:23.959Z",
+    "fetched_at": "2026-08-14T04:45:41.248Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T18:39:44+02:00",
+    "upstream_commit_at": "2026-08-14T01:03:16+03:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:23.959Z",
+    "generated_at": "2026-08-14T04:45:41.248Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会先对比你改过的代码和上游新版,生成一份记录改动内容和意图的迁移指南;升级时先取上游干净版本,再按指南重新应用你的自定义改动,而不是直接合并代码。",
-    "when": "当你说要升级 NanoClaw 或迁移自定义改动,且本地代码与上游有分叉时触发;它会先检查工作区是否干净,再评估改动规模并开始提取,已有指南时会询问是否直接升级。",
+    "what": "装上后,Claude 会先把你对 NanoClaw 的定制提取成一份可重放的迁移指南(写明改动内容和意图),升级时在干净的上游代码上按指南重新应用这些定制,不再靠 git merge,因此不会产生合并冲突。",
+    "when": "当你要求把 fork 的 NanoClaw 升级到上游新版本、提到“迁移我的定制”,或说要避免 git 合并冲突时,这个技能会接管。",
     "say": [
       {
-        "text": "帮我把对这个 NanoClaw 的修改生成迁移指南。",
-        "note": "它会扫描改动,并问你要先描述还是自动分析。"
+        "text": "帮我提取这个 NanoClaw fork 里的所有定制,生成迁移指南。",
+        "note": "会先检查工作区并备份,再分析改动。"
       },
       {
-        "text": "升级到上游最新版,保留我的自定义配置。",
-        "note": "它会先提取改动,再在干净副本上重新应用。"
+        "text": "升级到上游新版本,但按迁移指南重新应用我的改动,别动数据目录。",
+        "note": "会在干净上游上重新应用定制,跳过合并。"
       },
       {
-        "text": "把已有的迁移指南更新一下。",
-        "note": "它会对比新提交,把新改动补进指南。"
+        "text": "我不想用 git merge,改用迁移方式升级。",
+        "note": "会评估改动规模并询问处理方式。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2c5804692181fa6a84009b85afc2804465cef19af4ddb6dc86a4a3ac56fbc2c2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T05:09:53.930Z",
+    "generated_at": "2026-08-14T05:17:54.560Z",
     "lint_pass": true,
-    "what_en": "Claude extracts your customizations from a forked NanoClaw, writes a replayable migration guide (intent + implementation detail), then upgrades by checking out clean upstream and re-applying changes from the guide instead of merging.",
-    "when_en": "Triggered when you ask to migrate/upgrade a customized NanoClaw fork. It checks the working tree, assesses scope, extracts customizations, and offers to skip to upgrade if a guide already exists.",
+    "what_en": "Once installed, Claude extracts your customizations from a NanoClaw fork into a replayable markdown migration guide (what changed and why), then upgrades to upstream by reapplying those changes on a clean base — no git merge, so no merge conflicts.",
+    "when_en": "Triggered when you ask to upgrade a NanoClaw fork to upstream, mention migrating your customizations, or want to avoid git merge conflicts.",
     "say_en": [
       {
-        "text": "Generate a migration guide for my customizations to this NanoClaw fork.",
-        "note": "Scans changes; asks you to describe or auto-analyze."
+        "text": "Extract all my customizations from this fork and generate a migration guide.",
+        "note": "Checks the tree, creates a rollback point, analyzes changes."
       },
       {
-        "text": "Upgrade to the latest upstream while keeping my custom config.",
-        "note": "Extracts changes, then reapplies them on a clean checkout."
+        "text": "Upgrade to upstream and reapply my changes from the guide, skipping data dirs.",
+        "note": "Reapplies customizations on clean upstream, skipping merge."
       },
       {
-        "text": "Update the existing migration guide with my new changes.",
-        "note": "Diffs new commits and appends them to the guide."
+        "text": "I don't want git merge — use the migration approach instead.",
+        "note": "Assesses scope and asks how to handle your changes."
       }
     ]
   }

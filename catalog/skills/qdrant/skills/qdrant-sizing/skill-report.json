@@ -5,7 +5,7 @@
     "name": "qdrant-sizing",
     "description": "Sizes a Qdrant deployment before it is provisioned. Use when someone asks 'how much RAM do I need', 'how many nodes', 'how big should my cluster be', 'sizing', 'capacity planning', 'will N vectors fit', 'what instance type should I pick', or gives a vector count and dimensions and asks what to provision. Also use when an existing estimate needs checking before hardware or a cluster tier is bought.",
     "upstream": "https://github.com/qdrant/skills/tree/main/skills/qdrant-sizing",
-    "upstream_commit": "1047aa8d8ac9ada13caead755d62a4d485969869",
+    "upstream_commit": "864f969fc7f8c6c02e0133f37e4f0840fe0f1fab",
     "content_hash": "sha256:b2d9247a1bbee303106a2088bb92c985ad120c1833636f5829c6a0bf496cbc1b",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -23,9 +23,9 @@
   "signals": {
     "stars_github": null,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-13T04:47:10.596Z",
+    "fetched_at": "2026-08-14T04:45:16.435Z",
     "first_seen_at": "2026-08-12T04:44:02.605Z",
-    "upstream_commit_at": "2026-08-12T12:16:33+02:00",
+    "upstream_commit_at": "2026-08-13T10:01:00+02:00",
     "curated_by": [
       {
         "list": "VoltAgent/awesome-agent-skills",
@@ -40,7 +40,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-13T04:47:10.596Z",
+    "generated_at": "2026-08-14T04:45:16.435Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,40 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当用户询问 Qdrant 部署需要哪些资源时，Claude 会引导用户提供向量数量、维度、负载等参数，按组件计算内存、磁盘、CPU、GPU 和节点数，并提醒留出余量和用官方计算器验证。",
-    "when": "当用户询问所需内存、节点数、集群规模等容量规划问题，或给出向量数和维度询问配置，或要求检查已有估算时触发。",
+    "what": "Claude会根据你给出的向量数、维度等，估算Qdrant集群需要的内存、磁盘、CPU、GPU和节点数，并给出量化、内存分层等配置建议。",
+    "when": "当用户询问需要多少内存、节点或磁盘，或给出向量数与维度要求配置时触发；也可用于购买前复核已有估算。",
     "say": [
       {
-        "text": "我有 1000 万条 768 维向量，需要多少 RAM？",
-        "note": "Claude 会收集副本数、负载等信息后估算内存。"
+        "text": "我有100万条128维向量，需要多少内存和磁盘？",
+        "note": "估算资源占用和余量"
       },
       {
-        "text": "帮我规划一个 Qdrant 集群，目标 p95 延迟 50ms。",
-        "note": "Claude 会询问吞吐和容灾要求，给出节点和资源配置。"
+        "text": "3节点集群，复制因子2，需要留多少余量？",
+        "note": "考虑复制和临时开销"
       },
       {
-        "text": "检查一下这个 8 节点配置是否够用。",
-        "note": "Claude 会复核现有估算并建议用计算器交叉核对。"
+        "text": "我的向量适合量化吗？存储空间怎么变？",
+        "note": "量化与原始向量并存，需按公式重算"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:b2d9247a1bbee303106a2088bb92c985ad120c1833636f5829c6a0bf496cbc1b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-13T05:12:47.542Z",
+    "generated_at": "2026-08-14T05:22:51.016Z",
     "lint_pass": true,
-    "what_en": "When asked to size a Qdrant deployment, Claude guides the user to provide vector count, dimensions, and workload parameters, then estimates RAM, disk, CPU, GPU, and node count per component, reminding to leave headroom and to verify with the official calculator.",
-    "when_en": "Triggered when someone asks about RAM, node count, cluster size, or other capacity questions, provides vector count/dimensions and asks what to provision, or wants an existing estimate checked before buying hardware or cluster tier.",
+    "what_en": "Claude sizes a Qdrant deployment before it is provisioned. Based on given vector counts, dimensions, payload, throughput, etc., it estimates required RAM, disk, CPU, GPU, and node count, and advises on memory tiers, quantization, and headroom for growth.",
+    "when_en": "Activates when the user asks about memory, node, or disk requirements, or provides vector count and dimensions asking what to provision. Also used to check an existing estimate before buying hardware or a cluster tier.",
     "say_en": [
       {
-        "text": "I have 10M vectors of 768 dims; how much RAM do I need?",
-        "note": "Claude will ask about replication and load, then estimate memory."
+        "text": "I have 1 million 128-dim vectors, how much RAM and disk do I need?",
+        "note": "Estimates resource footprint."
       },
       {
-        "text": "Help me size a Qdrant cluster for p95 50ms latency."
+        "text": "For a 3-node cluster with replication factor 2, what headroom should I keep?",
+        "note": "Adds replication and headroom."
       },
       {
-        "text": "Check if this 8-node setup is sufficient.",
-        "note": "Claude will review the estimate and suggest the sizing calculator."
+        "text": "Is quantization suitable for my vectors and what space will it take?",
+        "note": "Explains quantization storage rules."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "MUST USE for ANY git operations. Atomic commits, rebase/squash, history search (blame, bisect, log -S). STRONGLY RECOMMENDED: Use with task(category='quick', load_skills=['git-master'], ...) to save context. Triggers: 'commit', 'rebase', 'squash', 'who wrote', 'when was X added', 'find the commit that'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-opencode/src/features/builtin-skills/git-master",
-    "upstream_commit": "757f506216f473cc6f5120b7a794a8ce02a0b9bb",
+    "upstream_commit": "8e71c1be5b56970ff07716cbbd919cc465dae305",
     "content_hash": "sha256:3b8a86289df510ac57d9b0cadb1291fb665484a9802d513855e689251acf24b2",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67781,
+    "stars_github": 67848,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-13T04:47:18.771Z",
+    "fetched_at": "2026-08-14T04:45:28.532Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-13T13:25:34+09:00",
+    "upstream_commit_at": "2026-08-14T08:09:29+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-13T04:47:18.771Z",
+    "generated_at": "2026-08-14T04:45:28.532Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按 Git 专家方式处理操作:先分析仓库状态和最近提交风格,再把变更拆成多个原子提交(文件越多提交越多),并处理 rebase/squash 与历史查询(blame、bisect、log -S)。",
-    "when": "当你说出“commit”“rebase”“squash”等词,或询问“谁写的”“某行何时加的”“找出引入某变更的提交”等历史问题时触发。",
+    "what": "装上后,Claude 处理 git 相关请求时,会先判断属于提交、变基还是历史检索。提交时按目录/关注点拆成多个原子提交,模仿仓库原有提交风格,先给计划再执行;变基/压缩负责重写历史,检索用 blame、bisect、log -S 等定位变更来源。",
+    "when": "当用户发起任何 git 操作时触发,典型入口是提交(commit)、变基(rebase)、压缩(squash)等请求。此外,询问“谁写的”“何时加入”或“找引入改动的提交”也会进入历史检索模式。",
     "say": [
       {
-        "text": "帮我把这些改动分成几个原子提交,按仓库风格写信息。",
-        "note": "Claude 会先分析再拆提交。"
+        "text": "帮我把这次的改动拆成几个独立提交,按目录分开。",
+        "note": "Claude 会先输出提交计划,再逐一执行原子提交。"
       },
       {
-        "text": "把最近三个提交 squash 成一个,并保留原风格。",
-        "note": "触发 REBASE 模式,执行压缩。"
+        "text": "把最近三个提交压缩成一个,并整理提交信息。"
       },
       {
-        "text": "用 git log -S 查一下这个字符串是哪个提交引入的。",
-        "note": "触发历史搜索找引入点。"
+        "text": "查一下这个文件里某行是谁写的,什么时候加的。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3b8a86289df510ac57d9b0cadb1291fb665484a9802d513855e689251acf24b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-13T05:00:26.907Z",
+    "generated_at": "2026-08-14T05:00:15.009Z",
     "lint_pass": true,
-    "what_en": "Claude becomes a Git expert: inspects repo state and commit style, splits changes into multiple atomic commits (more files → more commits), handles rebase/squash, and searches history via blame, bisect, log -S.",
-    "when_en": "Triggered when the user mentions 'commit', 'rebase', 'squash', or asks who wrote a line, when something was added, or to find the commit that introduced a change.",
+    "what_en": "Claude maps any git request to commit, rebase, or history mode. Commit mode plans multiple atomic commits, imitates repo style, then executes. History mode uses blame, bisect, log -S to locate the change origin.",
+    "when_en": "Triggers on any git request; typical entries are commit, rebase, or squash. Asking who wrote something, when a change was added, or for the introducing commit also enters history search.",
     "say_en": [
       {
-        "text": "Split these changes into atomic commits and follow the repo style.",
-        "note": "Claude analyzes then commits in chunks."
+        "text": "Split my current changes into several independent commits by directory.",
+        "note": "Claude shows a commit plan, then makes atomic commits."
       },
       {
-        "text": "Squash the last three commits into one, keeping the style.",
-        "note": "Enters REBASE mode and compresses."
+        "text": "Squash the last three commits into one and clean up the messages.",
+        "note": "Claude will rewrite local history using an autosquash rebase."
       },
       {
-        "text": "Use git log -S to find which commit added this string.",
-        "note": "Searches history for the introducing commit."
+        "text": "Find who wrote that line in this file and when it was added.",
+        "note": "Claude will use blame and log -S to trace the origin."
       }
     ]
   }

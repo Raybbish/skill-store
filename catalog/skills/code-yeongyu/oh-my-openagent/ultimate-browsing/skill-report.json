@@ -5,7 +5,7 @@
     "name": "ultimate-browsing",
     "description": "Escalation skill for blocked or hard-to-reach web access — load it when a normal browse/fetch is blocked (WAF, 403, Cloudflare, JS-only render, login-gated, or a platform a generic fetcher cannot read). Tiered router: TIER 1 insane-search (headless extraction + WAF bypass via curl_cffi TLS impersonation, yt-dlp, Jina Reader, public APIs, Playwright real-Chrome fallback); TIER 1.5 agent-reach (platform-native readers for Chinese and social platforms: Xiaohongshu, Douyin, Weibo, Bilibili, V2EX, WeChat, plus Twitter/Reddit/LinkedIn/GitHub); TIER 2 Chrome stealth (CloakBrowser stealth Chromium + agent-browser CDP for clicks, forms, screenshots, video, cookie login). Triggers: blocked site, bypass bot detection, cloudflare/WAF bypass, scrape, stealth browser, import cookies, fill form, screenshot, play youtube, xiaohongshu, douyin, weibo, bilibili, v2ex, wechat article, podcast transcript. NOT for simple searches (use web-search) or plain fetches (use webfetch).",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ultimate-browsing",
-    "upstream_commit": "757f506216f473cc6f5120b7a794a8ce02a0b9bb",
+    "upstream_commit": "8e71c1be5b56970ff07716cbbd919cc465dae305",
     "content_hash": "sha256:71981fabd086e6014286f1abb84d4b251eede4ecb726635237e731b0fed5bbed",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67781,
+    "stars_github": 67848,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-13T04:47:18.771Z",
+    "fetched_at": "2026-08-14T04:45:28.532Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-13T13:25:34+09:00",
+    "upstream_commit_at": "2026-08-14T08:09:29+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-13T04:47:18.771Z",
+    "generated_at": "2026-08-14T04:45:28.532Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -156,42 +156,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,遇到被 WAF/403/Cloudflare 拦截、需 JS 渲染或有登录墙的网页,Claude 会依次尝试三层方案:无头提取绕过拦截、平台专用读取器、隐身浏览器真实交互(点击/截图/登录)。",
-    "when": "当普通浏览或抓取被拦(如 WAF/403/Cloudflare、需 JS 渲染、登录墙),或目标在通用抓取器读不了的平台时触发。",
+    "what": "装上后,Claude 遇到被拦截或难访问的网页时,会按三层路由处理:先用无头抓取绕过 WAF/Cloudflare,再改用小红书、抖音等平台原生读取,仍失败则用隐身 Chrome 模拟点击、填表、截图。只处理复杂访问,简单搜索不触发。",
+    "when": "当普通浏览/抓取被拒(WAF、403、Cloudflare 等),或目标在小红书、抖音、微博等平台,或需要点击、填表、截图等交互时触发。简单搜索和普通抓取不归它管。",
     "say": [
       {
-        "text": "这个网页被 WAF 拦了,帮我抓取内容",
-        "note": "会走 T1 无头提取"
+        "text": "这个网页被 Cloudflare 拦了,帮我绕过它读取内容。",
+        "note": "会走无头抓取绕过 WAF。"
       },
       {
-        "text": "提取这个 B 站视频的简介和字幕",
-        "note": "走 T1.5 平台读取器"
+        "text": "帮我把这个抖音视频的信息抓下来。",
+        "note": "走平台原生读取。"
       },
       {
-        "text": "用隐身浏览器打开小红书并截图",
-        "note": "走 T2 隐身浏览器"
+        "text": "用隐身 Chrome 打开这个页面,点击按钮后截图。",
+        "note": "走隐身浏览器交互。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:71981fabd086e6014286f1abb84d4b251eede4ecb726635237e731b0fed5bbed",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-13T05:03:56.017Z",
-    "lint_pass": true,
-    "what_en": "Claude escalates blocked or hard-to-reach pages through a three-tier router: headless extraction with WAF bypass, platform-native readers for Chinese/social platforms, then a stealth browser for interaction (clicks, forms, screenshots, cookie login).",
-    "when_en": "Triggered when a normal browse/fetch is blocked (WAF, 403, Cloudflare, JS render, login gate) or the target is on a platform a generic fetcher cannot read. Not for simple searches.",
-    "say_en": [
-      {
-        "text": "This page is blocked by WAF — fetch the content for me.",
-        "note": "Runs Tier 1 headless extraction."
-      },
-      {
-        "text": "Get the description and subtitles of this Bilibili video.",
-        "note": "Uses Tier 1.5 platform reader."
-      },
-      {
-        "text": "Open Xiaohongshu in the stealth browser and take a screenshot.",
-        "note": "Uses Tier 2 Chrome stealth."
-      }
-    ]
+    "generated_at": "2026-08-14T05:02:10.965Z",
+    "lint_pass": true
   }
 }

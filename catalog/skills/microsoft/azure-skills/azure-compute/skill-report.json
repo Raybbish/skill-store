@@ -5,7 +5,7 @@
     "name": "azure-compute",
     "description": "Azure VM/VMSS router. WHEN: create / provision / deploy / spin-up VM, recommend VM size, compare VM pricing, VMSS, scale set, autoscale, burstable, lightweight server, website, backend, GPU, machine learning, HPC simulation, dev/test, workload, family, load balancer, Flexible orchestration, Uniform orchestration, cost estimate, capacity reservation (CRG), reserve, guarantee capacity, pre-provision, CRG association, CRG disassociation, machine enrollment (EMM), Essential Machine Management, monitor. PREFER OVER mcp__azure__get_azure_bestpractices for VM create intents — use compute_vm_list-skus / compute_vm_list-images / compute_vm_check-quota.",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/azure-compute",
-    "upstream_commit": "19290671e4f061b2a8c54fa2d42cdbc979000106",
+    "upstream_commit": "db28f0ed1d05d23056b86d536d9a5e6967f68ef3",
     "content_hash": "sha256:cdcf64ec0620dad3367ecdb34b30e2e3cb20d2c7f007e613e50bec06a7d44533",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 462200,
-    "fetched_at": "2026-08-13T04:49:03.516Z",
+    "installs_skills_sh": 464800,
+    "fetched_at": "2026-08-14T04:48:19.394Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-08-12T10:22:53-07:00"
+    "upstream_commit_at": "2026-08-13T09:20:11-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-13T04:49:03.516Z",
+    "generated_at": "2026-08-14T04:48:19.394Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -128,40 +128,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后,Claude 会把 Azure 虚拟机(VM)和规模集(VMSS)请求按意图分流到对应流程(推荐、创建、容量预留、机器管理),意图不明时先提问。",
-    "when": "当用户提出创建/部署 VM、推荐或比较型号/价格、容量预留、机器管理等需求时触发;应用部署类请求会转给 azure-prepare。",
+    "what": "装上后,Claude 会先判断你的请求属于哪类 Azure 计算任务,再按对应流程处理,给出虚拟机选型、价格对比、创建步骤或容量预留等结果。",
+    "when": "当你想创建或部署 Azure 虚拟机(VM)、需要推荐或比较 VM 型号与价格、或提到容量预留等话题时触发。",
     "say": [
       {
-        "text": "帮我推荐一台适合跑深度学习的 Azure VM 型号"
+        "text": "我想在 Azure 上开一台跑网站后端的小型虚拟机,推荐个机型",
+        "note": "会进入 VM 选型流程,给出推荐与理由。"
       },
       {
-        "text": "在 eastus 创建一个 Ubuntu 22.04 虚拟机",
-        "note": "Claude 会检查配额并执行创建流程。"
+        "text": "帮我对比一下 D 系列和 B 系列 VM 的价格",
+        "note": "会按价格比较流程给出对比结果。"
       },
       {
-        "text": "创建容量预留组,预留 10 台 D-series 容量",
-        "note": "Claude 会进入容量预留工作流,创建 CRG。"
+        "text": "我想预留一批 VM 容量并保证可用",
+        "note": "会进入容量预留(CRG)流程。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cdcf64ec0620dad3367ecdb34b30e2e3cb20d2c7f007e613e50bec06a7d44533",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-13T05:08:32.777Z",
+    "generated_at": "2026-08-14T05:13:57.241Z",
     "lint_pass": true,
-    "what_en": "Enables Claude to route Azure VM/VMSS requests to the appropriate workflow (recommender, creator, capacity reservation, EMM), asking a clarifying question when intent is unclear.",
-    "when_en": "Triggered when the user asks about creating/provisioning VMs, recommending/comparing VM sizes, capacity reservation groups, or machine enrollment, etc. App-deployment requests are routed to azure-prepare.",
+    "what_en": "After installation, Claude classifies the request into the matching Azure VM/VMSS workflow and returns the corresponding guidance, such as VM size recommendations, pricing comparison, creation steps, or capacity reservation options.",
+    "when_en": "Triggered when the user wants to create or deploy an Azure VM, needs a recommendation or price comparison, or mentions topics such as VMSS or capacity reservation.",
     "say_en": [
       {
-        "text": "Recommend an Azure VM size for deep learning.",
-        "note": "Runs the VM recommender workflow filtering SKUs by GPU needs."
+        "text": "I want to create a small VM for a website backend, which size do you recommend?",
+        "note": "Runs the VM recommender workflow and gives a recommendation."
       },
       {
-        "text": "Create an Ubuntu 22.04 VM in eastus.",
-        "note": "Checks quota then runs the VM creator workflow."
+        "text": "Compare the prices of D-series and B-series VMs.",
+        "note": "Runs the pricing/compare workflow and returns a comparison."
       },
       {
-        "text": "Create a capacity reservation group for 10 D-series VMs.",
-        "note": "Runs the capacity reservation workflow to provision the CRG."
+        "text": "I want to reserve some VM capacity to guarantee availability.",
+        "note": "Runs the capacity reservation (CRG) workflow."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "MUST USE whenever a task needs a commit or git-history investigation. Covers atomic commits, staging, commit-message style, rebase, squash, fixup/autosquash, blame, bisect, reflog, git log -S/-G, and questions like who wrote this or when was this added. Do not use for ordinary code edits unless the user asks for git work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "757f506216f473cc6f5120b7a794a8ce02a0b9bb",
+    "upstream_commit": "8e71c1be5b56970ff07716cbbd919cc465dae305",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67781,
+    "stars_github": 67848,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-13T04:47:18.771Z",
+    "fetched_at": "2026-08-14T04:45:28.532Z",
     "first_seen_at": "2026-07-15T03:55:58.117Z",
-    "upstream_commit_at": "2026-08-13T13:25:34+09:00",
+    "upstream_commit_at": "2026-08-14T08:09:29+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-13T04:47:18.771Z",
+    "generated_at": "2026-08-14T04:45:28.532Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,41 +93,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 遇到 Git 任务会先查仓库状态,把改动按逻辑拆成原子提交并逐一提交;也能整理提交历史,或查明谁在哪个提交改了什么,并给出证据。",
-    "when": "当任务涉及提交改动或调查 Git 历史时触发,例如“谁改过这段代码”“这行何时加的”;普通代码编辑不会触发,除非用户明确要求 Git 操作。",
+    "what": "装上后，Claude会识别你的Git操作请求并分四类处理：提交改动、改写历史、查历史、查状态。提交前会检查diff并拆分原子提交；改写历史前会做安全确认；查历史时用git log、blame等工具并给出证据。",
+    "when": "当你要求提交代码、查看提交历史或调查某行代码的来历，以及改写历史（rebase、squash等）时触发。仅询问普通代码编辑不触发。",
     "say": [
       {
-        "text": "把当前改动按逻辑分成几个原子提交,并写规范的提交信息。",
-        "note": "Claude 会先检查状态和最近提交风格,再分步提交。"
+        "text": "帮我提交这些改动，提交信息按仓库风格写",
+        "note": "Claude会暂存改动并按仓库历史风格生成提交"
       },
       {
-        "text": "把最近这几个提交用 fixup 压缩成一个,再 rebase 整理历史。",
-        "note": "会先确认分支状态,再执行 autosquash 重写。"
+        "text": "查一下这行代码是哪个提交加的，谁改的",
+        "note": "会用git log -S或blame追查并给出证据"
       },
       {
-        "text": "查一下这行代码是谁、在哪个提交里加的。",
-        "note": "会用 blame 和 log 找出提交哈希作为证据。"
+        "text": "把最近三个提交压缩成一个",
+        "note": "会执行interactive rebase并合并"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-13T05:00:34.753Z",
+    "generated_at": "2026-08-14T04:59:27.544Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude first checks the repo state, splits changes into logical atomic commits, and commits them one by one. It can also rewrite or tidy commit history, or investigate who changed what and in which commit, citing command evidence.",
-    "when_en": "Triggers whenever a task involves committing changes or investigating Git history—for example, “who changed this line” or “when was it added.” Ordinary code edits do not trigger it unless the user explicitly asks for Git work.",
+    "what_en": "Claude classifies Git requests into commit, rebase, history, or status. It commits atomically with repo-style messages, safety-checks history rewrites, and answers history questions with git log/blame evidence.",
+    "when_en": "Triggers when you ask to commit changes, investigate history (who/when/why changed something), or rewrite history (rebase, squash). Ordinary code edits without a Git request do not trigger it.",
     "say_en": [
       {
-        "text": "Split the current changes into logical atomic commits with proper messages.",
-        "note": "It checks status and recent commit style first, then commits in steps."
+        "text": "Commit these changes with the message style from the repo history.",
+        "note": "Stages and commits atomically."
       },
       {
-        "text": "Squash these recent commits into one with fixup, then rebase.",
-        "note": "It verifies branch state before rewriting and uses autosquash."
+        "text": "Find which commit added this line and who did it.",
+        "note": "Uses git log -S or blame with evidence."
       },
       {
-        "text": "Find who added this line and in which commit.",
-        "note": "It uses blame and log to report the commit hash as evidence."
+        "text": "Squash the last three commits into one.",
+        "note": "Runs interactive rebase to combine them."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "embedded-captions",
     "description": "Add captions or subtitles to an existing single-subject talking-head video without editing the footage. Use for plain verbatim captions, cinematic captions embedded behind the subject, VFX captions, “炸/特效/酷炫字幕,” or a named identity from the 35-style catalog. Route by visual identity, not by backend engine. The quiet `anchor` rail is the default; embed every word only when the user explicitly wants a fully cinematic treatment. The workflow runs locally end to end, including transcription and subject matting; split multi-shot footage before applying it.\n",
     "upstream": "https://github.com/heygen-com/hyperframes/tree/main/skills/embedded-captions",
-    "upstream_commit": "cbd38b32f7a1cc38964e898991b8767d3a05506c",
+    "upstream_commit": "532caf7aa24fef382cb103013f6414bb547a4129",
     "content_hash": "sha256:a0bbffbbed5b80edb1129cf423ae2351f8aaed5fd5fe71d58fe7de7719c21693",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -20,10 +20,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 153800,
-    "fetched_at": "2026-08-13T04:49:16.265Z",
+    "installs_skills_sh": 155700,
+    "fetched_at": "2026-08-14T04:48:42.216Z",
     "first_seen_at": "2026-07-14T05:27:20.908Z",
-    "upstream_commit_at": "2026-08-13T00:38:47-04:00"
+    "upstream_commit_at": "2026-08-13T21:10:12-04:00"
   },
   "context_size": {
     "version": "1",
@@ -32,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-13T04:49:16.265Z",
+    "generated_at": "2026-08-14T04:48:42.216Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -197,41 +197,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude会为单个说话人的视频加字幕：先检查视频是否合格，再进行转录、抠像，按你选的风格（普通字幕、电影嵌入字幕、特效字幕等）生成字幕，并合成到原视频上，输出带字幕的新视频。",
-    "when": "当你提供一个单人谈话视频，并请求加普通逐字字幕、电影感嵌入字幕或“炸/特效”字幕，或指定35种风格之一时触发。",
+    "what": "装上后,Claude 会给单人讲话视频加字幕/副标题,不改动原始画面。它从 35 种风格中选一种,生成字幕:默认是干净的下方字幕轨 + 一个嵌入主体后的高潮字;也可要求纯电影化嵌入或主题特效。它会在本地转录和抠像,并拒绝不适合的视频,最终输出带字幕的新视频。",
+    "when": "当你要求给单个说话人视频加字幕,包括逐字字幕、嵌入主体后的电影字幕、“炸/特效/酷炫” 字幕,或指名某种风格时触发。它会先探测视频,拒绝多说话者、无语音或已有烧录字幕的素材。",
     "say": [
       {
-        "text": "给这个视频加上默认字幕，逐字显示。",
-        "note": "将走标准模式，生成rail+嵌入高潮。"
+        "text": "给这个视频加逐字字幕,默认风格就行。",
+        "note": "会按默认 rail+embed 处理。"
       },
       {
-        "text": "把“奇迹”这个词做成电影感嵌入人身后。",
-        "note": "使用Cinematic模式，该词成为主角词。"
+        "text": "把“炸”这个字做成特效嵌入在人物后面。",
+        "note": "会走主题模式,选相关风格。"
       },
       {
-        "text": "要一个“炸”风格的特效字幕。",
-        "note": "从主题风格中选一个匹配身份。"
+        "text": "用电影风格给这段讲解加字幕,所有词都嵌入。",
+        "note": "会触发纯嵌入电影模式。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a0bbffbbed5b80edb1129cf423ae2351f8aaed5fd5fe71d58fe7de7719c21693",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-13T05:05:19.322Z",
+    "generated_at": "2026-08-14T05:05:49.900Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude will add captions to a single-subject talking-head video: it checks the clip, transcribes and mattes the subject, generates captions in the chosen style (plain, cinematic embed, VFX, etc.), composites them onto the footage, and outputs a new captioned video.",
-    "when_en": "Triggers when you provide a single-subject talking-head video and ask for plain verbatim captions, cinematic embedded captions, or 'explosive/VFX' captions, or specify one of the 35 catalog identities.",
+    "what_en": "Adds captions to a single-subject talking-head video without editing footage. Picks from 35 styles; default is a clean rail plus one embedded peak word, with full cinematic or themed VFX on request. Runs locally, rejects bad clips, outputs final.mp4.",
+    "when_en": "Triggered when asking to caption a single-speaker video: verbatim, cinematic embed, VFX, or a named style. Probes the clip, refuses multi-speaker, silent, or burned-in captions.",
     "say_en": [
       {
-        "text": "Add default captions to this video, verbatim.",
-        "note": "Runs Standard mode: rail plus an embedded peak."
+        "text": "Add verbatim captions to this video, default style.",
+        "note": "Runs default rail+embed flow."
       },
       {
-        "text": "Make the word 'miracle' a cinematic embed behind the subject.",
-        "note": "Uses Cinematic mode; that word becomes the hero."
+        "text": "Make the word '炸' an embedded VFX behind the person.",
+        "note": "Triggers a themed identity."
       },
       {
-        "text": "Give me a 'boom' style VFX caption.",
-        "note": "Picks a matching themed identity from the catalog."
+        "text": "Use cinematic style for this explainer, embed every word.",
+        "note": "Forces pure embed, no rail."
       }
     ]
   }
