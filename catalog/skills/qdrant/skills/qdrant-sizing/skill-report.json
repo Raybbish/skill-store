@@ -5,7 +5,7 @@
     "name": "qdrant-sizing",
     "description": "Sizes a Qdrant deployment before it is provisioned. Use when someone asks 'how much RAM do I need', 'how many nodes', 'how big should my cluster be', 'sizing', 'capacity planning', 'will N vectors fit', 'what instance type should I pick', or gives a vector count and dimensions and asks what to provision. Also use when an existing estimate needs checking before hardware or a cluster tier is bought.",
     "upstream": "https://github.com/qdrant/skills/tree/main/skills/qdrant-sizing",
-    "upstream_commit": "1578f1fe8be965d68047155abe21e891995ffccb",
+    "upstream_commit": "1047aa8d8ac9ada13caead755d62a4d485969869",
     "content_hash": "sha256:b2d9247a1bbee303106a2088bb92c985ad120c1833636f5829c6a0bf496cbc1b",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -23,9 +23,9 @@
   "signals": {
     "stars_github": null,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:02.605Z",
+    "fetched_at": "2026-08-13T04:47:10.596Z",
     "first_seen_at": "2026-08-12T04:44:02.605Z",
-    "upstream_commit_at": "2026-08-11T14:57:24+02:00",
+    "upstream_commit_at": "2026-08-12T12:16:33+02:00",
     "curated_by": [
       {
         "list": "VoltAgent/awesome-agent-skills",
@@ -40,7 +40,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:02.605Z",
+    "generated_at": "2026-08-13T04:47:10.596Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,41 +94,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后,Claude 会在部署前帮你估算 Qdrant 所需的内存、磁盘、CPU/GPU 核数和节点数,并提醒考虑副本、量化、负载等额外开销。",
-    "when": "当你说出“需要多少内存/节点”、提到“容量规划/扩容”,或给出向量数量与维度询问如何配置时触发;也用于购买前核对已有估算。",
+    "what": "当用户询问 Qdrant 部署需要哪些资源时，Claude 会引导用户提供向量数量、维度、负载等参数，按组件计算内存、磁盘、CPU、GPU 和节点数，并提醒留出余量和用官方计算器验证。",
+    "when": "当用户询问所需内存、节点数、集群规模等容量规划问题，或给出向量数和维度询问配置，或要求检查已有估算时触发。",
     "say": [
       {
-        "text": "我有 5000 万条 768 维向量,需要多大内存?",
-        "note": "它会按公式估算内存占用。"
+        "text": "我有 1000 万条 768 维向量，需要多少 RAM？",
+        "note": "Claude 会收集副本数、负载等信息后估算内存。"
       },
       {
-        "text": "3 副本的 Qdrant 集群需要几个节点?",
-        "note": "它会考虑副本和容灾来给节点数。"
+        "text": "帮我规划一个 Qdrant 集群，目标 p95 延迟 50ms。",
+        "note": "Claude 会询问吞吐和容灾要求，给出节点和资源配置。"
       },
       {
-        "text": "2 节点 64GB 配置够用吗?帮我核对下",
-        "note": "它会核对现有估算再给结论。"
+        "text": "检查一下这个 8 节点配置是否够用。",
+        "note": "Claude 会复核现有估算并建议用计算器交叉核对。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:b2d9247a1bbee303106a2088bb92c985ad120c1833636f5829c6a0bf496cbc1b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T05:16:33.284Z",
+    "generated_at": "2026-08-13T05:12:47.542Z",
     "lint_pass": true,
-    "what_en": "Before provisioning Qdrant, it estimates RAM, disk, CPU/GPU cores, and node count from workload requirements, and flags extra overhead such as replication, quantization, and load.",
-    "when_en": "Triggered by questions about RAM, nodes, cluster size, capacity planning, or vector count/dimensions; also used to check an existing estimate before buying hardware.",
+    "what_en": "When asked to size a Qdrant deployment, Claude guides the user to provide vector count, dimensions, and workload parameters, then estimates RAM, disk, CPU, GPU, and node count per component, reminding to leave headroom and to verify with the official calculator.",
+    "when_en": "Triggered when someone asks about RAM, node count, cluster size, or other capacity questions, provides vector count/dimensions and asks what to provision, or wants an existing estimate checked before buying hardware or cluster tier.",
     "say_en": [
       {
-        "text": "I have 50M 768-dim vectors. How much RAM do I need?",
-        "note": "It estimates the RAM footprint."
+        "text": "I have 10M vectors of 768 dims; how much RAM do I need?",
+        "note": "Claude will ask about replication and load, then estimate memory."
       },
       {
-        "text": "How many nodes for a 3-replica Qdrant cluster?",
-        "note": "It accounts for replication and fault tolerance."
+        "text": "Help me size a Qdrant cluster for p95 50ms latency."
       },
       {
-        "text": "Is a 2-node 64GB setup enough? Please check.",
-        "note": "It validates the estimate before provisioning."
+        "text": "Check if this 8-node setup is sufficient.",
+        "note": "Claude will review the estimate and suggest the sizing calculator."
       }
     ]
   }
