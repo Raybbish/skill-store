@@ -5,7 +5,7 @@
     "name": "receiving-code-review",
     "description": "Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation",
     "upstream": "https://github.com/obra/superpowers/tree/main/skills/receiving-code-review",
-    "upstream_commit": "44c9b2d6e889982ac18c27d05a19fefe335194e1",
+    "upstream_commit": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
     "content_hash": "sha256:f168127f63374a63e66b8cbdf0712738a535cec56e01e1d931c2df8c0d13dad1",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 152000,
-    "fetched_at": "2026-07-29T05:49:40.965Z",
+    "installs_skills_sh": 165200,
+    "fetched_at": "2026-08-13T04:49:20.551Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-07-28T12:25:36-07:00"
+    "upstream_commit_at": "2026-08-12T09:53:21-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-29T05:49:40.965Z",
+    "generated_at": "2026-08-13T04:49:20.551Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,33 +86,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "收到代码审查反馈后，Claude 会先完整阅读，再用自己的话重述需求或提问，然后对照代码库验证技术正确性，最后做出技术性确认或推理反驳，并逐一实施并测试。",
-    "when": "当收到代码审查反馈时触发，尤其是反馈不清楚或技术上可疑时。",
+    "what": "收到代码评审反馈后，Claude 会先通读并用自己的话复述需求，再对照代码库核实；不清楚就问，不盲目执行。确认无误后逐条实施并单独测试；若反馈技术上有误，会用技术理由反驳，而不是客套附和。",
+    "when": "当用户把代码评审反馈转给 Claude、准备实施之前，尤其是反馈表述不清或技术上存疑的时候。",
     "say": [
       {
-        "text": "审查者建议删除遗留代码，请验证兼容性后再回复。",
-        "note": "Claude 将检查代码库实际需求。"
+        "text": "这条评审意见我看不懂，先别动手，帮我解释清楚再改。",
+        "note": "触发先澄清、后实施的流程。"
       },
       {
-        "text": "我不确定第4点和第5点，请先澄清再实施。",
-        "note": "Claude 将暂停并询问细节。"
+        "text": "评审建议加个专业功能，先查一下代码里有没有人用这个接口。",
+        "note": "触发 YAGNI 检查，避免加无用功能。"
+      },
+      {
+        "text": "反馈有好几条，先按阻断问题、简单修复、复杂重构的顺序来。",
+        "note": "按原文实施顺序逐项处理并测试。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f168127f63374a63e66b8cbdf0712738a535cec56e01e1d931c2df8c0d13dad1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-29T05:59:05.476Z",
+    "generated_at": "2026-08-13T05:09:48.429Z",
     "lint_pass": true,
-    "what_en": "Upon receiving code review feedback, Claude will first read it fully, then restate the requirement or ask questions, verify technical correctness against the codebase, and respond with technical acknowledgment or reasoned pushback, implementing and testing each item one at a time.",
-    "when_en": "Triggered when receiving code review feedback, especially if feedback seems unclear or technically questionable.",
+    "what_en": "Receiving code review feedback, Claude restates the requirement, verifies against the codebase, and clarifies unclear items before implementing. It pushes back with technical reasoning on questionable suggestions, then implements one at a time, testing each.",
+    "when_en": "When the user shares code review feedback and expects implementation, especially if the feedback seems unclear or technically questionable.",
     "say_en": [
       {
-        "text": "The reviewer suggests removing legacy code. Please verify compatibility first.",
-        "note": "Claude will check actual usage in codebase."
+        "text": "This review comment is unclear. Pause and explain before changing anything.",
+        "note": "Triggers clarification first."
       },
       {
-        "text": "I'm unclear on items 4 and 5. Please clarify before proceeding.",
-        "note": "Claude will stop and ask for details."
+        "text": "Reviewer wants a feature. Check if the codebase uses this endpoint first.",
+        "note": "Triggers YAGNI check."
+      },
+      {
+        "text": "Multiple items. Fix blockers, then simple fixes, then complex refactors.",
+        "note": "Follows implementation order, testing each."
       }
     ]
   }

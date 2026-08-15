@@ -5,7 +5,7 @@
     "name": "remove-deadcode",
     "description": "Remove unused code from this project with ultrawork mode, LSP-verified safety, atomic commits. Triggers: remove dead code, dead code, cleanup, remove unused.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/remove-deadcode",
-    "upstream_commit": "c5cefab7fcbf9dbaff3ed22678429d17127808be",
+    "upstream_commit": "8e71c1be5b56970ff07716cbbd919cc465dae305",
     "content_hash": "sha256:5e87c2118e567b4a1ddcb9d423ec86110488347fce8b2acaa7d1d0a3bd47ebf1",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67721,
+    "stars_github": 67848,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:12.294Z",
+    "fetched_at": "2026-08-14T04:45:28.532Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-12T12:53:25+09:00",
+    "upstream_commit_at": "2026-08-14T08:09:29+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:12.294Z",
+    "generated_at": "2026-08-14T04:45:28.532Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 先扫描项目,标记未使用的变量、导入、函数和类型;再用 LSP 确认它们确实未被引用;然后并行派多个代理删除,每个改动单独提交,最后运行类型检查与构建来验证。",
-    "when": "当你说“remove dead code”“cleanup”或“remove unused”等清理指令时触发。",
+    "what": "它会扫描项目文件,找出没有被其他代码引用的“死代码”。逐条用 LSP 工具确认确实没人用之后,按文件分组,派多个后台智能体并行删除并各自提交 git。最后再跑类型检查、测试与构建,确保没弄坏项目。",
+    "when": "当用户提到“remove dead code”、“cleanup”或“remove unused”等与删除无用代码相关的指令时触发。",
     "say": [
       {
-        "text": "请移除项目中的死代码。",
-        "note": "会扫描全项目并删除未使用代码。"
+        "text": "把这个项目的死代码清理掉。",
+        "note": "触发全项目扫描并删除未使用代码。"
       },
       {
-        "text": "清理 src/utils 目录里没用的代码。",
-        "note": "只处理该目录。"
+        "text": "只清理 src/utils 目录里的无用代码。",
+        "note": "把扫描范围限定在该目录。"
       },
       {
-        "text": "删除未使用的导入和变量。",
-        "note": "会做 LSP 验证再删。"
+        "text": "删掉没用的函数 unusedFunc,但别动入口文件。",
+        "note": "按符号名定点清理,入口文件受保护。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5e87c2118e567b4a1ddcb9d423ec86110488347fce8b2acaa7d1d0a3bd47ebf1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T04:56:00.453Z",
+    "generated_at": "2026-08-14T05:01:35.174Z",
     "lint_pass": true,
-    "what_en": "Claude scans the project for unused variables, imports, functions, and types; uses LSP reference checks to confirm they are genuinely unreferenced; then dispatches parallel agents to remove them in separate atomic commits, and runs typecheck and build to verify.",
-    "when_en": "Triggered when you ask to remove dead code, clean up unused code, or say keywords like \"remove dead code\", \"cleanup\", \"remove unused\".",
+    "what_en": "Claude scans the codebase for unused code, verifies candidates via LSP, then batches removals by file and delegates them to parallel agents that delete and commit. Finally runs typecheck, tests, build.",
+    "when_en": "When the user asks to remove unused code, for example saying 'remove dead code', 'cleanup', or 'remove unused'.",
     "say_en": [
       {
-        "text": "Please remove dead code from the project.",
-        "note": "Scans the whole project and deletes unused code."
+        "text": "Clean up the dead code in this project.",
+        "note": "Runs a full-project scan and removes unused code."
       },
       {
-        "text": "Clean up unused code in src/utils.",
-        "note": "Scans and removes dead code in that directory only."
+        "text": "Only clean unused code in src/utils.",
+        "note": "Narrows the scan to that directory."
       },
       {
-        "text": "Remove unused imports and variables.",
-        "note": "They are LSP-verified before removal."
+        "text": "Remove the unused function unusedFunc, but keep entry points intact.",
+        "note": "Targets one symbol; entry points are protected."
       }
     ]
   }

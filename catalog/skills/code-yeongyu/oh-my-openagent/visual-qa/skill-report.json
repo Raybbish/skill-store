@@ -5,7 +5,7 @@
     "name": "visual-qa",
     "description": "MUST USE after building/changing any UI or when asked whether a page, component, or TUI looks right. Rigorous visual QA across web/page and terminal UIs. Prefer browser:control-in-app-browser for unauthenticated browser/page QA in Codex, then Playwright/agent-browser/dev-browser. Captures screenshot/TUI evidence with bundled diff scripts, runs design-system/functional and visual-fidelity/CJK reviewer passes, then synthesizes a good/bad verdict. Triggers: visual QA, screenshot/pixel diff, UI looks wrong, reference fidelity, design system check, responsive check, CJK text clipping, TUI alignment, box-drawing drift.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/visual-qa",
-    "upstream_commit": "c5cefab7fcbf9dbaff3ed22678429d17127808be",
+    "upstream_commit": "8e71c1be5b56970ff07716cbbd919cc465dae305",
     "content_hash": "sha256:9ddc9213845fc48c1e89d25c636e2468adf4f8c36a56e5ca5342a597def68f2d",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67721,
+    "stars_github": 67848,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:12.294Z",
+    "fetched_at": "2026-08-14T04:45:28.532Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-12T12:53:25+09:00",
+    "upstream_commit_at": "2026-08-14T08:09:29+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:12.294Z",
+    "generated_at": "2026-08-14T04:45:28.532Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -109,40 +109,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会在你构建或改动界面后自动跑视觉 QA:截取实际渲染画面,做像素差异对比,再派两个只读子代理分别审查设计系统/功能和视觉保真/CJK 文字,最后给出通过与不通过结论。",
-    "when": "当你构建或修改任何界面(网页、组件、终端 TUI)后,或你提到 “visual QA”、“UI looks wrong”、“reference fidelity” 等触发词,或询问页面、组件或 TUI 看起来是否正确时触发。",
+    "what": "装上后,Claude 会在你构建或修改界面后,自动对网页和终端界面做视觉检查:先截取屏幕或终端画面并与参考图对比,再用两个独立审查代理分别检查设计系统完整性和视觉细节(含中文/日文/韩文文字截断),最后给出“好/坏”结论。",
+    "when": "当你构建或改动任何界面后,或问某个页面/组件/终端界面是否正常时触发;也适用于提到“视觉检查”“界面不对劲”“设计系统核对”等关键词时。",
     "say": [
       {
-        "text": "我刚改完这个页面,帮我跑一次视觉 QA。"
+        "text": "我刚改了登录页样式,帮我做个视觉检查。",
+        "note": "会截图并与改动前对比,再派两个审查代理检查。"
       },
       {
-        "text": "对比这张截图和我的参考图,差异在哪里?",
-        "note": "会做像素差异分析并指出热点区域。"
+        "text": "这个终端界面边框对不齐了,看看哪里漂移。",
+        "note": "对标终端对齐与边框漂移问题。"
       },
       {
-        "text": "检查这个 TUI 的边框对齐和 CJK 文字是否截断。",
-        "note": "会用真实终端渲染并做宽度检查。"
+        "text": "检查这个页面在中日韩文字下有没有被截断。",
+        "note": "专门检查中日韩文字截断与换行。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9ddc9213845fc48c1e89d25c636e2468adf4f8c36a56e5ca5342a597def68f2d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T04:58:05.306Z",
+    "generated_at": "2026-08-14T05:02:34.251Z",
     "lint_pass": true,
-    "what_en": "After install, Claude runs visual QA after any UI build/change: captures rendered screen, pixel-diffs vs reference, spawns two read-only reviewers (design-system/functionality and visual-fidelity/CJK), then gives a pass/fail verdict.",
-    "when_en": "Triggers after any UI build/change (web, component, TUI), or when you say trigger words like \"visual QA\", \"UI looks wrong\", \"reference fidelity\", or ask whether a page/component/TUI looks right.",
+    "what_en": "After any UI build/change, Claude verifies web and terminal UIs: captures screenshots/TUI frames, diffs them against the reference, dispatches two read-only review passes (design-system and visual/CJK), then gives a good/bad verdict.",
+    "when_en": "Triggers after building or changing any UI, or when asked whether a page/component/TUI looks right. Also on keywords such as \"visual QA\", \"UI looks wrong\", \"design system check\", etc.",
     "say_en": [
       {
-        "text": "I just changed this page — run a visual QA for me.",
-        "note": "Spawns two read-only reviewers, then gives a pass/fail verdict."
+        "text": "I just changed the login page style. Run a visual QA.",
+        "note": "Will capture and run both review passes."
       },
       {
-        "text": "Compare this screenshot against my reference — where are the differences?",
-        "note": "Runs pixel diff and flags hotspots."
+        "text": "The TUI borders are misaligned. Find the drift.",
+        "note": "Runs the TUI width/border check."
       },
       {
-        "text": "Check the TUI border alignment and whether CJK text is clipped.",
-        "note": "Renders in a real terminal and runs width checks."
+        "text": "Check this page for CJK text clipping.",
+        "note": "Checks Korean/Japanese/Chinese rendering."
       }
     ]
   }

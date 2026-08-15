@@ -5,7 +5,7 @@
     "name": "get-available-resources",
     "description": "Detect host inventory and effective CPU, memory, disk, scheduler, container, and accelerator limits when a user asks for resource-aware planning or before a clearly resource-sensitive local workload. Produces a redacted JSON snapshot and conservative planning helpers without stress tests or assuming visible host hardware is usable.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/get-available-resources",
-    "upstream_commit": "5ad4aae76bc40257b914367afacc6fd686a282d5",
+    "upstream_commit": "13385c7c4db02fdcc84a020752c07cce91ef780e",
     "content_hash": "sha256:555ed7d7b44931c68ba98234ba31b49b322a454463fad29212d887be4b87df28",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33257,
+    "stars_github": 33454,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:20.776Z",
+    "fetched_at": "2026-08-14T04:45:37.475Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T17:44:32-07:00",
+    "upstream_commit_at": "2026-08-13T13:07:22-07:00",
     "repo_skill_count": 161,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:20.776Z",
+    "generated_at": "2026-08-14T04:45:37.475Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -103,41 +103,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude会在计算密集任务开始前先检测本机资源:CPU核心数、GPU(含NVIDIA/AMD/Apple Silicon)、内存、磁盘空间,并在当前目录生成 .claude_resources.json 文件,内含资源实测值和并行、内存、GPU加速、大数据处理等策略建议。",
-    "when": "当你要求做资源感知规划,或开始数据分析、模型训练等计算密集任务时触发。",
+    "what": "装上后,Claude 会在计算密集型任务开始前自动检测本机 CPU、内存、磁盘、GPU 等资源,生成一份脱敏 JSON 快照,并根据资源情况给出并行处理、内存策略、GPU 加速等保守建议,帮助决定如何运行任务。",
+    "when": "当用户请求资源感知规划,或任务涉及大型数据分析、模型训练、大规模并行处理等计算密集型场景时,Claude 会先检测系统资源再继续。",
     "say": [
       {
-        "text": "先检测这台机器的CPU、内存和磁盘,再开始分析",
-        "note": "Claude会运行检测脚本并给出资源报告"
+        "text": "先检测一下这台机器的CPU和内存,再开始分析。",
+        "note": "Claude 会先运行资源检测,再继续任务。"
       },
       {
-        "text": "我要训练神经网络,看看有没有可用的GPU",
-        "note": "检测GPU及可用后端,如CUDA/Metal"
+        "text": "处理这个50GB数据集之前,先检查磁盘和GPU情况。",
+        "note": "Claude 会生成资源快照,判断是否需要外存计算。"
       },
       {
-        "text": "处理10万个文件,帮我确定并行worker数",
-        "note": "根据核心数推荐并行worker数"
+        "text": "用并行处理跑这批任务,先看最优核数。",
+        "note": "Claude 会根据核数给出推荐的并行 worker 数。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:555ed7d7b44931c68ba98234ba31b49b322a454463fad29212d887be4b87df28",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T05:04:29.737Z",
+    "generated_at": "2026-08-14T05:12:34.813Z",
     "lint_pass": true,
-    "what_en": "Installed, Claude detects CPU, GPU (NVIDIA/AMD/Apple Silicon), memory, and disk before compute-intensive tasks, and writes .claude_resources.json with resource measurements and strategy recommendations.",
-    "when_en": "Triggered at the start of compute-intensive tasks or when the user asks for resource-aware planning, for example before data analysis, model training, or parallel processing.",
+    "what_en": "After installation, Claude detects CPU, memory, disk, and GPU resources before computationally intensive tasks. It creates a redacted JSON snapshot and suggests conservative parallelism, memory, and GPU strategies to guide library choices.",
+    "when_en": "Triggers when a user asks for resource-aware planning or before a clearly resource-sensitive local workload, such as large data analysis, model training, or parallel processing.",
     "say_en": [
       {
-        "text": "Check CPU, memory, and disk on this machine before starting",
-        "note": "Claude runs the detection script and reports resources."
+        "text": "Check CPU and memory first, then start the analysis.",
+        "note": "Claude will run detection before proceeding."
       },
       {
-        "text": "I want to train a neural network; check for available GPUs",
-        "note": "Detects GPUs and available backends like CUDA/Metal."
+        "text": "Before processing this 50GB dataset, check disk and GPU.",
+        "note": "Claude will produce a snapshot and advise on out-of-core."
       },
       {
-        "text": "Handling 10,000 files; recommend the number of parallel workers",
-        "note": "Recommends workers based on core count."
+        "text": "For a parallel run, tell me the optimal worker count.",
+        "note": "Claude will estimate workers from core count."
       }
     ]
   }

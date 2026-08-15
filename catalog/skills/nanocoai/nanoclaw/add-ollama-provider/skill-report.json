@@ -5,7 +5,7 @@
     "name": "add-ollama-provider",
     "description": "Route a NanoClaw agent group to a local Ollama model instead of the Anthropic API. Ollama speaks the Anthropic API natively (v1/messages), so no provider code changes are needed — just env var overrides and a model setting. Use when the user wants to run their agent locally, cut API costs, or experiment with open-weight models. See docs/ollama.md for background.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-provider",
-    "upstream_commit": "639577c30456980de542d9cdce106455799d350e",
+    "upstream_commit": "48347e113e5fa08ae7d6bd80fb5183e3272e94d6",
     "content_hash": "sha256:1f90a56ab2eaa1145fb12745207b716d712b1745464a88a24a0e4fea9df38861",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30488,
+    "stars_github": 30510,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:23.959Z",
+    "fetched_at": "2026-08-14T04:45:41.248Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T18:39:44+02:00",
+    "upstream_commit_at": "2026-08-14T01:03:16+03:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:23.959Z",
+    "generated_at": "2026-08-14T04:45:41.248Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "使用该技能配置后，NanoClaw 代理组会改用你指定的本地 Ollama 模型来回答，不再走 Anthropic API；请求通过环境变量指向本地 Ollama，并可屏蔽 api.anthropic.com 以控制成本。",
-    "when": "当你想在本地运行代理、减少 API 费用或尝试开源权重模型时触发。要求 Ollama 已启动且已拉取模型。",
+    "what": "装上后,该智能体组里的 Claude 会改把请求发给本地 Ollama,回复由本地模型生成;按需屏蔽 Anthropic 访问,并把模型名写入设置。技能还会重新构建并重启服务。",
+    "when": "当你想让某个 NanoClaw 智能体组使用本地 Ollama 模型时,例如要本地运行、省 API 费用或试用开源权重模型,可触发本技能。",
     "say": [
       {
-        "text": "把我的代理组切到本地 Ollama 模型",
-        "note": "Claude 会问具体代理组和模型"
-      },
-      {
-        "text": "用 qwen3-coder 运行代理并屏蔽 Anthropic API",
-        "note": "它会写入相应配置"
-      },
-      {
-        "text": "改回 Anthropic API 要怎么操作？",
-        "note": "它会提供恢复步骤"
+        "text": "我要从本地 Ollama 切回 Anthropic API,帮我恢复配置",
+        "note": "移除相关配置并重启,无需重新构建"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1f90a56ab2eaa1145fb12745207b716d712b1745464a88a24a0e4fea9df38861",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T05:07:16.643Z",
+    "generated_at": "2026-08-14T05:15:48.405Z",
     "lint_pass": true,
-    "what_en": "After configuring with this skill, the NanoClaw agent group will use your specified local Ollama model to respond instead of the Anthropic API; requests are redirected via environment variables, and api.anthropic.com can be blocked to control costs.",
-    "when_en": "Triggered when you want to run an agent locally, reduce API costs, or try open-weight models. Requires Ollama to be running with a model already pulled.",
+    "what_en": "It points a chosen agent group's requests to local Ollama instead of Anthropic API, optionally blocks Anthropic access, writes the model into Claude settings, then rebuilds and restarts.",
+    "when_en": "Trigger when the user wants a NanoClaw agent group to use a local Ollama model, e.g. to run locally, cut API costs, or try open-weight models.",
     "say_en": [
       {
-        "text": "Point my agent group to a local Ollama model.",
-        "note": "It will ask which group and model."
+        "text": "Switch the my-agent group to local Ollama model gemma4",
+        "note": "It asks for group/model, edits config, restarts."
       },
       {
-        "text": "Run the agent with qwen3-coder and block Anthropic API.",
-        "note": "It writes the config accordingly."
+        "text": "Make test-group use local Ollama and block Anthropic API",
+        "note": "Adds env and blockedHosts, then restarts."
       },
       {
-        "text": "How do I switch back to the Anthropic API?",
-        "note": "It gives rollback steps."
+        "text": "Switch back from local Ollama to Anthropic API for this group",
+        "note": "Removes settings and restarts; no rebuild."
       }
     ]
   }

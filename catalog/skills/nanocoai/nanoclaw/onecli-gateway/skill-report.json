@@ -5,7 +5,7 @@
     "name": "onecli-gateway",
     "description": "OneCLI Gateway: transparent HTTPS proxy that injects stored credentials into outbound calls. You MUST use this skill when the user asks you to read emails, check calendar, access GitHub repos, create issues, check Stripe payments, or interact with ANY external service or API. Do NOT use browser extensions or OAuth CLI tools. Make HTTP requests directly; the gateway injects credentials automatically.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/container/skills/onecli-gateway",
-    "upstream_commit": "639577c30456980de542d9cdce106455799d350e",
+    "upstream_commit": "48347e113e5fa08ae7d6bd80fb5183e3272e94d6",
     "content_hash": "sha256:1e9ee86b5be83fd832c4a570c39a46e5e6efce49f818568c396f2c4c89ada25b",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30488,
+    "stars_github": 30510,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:23.959Z",
+    "fetched_at": "2026-08-14T04:45:41.248Z",
     "first_seen_at": "2026-07-17T09:02:55.674Z",
-    "upstream_commit_at": "2026-08-11T18:39:44+02:00",
+    "upstream_commit_at": "2026-08-14T01:03:16+03:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:23.959Z",
+    "generated_at": "2026-08-14T04:45:41.248Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,38 +93,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 访问外部服务时自动通过 OneCLI 网关发送请求，网关代为注入已保存的凭据，你无需提供密码或令牌。若服务未连接，Claude 会返回一个连接链接，并等你连完自动重试。",
-    "when": "当你要 Claude 读取邮件、查看日历、访问 GitHub 等外部服务或调用任意 API 时触发；这是此类请求的必经入口。",
+    "what": "装上后,Claude 会直接向外部 API 发请求,网关自动带上已保存的凭证;不再要密钥或用浏览器登录。服务未连接时,返回连接链接供用户确认后重试。",
+    "when": "当用户要求读取邮件、查看日历、访问 GitHub 等外部服务,或调用任何外部 API 时触发。",
     "say": [
       {
-        "text": "帮我读一下最近的5封邮件。"
+        "text": "读一下我 Gmail 里最新的 5 封邮件。",
+        "note": "会调用 Gmail API,网关自动注入凭证。"
       },
       {
-        "text": "列出我的 GitHub 仓库。"
+        "text": "看看我今天日历上有什么安排。",
+        "note": "返回日历 API 的结果。"
       },
       {
-        "text": "Stripe 最近有几笔付款？"
+        "text": "帮我列出我的 GitHub 仓库。",
+        "note": "直接请求 GitHub API。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1e9ee86b5be83fd832c4a570c39a46e5e6efce49f818568c396f2c4c89ada25b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T05:09:29.527Z",
+    "generated_at": "2026-08-14T05:17:58.054Z",
     "lint_pass": true,
-    "what_en": "After installing, Claude automatically sends requests to external services through the OneCLI gateway, which injects stored credentials for you—no passwords or tokens needed. If a service isn't connected, Claude presents a connect link and retries after you finish connecting.",
-    "when_en": "Triggered when you ask Claude to read emails, check calendar, access GitHub, or interact with any external API. It's the required entry for such requests.",
+    "what_en": "Claude calls external APIs directly through the gateway, which injects stored credentials. No keys asked, no browser extensions. Unconnected services return a connect link.",
+    "when_en": "Triggered when the user asks to read emails, check calendar, access GitHub, etc., or interact with any external API.",
     "say_en": [
       {
-        "text": "Read my latest 5 emails.",
-        "note": "Claude requests Gmail API via the gateway with auto-injected credentials."
+        "text": "Read the latest 5 emails in my Gmail.",
+        "note": "Calls Gmail API with credentials via gateway."
+      },
+      {
+        "text": "What's on my calendar today?",
+        "note": "Returns calendar API results."
       },
       {
         "text": "List my GitHub repositories.",
-        "note": "Claude directly calls GitHub API; no token needed."
-      },
-      {
-        "text": "How many recent Stripe charges?",
-        "note": "Claude queries Stripe charges; gateway handles credentials."
+        "note": "Direct GitHub API request."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Intelligent refactor command. Triggers: refactor, refactoring, cleanup, restructure, extract, simplify, modernize.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "c5cefab7fcbf9dbaff3ed22678429d17127808be",
+    "upstream_commit": "8e71c1be5b56970ff07716cbbd919cc465dae305",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67721,
+    "stars_github": 67848,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:12.294Z",
+    "fetched_at": "2026-08-14T04:45:28.532Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-12T12:53:25+09:00",
+    "upstream_commit_at": "2026-08-14T08:09:29+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:12.294Z",
+    "generated_at": "2026-08-14T04:45:28.532Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当用户提出重构、清理或简化代码时,Claude 会先确认目标,再分析整个代码库,找出相关依赖,评估测试覆盖,制定分步计划;随后逐步修改,每步都运行测试,失败立即回退,最后做全项目回归并输出改动总结。",
-    "when": "当用户说“refactor、restructure、cleanup”等关键词,或输入 /refactor 命令时触发;若请求含糊(如“改进代码”),它先追问具体目标。",
+    "what": "当你说要重构代码时,Claude 不会直接改,而是先确认你的目标,再分析整个代码库的依赖和测试覆盖,制定步骤后一步步修改,每步都跑测试保证不出错,最后给改动总结。",
+    "when": "当你说出 “refactor”、“cleanup” 等关键词,或要求提取、简化代码时触发。若目标含糊,它会先追问清楚。",
     "say": [
       {
-        "text": "重构 src/auth/handler.ts,把验证逻辑拆成独立模块。",
-        "note": "Claude 会先分析相关代码与测试再动手。"
+        "text": "把 src/auth/handler.ts 里的验证逻辑抽成独立模块",
+        "note": "Claude 会先分析依赖,再逐步实施并验证。"
       },
       {
-        "text": "/refactor 把所有用旧 API 的调用改成新接口。",
-        "note": "它会先定位所有受影响的文件。"
+        "text": "重构 AuthService 类,让每个方法只做一件事",
+        "note": "它会在改动后运行测试,确保没破坏功能。"
       },
       {
-        "text": "用保守策略重构整个项目,保持行为不变。",
-        "note": "会先评估测试覆盖,再开始重构。"
+        "text": "清理项目中所有已废弃 API 的调用",
+        "note": "触发 cleanup 流程,定位所有废弃用法。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T04:56:04.830Z",
+    "generated_at": "2026-08-14T05:01:34.039Z",
     "lint_pass": true,
-    "what_en": "When asked to refactor, Claude clarifies the target, maps the codebase and test coverage, plans, then executes small verified steps with rollback, ending with a full regression check and a change summary.",
-    "when_en": "Triggered when the user says keywords like 'refactor', 'restructure', 'cleanup', or uses the /refactor command. Vague requests (e.g., 'improve code') are met with clarifying questions.",
+    "what_en": "Claude clarifies intent, maps the codebase, checks test coverage, then refactors step-by-step with LSP and AST-grep, running tests after every step to avoid regressions.",
+    "when_en": "Triggers on keywords like refactor, cleanup, extract, or requests to restructure, simplify, or modernize code. Vague or broad requests prompt clarifying questions.",
     "say_en": [
       {
-        "text": "Refactor src/auth/handler.ts and extract the validation logic into a separate module.",
-        "note": "Claude analyzes related code and tests before editing."
+        "text": "Extract the validation logic from src/auth/handler.ts into a separate module.",
+        "note": "Claude analyzes dependencies, then refactors and verifies."
       },
       {
-        "text": "/refactor migrate all callers of the deprecated API to the new interface.",
-        "note": "It finds all affected files first."
+        "text": "Refactor the AuthService class so each method does one thing.",
+        "note": "It runs tests after changes to ensure nothing breaks."
       },
       {
-        "text": "Refactor the whole project with a conservative strategy, keeping behavior unchanged.",
-        "note": "It checks test coverage first."
+        "text": "Clean up all calls to deprecated APIs in the project.",
+        "note": "Triggers the cleanup flow and locates all obsolete usages."
       }
     ]
   }

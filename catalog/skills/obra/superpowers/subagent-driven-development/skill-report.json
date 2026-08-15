@@ -5,8 +5,8 @@
     "name": "subagent-driven-development",
     "description": "Use when executing implementation plans with independent tasks in the current session",
     "upstream": "https://github.com/obra/superpowers/tree/main/skills/subagent-driven-development",
-    "upstream_commit": "44c9b2d6e889982ac18c27d05a19fefe335194e1",
-    "content_hash": "sha256:03a880425be18262871561efebcba20447e1a4ab6192218b2d1015f51e15038c",
+    "upstream_commit": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+    "content_hash": "sha256:47730f44b80e1e83e28266a7d5d277d049b764294121eb8379ca74cc6d06861a",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 160300,
-    "fetched_at": "2026-07-29T05:49:40.965Z",
+    "installs_skills_sh": 174200,
+    "fetched_at": "2026-08-13T04:49:20.551Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-07-28T12:25:36-07:00"
+    "upstream_commit_at": "2026-08-12T09:53:21-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,16 +34,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-29T05:49:40.965Z",
+    "generated_at": "2026-08-13T04:49:20.551Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 28077,
-        "chars": 27892,
-        "tokens": 6067
+        "bytes": 32339,
+        "chars": 32120,
+        "tokens": 7096
       },
       "activation_with_declared_refs": {
         "files": [
@@ -53,9 +53,9 @@
           "task-reviewer-prompt.md"
         ],
         "text_files": 4,
-        "bytes": 45916,
-        "chars": 45621,
-        "tokens": 9731
+        "bytes": 52457,
+        "chars": 52124,
+        "tokens": 11277
       },
       "package_total_text": {
         "files": [
@@ -65,60 +65,68 @@
           "task-reviewer-prompt.md"
         ],
         "text_files": 4,
-        "bytes": 45916,
-        "chars": 45621,
-        "tokens": 9731
+        "bytes": 52457,
+        "chars": 52124,
+        "tokens": 11277
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "用子智能体并行执行独立任务",
+    "tagline": "拆解计划并让多个子代理并行推进开发",
     "scene_tags": [
-      "任务拆分",
+      "实施计划",
       "并行开发"
     ],
-    "fit_line": "适合你，如果需要在当前会话中同时推进多个独立实现任务",
-    "tagline_en": "Execute independent tasks in parallel with subagents",
+    "fit_line": "适合你,如果 你要按计划推进开发，希望让子代理并行处理独立任务",
+    "tagline_en": "Break down the plan and have subagents execute independent tasks in parallel",
     "scene_tags_en": [
-      "task splitting",
+      "implementation plan",
       "parallel development"
     ],
-    "fit_line_en": "For you if you need to run multiple independent implementation tasks concurrently in the same session",
+    "fit_line_en": "For you if you have an implementation plan and want subagents to handle independent tasks in parallel",
     "source": "llm",
-    "content_hash": "sha256:03a880425be18262871561efebcba20447e1a4ab6192218b2d1015f51e15038c",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-24T05:47:49.216Z",
+    "content_hash": "sha256:47730f44b80e1e83e28266a7d5d277d049b764294121eb8379ca74cc6d06861a",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-13T04:54:47.551Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude会按照你给的实现计划，为每个独立任务分派全新的子代理来独立完成，并依次进行任务审查和最终审查，全程无需你干预，直到完成或遇到阻塞。",
-    "when": "当你给出一个包含多个独立任务的实现计划并指示Claude在当前会话中执行时，该技能自动触发。",
+    "what": "启用后,Claude 会按实施计划把每个独立任务交给新派出的子代理完成;每完成一个任务,就审查是否符规格、质量是否过关,最后再整体检查一次全部改动。它会用台账文件记录进度和裁决,除少数特定情况外不中途停下来问你。",
+    "when": "当你已有一份实施计划、任务相互独立,且要在当前会话中执行时,会触发。没有计划或任务紧密耦合时不会用它。",
     "say": [
       {
-        "text": "请按照这个实现计划，用子代理逐个执行每个独立任务。",
-        "note": "Claude会分派子代理并审查结果。"
+        "text": "按实施计划执行,每个任务单独派子代理,做完就审查。",
+        "note": "Claude 会启动逐任务派发的循环并记录进度。"
       },
       {
-        "text": "帮我用子代理驱动开发模式完成这个计划中的全部任务。",
-        "note": "从任务1开始，连续执行。"
+        "text": "计划里有多个同类小改动,合并成一个子代理批处理。",
+        "note": "它会合并成一次派发并统一审查,加快速度。"
+      },
+      {
+        "text": "执行完计划后,用最强的模型做一次最终代码审查。",
+        "note": "最后会用最强的模型做全分支审查。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:03a880425be18262871561efebcba20447e1a4ab6192218b2d1015f51e15038c",
+    "content_hash": "sha256:47730f44b80e1e83e28266a7d5d277d049b764294121eb8379ca74cc6d06861a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-29T05:59:08.587Z",
+    "generated_at": "2026-08-13T05:10:20.730Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude will execute your implementation plan by dispatching a fresh subagent for each independent task, followed by task review and final branch review, without requiring your intervention until completion or a blockage.",
-    "when_en": "This skill triggers when you provide an implementation plan with independent tasks and instruct Claude to execute it in the current session.",
+    "what_en": "When enabled, Claude executes an implementation plan by dispatching a fresh implementer per task, checking each against spec and quality, then doing a whole-branch review. It records progress and rulings in a ledger and does not pause between tasks except in specific blocking situations.",
+    "when_en": "Triggered when you already have an implementation plan, tasks are mostly independent, and you're working in the current session. Not used without a plan or with tightly coupled tasks.",
     "say_en": [
       {
-        "text": "Please execute each independent task from this plan using subagents.",
-        "note": "Claude dispatches subagents and reviews results."
+        "text": "Execute the implementation plan; dispatch a new subagent for each task and review after each.",
+        "note": "Claude starts the per-task loop and logs progress."
       },
       {
-        "text": "Help me complete all tasks in this plan using subagent-driven development.",
-        "note": "Starts from task 1, runs continuously."
+        "text": "Batch the similar small changes in the plan into one subagent dispatch.",
+        "note": "It combines them into one dispatch and reviews as one unit, faster."
+      },
+      {
+        "text": "After finishing the plan, run a final code review with the most capable model.",
+        "note": "It will dispatch the strongest model for the whole-branch review."
       }
     ]
   }
