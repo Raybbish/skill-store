@@ -5,7 +5,7 @@
     "name": "diffdock",
     "description": "DiffDock and DiffDock-L molecular docking. Use for protein-small-molecule pose prediction from PDB or sequence plus SMILES/SDF/MOL2, batch docking, virtual screening, and pose-confidence interpretation. Not for binding affinity prediction.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/diffdock",
-    "upstream_commit": "13385c7c4db02fdcc84a020752c07cce91ef780e",
+    "upstream_commit": "b2a92ba052dcae4ef48e850b9e31ebf75706be48",
     "content_hash": "sha256:0d34cf7713c21a0e1a4197a494392b92a82dbc8cb8d0ce41f08590e43d027f95",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33454,
+    "stars_github": 33527,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-14T04:45:37.475Z",
+    "fetched_at": "2026-08-15T03:34:36.291Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-13T13:07:22-07:00",
-    "repo_skill_count": 161,
+    "upstream_commit_at": "2026-08-14T13:15:10-07:00",
+    "repo_skill_count": 162,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-14T04:45:37.475Z",
+    "generated_at": "2026-08-15T03:34:36.291Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,26 +100,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 能调用 DiffDock 做分子对接：输入蛋白 PDB 或氨基酸序列，加上配体的 SMILES 或 SDF/MOL2 文件，预测小分子配体在蛋白上的三维结合构象，并输出带置信度分数的排名结果。也可进行批量对接和虚拟筛选，但不会预测结合亲和力。",
-    "when": "当你要求做蛋白-小分子对接、虚拟筛选，或让 Claude 解释对接结果的置信度分数，且用户提供蛋白结构或序列及配体描述（SMILES/SDF/MOL2）时触发。",
+    "what": "装上后,Claude 会用扩散模型预测小分子配体在蛋白上的三维结合姿势,输出多个按置信度排序的 SDF 文件,并分析置信度高低、汇总统计与导出 CSV。它只预测姿势与置信度,不预测结合亲和力。",
+    "when": "当用户说“对接这个配体”“预测结合姿势/结合位点”“虚拟筛选”等,并给出蛋白质(PDB 文件或序列)和配体(SMILES/SDF/MOL2)时触发。",
     "say": [
       {
-        "text": "用这个蛋白 PDB 和配体 SMILES 跑一次对接。",
-        "note": "会生成按置信度排序的多个预测构象。"
+        "text": "把这个 SMILES 和蛋白 PDB 做对接,输出前 5 个姿势。",
+        "note": "会生成按置信度排序的多个 pose 文件。"
       },
       {
-        "text": "对这份化合物 CSV 做批量虚拟筛选。",
-        "note": "会按批次处理并输出每个复合物的结果。"
+        "text": "批量对接这个 CSV 里的配体,并把置信度低的筛掉。",
+        "note": "会走批量流程并输出汇总 CSV。"
       },
       {
-        "text": "解释一下这些对接姿势的置信度分数。",
-        "note": "会按高、中、低三档说明可靠性。"
+        "text": "解释一下结果里 rank1_confidence0.87.sdf 的置信度。",
+        "note": "会读取结果文件并说明置信度范围。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0d34cf7713c21a0e1a4197a494392b92a82dbc8cb8d0ce41f08590e43d027f95",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-14T05:11:03.433Z",
-    "lint_pass": true
+    "generated_at": "2026-08-15T03:58:28.226Z",
+    "lint_pass": true,
+    "what_en": "Claude uses a diffusion model to predict 3D binding poses of a small-molecule ligand on a protein, writing ranked SDF pose files with confidence scores and producing confidence summaries/CSV exports. It predicts poses and confidence, not binding affinity.",
+    "when_en": "Triggered when the user asks to dock a ligand, predict a binding pose/site, or run virtual screening, and provides a protein (PDB file or sequence) plus a ligand (SMILES/SDF/MOL2).",
+    "say_en": [
+      {
+        "text": "Dock this SMILES into this PDB and output the top 5 poses.",
+        "note": "Generates ranked pose files with confidence scores."
+      },
+      {
+        "text": "Run batch docking on this CSV and filter out low-confidence hits.",
+        "note": "Uses batch workflow and exports a summary CSV."
+      },
+      {
+        "text": "Explain the confidence of rank1_confidence0.87.sdf.",
+        "note": "Reads the result and interprets the confidence range."
+      }
+    ]
   }
 }

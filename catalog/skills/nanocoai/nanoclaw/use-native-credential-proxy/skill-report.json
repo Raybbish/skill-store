@@ -5,7 +5,7 @@
     "name": "use-native-credential-proxy",
     "description": "Opt out of the OneCLI gateway and supply Anthropic credentials from .env instead. For users who want simple .env-based credential management without the OneCLI agent vault. Reads the API key or OAuth token from .env and injects it into the container's API requests.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/use-native-credential-proxy",
-    "upstream_commit": "48347e113e5fa08ae7d6bd80fb5183e3272e94d6",
+    "upstream_commit": "249cf98385bb6e6b3a56417b171b27aee8ad3e94",
     "content_hash": "sha256:35f97c825ad7902fbaf8118a194e113cd18019a13da0bf2239cb05fc522429ec",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30510,
+    "stars_github": 30511,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-14T04:45:41.248Z",
+    "fetched_at": "2026-08-15T03:34:40.598Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-14T01:03:16+03:00",
+    "upstream_commit_at": "2026-08-14T11:50:58+03:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-14T04:45:41.248Z",
+    "generated_at": "2026-08-15T03:34:40.598Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -97,40 +97,36 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "启用后,Claude会直接读取项目根目录.env里的Anthropic凭证(API密钥或OAuth令牌),并注入容器环境变量,让API请求绕过OneCLI网关。未启用开关时行为不变。",
-    "when": "当你在.env中设置NANOCLAW_NATIVE_CREDENTIALS=true,并配置ANTHROPIC_API_KEY、CLAUDE_CODE_OAUTH_TOKEN等凭证后,重启服务即触发;未设置则不生效。",
+    "what": "装上后,Claude的容器代理会改从`.env`文件读取Anthropic的密钥或令牌,并注入到请求中,不再经过OneCLI网关。只有开启开关时生效,原网关路径保持不变。",
+    "when": "当`.env`中设置`NANOCLAW_NATIVE_CREDENTIALS=true`,且存在API密钥或OAuth令牌时,每次容器启动构建参数都会注入凭证;未开启标志则无动作。",
     "say": [
       {
-        "text": "帮我把凭证改成从.env读取,绕过OneCLI网关",
-        "note": "Claude会执行本技能的安装步骤并写入配置。"
+        "text": "帮我启用原生凭证代理,从.env读取Anthropic API密钥。",
+        "note": "会设置开关并读取.env配置。"
       },
       {
-        "text": "检查一下现在是否启用了原生凭证代理",
-        "note": "Claude会查代码和.env确认状态。"
-      },
-      {
-        "text": "我想用Claude订阅登录,不用API Key"
+        "text": "我想改用Claude订阅令牌,不用OneCLI网关。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:35f97c825ad7902fbaf8118a194e113cd18019a13da0bf2239cb05fc522429ec",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-14T05:18:16.929Z",
+    "generated_at": "2026-08-15T04:05:41.139Z",
     "lint_pass": true,
-    "what_en": "After enabling, Claude reads Anthropic credentials (API key or OAuth token) directly from .env, injects them into the container env, bypassing the OneCLI gateway. Without the flag, behavior is unchanged.",
-    "when_en": "Triggered when NANOCLAW_NATIVE_CREDENTIALS=true is set in .env with ANTHROPIC_API_KEY, CLAUDE_CODE_OAUTH_TOKEN, etc., after service restart. No effect without the flag.",
+    "what_en": "Once installed, the container agent reads Anthropic credentials (API key or OAuth token) from .env and injects them into container API requests instead of going through the OneCLI gateway. It only acts when the flag is enabled; the original gateway path stays unchanged.",
+    "when_en": "Triggers when NANOCLAW_NATIVE_CREDENTIALS=true is set in .env and an API key or OAuth token is present, at each container spawn while building args. If the flag is unset, it is a no-op.",
     "say_en": [
       {
-        "text": "Set up credentials from .env, bypassing the OneCLI gateway",
-        "note": "Claude applies this skill's install steps and writes config."
+        "text": "Enable the native credential proxy and read the Anthropic API key from .env.",
+        "note": "Sets the flag and reads .env."
       },
       {
-        "text": "Check if the native credential proxy is currently enabled",
-        "note": "Claude inspects code and .env to report status."
+        "text": "I want to use my Claude subscription token instead of the OneCLI gateway.",
+        "note": "Prompts you to run claude setup-token and writes it to .env."
       },
       {
-        "text": "I want to use a Claude subscription login, not an API key",
-        "note": "Claude guides you to run claude setup-token."
+        "text": "Set NANOCLAW_NATIVE_CREDENTIALS to true and add a custom ANTHROPIC_BASE_URL.",
+        "note": "Updates .env and restarts the service."
       }
     ]
   }

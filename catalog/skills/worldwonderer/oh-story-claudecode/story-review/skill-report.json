@@ -5,7 +5,7 @@
     "name": "story-review",
     "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/story-review、/审查、「审查一下」「帮我审一下」。",
     "upstream": "https://github.com/worldwonderer/oh-story-claudecode/tree/main/skills/story-review",
-    "upstream_commit": "0a34c6998263026ec6160320a89692cdaa53fe69",
+    "upstream_commit": "6af052974fd86fbdbbafce3e363d643221c6ce27",
     "content_hash": "sha256:4eb9723274971dc89ef0abfbaf3c9bdb058acdaa6872c6d2c8b75d3c4599bc23",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5528,
+    "stars_github": 5572,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-14T04:46:13.190Z",
+    "fetched_at": "2026-08-15T03:35:14.302Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-13T06:58:42-07:00",
+    "upstream_commit_at": "2026-08-14T08:54:52-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-14T04:46:13.190Z",
+    "generated_at": "2026-08-15T03:35:14.302Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -109,41 +109,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，让 Claude 审查小说章节，它会从结构、角色、文字、设定等多个角度看问题，找出毛病并给出具体修改建议。若配合的审查员不可用，它会自动降级成自己单审，仍会输出标有严重等级的问题清单。",
-    "when": "当你要求审查小说文本时触发，比如说出「审查一下」「帮我审一下」，或输入 /story-review 等命令。它默认按完整模式运行；若配套审查员缺失或启动失败，会自动降级为单审。",
+    "what": "装上后，Claude 会变成小说“审查协调器”，专门查找结构、角色、文字、设定问题并给出可执行修改建议，而非验证正确性；条件允许时并行调用多个审查代理，否则自动降级为单人审查。",
+    "when": "当你说出“/story-review”“审查一下”等触发词，或要求“帮我审一下”小说文本时触发；未指定模式时默认 full。",
     "say": [
       {
-        "text": "帮我审一下第三章的小说文本。",
-        "note": "Claude 会按完整模式多角度审查，并给出修改建议。"
+        "text": "帮我审一下第三章，full 模式",
+        "note": "会并行调用多个审查代理并输出报告"
       },
       {
-        "text": "审查一下最近改过的章节。",
-        "note": "它会自动定位最近修改的正文文件进行审查。"
+        "text": "用 lean 模式审查最近写的那章",
+        "note": "只查结构与设定一致性"
       },
       {
-        "text": "用 solo 模式审查一下这个片段。",
-        "note": "不会启动额外审查员，由当前会话直接审查。"
+        "text": "solo 模式审查这篇开头",
+        "note": "不调用子代理，直接审查"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4eb9723274971dc89ef0abfbaf3c9bdb058acdaa6872c6d2c8b75d3c4599bc23",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-14T05:19:57.654Z",
+    "generated_at": "2026-08-15T04:08:08.627Z",
     "lint_pass": true,
-    "what_en": "When installed, asking Claude to review a fiction chapter makes it examine structure, characters, prose, and setting, spot issues, and suggest fixes. If companion agents are unavailable, it falls back to solo review, still outputting a severity-ranked list.",
-    "when_en": "Triggers when you ask to review fiction text, e.g. saying '审查一下' / '帮我审一下' or typing commands like /story-review. It defaults to full mode; if required agents are missing or fail to spawn, it degrades to solo.",
+    "what_en": "Claude acts as a fiction review coordinator: it hunts for structural, character, prose, and setting issues and gives actionable fixes — not validation. It can spawn multiple review agents in parallel, falling back to solo review if unavailable.",
+    "when_en": "Triggered by spoken commands like “/story-review” or “审查一下” (review this), or when asking to review fiction text; defaults to full mode unless a mode is specified.",
     "say_en": [
       {
-        "text": "Please review the text of Chapter 3.",
-        "note": "Runs a full multi-angle review and returns suggestions."
+        "text": "Review Chapter 3 in full mode",
+        "note": "Spawns multiple review agents and outputs a report."
       },
       {
-        "text": "Review the chapter I just edited.",
-        "note": "Auto-targets the most recently edited prose file."
+        "text": "Lean-review the chapter I just wrote",
+        "note": "Only checks structure and setting consistency."
       },
       {
-        "text": "Run a solo review of this passage.",
-        "note": "No extra agents; the current session reviews directly."
+        "text": "Solo review this opening",
+        "note": "Reviews directly without sub-agents."
       }
     ]
   }

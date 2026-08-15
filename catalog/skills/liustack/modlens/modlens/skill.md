@@ -1,7 +1,7 @@
 ---
 name: modlens
 description: "Plug-in vision for text-only models. Hard rule: when a file path or URL with an image extension (.png, .jpg, .jpeg, .webp, .gif, .heic, .heif) appears anywhere in the conversation (typed by the user, injected as a `[Image: source: <path>]` line, or inside a tag) and you cannot see that image's content, run this skill on it before any other approach: no self-built OCR, no PIL, no tesseract. Also triggers on pasted-image placeholders such as `[Image #1]` and `[Unsupported Image]`. If you can actually see the image, do not use this skill. When unsure, run `modlens guard` before the first read of a session: a deny verdict means the active model has native vision and must read the image itself. Runs the modlens CLI to convert the image into structured JSON evidence: every word transcribed, layout regions, semantics, visual clues. Also use when the user asks how to install, configure, or switch modlens providers (Gemini API key, OpenAI-compatible endpoints, Claude API or Claude Code CLI)."
-compatibility: Requires network access and one of node 22+/npx, bun/bunx, or a preinstalled modlens binary on PATH.
+compatibility: Requires network access and one of node 22.19+/npx, bun/bunx, or a preinstalled modlens binary on PATH.
 allowed-tools: Bash
 ---
 
@@ -20,12 +20,12 @@ powershell -ExecutionPolicy Bypass -File <skill-dir>\scripts\run.ps1 <args>     
 
 It resolves a working runtime (PATH `modlens`, then `npx`, then `bunx`) and forwards your arguments unchanged. Exit 78 means no runtime: relay the `nextSteps` from its stderr JSON instead of retrying.
 
-If your harness forbids running scripts, reason through the same order by hand and run the first line that works (the pinned version is 3.12.1):
+If your harness forbids running scripts, reason through the same order by hand and run the first line that works (the pinned version is 3.16.6):
 
-1. A `modlens` on `PATH` whose major version is 3 and is at least 3.12.1: `modlens <args>`.
-2. Otherwise, if `npx` exists: `npx --yes --package @liustack/modlens@3.12.1 modlens <args>`.
-3. Otherwise, if `bunx` exists: `bunx --bun @liustack/modlens@3.12.1 <args>`.
-4. Otherwise tell the user no JavaScript runtime was found and that installing Node 22.13+ (https://nodejs.org) or Bun (https://bun.sh) is the next step. Do not claim modlens itself failed.
+1. A `modlens` on `PATH` whose major version is 3 and is at least 3.16.6: `modlens <args>`.
+2. Otherwise, if `npx` exists: `npx --yes --package @liustack/modlens@3.16.6 modlens <args>`.
+3. Otherwise, if `bunx` exists: `bunx --bun @liustack/modlens@3.16.6 <args>`.
+4. Otherwise tell the user no JavaScript runtime was found and that installing Node 22.19+ (https://nodejs.org) or Bun (https://bun.sh) is the next step. Do not claim modlens itself failed.
 
 `references/runtime.md` documents the pin and the diagnostic fields.
 

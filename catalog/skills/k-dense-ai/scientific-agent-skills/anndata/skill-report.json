@@ -5,7 +5,7 @@
     "name": "anndata",
     "description": "Data structure for annotated matrices in single-cell analysis. Use when working with .h5ad files or integrating with the scverse ecosystem. This is the data format skill—for analysis workflows use scanpy; for probabilistic models use scvi-tools; for population-scale queries use cellxgene-census.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/anndata",
-    "upstream_commit": "13385c7c4db02fdcc84a020752c07cce91ef780e",
+    "upstream_commit": "b2a92ba052dcae4ef48e850b9e31ebf75706be48",
     "content_hash": "sha256:f375d8c51a1495cc6dabef38171435090cba41cc7e651b1647107594a0f2e775",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33454,
+    "stars_github": 33527,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-14T04:45:37.475Z",
+    "fetched_at": "2026-08-15T03:34:36.291Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-13T13:07:22-07:00",
-    "repo_skill_count": 161,
+    "upstream_commit_at": "2026-08-14T13:15:10-07:00",
+    "repo_skill_count": 162,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-14T04:45:37.475Z",
+    "generated_at": "2026-08-15T03:34:36.291Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,36 +98,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 能创建、读取、写入 AnnData 对象,处理 .h5ad、zarr 等数据文件;支持按条件子集、合并多个数据集,以及配合 Scanpy 等工具做单细胞分析。",
-    "when": "当用户提到 .h5ad 或 zarr 文件、要求读写 AnnData 对象,或涉及单细胞数据与 scverse 生态工具集成时触发。",
+    "what": "装上后,涉及单细胞数据或 .h5ad 文件时,Claude 会用 AnnData 读写 h5ad/zarr,做筛选、拼接、转置等操作,并可与 Scanpy 等 scverse 工具配合。",
+    "when": "当你说到 .h5ad/.zarr 文件,或要求做单细胞数据读写、拼接、筛选时触发。",
     "say": [
       {
-        "text": "读取这个 data.h5ad,告诉我有多少细胞和基因。",
-        "note": "调用 read_h5ad 并输出 n_obs×n_vars。"
+        "text": "帮我用 anndata 读取这个 data.h5ad 并显示 obs 的列名。",
+        "note": "会调用 AnnData 读取文件并返回 obs 信息。"
       },
       {
-        "text": "用 backed 模式打开大文件,过滤掉质量分低于 0.8 的细胞。"
+        "text": "h5ad 文件太大,怎么用 backed 模式打开再筛选?",
+        "note": "会给出 backed='r' 的读取和筛选方法。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f375d8c51a1495cc6dabef38171435090cba41cc7e651b1647107594a0f2e775",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-14T05:08:54.490Z",
+    "generated_at": "2026-08-15T03:56:09.667Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can create, read, and write AnnData objects, handle .h5ad or zarr files, subset/filter data, concatenate datasets, and work with scverse tools like Scanpy.",
-    "when_en": "Triggered when the user mentions .h5ad or zarr files, asks to read/write AnnData objects, or works with single-cell data and scverse ecosystem tools.",
+    "what_en": "After installation, when working with single-cell data or .h5ad files, Claude can read/write h5ad and zarr via AnnData, subset, concatenate, transpose data, and integrate with scverse tools like Scanpy.",
+    "when_en": "Triggered when you mention .h5ad/.zarr files, or ask to read/write single-cell data, concatenate or filter AnnData objects.",
     "say_en": [
       {
-        "text": "Read this data.h5ad and tell me the number of cells and genes.",
-        "note": "Calls read_h5ad and reports n_obs×n_vars."
+        "text": "Read data.h5ad with anndata and show the obs column names.",
+        "note": "Loads the file and returns the obs columns."
       },
       {
-        "text": "Merge batch1 and batch2 h5ad files, adding a batch label column.",
-        "note": "Uses ad.concat to combine observations."
+        "text": "Concatenate batch1 and batch2 h5ad with anndata, adding a batch label.",
+        "note": "Runs ad.concat and labels each source."
       },
       {
-        "text": "Open a large file in backed mode and filter out cells with quality score below 0.8.",
-        "note": "Uses read_h5ad(backed='r') then subsets by obs condition."
+        "text": "The h5ad file is huge; how do I open it in backed mode and filter?",
+        "note": "Suggests backed='r' reading and filtering."
       }
     ]
   }
