@@ -5,7 +5,7 @@
     "name": "work-with-pr",
     "description": "Full PR lifecycle in a fresh task-owned git worktree: implement via the ulw-loop skill with mandatory evidence-bound manual QA → reviewer-readable English PR → verification loop (CI + Cubic, where Cubic is skipped only when its quota is exhausted) → merge by default → worktree cleanup. Decomposes one task into the smallest atomic, independently-mergeable PRs and builds the independent ones concurrently via one worktree per PR driven by parallel subagents or a team. Unbounded loop: any failing gate sends you back to fix-and-re-QA inside that PR's worktree. Use whenever implementation work needs to land as a PR. Triggers: 'create a PR', 'implement and PR', 'work on this and make a PR', 'implement issue', 'land this as a PR', 'split into atomic PRs', 'parallel PRs', 'work-with-pr', 'PR workflow', 'implement end to end', even when user just says 'implement X' if the context implies PR delivery.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/work-with-pr",
-    "upstream_commit": "c5cefab7fcbf9dbaff3ed22678429d17127808be",
+    "upstream_commit": "038ed0cbbefe2b40677b63867aeea0d16bc303e0",
     "content_hash": "sha256:9f16561199518df9355475dc4de0b66ec12f8e257d270f3b39148230ba0a672f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67721,
+    "stars_github": 67875,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:12.294Z",
+    "fetched_at": "2026-08-15T03:34:26.665Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-12T12:53:25+09:00",
+    "upstream_commit_at": "2026-08-14T17:57:56+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:12.294Z",
+    "generated_at": "2026-08-15T03:34:26.665Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,25 +90,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把一个大任务拆成多个最小、可独立合并的 PR;每个 PR 在独立工作区实现,强制手动测试并留存证据,再写英文 PR 说明;经 CI 和 Cubic 审查全通过后自动合并,最后清理工作区。未通过的环节会退回该 PR 修复并重新测试,直到全通过。",
-    "when": "当你提到“create a PR”、“implement and PR”、“work on this and make a PR”等关键词,或说“实现 X”但语境表明要交付 PR 时,它会接管并执行完整 PR 流程。",
+    "what": "它会自动把一个开发任务拆成多个小改动，每个改动单独建分支、写代码并验证，提交英文 PR，通过 CI 和 Cubic 检查后自动合并，最后清理临时文件。",
+    "when": "当你说“create a PR”、“implement and PR”、“work on this and make a PR”等，或提到的实现工作需要以 PR 形式交付时，会接管。",
     "say": [
       {
-        "text": "把这个任务拆成原子 PR,并逐个实现,每个都要有手动测试证据。"
+        "text": "实现这个功能并提交 PR",
+        "note": "会拆任务、建分支、写代码、跑检查并合并"
       },
       {
-        "text": "实现这个功能,创建英文 PR,通过 CI 和 Cubic 审查后自动合并。",
-        "note": "它会走完整生命周期,默认自动合并。"
+        "text": "把这个问题拆成多个小 PR 并行处理",
+        "note": "会拆分并并行构建独立 PR"
       },
       {
-        "text": "这个 PR 提交后帮我等 CI 和 Cubic 通过,有问题就修。",
-        "note": "对应验证循环,失败会回到修复重新测试。"
+        "text": "用 work-with-pr 完成这个改动",
+        "note": "按完整 PR 流程执行并默认合并"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f16561199518df9355475dc4de0b66ec12f8e257d270f3b39148230ba0a672f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T04:57:26.326Z",
-    "lint_pass": true
+    "generated_at": "2026-08-15T03:53:45.609Z",
+    "lint_pass": true,
+    "what_en": "Automates full PR lifecycle: decompose into small atomic PRs, implement & QA each, create English PRs, verify via CI+Cubic, auto-merge, cleanup worktrees.",
+    "when_en": "Triggers when the user says 'create a PR', 'implement and PR', 'work on this and make a PR', etc., or when implementation work needs to land as a PR.",
+    "say_en": [
+      {
+        "text": "Implement this feature and open a PR",
+        "note": "It will split, implement, verify, and merge."
+      },
+      {
+        "text": "Split this into multiple small PRs and do them in parallel",
+        "note": "It will create independent PRs concurrently."
+      },
+      {
+        "text": "Use work-with-pr for this change",
+        "note": "It runs the full PR lifecycle and merges by default."
+      }
+    ]
   }
 }

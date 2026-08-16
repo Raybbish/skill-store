@@ -5,7 +5,7 @@
     "name": "flowio",
     "description": "Read, inspect, and write Flow Cytometry Standard (FCS) 2.0, 3.0, and 3.1 files with FlowIO. Use for low-level FCS metadata and channel inspection, NumPy event extraction, multi-dataset files, table export, and FCS 3.1 creation; use FlowKit for compensation, cytometry transforms, gating, or FlowJo workspaces.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/flowio",
-    "upstream_commit": "5ad4aae76bc40257b914367afacc6fd686a282d5",
+    "upstream_commit": "b2a92ba052dcae4ef48e850b9e31ebf75706be48",
     "content_hash": "sha256:beb5ae23f6e75520849a0e5bef8e2859d5557f99b4529504dfd198667d9e23e9",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33257,
+    "stars_github": 33527,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:20.776Z",
+    "fetched_at": "2026-08-15T03:34:36.291Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T17:44:32-07:00",
-    "repo_skill_count": 161,
+    "upstream_commit_at": "2026-08-14T13:15:10-07:00",
+    "repo_skill_count": 162,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:20.776Z",
+    "generated_at": "2026-08-15T03:34:36.291Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,37 +98,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能解析 FCS 流式细胞术文件(2.0、3.0、3.1):读取版本、事件数、通道信息与元数据,把事件数据转成 NumPy 数组,或新建 FCS 文件、导出 CSV/表格,支持多数据集文件。",
-    "when": "当你给出 FCS 文件,要求读取元数据与通道、提取事件数据,或把数据写成新的 FCS 文件时触发;多数据集文件也会触发。补偿、设门等高级分析不触发(改用 FlowKit)。",
+    "what": "装上后，Claude 能读取 FCS 2.0/3.0/3.1 文件，解析版本、事件数、通道名等元数据，把事件数据转成 NumPy 数组或 CSV，也能从数组创建新的 FCS 文件。",
+    "when": "当用户需要读写 FCS 文件、提取元数据和通道信息、把事件数据转成 NumPy 数组或 CSV 等时触发。",
     "say": [
       {
-        "text": "读取 sample.fcs,告诉我它的版本、事件数和通道列表。",
-        "note": "Claude 会解析文件并汇总这些信息。"
+        "text": "读取 sample.fcs，告诉我它的版本、事件数和通道名。",
+        "note": "Claude 会用 FlowIO 解析并返回基本信息。"
       },
       {
-        "text": "把 sample.fcs 的事件数据导出为 CSV 表格。",
-        "note": "Claude 会转成 DataFrame 并输出 CSV。"
+        "text": "把 sample.fcs 的事件数据转成 CSV 文件。",
+        "note": "Claude 会提取事件数据并导出 CSV。"
+      },
+      {
+        "text": "用这个事件数据数组创建 FCS 3.1 文件。",
+        "note": "Claude 会用 create_fcs 生成新文件。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:beb5ae23f6e75520849a0e5bef8e2859d5557f99b4529504dfd198667d9e23e9",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T05:03:46.688Z",
+    "generated_at": "2026-08-15T03:59:18.138Z",
     "lint_pass": true,
-    "what_en": "With this skill, Claude can parse FCS files (v2.0-3.1), read metadata and channel info, extract events as NumPy arrays, write new FCS files, export to CSV/DataFrame, and handle multi-dataset files.",
-    "when_en": "Triggers when you provide an FCS file and ask to inspect metadata/channels, extract events, convert to tables, or create FCS files. It does not cover compensation, gating, or FlowJo workspaces.",
+    "what_en": "After installation, Claude can read FCS 2.0/3.0/3.1 files, parse metadata like version, event count, and channel names, extract event data as NumPy arrays or CSV, and create new FCS files from arrays.",
+    "when_en": "Triggers when the user needs to read or write FCS files, extract metadata and channel information, or convert event data to NumPy arrays or CSV, etc.",
     "say_en": [
       {
-        "text": "Read sample.fcs and report its version, event count, and channel list.",
-        "note": "Claude will parse the file and summarize these details."
+        "text": "Read sample.fcs and tell me its version, event count, and channel names.",
+        "note": "Claude will parse it with FlowIO and return basic info."
       },
       {
-        "text": "Export the event data from sample.fcs to a CSV table.",
-        "note": "Claude will convert it to a DataFrame and output CSV."
+        "text": "Convert the event data from sample.fcs to a CSV file.",
+        "note": "Claude will extract event data and export CSV."
       },
       {
-        "text": "Write data array with channels FSC-A, SSC-A, FL1-A into a new FCS file.",
-        "note": "Claude will create an FCS 3.1 file with create_fcs."
+        "text": "Create an FCS 3.1 file from this event data array.",
+        "note": "Claude will use create_fcs to generate a new file."
       }
     ]
   }

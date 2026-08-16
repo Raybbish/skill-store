@@ -5,7 +5,7 @@
     "name": "fluidsim",
     "description": "Plan, configure, inspect, restart, and analyze bounded FluidSim computational-fluid-dynamics simulations with explicit numerical-validity and HPC safety checks. Use for FluidSim solver selection, parameter review, FFT/MPI setup, output diagnostics, or restart compatibility.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/fluidsim",
-    "upstream_commit": "5ad4aae76bc40257b914367afacc6fd686a282d5",
+    "upstream_commit": "b2a92ba052dcae4ef48e850b9e31ebf75706be48",
     "content_hash": "sha256:04968e4032c50bdbcb41cd13e81c19666f14630f4a41a5d0e30c6c1f44be5caf",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33257,
+    "stars_github": 33527,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:20.776Z",
+    "fetched_at": "2026-08-15T03:34:36.291Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T17:44:32-07:00",
-    "repo_skill_count": 161,
+    "upstream_commit_at": "2026-08-14T13:15:10-07:00",
+    "repo_skill_count": 162,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:20.776Z",
+    "generated_at": "2026-08-15T03:34:36.291Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -115,37 +115,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能帮你规划、配置、检查、重启 FluidSim 流体模拟,包含数值有效性和 HPC 安全检查;可选用对应求解器、设参数、运行并分析输出(如速度场、涡量、能谱)。",
-    "when": "当用户要求运行流体动力学模拟(如 2D/3D Navier-Stokes、浅水、分层流等),或进行湍流/涡旋分析,或需要选求解器、配 FFT/MPI、检查/重启模拟时触发。",
+    "what": "装好后,Claude 会帮你规划、配置、检查、重启并分析 FluidSim 流体仿真:按物理问题选求解器(2D/3D 纳维-斯托克斯、浅水、分层流),生成参数与运行代码,并读取输出画图、做数值有效性与 HPC 安全检查。",
+    "when": "当你想规划或配置流体模拟、选择 FluidSim 求解器、核对参数与 FFT/MPI 设置,或要求输出诊断、重启仿真时,Claude 会接管处理。",
     "say": [
       {
-        "text": "检查这个模拟的参数设置是否有效,然后重启它。",
-        "note": "检查数值有效性和重启兼容性。"
+        "text": "帮我用 ns2d 配一个 2D 湍流模拟,256 网格,粘性 1e-3",
+        "note": "生成可运行的参数与启动代码"
       },
       {
-        "text": "分析我保存的模拟输出,画出涡量和一维能谱。",
-        "note": "加载 HDF5 数据并绘图。"
+        "text": "跑完后把能量谱和涡量场画出来",
+        "note": "会读取输出并调用绘图接口"
+      },
+      {
+        "text": "用 mpirun 跑 512³ 的 3D 仿真,参数怎么改?",
+        "note": "给出 MPI 启动方式和参数设置"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:04968e4032c50bdbcb41cd13e81c19666f14630f4a41a5d0e30c6c1f44be5caf",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T05:04:31.166Z",
+    "generated_at": "2026-08-15T03:59:00.054Z",
     "lint_pass": true,
-    "what_en": "With this skill, Claude can help you plan, configure, inspect, and restart FluidSim CFD simulations, with numerical-validity and HPC safety checks; it selects solvers, sets parameters, runs simulations, and analyzes outputs such as velocity fields, vorticity, and spectra.",
-    "when_en": "Triggered for fluid dynamics runs (2D/3D Navier-Stokes, shallow water, stratified), turbulence/vortex analysis, or solver selection, FFT/MPI setup, output diagnostics, or restart.",
+    "what_en": "After installation, Claude helps plan, configure, inspect, restart, and analyze FluidSim CFD simulations: pick a solver (2D/3D Navier-Stokes, shallow water, stratified), generate parameters and run code, and read outputs for plotting and numerical/HPC safety checks.",
+    "when_en": "Triggered when you ask to plan or configure a fluid simulation, choose a FluidSim solver, review parameters or FFT/MPI setup, or request output diagnostics or a restart.",
     "say_en": [
       {
-        "text": "Set up ns2d with a 256×256 grid, viscosity 1e-4, and run for 50 time units.",
-        "note": "Generates code and run steps."
+        "text": "Set up a 2D turbulence run with ns2d, 256 grid, viscosity 1e-3",
+        "note": "Returns runnable params and start code"
       },
       {
-        "text": "Check parameter validity and restart this simulation.",
-        "note": "Checks numerical validity and restart compatibility."
+        "text": "Plot the energy spectrum and vorticity after the run",
+        "note": "Reads outputs and calls plotting functions"
       },
       {
-        "text": "Analyze saved outputs and plot vorticity and 1D spectra.",
-        "note": "Loads HDF5 data and plots."
+        "text": "What parameters do I need for a 512^3 3D run with mpirun?",
+        "note": "Gives MPI command and parameter settings"
       }
     ]
   }
