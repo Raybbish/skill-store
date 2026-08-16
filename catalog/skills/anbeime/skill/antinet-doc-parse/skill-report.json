@@ -5,7 +5,7 @@
     "name": "antinet-doc-parse",
     "description": "将 PDF/PPT/Excel/Word 等多格式文档解析为结构化 Markdown，并输出元数据与解析置信度，作为 RAG 与四色卡片的数据底座。",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-doc-parse",
-    "upstream_commit": "6ea4446000d11c1b13608f8c60852ca6b860fc46",
+    "upstream_commit": "7054767e03d43c1b80b0a525d5e58b80d2a8e2f8",
     "content_hash": "sha256:5a3007e0ab01858b371818eb7f7f9ba4976a99acb0069883abb1e8856efadbfc",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5288,
+    "stars_github": 5329,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-15T03:35:24.145Z",
+    "fetched_at": "2026-08-16T03:43:43.639Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-08-15T02:52:47Z",
+    "upstream_commit_at": "2026-08-16T03:00:58Z",
     "repo_skill_count": 72,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-15T03:35:24.145Z",
+    "generated_at": "2026-08-16T03:43:43.639Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "将你上传的 PDF、PPT、Excel、Word 等文档解析成结构化 Markdown，同时输出标题、页数等元数据和 0–1 的解析置信度，供 RAG 检索与知识库使用。",
-    "when": "当密卷房 Worker 收到已通过安全扫描的文档文件时触发；也可在需要把任意格式文档转成结构化文本时接管。",
+    "what": "会把已通过安全扫描的 PDF/PPT/Excel/Word 等文档解析成结构化 Markdown，同时输出标题、页数等元数据和 0–1 的解析置信度；解析器失败会自动降级，全失败则标记人工介入。",
+    "when": "当你给出已通过安全扫描的本地文件路径并要求解析为结构化文本时触发；也可直接运行 scripts/run_doc_parse.py。",
     "say": [
       {
-        "text": "请把这个 PDF 解析成 Markdown",
-        "note": "返回结构化文本与元数据"
+        "text": "把这份 PDF 解析成 Markdown，告诉我置信度。",
+        "note": "会返回结构化正文、元数据与置信度。"
       },
       {
-        "text": "把这份 Excel 转成结构化文本，并给出置信度",
-        "note": "会输出 fallback 信息和解析置信度"
+        "text": "解析这个 Excel，输出元数据和解析置信度。",
+        "note": "走三级 fallback，失败会标记人工介入。"
       },
       {
-        "text": "解析这个 PPT，结果输出标题和页数",
-        "note": "可得到 metadata 等摘要"
+        "text": "运行 scripts/run_doc_parse.py 处理示例文件。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5a3007e0ab01858b371818eb7f7f9ba4976a99acb0069883abb1e8856efadbfc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-15T03:46:31.271Z",
+    "generated_at": "2026-08-16T03:47:49.792Z",
     "lint_pass": true,
-    "what_en": "Parses uploaded documents (PDF, PPT, Excel, Word, etc.) into structured Markdown, and outputs metadata such as title and page count plus a 0–1 confidence score for RAG retrieval.",
-    "when_en": "Triggered when the MiJuanFang Worker receives a file that has passed security scanning, or when any raw document needs converting to structured text.",
+    "what_en": "Parses security-scanned PDF/PPT/Excel/Word files into structured Markdown, with metadata and a 0–1 confidence score. Falls back through parsers automatically; if all fail, marks the task for manual review.",
+    "when_en": "Triggers when a security-scanned local file path is provided for parsing, or when scripts/run_doc_parse.py is run directly.",
     "say_en": [
       {
-        "text": "Please parse this PDF into Markdown.",
-        "note": "Returns structured text and metadata."
+        "text": "Parse this PDF into Markdown and give me the confidence.",
+        "note": "Returns structured text, metadata, and confidence."
       },
       {
-        "text": "Convert this Excel file to structured text and give confidence.",
-        "note": "Shows fallback info and parsing confidence."
+        "text": "Parse this Excel and output metadata and confidence.",
+        "note": "Uses three-level fallback; marks manual review on failure."
       },
       {
-        "text": "Parse this PPT and output title and page count.",
-        "note": "Gets metadata summary."
+        "text": "Run scripts/run_doc_parse.py on the sample file.",
+        "note": "Writes output to skill_outputs/doc_parse.json."
       }
     ]
   }

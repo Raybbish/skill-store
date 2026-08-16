@@ -5,7 +5,7 @@
     "name": "onecli-gateway",
     "description": "OneCLI Gateway: transparent HTTPS proxy that injects stored credentials into outbound calls. You MUST use this skill when the user asks you to read emails, check calendar, access GitHub repos, create issues, check Stripe payments, or interact with ANY external service or API. Do NOT use browser extensions or OAuth CLI tools. Make HTTP requests directly; the gateway injects credentials automatically.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/container/skills/onecli-gateway",
-    "upstream_commit": "249cf98385bb6e6b3a56417b171b27aee8ad3e94",
+    "upstream_commit": "d7d9887eb4acae8d60e327afc21955e3f10b77eb",
     "content_hash": "sha256:1e9ee86b5be83fd832c4a570c39a46e5e6efce49f818568c396f2c4c89ada25b",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30511,
+    "stars_github": 30512,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-15T03:34:40.598Z",
+    "fetched_at": "2026-08-16T03:43:15.372Z",
     "first_seen_at": "2026-07-17T09:02:55.674Z",
-    "upstream_commit_at": "2026-08-14T11:50:58+03:00",
+    "upstream_commit_at": "2026-08-16T01:13:17+03:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-15T03:34:40.598Z",
+    "generated_at": "2026-08-16T03:43:15.372Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,26 +93,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "这个技能让 Claude 能直接通过 OneCLI 网关访问邮箱、日历、GitHub、Stripe 等外部服务。它会自动在请求中加上已保存的登录凭据,用户无需提供密码或 API 密钥;若服务未连接,Claude 会给出连接链接,等用户连接后重试。",
-    "when": "当用户要求读取邮件、查看日历、访问 GitHub 等外部服务,或要求调用任意外部 API 时触发。",
+    "what": "装上后,Claude 会直接向真实 API 地址发起 HTTPS 请求,网关自动注入已保存的账号凭证,不再需要你提供密钥或走浏览器授权;遇到未连接的服务时,会给你一个链接去完成授权。",
+    "when": "当用户要求读取邮件、查看日历、访问 GitHub 等,或与任何外部服务/API 交互时触发。",
     "say": [
       {
-        "text": "帮我读一下收件箱里最新的几封邮件",
-        "note": "Claude 会通过网关直接请求 Gmail API"
+        "text": "帮我读一下收件箱里最新的5封邮件。",
+        "note": "Claude 会通过网关调用 Gmail API 获取。"
       },
       {
-        "text": "查看一下我的 GitHub 仓库列表",
-        "note": "Claude 会直接调用 GitHub API 获取数据"
+        "text": "列出我 GitHub 上的私有仓库。",
+        "note": "无需额外授权,网关自动注入凭证。"
       },
       {
-        "text": "查一下最近 Stripe 的收款记录",
-        "note": "Claude 会调用 Stripe API,网关自动带上凭据"
+        "text": "查一下 Stripe 最近几笔收款。",
+        "note": "Claude 会请求 Stripe API 并返回结果。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1e9ee86b5be83fd832c4a570c39a46e5e6efce49f818568c396f2c4c89ada25b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-15T04:05:03.085Z",
-    "lint_pass": true
+    "generated_at": "2026-08-16T04:02:13.032Z",
+    "lint_pass": true,
+    "what_en": "Claude makes direct HTTPS requests to real API URLs via a gateway, which injects stored credentials automatically. Claude never sees or handles secrets, and if an app isn't connected the gateway returns a connect URL to present to the user.",
+    "when_en": "Triggered when the user asks to read emails, check calendar, access GitHub, or interact with any external service/API.",
+    "say_en": [
+      {
+        "text": "Read the latest 5 emails in my inbox.",
+        "note": "Claude will fetch them via the gateway using the Gmail API."
+      },
+      {
+        "text": "List my private repositories on GitHub.",
+        "note": "Credentials are injected automatically, no extra login needed."
+      },
+      {
+        "text": "Show me the latest Stripe charges.",
+        "note": "Claude calls the Stripe API and returns the results."
+      }
+    ]
   }
 }

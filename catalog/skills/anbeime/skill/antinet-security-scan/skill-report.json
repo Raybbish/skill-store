@@ -5,7 +5,7 @@
     "name": "antinet-security-scan",
     "description": "对进入系统的文件或 URL 执行安全与合规扫描，输出 pass/reject 判定与扫描报告，作为所有文档处理的强制前置关卡。",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-security-scan",
-    "upstream_commit": "6ea4446000d11c1b13608f8c60852ca6b860fc46",
+    "upstream_commit": "7054767e03d43c1b80b0a525d5e58b80d2a8e2f8",
     "content_hash": "sha256:bf050300dabcd6102689c7e78bf7fef933d60f8577ec602cd05b5074fbd946e5",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5288,
+    "stars_github": 5329,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-15T03:35:24.145Z",
+    "fetched_at": "2026-08-16T03:43:43.639Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-08-15T02:52:47Z",
+    "upstream_commit_at": "2026-08-16T03:00:58Z",
     "repo_skill_count": 72,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-15T03:35:24.145Z",
+    "generated_at": "2026-08-16T03:43:43.639Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,38 +90,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "收到文件或网址时，Claude 会先执行安全与合规扫描，而不是直接处理：查黑名单、验证许可、探测文件类型，输出 pass/reject 判定、扫描报告与追踪 ID。",
-    "when": "当文件或 URL 进入系统、需要先过安检时触发；可用本地文件路径或外部网址，也可用 policy_ref 换规则。",
+    "what": "装在文档入口后，Claude 收到文件或 URL 会先做安全与合规扫描：解析域名、比对违规黑名单、校验 OA 许可、识别文件类型，最后输出 pass/reject 判定，并附含命中项、许可状态和风险等级的扫描报告及追踪 ID。",
+    "when": "当文件或 URL 进入系统、经过文档入口时触发，作为流水线第一道闸门；也可直接运行 scripts/run_security_scan.py 手动扫描。",
     "say": [
       {
-        "text": "扫一下这个链接 https://example.com，先查域名黑名单。",
-        "note": "网址会被解析域名并核对黑名单。"
+        "text": "帮我扫一下这个文件，给出 pass 还是 reject。",
+        "note": "会返回判定和扫描报告。"
       },
       {
-        "text": "扫描 /data/in/contract.docx，标注许可校验状态。",
-        "note": "会先验证 OA 文档许可，再给判定。"
+        "text": "这个 URL 合规吗？查一下黑名单。",
+        "note": "先解析域名再比对黑名单。"
+      },
+      {
+        "text": "按 policy_ref 指的策略扫描这份 Word。",
+        "note": "可覆盖默认合规基线。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:bf050300dabcd6102689c7e78bf7fef933d60f8577ec602cd05b5074fbd946e5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-15T03:46:44.346Z",
-    "lint_pass": true,
-    "what_en": "When Claude receives a file or URL, it runs a security and compliance check: domain blacklist, OA license, file type; then outputs pass/reject, report, and trace ID.",
-    "when_en": "Triggered when a file or URL enters the system, as the first gate. Callable with a local file path or external URL; optional policy_ref switches compliance rules.",
-    "say_en": [
-      {
-        "text": "Please scan this PDF: /tmp/example.pdf, and return pass or reject.",
-        "note": "Claude detects the file type first, then gives the verdict and report."
-      },
-      {
-        "text": "Scan this link https://example.com and check the domain blacklist first.",
-        "note": "The URL is resolved and checked against the blacklist."
-      },
-      {
-        "text": "Scan /data/in/contract.docx and report the license check status.",
-        "note": "It validates the OA document license before deciding."
-      }
-    ]
+    "generated_at": "2026-08-16T03:48:00.324Z",
+    "lint_pass": true
   }
 }

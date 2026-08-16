@@ -5,7 +5,7 @@
     "name": "diffdock",
     "description": "DiffDock and DiffDock-L molecular docking. Use for protein-small-molecule pose prediction from PDB or sequence plus SMILES/SDF/MOL2, batch docking, virtual screening, and pose-confidence interpretation. Not for binding affinity prediction.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/diffdock",
-    "upstream_commit": "b2a92ba052dcae4ef48e850b9e31ebf75706be48",
+    "upstream_commit": "336c4f838a6c21b54e1e1f58cbbeae143d151fe2",
     "content_hash": "sha256:0d34cf7713c21a0e1a4197a494392b92a82dbc8cb8d0ce41f08590e43d027f95",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33527,
+    "stars_github": 33605,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-15T03:34:36.291Z",
+    "fetched_at": "2026-08-16T03:43:12.484Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-14T13:15:10-07:00",
+    "upstream_commit_at": "2026-08-15T20:12:06-07:00",
     "repo_skill_count": 162,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-15T03:34:36.291Z",
+    "generated_at": "2026-08-16T03:43:12.484Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,41 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会用扩散模型预测小分子配体在蛋白上的三维结合姿势,输出多个按置信度排序的 SDF 文件,并分析置信度高低、汇总统计与导出 CSV。它只预测姿势与置信度,不预测结合亲和力。",
-    "when": "当用户说“对接这个配体”“预测结合姿势/结合位点”“虚拟筛选”等,并给出蛋白质(PDB 文件或序列)和配体(SMILES/SDF/MOL2)时触发。",
+    "what": "装上后，当你说要分子对接时，Claude 会用 DiffDock 把配体小分子对接到蛋白上，输出多个预测结合姿势及置信度分数，支持单个、批量或虚拟筛选，并会解释置信度含义。",
+    "when": "当你提出“预测结合姿势”“做分子对接”“虚拟筛选化合物库”等要求，并提供蛋白结构/序列与配体文件或 SMILES 时触发。",
     "say": [
       {
-        "text": "把这个 SMILES 和蛋白 PDB 做对接,输出前 5 个姿势。",
-        "note": "会生成按置信度排序的多个 pose 文件。"
+        "text": "用这个蛋白PDB和配体SMILES跑一次对接",
+        "note": "生成排名靠前的结合姿势和置信度"
       },
       {
-        "text": "批量对接这个 CSV 里的配体,并把置信度低的筛掉。",
-        "note": "会走批量流程并输出汇总 CSV。"
+        "text": "对batch_input.csv里的复合物批量对接",
+        "note": "逐复合物输出姿势文件"
       },
       {
-        "text": "解释一下结果里 rank1_confidence0.87.sdf 的置信度。",
-        "note": "会读取结果文件并说明置信度范围。"
+        "text": "分析results目录里的置信度并导出CSV",
+        "note": "生成统计摘要和top列表"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0d34cf7713c21a0e1a4197a494392b92a82dbc8cb8d0ce41f08590e43d027f95",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-15T03:58:28.226Z",
+    "generated_at": "2026-08-16T03:55:05.173Z",
     "lint_pass": true,
-    "what_en": "Claude uses a diffusion model to predict 3D binding poses of a small-molecule ligand on a protein, writing ranked SDF pose files with confidence scores and producing confidence summaries/CSV exports. It predicts poses and confidence, not binding affinity.",
-    "when_en": "Triggered when the user asks to dock a ligand, predict a binding pose/site, or run virtual screening, and provides a protein (PDB file or sequence) plus a ligand (SMILES/SDF/MOL2).",
+    "what_en": "After installation, when you ask for molecular docking, Claude uses DiffDock to dock small-molecule ligands to proteins, producing multiple predicted binding poses with confidence scores for single, batch, or virtual-screening runs, and interprets confidence values.",
+    "when_en": "Triggered when you ask to predict a binding pose, run docking, or screen a compound library, and provide a protein structure/sequence plus ligand file or SMILES.",
     "say_en": [
       {
-        "text": "Dock this SMILES into this PDB and output the top 5 poses.",
-        "note": "Generates ranked pose files with confidence scores."
+        "text": "Run one docking with this protein PDB and ligand SMILES.",
+        "note": "Generates ranked poses with confidence."
       },
       {
-        "text": "Run batch docking on this CSV and filter out low-confidence hits.",
-        "note": "Uses batch workflow and exports a summary CSV."
+        "text": "Batch-dock the complexes in batch_input.csv.",
+        "note": "Outputs pose files per complex."
       },
       {
-        "text": "Explain the confidence of rank1_confidence0.87.sdf.",
-        "note": "Reads the result and interprets the confidence range."
+        "text": "Analyze confidence in the results dir and export a CSV.",
+        "note": "Produces summary statistics and top list."
       }
     ]
   }
