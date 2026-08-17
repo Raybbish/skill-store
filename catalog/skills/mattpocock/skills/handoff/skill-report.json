@@ -5,8 +5,8 @@
     "name": "handoff",
     "description": "Compact the current conversation into a handoff document for another agent to pick up.",
     "upstream": "https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff",
-    "upstream_commit": "84fdeffd12f2ee307994d1eb6feb48173b6e0502",
-    "content_hash": "sha256:2bac51282cceb96c22ec3e2f80f78e739a8406afc3a38bff48805d529a346e29",
+    "upstream_commit": "068b6e0c62393147daf03530149cdce209c93da8",
+    "content_hash": "sha256:512aa39a150d067b4c997b3c5be6e93327c13ede015de07e531a2ca9e414a305",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -23,9 +23,9 @@
   "signals": {
     "stars_github": null,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-07T04:51:19.809Z",
+    "fetched_at": "2026-08-16T03:42:39.488Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-08-06T20:49:51+01:00"
+    "upstream_commit_at": "2026-08-15T22:24:19+01:00"
   },
   "context_size": {
     "version": "1",
@@ -34,25 +34,25 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-07T04:51:19.809Z",
+    "generated_at": "2026-08-16T03:42:39.488Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 879,
-        "chars": 879,
-        "tokens": 188
+        "bytes": 894,
+        "chars": 894,
+        "tokens": 193
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 879,
-        "chars": 879,
-        "tokens": 188
+        "bytes": 894,
+        "chars": 894,
+        "tokens": 193
       },
       "package_total_text": {
         "files": [
@@ -60,70 +60,68 @@
           "agents/openai.yaml"
         ],
         "text_files": 2,
-        "bytes": 1022,
-        "chars": 1022,
-        "tokens": 208
+        "bytes": 1037,
+        "chars": 1037,
+        "tokens": 214
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "将当前对话压缩为交接文档，供其他智能体继续处理",
+    "tagline": "把对话压缩成交接文档,让下一个智能体顺利接手。",
     "scene_tags": [
-      "多智能体协作",
-      "任务交接",
-      "对话摘要"
+      "任务转交",
+      "对话接力"
     ],
-    "fit_line": "适合你，如果需要在多个智能体之间传递对话上下文",
-    "tagline_en": "Compact the current conversation into a handoff document for another agent",
+    "fit_line": "适合你,如果需要在多个智能体之间接力完成任务。",
+    "tagline_en": "Compress the conversation into a handoff doc for the next agent.",
     "scene_tags_en": [
-      "multi-agent collaboration",
       "task handoff",
-      "conversation summary"
+      "conversation relay"
     ],
-    "fit_line_en": "For you if you need to pass conversation context between multiple agents",
+    "fit_line_en": "For you if you need to hand off context between agents in a multi-step task.",
     "source": "llm",
-    "content_hash": "sha256:2bac51282cceb96c22ec3e2f80f78e739a8406afc3a38bff48805d529a346e29",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-14T08:45:00.329Z",
+    "content_hash": "sha256:512aa39a150d067b4c997b3c5be6e93327c13ede015de07e531a2ca9e414a305",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-16T03:46:26.694Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把当前对话压缩成一份交接文档,让新的 Agent 能接着干。文档保存到系统临时目录,包含建议调用的技能,并引用已有文件(不重复写内容),还会抹掉 API 密钥、密码等敏感信息。",
-    "when": "当你要求把当前对话整理成交接文档,交给另一个 Agent 继续处理时触发。也可以附带说明下一个会话的用途,文档会按此定制。",
+    "what": "把当前对话压缩成一份交接文档，存入电脑的临时文件夹（不是当前工作区）。文档会附建议调用的技能清单，引用已有文件而非重复内容，并隐去密钥等敏感信息。若你给出参数，会按参数侧重下一阶段工作。",
+    "when": "当你说要把对话交接给别的 agent、生成交接文档，或让另一个会话继续当前任务时触发。技能不会自动调用，需要你明确提出。",
     "say": [
       {
-        "text": "把当前对话整理成交接文档",
-        "note": "生成文档并保存到临时目录。"
+        "text": "把当前对话整理成交接文档，给下一个会话用。",
+        "note": "Claude 会写好文档存到临时文件夹。"
       },
       {
-        "text": "生成 handoff,下一个会话用于继续写代码",
-        "note": "会按你指定的用途定制交接内容。"
+        "text": "生成交接文档，并列出建议调用的技能。",
+        "note": "文档会包含技能建议部分。"
       },
       {
-        "text": "总结这次讨论并交接给新 agent",
-        "note": "文档会包含建议技能和敏感信息脱敏。"
+        "text": "将交接文档保存到系统临时目录，隐去API密钥。",
+        "note": "敏感信息会被移除。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:2bac51282cceb96c22ec3e2f80f78e739a8406afc3a38bff48805d529a346e29",
+    "content_hash": "sha256:512aa39a150d067b4c997b3c5be6e93327c13ede015de07e531a2ca9e414a305",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-07T05:12:10.244Z",
+    "generated_at": "2026-08-16T03:57:31.169Z",
     "lint_pass": true,
-    "what_en": "Claude condenses the current conversation into a handoff document for another agent, saved to the OS temp directory. It suggests skills to invoke, references existing artifacts by path/URL, and redacts sensitive info.",
-    "when_en": "When you ask to compress the current chat into a handoff doc for another agent. Also when you specify the next session's focus, it tailors the doc accordingly.",
+    "what_en": "Compacts the current conversation into a handoff doc, saved to the OS temp directory (not workspace). Adds a suggested-skills section, references existing files by path, and redacts secrets. With arguments, tailors the doc to the next session's focus.",
+    "when_en": "Triggers when you ask to hand off the conversation, create a handoff document, or let another session continue the current task. It is not auto-invoked; you must request it explicitly.",
     "say_en": [
       {
-        "text": "Turn this conversation into a handoff document.",
-        "note": "Saves it to the system temp directory."
+        "text": "Summarize this conversation into a handoff document for the next session.",
+        "note": "Claude saves it to the temp folder."
       },
       {
-        "text": "Make a handoff; next session will continue the code review.",
-        "note": "Customizes to that focus."
+        "text": "Generate a handoff doc and list suggested skills to invoke.",
+        "note": "It includes a skill suggestions section."
       },
       {
-        "text": "Summarize and hand off to a fresh agent.",
-        "note": "Includes suggested skills and redacts secrets."
+        "text": "Save the handoff doc to the OS temp directory and redact API keys.",
+        "note": "Sensitive info is removed."
       }
     ]
   }

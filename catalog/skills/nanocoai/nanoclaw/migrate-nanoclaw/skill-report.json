@@ -5,7 +5,7 @@
     "name": "migrate-nanoclaw",
     "description": "Extracts user customizations from a fork, generates a replayable migration guide, and upgrades to upstream by reapplying customizations on a clean base. Replaces merge-based upgrades with intent-based migration.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-nanoclaw",
-    "upstream_commit": "639577c30456980de542d9cdce106455799d350e",
+    "upstream_commit": "d7d9887eb4acae8d60e327afc21955e3f10b77eb",
     "content_hash": "sha256:2c5804692181fa6a84009b85afc2804465cef19af4ddb6dc86a4a3ac56fbc2c2",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30488,
+    "stars_github": 30512,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:23.959Z",
+    "fetched_at": "2026-08-16T03:43:15.372Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T18:39:44+02:00",
+    "upstream_commit_at": "2026-08-16T01:13:17+03:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:23.959Z",
+    "generated_at": "2026-08-16T03:43:15.372Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会先对比你改过的代码和上游新版,生成一份记录改动内容和意图的迁移指南;升级时先取上游干净版本,再按指南重新应用你的自定义改动,而不是直接合并代码。",
-    "when": "当你说要升级 NanoClaw 或迁移自定义改动,且本地代码与上游有分叉时触发;它会先检查工作区是否干净,再评估改动规模并开始提取,已有指南时会询问是否直接升级。",
+    "what": "这个技能让 Claude 在升级 NanoClaw 时,先检查你的工作区并创建回滚点,然后提取你对代码的改动(配置、源码、技能等),整理成一份可重放的迁移指南,再在干净的上游代码上重新应用这些自定义,避免合并冲突。",
+    "when": "当你要求升级 NanoClaw 到上游新版本、想把 fork 上的改动提取成迁移指南,或已有指南时要求直接跳过提取开始重放时触发。",
     "say": [
       {
-        "text": "帮我把对这个 NanoClaw 的修改生成迁移指南。",
-        "note": "它会扫描改动,并问你要先描述还是自动分析。"
+        "text": "帮我提取 NanoClaw 的本地改动,生成一份迁移指南。",
+        "note": "Claude 会先做预检,然后分析改动并和你确认。"
       },
       {
-        "text": "升级到上游最新版,保留我的自定义配置。",
-        "note": "它会先提取改动,再在干净副本上重新应用。"
+        "text": "帮我看下改动规模,决定用完整迁移还是轻量升级。",
+        "note": "Claude 会评估分歧等级,推荐最合适的路线。"
       },
       {
-        "text": "把已有的迁移指南更新一下。",
-        "note": "它会对比新提交,把新改动补进指南。"
+        "text": "我已经有迁移指南了,直接开始升级吧。",
+        "note": "Claude 会跳过提取,按指南重新应用改动。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2c5804692181fa6a84009b85afc2804465cef19af4ddb6dc86a4a3ac56fbc2c2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T05:09:53.930Z",
+    "generated_at": "2026-08-16T04:02:25.942Z",
     "lint_pass": true,
-    "what_en": "Claude extracts your customizations from a forked NanoClaw, writes a replayable migration guide (intent + implementation detail), then upgrades by checking out clean upstream and re-applying changes from the guide instead of merging.",
-    "when_en": "Triggered when you ask to migrate/upgrade a customized NanoClaw fork. It checks the working tree, assesses scope, extracts customizations, and offers to skip to upgrade if a guide already exists.",
+    "what_en": "This skill turns NanoClaw upgrades into intent-based migration: it inspects the working tree, creates a rollback point, extracts your customizations into a replayable guide, then re-applies them on a clean upstream checkout instead of merging.",
+    "when_en": "Triggered when the user asks to upgrade NanoClaw to upstream, wants customizations extracted into a guide, or asks to skip straight to reapplying from an existing guide.",
     "say_en": [
       {
-        "text": "Generate a migration guide for my customizations to this NanoClaw fork.",
-        "note": "Scans changes; asks you to describe or auto-analyze."
+        "text": "Extract my NanoClaw changes and generate a migration guide.",
+        "note": "Claude runs preflight then analyzes changes with you."
       },
       {
-        "text": "Upgrade to the latest upstream while keeping my custom config.",
-        "note": "Extracts changes, then reapplies them on a clean checkout."
+        "text": "Check how big my changes are and recommend the migration path.",
+        "note": "It assesses divergence tier and offers the lightest route."
       },
       {
-        "text": "Update the existing migration guide with my new changes.",
-        "note": "Diffs new commits and appends them to the guide."
+        "text": "I already have a migration guide; start the upgrade.",
+        "note": "Skips extraction and reapplies from the guide."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "supabase-postgres-best-practices",
     "description": "Postgres best practices maintained by Supabase, for Postgres running anywhere. Load this skill BEFORE writing or changing anything that lives in a Postgres database: creating or altering tables and columns (including choosing column types), schema design, migrations and declarative schema files, RLS policies and the tests that verify them, indexes, triggers, database functions, queues and scheduled jobs (pg_cron, pgmq), vector/semantic search (pgvector), and restoring dumps (pg_restore) or importing data. Also load it when diagnosing slow queries, high CPU, timeouts, EXPLAIN plans, connection exhaustion, locking, bloat, or rows visible to the wrong user or tenant. This is not just a performance guide — schema, migration, security, and SQL authoring tasks need these rules too, even for a one-column change or a single query.",
     "upstream": "https://github.com/supabase/agent-skills/tree/main/skills/supabase-postgres-best-practices",
-    "upstream_commit": "1207767388a0ffb55f21fb4e6988fee96942431d",
+    "upstream_commit": "8331f910845103c08d51f6ca1d86ebb7d1f745e3",
     "content_hash": "sha256:eb3af1d69771f2f799a7f2325a6489e0df165d83edb095c877797dd7c0961ba6",
     "license": "MIT",
     "hosting": "indexed",
@@ -23,10 +23,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 317700,
-    "fetched_at": "2026-07-31T06:10:40.404Z",
+    "installs_skills_sh": 344500,
+    "fetched_at": "2026-08-13T04:49:20.228Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-07-30T12:52:48+01:00"
+    "upstream_commit_at": "2026-08-12T08:36:50+01:00"
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-31T06:10:40.404Z",
+    "generated_at": "2026-08-13T04:49:20.228Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -127,25 +127,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 在编写或修改 Postgres 数据库相关内容时，会按 Supabase 维护的规范给出建议，包括表结构、索引、安全策略、迁移等，并帮助排查慢查询等性能问题。",
-    "when": "当用户要求创建或修改数据库表、索引、安全策略等，或要求诊断慢查询、连接耗尽等性能问题时，此技能会启用。",
+    "what": "装上后,Claude 在写或修改 Postgres 数据库前会套用 Supabase 维护的 8 类最佳实践规则,依据这些规则生成 SQL、表结构、索引、RLS 策略与迁移文件,并指出原写法里不符合规则的地方。",
+    "when": "当你说要创建或修改数据库表、编写迁移、排查慢查询等任何 Postgres 相关任务时会触发,即使只是改一列或一条查询也会套用规则。",
     "say": [
       {
-        "text": "帮我设计一个用户表，包含索引和行级安全策略。"
+        "text": "我要在 Postgres 建一张用户表,请按这套最佳实践设计并加上 RLS。",
+        "note": "Claude 会据此给出建表和 RLS 策略。"
       },
       {
-        "text": "这条查询太慢了，帮我看看执行计划哪里有问题。",
-        "note": "Claude 会分析 EXPLAIN 并指出缺少索引等问题。"
+        "text": "这条查询很慢,帮我用 EXPLAIN 分析并给出修索引建议。",
+        "note": "它会按查询性能规则检查缺失索引等问题。"
       },
       {
-        "text": "我要给订单表加一列，需要注意哪些数据库最佳实践？",
-        "note": "Claude 会检查变更对迁移、索引和性能的影响。"
+        "text": "我要给订单表写一个迁移,先按 8 类规则审查一遍。",
+        "note": "迁移改动会按 schema、安全等规则过一遍。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:eb3af1d69771f2f799a7f2325a6489e0df165d83edb095c877797dd7c0961ba6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-31T06:29:52.361Z",
-    "lint_pass": true
+    "generated_at": "2026-08-13T05:11:43.636Z",
+    "lint_pass": true,
+    "what_en": "Once loaded, Claude applies Supabase's 8-category Postgres best-practice rules when writing or changing anything in a Postgres database. It produces SQL, schemas, indexes, RLS policies, and migration files that follow these rules, and flags existing code that violates them.",
+    "when_en": "It triggers before creating or altering tables, writing migrations, diagnosing slow queries, or any other Postgres-related task—even a one-column change or a single query gets checked against these rules.",
+    "say_en": [
+      {
+        "text": "Create a users table in Postgres following these best practices and add RLS.",
+        "note": "Claude will produce the schema and RLS policy."
+      },
+      {
+        "text": "This query is slow; use EXPLAIN and suggest index fixes.",
+        "note": "It checks missing indexes and other query-performance issues."
+      },
+      {
+        "text": "Write a migration for the orders table, review it against the 8 rule categories.",
+        "note": "The migration is checked against schema, security, and other rules."
+      }
+    ]
   }
 }

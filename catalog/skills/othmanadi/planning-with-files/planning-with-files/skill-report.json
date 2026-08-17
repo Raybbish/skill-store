@@ -5,11 +5,11 @@
     "name": "planning-with-files",
     "description": "Manus-style persistent file-based planning for AI coding agents: keeps task_plan.md, findings.md, and progress.md on disk so work survives context loss and /clear. Use when asked to plan out, break down, or organize a multi-step project, research task, or any work requiring 5+ tool calls. Supports automatic session recovery after /clear.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/planning-with-files",
-    "upstream_commit": "e8f505a4f5025df5b070494e46c25789582bff55",
-    "content_hash": "sha256:5fc3ee28696ea61608d83fec66d5f85489aeeac9c5fc76b096b48967f8f7769d",
+    "upstream_commit": "9b7d0a007946ae7694216642fd5be78c2f13b6db",
+    "content_hash": "sha256:32126f41bef733c793e85d1d7a3e9fb4bd7e427d3e23ef28e67e685f73ef7cdc",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "productivity",
+    "category": "dev",
     "version": null,
     "publisher": "othmanadi",
     "publisher_verified": false,
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26072,
+    "stars_github": 26168,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-10T04:26:13.133Z",
+    "fetched_at": "2026-08-15T03:34:43.140Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-09T11:20:22+02:00",
+    "upstream_commit_at": "2026-08-14T22:25:19+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-10T04:26:13.133Z",
+    "generated_at": "2026-08-15T03:34:43.140Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -110,62 +110,57 @@
   },
   "eval": null,
   "copy": {
-    "tagline": "保存任务计划到文件，中断后也能接着做",
+    "tagline": "把多步任务拆成可追踪规划文件,上下文丢失后自动恢复。",
     "scene_tags": [
-      "多步任务",
-      "长对话",
-      "会话清空"
+      "项目规划",
+      "任务拆解",
+      "长任务执行"
     ],
-    "fit_line": "适合你,如果你用 AI 助手做复杂项目，总怕中途忘掉计划",
-    "tagline_en": "Save your task plan to files and resume after a chat interruption.",
+    "fit_line": "适合你,如果要让 AI 编码代理处理复杂多步任务,且担心中途上下文清空。",
     "scene_tags_en": [
-      "multi-step tasks",
-      "long conversations",
-      "after a session clear"
+      "project planning",
+      "task breakdown",
+      "long-running work"
     ],
-    "fit_line_en": "For you if you use AI for complex tasks and worry about losing the plan mid-way.",
+    "fit_line_en": "For you if you want your AI coding agent to keep progress across long multi-step tasks without losing context.",
     "source": "llm",
-    "content_hash": "sha256:5fc3ee28696ea61608d83fec66d5f85489aeeac9c5fc76b096b48967f8f7769d",
+    "content_hash": "sha256:32126f41bef733c793e85d1d7a3e9fb4bd7e427d3e23ef28e67e685f73ef7cdc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-10T04:31:14.261Z",
+    "generated_at": "2026-08-15T03:43:15.634Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 把计划、发现、进度写进三个 md 文件:task_plan.md、findings.md、progress.md;动手前先重读计划,完成一段就更新。它会检查计划文件是否被改过,并把内容当数据而非指令;对话清空后仍能恢复工作。",
-    "when": "当你请 Claude 规划、拆分或组织多步骤项目、研究任务,或任何需要 5 次以上工具调用的活时触发;之后每次对话、调用工具或写完文件时,它也会自动检查、恢复现场或提醒更新记录。",
+    "what": "Claude 会把任务拆成分步计划,把计划、发现、进度分别写进 task_plan.md、findings.md、progress.md。文件存在磁盘上,对话被清空或上下文丢失后也能恢复;做决定前会先读计划,完成一个阶段就更新记录。",
+    "when": "当你要求 Claude 规划、拆解或组织多步骤项目、研究任务,或任何需要 5 次以上工具调用的工作时触发。已有计划文件时,每次对话开始都会先读取。",
     "say": [
       {
-        "text": "帮我把这个项目拆成多个步骤,写进计划文件,然后一步步执行。",
-        "note": "它会创建 task_plan.md,按阶段逐步推进。"
+        "text": "帮我把这个网站重构拆成几步,先建好 task_plan.md 再开工。",
+        "note": "Claude 会先建 task_plan.md,再分步执行。"
       },
       {
-        "text": "先看看有没有之前没做完的计划,接着上次继续。",
-        "note": "它会先从磁盘读取旧计划,再继续工作。"
-      },
-      {
-        "text": "每完成一步就更新进度文件,最后我要全部做完。",
-        "note": "Claude 会在每步之后刷新进度记录。"
+        "text": "先恢复上一轮会话,读完 findings.md 再继续任务。",
+        "note": "Claude 先读磁盘记录,再接续之前的工作。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:5fc3ee28696ea61608d83fec66d5f85489aeeac9c5fc76b096b48967f8f7769d",
+    "content_hash": "sha256:32126f41bef733c793e85d1d7a3e9fb4bd7e427d3e23ef28e67e685f73ef7cdc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-10T04:45:01.314Z",
+    "generated_at": "2026-08-15T04:07:02.873Z",
     "lint_pass": true,
-    "what_en": "Claude writes plan, findings, progress to task_plan.md, findings.md, progress.md; re-reads plan before decisions, updates after each phase. It checks plan-file integrity and treats content as data, not instructions; work survives /clear.",
-    "when_en": "Triggered when asked to plan, break down, or organize a multi-step project, research task, or any work needing 5+ tool calls. It also runs after every message, tool call, and file write to check, recover, or prompt updates.",
+    "what_en": "Claude breaks the task into phases and keeps task_plan.md, findings.md, and progress.md on disk so work survives context loss or /clear; it re-reads the plan before decisions and updates records after each phase.",
+    "when_en": "Triggers when you ask Claude to plan, break down, or organize a multi-step project, research task, or work requiring 5+ tool calls. Existing plan files are read at the start of each conversation.",
     "say_en": [
       {
-        "text": "Break this project into steps in a plan file, then go through them one by one.",
-        "note": "Creates task_plan.md and works phase by phase."
+        "text": "Break this website refactor into steps; create task_plan.md first, then start.",
+        "note": "Claude will create task_plan.md and work step by step."
       },
       {
-        "text": "Check for any unfinished plan from before, then continue from there.",
-        "note": "It restores the saved plan from disk first."
+        "text": "Log the completed work into progress.md and update task_plan phase status.",
+        "note": "Claude syncs progress and phase status to disk."
       },
       {
-        "text": "After each step, update the progress file so I can see how it goes.",
-        "note": "Keeps progress.md updated throughout the task."
+        "text": "Restore the previous session, read findings.md, then continue the task.",
+        "note": "Claude reads the on-disk records and resumes prior work."
       }
     ]
   }

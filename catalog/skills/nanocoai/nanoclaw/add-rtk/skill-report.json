@@ -5,7 +5,7 @@
     "name": "add-rtk",
     "description": "Install rtk token-compression proxy into agent containers. Routes Bash tool calls through rtk for 60–90% token savings on dev commands (git, cargo, pytest, docker, kubectl, etc.).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-rtk",
-    "upstream_commit": "639577c30456980de542d9cdce106455799d350e",
+    "upstream_commit": "d7d9887eb4acae8d60e327afc21955e3f10b77eb",
     "content_hash": "sha256:2d794ab4db2bf9ef8982e33e03b2fadb8ef70ea63e033599111fc938314accc6",
     "license": "MIT",
     "hosting": "mirrored",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30488,
+    "stars_github": 30512,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:23.959Z",
+    "fetched_at": "2026-08-16T03:43:15.372Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T18:39:44+02:00",
+    "upstream_commit_at": "2026-08-16T01:13:17+03:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -39,7 +39,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:23.959Z",
+    "generated_at": "2026-08-16T03:43:15.372Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -95,41 +95,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装并启用 rtk 代理后,Claude 执行 Bash 命令时会自动经过 rtk 压缩,节省 60–90% 的 token。整个过程自动完成,无需额外指示。",
-    "when": "当 Claude 在已配置的容器中运行任何 Bash 工具调用(如 git、cargo、pytest 等)时触发,该调用会被 rtk 拦截并压缩。",
+    "what": "装上后,Claude 在配置好的容器里每次用 Bash 执行命令时,命令会先经过 rtk 压缩代理再运行;对 git、cargo、pytest 等开发命令可节省 60%–90% 的 token,且无需额外改 CLAUDE.md。",
+    "when": "每次 Claude 即将执行 Bash 命令时触发(Bash 匹配 PreToolUse 钩子)。该技能需先安装并配置好容器才会生效。",
     "say": [
       {
-        "text": "运行 git status 查看当前仓库状态。",
-        "note": "该命令会通过 rtk 压缩 token。"
+        "text": "运行 git status,看看当前仓库状态。",
+        "note": "这条 Bash 调用会先经 rtk 压缩。"
       },
       {
-        "text": "执行 pytest 并输出测试结果。",
-        "note": "pytest 命令会经过 rtk 代理。"
+        "text": "跑一遍 pytest,然后告诉我结果。",
+        "note": "rtk 会拦截;节省量可另用 rtk gain 查看。"
       },
       {
-        "text": "运行 cargo build 检查编译是否通过。",
-        "note": "cargo 命令会被 rtk 压缩处理。"
+        "text": "在容器里执行 docker ps。",
+        "note": "该 Bash 命令同样会经过 rtk 代理。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2d794ab4db2bf9ef8982e33e03b2fadb8ef70ea63e033599111fc938314accc6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T05:07:27.340Z",
+    "generated_at": "2026-08-16T04:00:13.245Z",
     "lint_pass": true,
-    "what_en": "Installs the rtk token-compression proxy and routes all Bash tool calls through it, saving 60–90% of tokens on common dev commands. The setup is automatic once configured.",
-    "when_en": "Triggered on every Bash tool call (e.g., git, cargo, pytest) inside a configured container; the call is intercepted by rtk.",
+    "what_en": "Installs rtk into the target containers and adds a PreToolUse hook, so every Bash tool call passes through rtk before running. This can save 60–90% of tokens on common dev commands such as git, cargo, pytest, docker, kubectl; no CLAUDE.md edits are needed.",
+    "when_en": "Fires before every Bash tool call in configured containers via the PreToolUse hook. The skill must already be installed and configured in the container to take effect.",
     "say_en": [
       {
-        "text": "Run git status to see the current repository state.",
-        "note": "The command will be token-compressed by rtk."
+        "text": "Run git status and show the repo state.",
+        "note": "This Bash call is compressed through rtk first."
       },
       {
-        "text": "Run pytest and show the test results.",
-        "note": "pytest commands go through the rtk proxy."
+        "text": "Run pytest and show me the result.",
+        "note": "rtk intercepts; use rtk gain to check savings."
       },
       {
-        "text": "Run cargo build to check if compilation succeeds.",
-        "note": "The cargo command will be compressed by rtk."
+        "text": "Run docker ps inside the container.",
+        "note": "This Bash call is proxied through rtk too."
       }
     ]
   }
