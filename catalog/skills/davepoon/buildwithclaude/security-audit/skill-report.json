@@ -5,7 +5,7 @@
     "name": "security-audit",
     "description": "Deep security audit covering OWASP Top 10, authentication, authorization, data protection, dependency vulnerabilities, and secrets scanning. Delegates to the Centinela (QA) agent.",
     "upstream": "https://github.com/davepoon/buildwithclaude/tree/main/plugins/agent-triforce/skills/security-audit",
-    "upstream_commit": "50c89fc0a85cbcfc2b3f8ada5e2782992dc94167",
+    "upstream_commit": "b0f6d4e5cb17f401c32bf64e8327c724e02abe68",
     "content_hash": "sha256:af1315d34ff070412f6dd7e8077ab79dfb9726b6b0c787f1bef9b8daca99ecfe",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 3287,
+    "stars_github": 3298,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-13T04:48:08.143Z",
+    "fetched_at": "2026-08-17T03:45:56.289Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-13T11:32:45+10:00",
+    "upstream_commit_at": "2026-08-16T16:41:18+10:00",
     "repo_skill_count": 352,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-13T04:48:08.143Z",
+    "generated_at": "2026-08-17T03:45:56.289Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,34 +89,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "进行深度安全审计：运行登录检查、OWASP 十大风险检查，扫描硬编码密钥/令牌/连接字符串，审计依赖漏洞，若含 Solidity 则检查智能合约。最后给出“通过/需修改”裁决，生成报告并交给开发代理。",
-    "when": "执行 /security-audit（可带路径）时触发；也可用于发布前、代码改动涉及认证/授权/数据处理、添加新依赖等审查时机。未指定范围默认审计整个 src/ 目录。",
+    "what": "装上后 Claude 会委托 Centinela (QA) 代理执行深度安全审计:检查 OWASP Top 10、认证授权、数据保护、硬编码密钥、依赖漏洞,若代码含 Solidity 还检查智能合约;随后给出通过或需修改的结论,把报告写入 docs/reviews/security-audit-{日期}.md,并向开发代理交接发现,但不会动手修复。",
+    "when": "当你说出 /security-audit 命令(可附带 src/auth/ 等路径限定范围)时触发;未指定范围则审计整个 src/ 目录。发布前、认证授权或数据处理重大变更后、新增依赖时也适合使用。",
     "say": [
       {
-        "text": "/security-audit",
-        "note": "默认检查 src/ 目录并生成报告。"
+        "text": "对 src/auth/ 做一次安全审计",
+        "note": "生成该目录的 OWASP 与密钥扫描报告。"
       },
       {
-        "text": "/security-audit src/auth/ src/api/",
-        "note": "只审计指定路径，不扫描其他目录。"
+        "text": "发布前审计整个代码库",
+        "note": "触发对 src/ 的完整安全审计。"
+      },
+      {
+        "text": "检查依赖项有没有已知漏洞",
+        "note": "报告依赖 CVE 情况。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:af1315d34ff070412f6dd7e8077ab79dfb9726b6b0c787f1bef9b8daca99ecfe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-14T05:03:24.217Z",
-    "lint_pass": true,
-    "what_en": "Deep security audit: SIGN IN checklist, OWASP Top 10, key/token scanning, dependency CVE audit, smart contract checks if Solidity. Outputs verdict and report, hands findings to Dev agent.",
-    "when_en": "Use before release, after changes to auth/authorization/data handling, or when adding dependencies. Also via /security-audit (with optional paths); defaults to src/ if no scope.",
-    "say_en": [
-      {
-        "text": "/security-audit",
-        "note": "Runs the full audit, defaulting to the src/ directory."
-      },
-      {
-        "text": "/security-audit src/auth/ src/api/",
-        "note": "Audits only the specified paths."
-      }
-    ]
+    "generated_at": "2026-08-17T03:57:33.665Z",
+    "lint_pass": false
   }
 }

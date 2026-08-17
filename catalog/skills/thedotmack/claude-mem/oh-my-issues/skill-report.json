@@ -5,7 +5,7 @@
     "name": "oh-my-issues",
     "description": "Cluster a GitHub issue backlog by root cause into a small set of plan-master issues, redirect children with a standardized comment, and bundle architectural-fix PRs that close clusters atomically. Use when an issue tracker has accumulated dozens of reports that share underlying defects, when asked to triage / consolidate / cluster / dedupe issues, when asked to build a plan series or roadmap from open issues, or when routing a new incoming bug into an existing plan.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/oh-my-issues",
-    "upstream_commit": "d768ba364302d12b76e69e4f021f0bb1d2d50ed6",
+    "upstream_commit": "fae697a45d107aae567d605916391ab64d8ecae1",
     "content_hash": "sha256:60bd448950afb01d988c47007e0dad4434bfbb983724fd9083d82aad9fcea037",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 90343,
+    "stars_github": 90920,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-11T04:15:42.340Z",
+    "fetched_at": "2026-08-17T03:44:38.788Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-10T13:35:56-07:00",
+    "upstream_commit_at": "2026-08-16T12:09:11-07:00",
     "repo_skill_count": 20
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-11T04:15:42.340Z",
+    "generated_at": "2026-08-17T03:44:38.788Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,35 +91,28 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会把 GitHub 上的问题按根本原因分成几组,每组创建一个总问题和设计文档,用标准评论重定向并关闭子问题,再准备一个能同时关掉整组的 PR。新 bug 会被归入已匹配的总问题,避免清单重新堆积。",
-    "when": "当仓库有 20 个以上未关闭的 issue,或你要求对 issue 分类、合并、去重,制定计划,或把新 bug 归入已有计划时。",
-    "say": [
-      {
-        "text": "新来的 bug #123 属于哪个已有计划?帮我归入并重定向。"
-      },
-      {
-        "text": "为 plan-02 生成修复 PR,用 Closes 关掉所有子 issue。"
-      }
-    ],
+    "what": "Claude 会把仓库的 issue 积压按根本原因而不是表面现象分组,为每组创建 plan-master issue 和 plans/ 设计文档,用固定评论关闭所有子 issue,并生成带 Closes #N 的 PR 一次关闭整组。新来的 bug 会被归入已有 master 追加评论,不新开 issue。",
+    "when": "当仓库有 20+ 个开放 issue 且很多疑似同根因,或你要求做归类/去重/制定计划等,或想判断新 bug 是否属于现有工作时触发。",
+    "say": [],
     "source": "llm",
     "content_hash": "sha256:60bd448950afb01d988c47007e0dad4434bfbb983724fd9083d82aad9fcea037",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-11T04:53:44.742Z",
-    "lint_pass": true,
-    "what_en": "Claude groups GitHub issues by root cause, creates a master issue + design doc per group, redirects/closes children, and prepares a PR that atomically closes the cluster. New bugs are appended to matching masters.",
-    "when_en": "Triggers when a repo has 20+ open issues, when asked to triage/consolidate/cluster/dedupe issues, build a plan/roadmap, or route a new bug into an existing plan.",
+    "generated_at": "2026-08-17T04:05:47.363Z",
+    "lint_pass": false,
+    "what_en": "Clusters issues by root cause, creates a master issue + plans doc per cluster, closes children via a standard redirect, and ships a PR closing all children atomically. New bugs are appended as Round-N comments to a matching master.",
+    "when_en": "Triggers when a repo has 20+ open issues that look like shared root causes, when asked to triage, consolidate, or plan the issue list, or when a new bug needs routing to existing work.",
     "say_en": [
       {
-        "text": "Group these 50 issues by root cause, create masters, and close children.",
-        "note": "Claude reads and clusters all issues, then creates masters and docs."
+        "text": "Cluster by root cause, open masters, close children with the standard redirect.",
+        "note": "Claude runs the initial clustering pass."
       },
       {
-        "text": "Which plan does new bug #123 fit? Fold it in and redirect.",
-        "note": "It matches the master, adds a Round N note, and closes the bug."
+        "text": "Is this new bug related to plan-02? Please fold it into that master.",
+        "note": "Claude triages, adds a Round-N comment, then closes."
       },
       {
-        "text": "Prepare a fix PR for plan-02 closing all child issues with Closes #.",
-        "note": "Lists children, writes PR description, includes test matrix."
+        "text": "For plan-01, build a PR with Closes #N per child and add the test matrix to CI.",
+        "note": "Claude bundles the cluster into one PR."
       }
     ]
   }

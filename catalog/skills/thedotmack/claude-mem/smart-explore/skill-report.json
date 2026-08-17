@@ -5,7 +5,7 @@
     "name": "smart-explore",
     "description": "Token-optimized structural code search using tree-sitter AST parsing. Use instead of reading full files when you need to understand code structure, find functions, or explore a codebase efficiently.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/smart-explore",
-    "upstream_commit": "d768ba364302d12b76e69e4f021f0bb1d2d50ed6",
+    "upstream_commit": "fae697a45d107aae567d605916391ab64d8ecae1",
     "content_hash": "sha256:a3fc2901c7cbe643cffd951ecb27dfef76bd5d48bb0501057afd0c216be8cdbd",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -20,11 +20,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 90343,
+    "stars_github": 90920,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-11T04:15:42.340Z",
+    "fetched_at": "2026-08-17T03:44:38.788Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-10T13:35:56-07:00",
+    "upstream_commit_at": "2026-08-16T12:09:11-07:00",
     "repo_skill_count": 20
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-11T04:15:42.340Z",
+    "generated_at": "2026-08-17T03:44:38.788Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,37 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后,Claude 分析代码时会先做结构索引,再用三个专用工具查代码:按关键词找符号、看文件结构骨架、只展开需要的函数源码,而不整篇读文件。这样节省 token。",
-    "when": "当你要理解代码结构、查找函数或探索代码库时触发;遇到超过约100行的代码文件,它会优先用结构化工具代替直接读文件。",
+    "what": "Claude 不再整文件读代码,而是先做语法结构分析:按关键词找到相关文件和符号,再看单文件骨架,最后只展开需要的函数源码。",
+    "when": "当需要理解代码结构、查找函数或高效探索代码库时触发,优先使用 smart_search、smart_outline、smart_unfold,而非 Read/Grep/Glob。",
     "say": [
       {
-        "text": "用 smart_search 在 src 里找 shutdown 相关的函数",
-        "note": "返回带路径和行号的符号列表及文件概览。"
+        "text": "帮我找一下 shutdown 相关的函数在哪",
+        "note": "会先搜目录,列出匹配符号和文件。"
       },
       {
-        "text": "给 worker-service.ts 生成一个结构大纲",
-        "note": "列出该文件里的函数和类。"
+        "text": "这个文件里有哪些函数?",
+        "note": "会生成文件结构骨架,而非整篇读取。"
+      },
+      {
+        "text": "展开 worker-service.ts 里 shutdown 的源码",
+        "note": "只展开该符号的完整实现。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a3fc2901c7cbe643cffd951ecb27dfef76bd5d48bb0501057afd0c216be8cdbd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-11T04:53:16.775Z",
+    "generated_at": "2026-08-17T04:04:44.283Z",
     "lint_pass": true,
-    "what_en": "After installing, Claude explores code via structural indexing: it uses smart_search, smart_outline, and smart_unfold instead of reading whole files, producing symbol lists, file skeletons, and individual function source.",
-    "when_en": "Triggers when you need to understand code structure, find functions, or efficiently explore a codebase; for code files over ~100 lines, it prefers structural tools over direct reads.",
+    "what_en": "Claude stops reading whole files first. It uses AST-based structural search: locate files and symbols by query, view a file's skeleton, then unfold only the needed function's source.",
+    "when_en": "Triggered when the user needs code structure, function lookup, or efficient codebase exploration; Claude uses smart_search/smart_outline/smart_unfold instead of Read/Grep/Glob.",
     "say_en": [
       {
-        "text": "Use smart_search to find shutdown-related functions in src.",
-        "note": "Returns ranked symbols with paths and line numbers."
+        "text": "Find the functions related to \"shutdown\" for me.",
+        "note": "It searches the directory and lists matching symbols and files."
       },
       {
-        "text": "Generate a structural outline of worker-service.ts.",
-        "note": "Lists all functions and classes in the file."
+        "text": "What functions are in this file?",
+        "note": "It returns the structural skeleton instead of the whole file."
       },
       {
-        "text": "Unfold the full implementation of performGracefulShutdown in GracefulShutdown.ts.",
-        "note": "Shows the complete source of that symbol."
+        "text": "Show the source of shutdown in worker-service.ts.",
+        "note": "It unfolds only that symbol's implementation."
       }
     ]
   }

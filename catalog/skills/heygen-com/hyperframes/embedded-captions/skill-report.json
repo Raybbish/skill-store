@@ -5,7 +5,7 @@
     "name": "embedded-captions",
     "description": "Add captions or subtitles to an existing single-subject talking-head video without editing the footage. Use for plain verbatim captions, cinematic captions embedded behind the subject, VFX captions, “炸/特效/酷炫字幕,” or a named identity from the 35-style catalog. Route by visual identity, not by backend engine. The quiet `anchor` rail is the default; embed every word only when the user explicitly wants a fully cinematic treatment. The workflow runs locally end to end, including transcription and subject matting; split multi-shot footage before applying it.\n",
     "upstream": "https://github.com/heygen-com/hyperframes/tree/main/skills/embedded-captions",
-    "upstream_commit": "fecaf72d1f6de66224b3857efb78a2f2c44c41bc",
+    "upstream_commit": "67edb01bf4aa2f5931e838e46e14e0f51a5809ee",
     "content_hash": "sha256:a0bbffbbed5b80edb1129cf423ae2351f8aaed5fd5fe71d58fe7de7719c21693",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -20,10 +20,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 158400,
-    "fetched_at": "2026-08-16T03:45:03.783Z",
+    "installs_skills_sh": 159600,
+    "fetched_at": "2026-08-17T03:48:01.549Z",
     "first_seen_at": "2026-07-14T05:27:20.908Z",
-    "upstream_commit_at": "2026-08-15T11:53:56-04:00"
+    "upstream_commit_at": "2026-08-16T14:01:38-04:00"
   },
   "context_size": {
     "version": "1",
@@ -32,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-16T03:45:03.783Z",
+    "generated_at": "2026-08-17T03:48:01.549Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -197,42 +197,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 可为单人讲话视频加字幕：先做“决策门”检查，拒绝多说话者、无人物、已有烧录字幕等片段；再从 35 种风格目录选一种身份（默认 anchor），本地完成转录与主体抠像，生成下方字幕轨并把峰值词嵌入人物身后，最终输出带字幕的 final.mp4。",
-    "when": "用户要求给单个说话者视频添加普通逐字字幕、电影式嵌入字幕、VFX 特效字幕（如“炸”“特效”“酷炫字幕”）或指定风格目录中的身份时触发；多说话者、硬切、无人物等不合格片段会先拒绝。",
+    "what": "给单人说话视频加字幕，不改原画面。会先检查视频是否适合（多说话人/硬切会拒绝或要求拆分），再推荐字幕风格（默认“anchor”），最后生成带字幕的新视频。普通口播默认用逐字字幕条，只把峰值词嵌入人身后；明确要求电影感时才全词嵌入。",
+    "when": "当用户要求给已有单人口播视频加字幕，或提到“特效字幕”“炸”等风格化字幕，或指定目录中的某个风格身份（如terminal）时触发。",
     "say": [
       {
-        "text": "给这段单人讲话视频加上普通逐字字幕。",
-        "note": "走标准模式，生成下方字幕轨并嵌入峰值词。"
+        "text": "给这段口播视频加标准字幕，保留原话。",
+        "note": "使用默认的anchor轨道，生成逐字字幕。"
       },
       {
-        "text": "用电影方式处理，把高潮词嵌入人物身后。",
-        "note": "进入电影模式，纯嵌入、无下方字幕轨。"
+        "text": "把“重要”这个词嵌到人物身后，其余用普通字幕。",
+        "note": "在标准模式中提升一个峰值词，嵌入人物背后。"
       },
       {
-        "text": "用“炸”风格给这段视频加特效字幕。",
-        "note": "从35种风格中选主题身份，生成VFX字幕。"
+        "text": "用terminal风格做一套特效字幕。",
+        "note": "需要先选择风格身份，生成主题式字幕。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a0bbffbbed5b80edb1129cf423ae2351f8aaed5fd5fe71d58fe7de7719c21693",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-16T03:51:41.179Z",
-    "lint_pass": true,
-    "what_en": "Once installed, Claude adds captions to a single-subject video: it rejects bad clips, picks one of 35 styles (default anchor), transcribes and mattes locally, adds a lower-third rail, embeds peak words behind the subject, and outputs final.mp4.",
-    "when_en": "Triggers when the user asks to add plain verbatim captions, cinematic embedded captions, VFX captions, or a named style to a single-subject video; clips with multiple speakers, hard cuts, no human, or burned-in captions are refused.",
-    "say_en": [
-      {
-        "text": "Add plain verbatim captions to this single-speaker video.",
-        "note": "Uses standard mode: lower-third rail plus embedded peak."
-      },
-      {
-        "text": "Make it cinematic and embed the climax behind the subject.",
-        "note": "Switches to cinematic pure-embed mode."
-      },
-      {
-        "text": "Add VFX captions in the “炸” style to this clip.",
-        "note": "Picks a themed identity from the catalog for VFX captions."
-      }
-    ]
+    "generated_at": "2026-08-17T03:58:29.911Z",
+    "lint_pass": true
   }
 }

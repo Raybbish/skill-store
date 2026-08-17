@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Expert data processing specialist with intelligent DuckDB/Polars selection for maximum performance. Always includes numpy, never uses pandas, runs everything through uv. Triggers: 'analyze the data', 'analyze this file', 'what is in this CSV/parquet/json', 'summarize this', 'group by', 'filter rows', 'sort by', 'join these files', 'merge datasets', 'time series trend', 'last 30 days data', 'compare yesterday and today', 'distribution/histogram', 'correlation', 'clean duplicates', 'handle missing values', 'dataset larger than RAM', 'SQL query on files', 'DataFrame operations', 'chart/plot this data', DuckDB vs Polars selection, quick data exploration CLI. NOT for plain text/code inspection, configs, or tiny inline math.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "038ed0cbbefe2b40677b63867aeea0d16bc303e0",
+    "upstream_commit": "94e954721ccb02fbcbc8bb583f9da1d244a0a06b",
     "content_hash": "sha256:e39ae723a946f2b155d695273288a77539d00adbfb1c8954bd676c6b016ae85e",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67875,
+    "stars_github": 67965,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-15T03:34:26.665Z",
+    "fetched_at": "2026-08-17T03:44:44.982Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-08-14T17:57:56+09:00",
-    "repo_skill_count": 49
+    "upstream_commit_at": "2026-08-17T06:41:22+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-15T03:34:26.665Z",
+    "generated_at": "2026-08-17T03:44:44.982Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -106,39 +106,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会用 uv 运行 Python 来处理数据文件：先用 numpy，绝不用 pandas；根据操作类型在 DuckDB 和 Polars 之间自动选择（例如过滤排序用 Polars，复杂 SQL 和聚合用 DuckDB），并给出处理时间和结果行数。",
-    "when": "当你提到“分析数据”“这个 CSV 里有什么”“分组汇总”等关键词，或要求对 CSV/Parquet/JSON 文件做查询、筛选、排序、合并、画图时触发。",
+    "what": "处理数据文件时,Claude 会用 Python 工具链(经 uv 运行),自动在 DuckDB 与 Polars 间选更快的,始终带 numpy 与 pyarrow,绝不用 pandas。可读取 CSV/Parquet/JSON 等,做过滤、排序、聚合等。",
+    "when": "当用户说“分析这个文件”,或要求做分组汇总、画图等数据处理时触发。不用于纯文本、配置文件或简单心算。",
     "say": [
       {
-        "text": "分析这份 CSV，按类别统计总金额。"
+        "text": "分析这个 CSV 文件,按分类汇总销售额",
+        "note": "Claude 会用 DuckDB 或 Polars 做聚合"
       },
       {
-        "text": "把这个 Parquet 里金额大于 100 的行筛出来。",
-        "note": "Claude 会改用 Polars 进行高效筛选。"
+        "text": "过滤出金额大于 100 的行,按日期排序",
+        "note": "Polars 过滤排序,返回结果"
       },
       {
-        "text": "对比昨天和今天的数据，画个趋势图。"
+        "text": "合并这两个数据集,画个趋势图",
+        "note": "混合处理并生成 matplotlib 图表"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e39ae723a946f2b155d695273288a77539d00adbfb1c8954bd676c6b016ae85e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-15T03:49:50.308Z",
+    "generated_at": "2026-08-17T03:54:33.369Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude processes data files by running Python via uv: always includes numpy, never uses pandas, and automatically picks DuckDB or Polars based on the operation (filtering/sorting → Polars; heavy SQL/aggregation → DuckDB). It also reports processing time and row counts.",
-    "when_en": "Triggers when you ask to analyze data, inspect a CSV/Parquet/JSON file, or request querying, filtering, sorting, joining, or plotting on such files.",
+    "what_en": "Claude processes data files via uv-run Python, picks DuckDB or Polars per operation, always bundles numpy & pyarrow, never pandas. Reads CSV/Parquet/JSON, performs filtering, sorting, aggregation.",
+    "when_en": "Triggers on requests like 'analyze this file', group/summary operations, or plotting. Not for plain text, configs, or trivial math.",
     "say_en": [
       {
-        "text": "Analyze this CSV and total the amounts by category.",
-        "note": "Claude uses DuckDB to query the file directly and returns grouped totals."
+        "text": "Analyze this CSV file and sum sales by category.",
+        "note": "Claude aggregates via DuckDB or Polars."
       },
       {
-        "text": "Filter rows with amount greater than 100 in this Parquet.",
-        "note": "Claude switches to Polars for efficient filtering."
+        "text": "Filter rows with amount > 100 and sort by date.",
+        "note": "Polars filters and sorts, returns result."
       },
       {
-        "text": "Compare yesterday and today and plot a trend chart.",
-        "note": "Claude includes matplotlib and visualizes the time trend."
+        "text": "Merge these two datasets and plot a trend.",
+        "note": "Hybrid processing with a matplotlib chart."
       }
     ]
   }

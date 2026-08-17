@@ -5,7 +5,7 @@
     "name": "antinet-security-scan",
     "description": "对进入系统的文件或 URL 执行安全与合规扫描，输出 pass/reject 判定与扫描报告，作为所有文档处理的强制前置关卡。",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-security-scan",
-    "upstream_commit": "7054767e03d43c1b80b0a525d5e58b80d2a8e2f8",
+    "upstream_commit": "6adb2412a9acd467d17a3a5af41120524702ec8c",
     "content_hash": "sha256:bf050300dabcd6102689c7e78bf7fef933d60f8577ec602cd05b5074fbd946e5",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5329,
+    "stars_github": 5380,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-16T03:43:43.639Z",
+    "fetched_at": "2026-08-17T03:45:38.609Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-08-16T03:00:58Z",
+    "upstream_commit_at": "2026-08-17T03:00:47Z",
     "repo_skill_count": 72,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-16T03:43:43.639Z",
+    "generated_at": "2026-08-17T03:45:38.609Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,26 +90,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装在文档入口后，Claude 收到文件或 URL 会先做安全与合规扫描：解析域名、比对违规黑名单、校验 OA 许可、识别文件类型，最后输出 pass/reject 判定，并附含命中项、许可状态和风险等级的扫描报告及追踪 ID。",
-    "when": "当文件或 URL 进入系统、经过文档入口时触发，作为流水线第一道闸门；也可直接运行 scripts/run_security_scan.py 手动扫描。",
+    "what": "用户提供文件路径或 URL 后，Claude 先做安全与合规扫描，输出 pass/reject 判定，并附上扫描报告与追踪 ID。",
+    "when": "当用户提供本地文件路径或外部 URL 时触发；作为文档入口的强制关卡，任何文件进入系统前都会先执行扫描。",
     "say": [
       {
-        "text": "帮我扫一下这个文件，给出 pass 还是 reject。",
-        "note": "会返回判定和扫描报告。"
+        "text": "帮我扫描这个 PDF 文件，路径是 /data/report.pdf",
+        "note": "Claude 会执行安全扫描并输出判定报告。"
       },
       {
-        "text": "这个 URL 合规吗？查一下黑名单。",
-        "note": "先解析域名再比对黑名单。"
+        "text": "检查这个网址是否在黑名单中",
+        "note": "Claude 会解析域名并核查黑名单。"
       },
       {
-        "text": "按 policy_ref 指的策略扫描这份 Word。",
-        "note": "可覆盖默认合规基线。"
+        "text": "对这份合同文档做合规安检",
+        "note": "Claude 会返回 pass/reject 和风险等级。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:bf050300dabcd6102689c7e78bf7fef933d60f8577ec602cd05b5074fbd946e5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-16T03:48:00.324Z",
-    "lint_pass": true
+    "generated_at": "2026-08-17T03:51:38.305Z",
+    "lint_pass": true,
+    "what_en": "After receiving a file path or URL, Claude first runs a security & compliance scan. It outputs a pass/reject verdict based on blacklists and license rules, together with a scan report and trace ID.",
+    "when_en": "Triggered when a local file path or external URL is provided, and as the mandatory gate for any document entering the system.",
+    "say_en": [
+      {
+        "text": "Scan this PDF file at /data/report.pdf",
+        "note": "Claude will run the security scan and output a verdict."
+      },
+      {
+        "text": "Check if this URL is on the blacklist",
+        "note": "Claude will resolve the domain and check the blacklist."
+      },
+      {
+        "text": "Run a compliance check on this contract document",
+        "note": "Claude will return pass/reject and risk level."
+      }
+    ]
   }
 }
