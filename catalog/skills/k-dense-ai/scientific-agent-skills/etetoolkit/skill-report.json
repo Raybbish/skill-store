@@ -5,7 +5,7 @@
     "name": "etetoolkit",
     "description": "Analyze, manipulate, compare, annotate, and visualize phylogenetic or other hierarchical trees with ETE 4. Use for Newick/Nexus tree I/O, topology edits and pattern matching, Robinson-Foulds comparisons, gene-tree evolutionary events and reconciliation, NCBI/GTDB taxonomy, SmartView exploration, and publication rendering. Do not use it to infer trees from raw sequences; align sequences and infer a tree first.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/etetoolkit",
-    "upstream_commit": "5ad4aae76bc40257b914367afacc6fd686a282d5",
+    "upstream_commit": "336c4f838a6c21b54e1e1f58cbbeae143d151fe2",
     "content_hash": "sha256:09bc766b5f3aaa042afd8d6e0c28c50fa80e2593e44602831e5c851985fcfb6d",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33257,
+    "stars_github": 33605,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:20.776Z",
+    "fetched_at": "2026-08-16T03:43:12.484Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T17:44:32-07:00",
-    "repo_skill_count": 161,
+    "upstream_commit_at": "2026-08-15T20:12:06-07:00",
+    "repo_skill_count": 162,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:20.776Z",
+    "generated_at": "2026-08-16T03:43:12.484Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,37 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能直接操作生物进化树文件:读取/转换 Newick 等格式,裁剪、重新生根、比较两棵树,识别基因复制与分化事件,查询 NCBI 分类并标注物种,还能把树画成 PDF/SVG 图。",
-    "when": "当用户要求处理或比较进化树、查询/标注物种分类,或把树渲染成图时触发;不用于从原始序列推断树,须先做序列比对和建树。",
+    "what": "装上后，Claude 可以读取、修改、比较和绘制系统发育树等层级树文件，检测基因树中的复制/分化事件、寻找直系同源基因，查询 NCBI/GTDB 分类信息，并用 PDF、SVG 等格式输出图表。也能处理聚类树和热图。",
+    "when": "当用户要求处理树文件、检测进化事件或绘制树图等树相关任务时触发。不用于从原始序列推断树。",
     "say": [
       {
-        "text": "帮我读入 tree.nw,按 midpoint 重新生根,输出 PDF 图。",
-        "note": "会调用脚本完成重根并渲染。"
+        "text": "帮我把这个 Newick 树做中点根，并统计叶节点数。",
+        "note": "会完成中点根并输出统计。"
       },
       {
-        "text": "给这棵树的叶子加上 NCBI 分类谱系,并标出物种名。",
-        "note": "用 NCBITaxa 查询谱系并添加特征。"
+        "text": "比较这两棵树的 Robinson-Foulds 距离，列出共有和独有的分裂。",
+        "note": "返回 RF 距离和分裂对比。"
+      },
+      {
+        "text": "给这个基因树检测复制/分化事件，并导出直系同源组。",
+        "note": "调用事件检测并输出分组文件。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:09bc766b5f3aaa042afd8d6e0c28c50fa80e2593e44602831e5c851985fcfb6d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T05:03:24.306Z",
+    "generated_at": "2026-08-16T03:55:56.594Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can work directly with phylogenetic tree files: read/convert Newick and related formats, prune and reroot trees, compare two trees, identify gene duplication and speciation events, query NCBI taxonomy to annotate species, and render trees as PDF/SVG figures.",
-    "when_en": "Triggered when the user asks to process or compare phylogenetic trees, query/annotate species taxonomy, or render trees as images. It should not be used to infer trees from raw sequences; align sequences and build a tree first.",
+    "what_en": "Claude can read, edit, compare, and render phylogenetic trees, detect duplication/speciation events and orthologs, query NCBI/GTDB taxonomy, and export PDF/SVG figures. Also handles clustering dendrograms and heatmaps.",
+    "when_en": "Triggers when users ask to process tree files, detect evolutionary events, or draw tree figures, among related tree tasks. Not for inferring trees from raw sequences.",
     "say_en": [
       {
-        "text": "Read tree.nw, reroot at midpoint, and output a PDF figure.",
-        "note": "Runs reroot and rendering commands."
+        "text": "Midpoint-root this Newick tree and count its leaf nodes.",
+        "note": "Performs rerooting and outputs stats."
       },
       {
-        "text": "Compare gene_tree.nw and species_tree.nw with Robinson-Foulds distance.",
-        "note": "Returns RF distance and unique branches."
+        "text": "Compare these two trees using Robinson-Foulds distance and list shared/unique splits.",
+        "note": "Returns RF distance and partition details."
       },
       {
-        "text": "Add NCBI taxonomic lineages to the leaves and label species names.",
-        "note": "Uses NCBITaxa to query lineages and annotate."
+        "text": "Detect duplication/speciation events in this gene tree and export orthogroups.",
+        "note": "Runs event detection and writes group files."
       }
     ]
   }

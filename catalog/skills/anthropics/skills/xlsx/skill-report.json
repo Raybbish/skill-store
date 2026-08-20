@@ -5,7 +5,7 @@
     "name": "xlsx",
     "description": "Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .xltx, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \"the xlsx in my downloads\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.",
     "upstream": "https://github.com/anthropics/skills/tree/main/skills/xlsx",
-    "upstream_commit": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+    "upstream_commit": "f6656c1256d5a8adfa37db9110046ef20bac644c",
     "content_hash": "sha256:be6351ec9114816a2e07d34fbb41ff0a7e0f7f389d3e0380d96eceeaa2fe4d26",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,9 +21,9 @@
   "signals": {
     "stars_github": null,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-08T04:08:34.846Z",
+    "fetched_at": "2026-08-14T04:44:47.626Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-08-07T13:14:14-04:00",
+    "upstream_commit_at": "2026-08-13T11:09:54-07:00",
     "appear_count": 1,
     "list_count": 1
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-08T04:08:34.846Z",
+    "generated_at": "2026-08-14T04:44:47.626Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -103,26 +103,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能直接打开、读取、编辑和新建表格文件(.xlsx、.xlsm、.xltx、.csv、.tsv):加列、写公式、排版、做图表、清理脏数据、转换格式;交付物是表格文件。写公式后会重算并报告错误。",
-    "when": "当表格文件是主要输入或输出时触发:读写/修复 .xlsx、.csv 等、新建表格、转换格式,或清理脏数据;提到文件名或路径也会触发。主要交付物非表格时不触发。",
+    "what": "装上后,处理表格时 Claude 会新建或修改 .xlsx、.csv 等文件,先写公式而不是固定数值,再用自带脚本重算并检查公式错误;编辑已有文件时会沿用原文件的格式和输入习惯。",
+    "when": "当任务是围绕电子表格展开时触发:打开/修改 .xlsx、.csv 等表格文件、从零创建表格、把杂乱数据整理成表格。若主要交付物是 Word、网页报告或数据库管道,则不触发。",
     "say": [
       {
-        "text": "打开 report.xlsx,把 B2 到 B9 求和,放进 B10,用公式。",
-        "note": "会写入 SUM 公式并重算。"
+        "text": "把这个 csv 转成 xlsx,标题加粗,金额带千分位。",
+        "note": "会新建表格并按格式要求处理。"
       },
       {
-        "text": "把 data.csv 转成 xlsx,表头加粗,最后一列加合计。",
-        "note": "会生成新表格并按排版要求输出。"
+        "text": "读这份 xlsx,把 B2:B9 的合计用公式写到 B10。",
+        "note": "会写入求和公式并重新计算。"
       },
       {
-        "text": "清理 messy.xlsx:删掉错行的数据,把表头放到第一行。",
-        "note": "会先检查再修改,保留现有格式。"
+        "text": "整理这份乱数据,表头放第一行,空行删掉。",
+        "note": "会清洗并输出规范表格。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:be6351ec9114816a2e07d34fbb41ff0a7e0f7f389d3e0380d96eceeaa2fe4d26",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-08T04:18:50.912Z",
-    "lint_pass": true
+    "generated_at": "2026-08-14T04:58:29.464Z",
+    "lint_pass": true,
+    "what_en": "With this skill, Claude creates or edits spreadsheet files, writes formulas instead of hardcoded values, recalculates and checks for formula errors; when editing an existing file it follows its formatting and input conventions.",
+    "when_en": "Triggered when a spreadsheet is the main input or output: open/edit .xlsx or .csv files, create a new spreadsheet, or clean messy tabular data. Not triggered when the main deliverable is a Word document, HTML report, or database pipeline.",
+    "say_en": [
+      {
+        "text": "Convert this csv to xlsx, bold the headers, and use thousands separators.",
+        "note": "Creates a new file with the requested formatting."
+      },
+      {
+        "text": "Read this xlsx and put the sum of B2:B9 into B10 as a formula.",
+        "note": "Writes a SUM formula and recalculates."
+      },
+      {
+        "text": "Clean this messy data: headers in row 1, drop blank rows.",
+        "note": "Outputs a cleaned spreadsheet."
+      }
+    ]
   }
 }

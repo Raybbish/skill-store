@@ -5,7 +5,7 @@
     "name": "antinet-provenance",
     "description": "收集系统全链路操作日志，生成可追溯的执行证据链与向量索引，是多智能体系统可观测性与安全审计的底座。",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-provenance",
-    "upstream_commit": "ba0b9d786a4c90ae1bfa87a49a941641c844833f",
+    "upstream_commit": "6adb2412a9acd467d17a3a5af41120524702ec8c",
     "content_hash": "sha256:9c090121e5411d4ca28243f9cc6797c610130b7da4eea3a5f801b43de2ac2c79",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5132,
+    "stars_github": 5380,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:45:00.369Z",
+    "fetched_at": "2026-08-17T03:45:38.609Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-08-12T04:08:52Z",
+    "upstream_commit_at": "2026-08-17T03:00:47Z",
     "repo_skill_count": 72,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:45:00.369Z",
+    "generated_at": "2026-08-17T03:45:38.609Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会记录系统中的每一步操作事件，按 trace_id 串成可追溯的证据链，并生成向量索引；还能按条件检索历史证据。失败时先缓存，恢复后再补写。",
-    "when": "当系统在关键操作节点（如分发、扫描、解析等）被调用，或通过事件总线异步推送事件时触发。",
+    "what": "装上后，Claude 会记录系统每次关键操作，按 trace_id 串成可追溯的证据链，并生成向量索引；你可按 trace_id、时间或官署检索这些记录。",
+    "when": "由各官署在分发、扫描、解析等关键节点调用，或由事件总线异步推送进入证据链。",
     "say": [
       {
-        "text": "记录这次分发操作，写入证据链",
-        "note": "会生成带 trace_id 的事件记录"
+        "text": "把这次分发操作记入证据链，trace_id 用 A-123",
+        "note": "会生成一条含官署、动作、目标与时间戳的事件"
       },
       {
-        "text": "按 trace_id 查询这个任务的历史证据",
-        "note": "返回该链路下的全部操作记录"
+        "text": "按 trace_id A-123 查完整执行链",
+        "note": "返回串联好的证据链，可追溯每步操作"
       },
       {
-        "text": "检索今天所有解析事件",
-        "note": "按时间窗返回历史事件与向量索引条目"
+        "text": "检索最近一小时所有官署的操作日志",
+        "note": "返回时间窗内事件，支撑审计与回放"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9c090121e5411d4ca28243f9cc6797c610130b7da4eea3a5f801b43de2ac2c79",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T04:52:10.849Z",
+    "generated_at": "2026-08-17T03:51:22.877Z",
     "lint_pass": true,
-    "what_en": "Claude records each operation event, links them into a traceable evidence chain per trace_id, and creates a vector index. It can query historical evidence by filters; failed writes are cached locally and retried.",
-    "when_en": "Triggers when a key operation node (e.g., dispatch, scan, parse) is called, or when an event is pushed via the event bus.",
+    "what_en": "After enabling, Claude records every key operation, building a traceable evidence chain by trace_id and a vector index; you can query by trace_id, time window, or department.",
+    "when_en": "Triggered when departments call at key nodes like dispatch, scanning, parsing, or via event bus async push into the evidence chain.",
     "say_en": [
       {
-        "text": "Record this dispatch operation and write it to the evidence chain.",
-        "note": "Creates a trace_id-linked event record."
+        "text": "Record this dispatch operation into the evidence chain with trace_id A-123",
+        "note": "Creates an event with actor, action, target, and timestamp"
       },
       {
-        "text": "Query the historical evidence for this task by trace_id.",
-        "note": "Returns the full chain for that trace."
+        "text": "Query the full execution chain for trace_id A-123",
+        "note": "Returns the linked evidence chain for traceability"
       },
       {
-        "text": "Search all parsing events from today.",
-        "note": "Returns time-filtered history and vector entries."
+        "text": "Retrieve operation logs for all departments in the last hour",
+        "note": "Returns events within the time window for audit and replay"
       }
     ]
   }

@@ -1,0 +1,129 @@
+{
+  "schema_version": "2",
+  "meta": {
+    "id": "elementalsouls/claude-bughunter/hunt-fintech-graphql",
+    "name": "hunt-fintech-graphql",
+    "description": "Hunt fintech-specific GraphQL vulnerabilities: money-movement mutations (transfers, redemptions, withdrawals, card top-ups), ledger/balance/portfolio query IDOR, decimal-precision and rounding abuse, idempotency-key bypass enabling double-spend, KYC/PII field-level authorization gaps, and admin-override mutations reachable via mass assignment. Distinct from hunt-graphql, which owns generic GraphQL discovery and IDOR/mutation methodology — this skill owns the delta introduced when a GraphQL layer sits in front of a ledger, wallet, payments, banking, brokerage, or lending backend, where a resolver bug moves real money instead of just leaking data. Use when hunting a fintech, banking, payments, wallet, neobank, brokerage, or lending target that exposes a GraphQL API, or when a schema/response includes balance, transfer, ledger, redeem, quote, KYC, or account-linking fields.",
+    "upstream": "https://github.com/elementalsouls/Claude-BugHunter/tree/main/skills/hunt-fintech-graphql",
+    "upstream_commit": "623051b770fde5f9e4f116bedbd2676c3a0163b8",
+    "content_hash": "sha256:2a9a84e65bf89b9f02ff6dd2e3829d2f15eb87f8ded438cb31ec267537941625",
+    "license": "MIT",
+    "hosting": "indexed",
+    "category": "security",
+    "version": null,
+    "publisher": "elementalsouls",
+    "publisher_verified": false,
+    "duplicate_of": null,
+    "tags": []
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "signals": {
+    "stars_github": 3629,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-08-17T03:45:51.659Z",
+    "first_seen_at": "2026-08-16T03:43:51.956Z",
+    "upstream_commit_at": "2026-08-16T04:52:07Z",
+    "repo_skill_count": 83,
+    "bulk_source": true
+  },
+  "context_size": {
+    "version": "1",
+    "counter": {
+      "id": "static-mixed-estimate-v1.1",
+      "method": "heuristic",
+      "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
+    },
+    "generated_at": "2026-08-17T03:45:51.659Z",
+    "scopes": {
+      "activation_core": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 14071,
+        "chars": 14007,
+        "tokens": 2758
+      },
+      "activation_with_declared_refs": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 14071,
+        "chars": 14007,
+        "tokens": 2758
+      },
+      "package_total_text": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 14071,
+        "chars": 14007,
+        "tokens": 2758
+      }
+    }
+  },
+  "eval": null,
+  "copy": {
+    "tagline": "发现金融应用中资金操作与账户信息的安全漏洞",
+    "scene_tags": [
+      "渗透测试",
+      "安全审计",
+      "金融api检测"
+    ],
+    "fit_line": "适合你，如果在测试金融系统接口，担心转账、提现等环节有安全漏洞。",
+    "tagline_en": "Find security flaws in fintech apps' money-moving operations and account data.",
+    "scene_tags_en": [
+      "penetration testing",
+      "security audit",
+      "fintech API checking"
+    ],
+    "fit_line_en": "For you if you test financial APIs and worry about vulnerabilities in transfers and account data.",
+    "source": "llm",
+    "content_hash": "sha256:2a9a84e65bf89b9f02ff6dd2e3829d2f15eb87f8ded438cb31ec267537941625",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-16T03:45:58.751Z",
+    "lint_pass": true
+  },
+  "howto": {
+    "what": "装上后，Claude 会针对金融类 GraphQL 接口执行安全测试：检查转账、提现等资金操作是否可被篡改或重放，验证余额查询是否泄露他人数据，测试金额精度、幂等键、字段级权限校验等漏洞，并只报告有账本状态变化证据的发现。",
+    "when": "当你对暴露 GraphQL 接口的金融类目标（银行、支付、钱包等）做安全测试，或接口数据里含有余额、转账、账本等字段时触发。",
+    "say": [
+      {
+        "text": "检查这个 GraphQL 接口的转账 mutation 是否存在幂等键绕过漏洞",
+        "note": "Claude 会重发相同幂等键，观察是否产生第二笔账"
+      },
+      {
+        "text": "用他人的账户 ID 查询余额，测试是否越权返回数据",
+        "note": "Claude 会构造跨账户查询，验证是否泄露他人数据"
+      },
+      {
+        "text": "用 0.001 和科学计数法金额测试 transferFunds 的精度处理",
+        "note": "Claude 会发送异常金额值，检查服务端舍入逻辑"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:2a9a84e65bf89b9f02ff6dd2e3829d2f15eb87f8ded438cb31ec267537941625",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-17T04:07:01.106Z",
+    "lint_pass": true,
+    "what_en": "Audits fintech GraphQL APIs for money-mutation flaws, balance IDOR, decimal abuse, idempotency-key double-spends, KYC/PII auth gaps, and mass-assignment admin mutations. Reports only proven ledger changes.",
+    "when_en": "Triggered when hunting a fintech target (banking, payments, wallet, etc.) exposing a GraphQL API, or when the schema/response contains balance, transfer, ledger, or similar fields.",
+    "say_en": [
+      {
+        "text": "Check this GraphQL API's transfer mutation for idempotency-key bypass.",
+        "note": "Claude replays the key, checking for a second ledger entry."
+      },
+      {
+        "text": "Fetch an account ID that isn't mine on the balance query to test IDOR.",
+        "note": "Claude tests a cross-account query for data leaks."
+      },
+      {
+        "text": "Probe transferFunds amount handling with 0.001 and 1e2.",
+        "note": "Claude sends edge-case amounts to expose rounding errors."
+      }
+    ]
+  }
+}
