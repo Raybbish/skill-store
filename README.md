@@ -1,84 +1,147 @@
 # oh-my-skill
 
-以**可复现评测、效果可见**为核心的 Agent Skills 商店。发现是红海,我们卖信任。
+> 以可复现评测和可核验来源为核心的 Agent Skills 目录。
 
-站点:[oh-my-skill.com](https://oh-my-skill.com)(中文)/ [oh-my-skill.com/en](https://oh-my-skill.com/en/)(English)。双语口径见 ADR 0022:商店的话跟语言走,商品(skill 名/描述/README)保持原文。
+[中文站点](https://oh-my-skill.com) · [English](https://oh-my-skill.com/en/) · [提交 Issue](https://github.com/Raybbish/skill-store/issues)
 
-> ⛔ **安全扫描整套已下架**(2026-07-04,[ADR 0011](docs/decisions/0011-unlist-security-scan.md)):审计链路(L1/L2/L3 + 人工复核)与全部产品面展示暂停,待详细研究与设计后再上架。下文带 ~~删除线~~ 或标注「已下架」的条目为历史记录。
+oh-my-skill 帮助开发者发现、比较和安装 Agent Skills。我们不把“收录”包装成安全背书，而是尽可能公开来源、许可证、内容哈希、社区信号和评测条件，让使用者能够自行判断。
 
-当前阶段:**上线冲刺**(M0 可信目录已收口,见下方里程碑;M1 可复现评测进行中)。
+> [!IMPORTANT]
+> 安全扫描与审计展示已于 2026-07-04 下架。L1/L2/L3 与人工复核链路均已暂停，详见 [ADR 0011](docs/decisions/0011-unlist-security-scan.md)。项目不会宣称任何 Skill “保证安全”。
 
-## 结构
+## 项目能力
 
-```
-packages/schemas    skill-report JSON Schema v1 + TS 类型 + 词表/微文案 lint(四端单一来源)
-packages/pipeline   采集管线:sources.yaml → adapter → 校验/licence 分流/哈希去重 → catalog/
-packages/web        商店前端:Next.js 纯静态导出,构建时直读 catalog(zh / en 双路由)
-packages/cli        oh-my-skill CLI:安装时逐文件复算 blob sha 校验 content_hash
-packages/verdicts   信任判定(可插拔判定服务方向,ADR 0012;S0 阶段)
-catalog/skills/     事实源:每 skill 一个目录(skill-report.json + mirror/)
-catalog/lists/      清单账本(ADR 0019:聚合仓/awesome-list 的出现记录)
-catalog/packs/      场景包(官方策展,一套一起装)
-docs/decisions/     ADR:所有裁决入档,现行架构以此为准
-.github/workflows   ingest.yml:每日采集(含 --code-search 探索),变更走 PR
-```
+- **可追溯目录**：记录 Skill 的上游来源、许可证与采集状态。
+- **托管 / 索引双轨**：许可证允许时保留镜像，否则仅保存元数据并链接到上游。
+- **内容完整性**：通过 `content_hash` 固定目录内容，CLI 安装时逐文件复算校验。
+- **中英双语商店**：界面文案随语言切换，Skill 名称、描述和 README 保持原文。
+- **可复现评测**：任务、输入、runner、模型和校验器共同定义评测结果；无法执行的任务记为 N/A，而不是 0 分。
+- **社区策展信号**：awesome-list 等社区清单只作为收录信号，Skill 内容仍从原始仓库采集。
 
 ## 快速开始
 
+### 环境要求
+
+- Node.js 20+
+- npm 10+
+- Git
+
+### 本地运行
+
 ```bash
+git clone https://github.com/Raybbish/skill-store.git
+cd skill-store
 npm install
-npm run ingest                         # 跑全部源
-npm run ingest -- --source anthropics/skills   # 只跑一个源
-npm run ingest -- --limit 10           # 限量试跑
-npm run web                            # 本地预览商店(:3001)
-npm run web:build                      # 出静态站(packages/web/out)
-npm run categorize:llm -- --scope missing-copy  # 补微文案(需 LLM key;missing-en 补英文)
-npm run status                         # 仓况快照(docs/STATUS)
+
+# 启动商店，默认访问 http://localhost:3001
+npm run web
 ```
 
-产出在 `catalog/skills/<owner>/<repo>/<name>/skill-report.json`;`mirrored` 条目附完整 `mirror/` 副本。
+构建静态站点：
 
-> 采集走 **git shallow clone**(无 API 限流、可完整镜像);GitHub API 仅用于 signals
-> 补充(stars 等,见 `github.ts`),在 API 可达环境(如 GitHub Actions)运行。
+```bash
+npm run web:build
+# 输出目录：packages/web/out
+```
 
-## 设计要点(M0)
+### 运行采集管线
 
-- **托管/索引双轨**:宽松 licence(MIT/Apache 等)→ `mirrored` 镜像;其余 → `indexed` 只存元数据 + 跳转上游
-- **content_hash**:对目录内 (path, git blob sha) 排序集合取 sha256,CLI 安装时校验,防上游篡改
-- **security_audit 字段**:catalog 中保留历史数据,但审计管线已下架(ADR 0011),前端与 CLI 不再读取
-- 措辞红线:全站不说「保证安全」
+```bash
+npm run ingest                                  # 采集全部配置源
+npm run ingest -- --source anthropics/skills  # 仅采集一个源
+npm run ingest -- --limit 10                  # 限量试跑
+```
 
-## 路线
+采集结果写入：
 
-- [x] W1 骨架 + official adapter(clone 模式,首批 27 条:12 mirrored / 15 indexed)
-- [x] ~~W2 审计 L1(critical 签名)+ L2(五因子静态分析)~~ **已下架**(ADR 0011;源码留仓,scripts 已移除)
-- [x] ~~W3a 审计 L3(LLM 意图审查)~~ **已下架**(ADR 0011;源码留仓,scripts 已移除)
-- [x] W3b Supabase 同步:`npm run sync`(增量,游标存 sync_state;infra/schema.sql 建表;sync.yml 自动触发)
-- [x] W3c 供给扩量:GitHub 全域采集器 `npm run ingest -- --github-search 100`(topic 搜头部仓,注入 stars);skills.sh 榜单 `--skills-sh 200`(解析 SSR 榜单注入安装量);三段式 ID owner/repo/name。~~每仓折叠采样 MAX_PER_REPO + collections 合集~~ 已被 ADR 0019 取代(见下)
-- [x] W4 商店前端:Next.js 纯静态导出,构建时直读 catalog;`npm run web` 本地预览,`npm run web:build` 出静态站
-- [x] W5 CLI:`node packages/cli/bin/oh-my-skill.mjs add <owner/repo/name>` — 逐文件复算 blob sha 校验 content_hash,篡改即拒装
+```text
+catalog/skills/<owner>/<repo>/<name>/skill-report.json
+```
 
-## M0 之后已落地(以 docs/decisions/ 为准)
+状态为 `mirrored` 的条目还会包含完整的 `mirror/` 副本。采集默认使用 Git shallow clone；GitHub API 仅用于补充 stars 等 signals。
 
-- [x] **作品/清单/出现对象模型**(ADR 0019):仓型判定由 content_hash 对撞客观给出,取代启发式采样;聚合仓成排序养料;S1 Code Search 探索采集进 cron(`--code-search`)
-- [x] **退市机制**(ADR 0020):上游消失 → 缺席观测计数 → 3 日墓碑页(深链不 404,事实陈述);重现自动复活
-- [x] **微文案层**(ADR 0013):机器生成 tagline/场景词/fit_line,lint 字段级判罚(主字段 tagline 不过才整份作废),禁用词表 prompt 与 lint 共用;场景词点击 = 搜索聚合,词频阈值裁可见 chip
-- [x] **双语**(ADR 0022):商店页 zh/en 瘦身双路由 + 共享页客户端切换;中英微文案同一次 LLM 调用产出;hreflang 互指
-- [x] **搜索 P1/P2**(ADR 0018):Typesense 接管三态检索(env 未配时自动回落纯静态);首页排序:热门(归一 star + per-repo cap)/ Star 数 / 最新收录(纯排序)
-- [x] **社区层**(ADR 0017 / 0021):skill 短评(下载回执 + 邮箱 OTP 隐形验证)、公海讨论区(信笺流);场景包 11 包(人写编辑手记)
+### 运行其他任务
 
-## M1 评测(进行中 · 可复现协议,平台做赛道不做裁判)
+```bash
+npm run typecheck
+npm run status
+npm run sync
+npm run eval -- --category doc-generation --runner openai
+npm run categorize:llm -- --scope missing-copy
+```
 
-- [x] 评测框架:任务集(`task.yaml`+`prompt.md`+`inputs/`+`verify.ts`)、确定性校验器、装/不装双跑;产物缺失/环境不匹配记 **N/A(不计 0 分)**并排除出统计(非"评到 0 分")
-- [x] 写入闸:只有带 runner+模型元数据、且无 N/A 任务的真实结果才回写 `skill-report.eval`;mock、全/部分 N/A 一律拒绝(防假分污染货架)
-- [x] 文档生成品类:md→带TOC的docx、csv→带SUM公式的xlsx(零依赖 OOXML 解析校验)
-- [x] 真实 runner:`npm run eval -- --category doc-generation --runner openai`(OpenAI 兼容端点;`mock` 仅跑通管线、不落库)
-- [ ] 货架分数展示:分数带元数据(runner/模型)、可复现可挑战;协议成熟前前端为「可复现评测·开发中」路线图态
-- [ ] 扩展任务集 / 覆盖更多品类;跨模型交叉验证防过拟合
+部分任务需要外部服务或密钥。请按实际环境配置 `.env`，不要提交密钥。
 
-## Hub 精选信号线(架构图落地)
+## CLI
 
-- [x] `npm run ingest -- --hub-signals 300` — 解析社区 awesome-list(VoltAgent/awesome-agent-skills 等,`HUB_LISTS` 可配)
-- 情报不当货:只读「哪些 skill 被收录 + 归为什么类」,内容一律回上游 GitHub 采集
-- 注入 `signals.curated_by`(收录来源+分类)并补 `meta.category`;详情页显示「★ 社区精选收录」
-- 需本机/CI 跑(拉 raw.githubusercontent + clone 上游);解析逻辑已沙箱验证
+在仓库中直接运行 CLI：
+
+```bash
+node packages/cli/bin/oh-my-skill.mjs add <owner/repo/name>
+```
+
+安装时 CLI 会逐文件复算 Git blob SHA，并核对目录级 `content_hash`；内容不一致时拒绝安装。
+
+## 仓库结构
+
+| 路径 | 用途 |
+| --- | --- |
+| `packages/schemas` | `skill-report` JSON Schema、TypeScript 类型、词表和微文案 lint |
+| `packages/pipeline` | 数据源适配、采集、校验、去重、同步和评测管线 |
+| `packages/web` | Next.js 静态商店，构建时读取 `catalog/` |
+| `packages/cli` | Skill 安装与内容哈希校验 CLI |
+| `packages/verdicts` | 可插拔信任判定服务的实验方向 |
+| `catalog/skills` | 每个 Skill 的事实记录及可选镜像 |
+| `catalog/lists` | 聚合仓和 awesome-list 的出现记录 |
+| `catalog/packs` | 官方策展的场景包 |
+| `docs/decisions` | 架构决策记录（ADR） |
+| `.github/workflows` | 自动采集、同步和构建工作流 |
+
+## 核心原则
+
+### 托管与索引分离
+
+许可证允许再镜像。MIT、Apache 等宽松许可证可进入 `mirrored`；其他条目进入 `indexed`，只保存元数据和上游链接。
+
+### 内容哈希
+
+`content_hash` 基于目录中排序后的 `(path, git blob sha)` 集合计算 SHA-256。它用于发现内容漂移，并为 CLI 安装提供完整性校验。
+
+### 事实、信号与判定分层
+
+- **事实**：来源、版本、许可证、文件内容和哈希。
+- **信号**：stars、社区清单收录、安装量等可观察数据。
+- **判定**：平台或外部服务基于事实与信号给出的结论。
+
+三者不会混为一谈；被收录不代表安全，也不代表官方推荐。
+
+## 当前状态
+
+项目处于 M1：可复现评测协议持续建设中。
+
+- [x] 可信目录、采集管线与许可证分流
+- [x] 中英双语静态商店
+- [x] CLI 内容哈希校验
+- [x] 社区清单信号与场景包
+- [x] 确定性评测框架及真实 runner
+- [ ] 在商店中展示带 runner / 模型元数据的评测结果
+- [ ] 扩展任务集、覆盖更多类别并开展跨模型验证
+
+具体设计和历史裁决以 [`docs/decisions/`](docs/decisions/) 中的 ADR 为准。
+
+## 参与贡献
+
+欢迎通过 [Issues](https://github.com/Raybbish/skill-store/issues) 报告问题、讨论数据口径或提出功能建议，也欢迎提交 Pull Request。
+
+提交前请注意：
+
+1. 不要把“收录”“社区信号”或“静态检查”描述为安全保证。
+2. 涉及数据模型、语言口径或信任规则的改动，请同步补充或更新 ADR。
+3. 不要提交 API Key、访问令牌、用户数据或其他敏感信息。
+4. 对新增命令或行为提供可复现的验证步骤。
+
+## 许可证状态
+
+本仓库代码已公开，但目前尚未添加 `LICENSE` 文件。在许可证明确前，代码默认保留所有权利；查看源码不等于获得复制、修改或再分发授权。
+
+如果你计划采用或再分发本项目代码，请先通过 Issue 与维护者确认。
