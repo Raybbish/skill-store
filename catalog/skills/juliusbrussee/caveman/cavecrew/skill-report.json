@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "Decision guide for delegating to caveman-style subagents. Tells the main thread WHEN to spawn `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit), or `cavecrew-reviewer` (diff review) instead of doing the work inline or using vanilla `Explore`. Subagent output is caveman-compressed so the tool-result injected back into main context is ~60% smaller — main context lasts longer across long sessions. Trigger: \"delegate to subagent\", \"use cavecrew\", \"spawn investigator/builder/reviewer\", \"save context\", \"compressed agent output\".\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "766dce6b1394ebb56a3090748d5a0240a5aefb36",
+    "upstream_commit": "81536f57b3303b7de7f5bc5b564cc344f9112d68",
     "content_hash": "sha256:5b9553c80fdab25088c5851d1f8f2c306f5c787214ca33f03654ebc16dafe2a3",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 255000,
-    "fetched_at": "2026-08-17T03:47:39.850Z",
+    "installs_skills_sh": 270200,
+    "fetched_at": "2026-08-27T13:40:07.880Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-08-16T21:26:42+02:00"
+    "upstream_commit_at": "2026-08-25T01:31:19+02:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-17T03:47:39.850Z",
+    "generated_at": "2026-08-27T13:40:07.880Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会根据任务类型决定是否派发三个压缩风格子代理之一：定位代码用 cavecrew-investigator，不超过 2 个文件的小改动用 cavecrew-builder，审查 diff 用 cavecrew-reviewer。子代理返回的压缩结果注入主上下文后体积约小 60%。",
-    "when": "当你说“delegate to subagent”、“use cavecrew”、“spawn investigator/builder/reviewer”等触发词，或要求压缩代理输出、节省上下文时触发。",
+    "what": "装上后,Claude 会按任务类型把“查代码位置”“改1-2个文件”“审查diff”分别交给三个子代理执行,它们返回压缩格式的结果,注入主对话的体积约比普通输出小六成。",
+    "when": "当你提到“delegate to subagent”“use cavecrew”“save context”等关键词,或要求spawn investigator/builder/reviewer中的某个子代理时触发。",
     "say": [
       {
-        "text": "用 cavecrew 找一下 X 函数在哪里定义的",
-        "note": "触发 investigator，返回带行号的压缩清单。"
-      },
-      {
-        "text": "派 cavecrew-builder 改这两个文件",
-        "note": "限 1-2 文件小改动，返回验证或 too-big 标记。"
-      },
-      {
-        "text": "让 cavecrew-reviewer 审一下这个 diff",
-        "note": "返回按行号排序的问题列表和汇总。"
+        "text": "叫 cavecrew-reviewer 审一下刚才的 diff 有没有问题。",
+        "note": "返回按严重度排列的问题列表。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5b9553c80fdab25088c5851d1f8f2c306f5c787214ca33f03654ebc16dafe2a3",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-17T03:59:06.767Z",
+    "generated_at": "2026-08-27T14:29:33.261Z",
     "lint_pass": true,
-    "what_en": "After enabling, Claude decides whether to delegate a task to one of three caveman-style subagents: cavecrew-investigator for locating code, cavecrew-builder for 1-2 file edits, or cavecrew-reviewer for diff review. Their compressed output is ~60% smaller when injected into main context.",
-    "when_en": "Triggered when you say \"delegate to subagent\", \"use cavecrew\", \"spawn investigator/builder/reviewer\", etc., or ask for compressed agent output to save context.",
+    "what_en": "After install, Claude routes three task types — locating code, editing 1-2 files, reviewing diffs — to dedicated caveman-style subagents. Their results come back in a compressed fixed format, so the text injected into the main thread is about 60% smaller.",
+    "when_en": "Triggers when you say phrases like \"delegate to subagent\", \"use cavecrew\", or \"save context\", or when you ask for a specific subagent such as investigator/builder/reviewer.",
     "say_en": [
       {
-        "text": "Use cavecrew to find where X is defined.",
-        "note": "Triggers investigator, returns line-numbered compressed list."
+        "text": "Spawn cavecrew-investigator to find where calculateTax is defined.",
+        "note": "Returns a path:line list."
       },
       {
-        "text": "Spawn cavecrew-builder to edit these two files.",
-        "note": "Limited to 1-2 file edits, returns verification or too-big."
+        "text": "Use cavecrew-builder to fix the error message at src/utils.ts:15.",
+        "note": "Returns a concise edit summary or too-big."
       },
       {
-        "text": "Have cavecrew-reviewer audit this diff.",
-        "note": "Returns findings sorted by file and line."
+        "text": "Have cavecrew-reviewer check the current diff for bugs.",
+        "note": "Returns findings sorted by severity."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "clinical-reports",
     "description": "Create safety-bounded draft structures and run local deterministic checks for clinical case, diagnostic, trial, safety, and aggregate research reports. Use only with synthetic, de-identified, or aggregate inputs and verified source-fact manifests; every output requires qualified review.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/clinical-reports",
-    "upstream_commit": "336c4f838a6c21b54e1e1f58cbbeae143d151fe2",
+    "upstream_commit": "36d8f13a1e754618794bf42f417884940077b4ae",
     "content_hash": "sha256:7b23e11b90d631b8171ea60a6345152f2149f8ea17d5c5e698de97e664052ee6",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33605,
+    "stars_github": 35043,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-16T03:43:12.484Z",
+    "fetched_at": "2026-08-27T13:37:16.869Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-15T20:12:06-07:00",
-    "repo_skill_count": 162,
+    "upstream_commit_at": "2026-08-24T09:22:54Z",
+    "repo_skill_count": 163,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-16T03:43:12.484Z",
+    "generated_at": "2026-08-27T13:37:16.869Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -155,40 +155,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后，Claude 能按 CARE 等规范写病例报告、诊断报告、试验报告等临床文书，并强制为每份报告生成至少一张示意图，同时做合规与去标识化检查。只接受合成/去标识/汇总数据，产出需合格审查。",
-    "when": "当你提供合成、去标识或汇总数据，并要求写病例报告（CARE）、诊断报告、临床试验/安全报告等临床文档时触发；也用于 HIPAA 等合规校验。",
+    "what": "安装后,Claude 会按 CARE、ICH-E3 等模板起草病例、诊断、试验/安全报告及 SOAP/H&P/出院小结;定稿前用固定规则自查,并强制配一张示意图,还要由专业人员复核。",
+    "when": "当你要求撰写临床病例、诊断报告、临床试验/安全报告等临床文书时触发;也用于校验文档完整性与 HIPAA 合规。仅限合成、去标识或聚合数据输入,每份输出需合格人员审阅。",
     "say": [
       {
-        "text": "用这份去标识的模拟数据，写一份 CARE 格式的病例报告草稿。",
-        "note": "会生成含标题、摘要、时间线的草稿，并配示意图。"
+        "text": "帮我按 CARE 指南写一份去标识化的病例报告初稿。",
+        "note": "会生成符合 CARE 清单的病例报告草稿。"
       },
       {
-        "text": "把病理结果整理成符合 CAP 协议的诊断报告。",
-        "note": "按大体、镜下、诊断等标准结构输出，并做合规检查。"
+        "text": "给诊断报告生成一张治疗流程示意图,放在 figures 目录。",
+        "note": "会调用scientific-schematics生成示意图。"
       },
       {
-        "text": "为这个模拟试验生成 CONSORT 受试者流程图。"
+        "text": "校验这份出院小结是否符合 HIPAA 去标识要求并补全缺失项。",
+        "note": "会检查完整性与去标识情况。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:7b23e11b90d631b8171ea60a6345152f2149f8ea17d5c5e698de97e664052ee6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-16T03:55:57.477Z",
+    "generated_at": "2026-08-27T14:32:46.447Z",
     "lint_pass": true,
-    "what_en": "Claude writes CARE case reports and diagnostic/trial reports (etc.), runs compliance/de-identification checks, and always adds one schematic. Inputs must be synthetic/de-identified/aggregate; outputs need review.",
-    "when_en": "Triggers when you write a case report (CARE), diagnostic report, or trial/safety report (etc.), or do compliance checks, using synthetic/de-identified/aggregate data.",
+    "what_en": "After install, Claude drafts case, diagnostic, trial/safety reports and patient notes (SOAP, H&P, discharge), runs local deterministic checks, and requires at least one scientific-schematics figure per report.",
+    "when_en": "Triggers on requests for case, diagnostic, or trial/safety report drafts, and validation/HIPAA checks. Accepts only synthetic, de-identified, or aggregated inputs; outputs need qualified review.",
     "say_en": [
       {
-        "text": "Using this de-identified mock data, draft a CARE-format case report.",
-        "note": "Generates a CARE-structured draft with a timeline schematic."
+        "text": "Draft a de-identified case report following the CARE guidelines.",
+        "note": "Produces a draft structured per the CARE checklist."
       },
       {
-        "text": "Turn these pathology findings into a CAP-protocol diagnostic report.",
-        "note": "Structures the report and checks de-identification."
+        "text": "Generate a treatment flowchart for the diagnostic report in figures.",
+        "note": "Invokes the scientific-schematics skill to create and refine the figure."
       },
       {
-        "text": "Generate a CONSORT participant flow diagram for this mock trial.",
-        "note": "Calls scientific-schematics to make and save the figure."
+        "text": "Check this discharge summary for HIPAA and fill in missing sections.",
+        "note": "Runs completeness and de-identification checks."
       }
     ]
   }

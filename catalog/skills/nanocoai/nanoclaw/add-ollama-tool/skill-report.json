@@ -5,30 +5,28 @@
     "name": "add-ollama-tool",
     "description": "Add Ollama MCP server so the container agent can call local models and optionally manage the Ollama model library.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-tool",
-    "upstream_commit": "69b1b42c0c49e2f2eecb894d1fbdc3032af3446e",
-    "content_hash": "sha256:d8474643a5cf86e8446bf461282f88444a9d0a87b7d7844c025ec229ec594779",
+    "upstream_commit": "99283f3e274b2b1dae47b141ac4f11f56ad8eb2d",
+    "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "license": "MIT",
-    "hosting": "mirrored",
-    "mirror_complete": true,
+    "hosting": "indexed",
     "category": "dev",
     "version": null,
     "publisher": "nanocoai",
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "mcp",
-      "docker"
+      "mcp"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30524,
+    "stars_github": 30627,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-17T03:44:58.323Z",
+    "fetched_at": "2026-08-27T13:37:21.454Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-16T23:33:57+03:00",
-    "repo_skill_count": 51,
+    "upstream_commit_at": "2026-08-26T23:04:22+02:00",
+    "repo_skill_count": 58,
     "bulk_source": true
   },
   "context_size": {
@@ -38,16 +36,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-17T03:44:58.323Z",
+    "generated_at": "2026-08-27T13:37:21.454Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 11671,
-        "chars": 11615,
-        "tokens": 2620
+        "bytes": 12042,
+        "chars": 11982,
+        "tokens": 2684
       },
       "activation_with_declared_refs": {
         "files": [
@@ -57,9 +55,9 @@
           "ollama-wiring.test.ts"
         ],
         "text_files": 4,
-        "bytes": 30395,
-        "chars": 30327,
-        "tokens": 6067
+        "bytes": 30544,
+        "chars": 30472,
+        "tokens": 6082
       },
       "package_total_text": {
         "files": [
@@ -71,68 +69,70 @@
           "ollama-wiring.test.ts"
         ],
         "text_files": 6,
-        "bytes": 33011,
-        "chars": 32933,
-        "tokens": 6647
+        "bytes": 33217,
+        "chars": 33133,
+        "tokens": 6667
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "让容器 agent 调用本地大模型并管理模型库",
+    "tagline": "添加本地 Ollama 服务，容器代理可直接调用",
     "scene_tags": [
-      "本地模型调用",
-      "模型库管理"
+      "本地模型接入",
+      "ai代理设置",
+      "开发环境配置"
     ],
-    "fit_line": "适合你，如果需要在容器中运行本地大模型并管理模型库",
-    "tagline_en": "Enable container agent to call local models and manage model library",
+    "fit_line": "适合你,如果 你的容器代理需要调用本地 Ollama 模型，又不想手动折腾配置",
+    "tagline_en": "Connect your container agent to local Ollama models",
     "scene_tags_en": [
-      "local model invocation",
-      "model library management"
+      "local model access",
+      "agent configuration",
+      "dev environment setup"
     ],
-    "fit_line_en": "For you if you need to run local LLMs in containers and manage model libraries",
+    "fit_line_en": "For you if your container agent needs to call local Ollama models and you'd prefer a straightforward setup",
     "source": "llm",
-    "content_hash": "sha256:d8474643a5cf86e8446bf461282f88444a9d0a87b7d7844c025ec229ec594779",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-11T08:28:45.739Z",
+    "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-27T14:04:34.556Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,容器代理可通过 MCP 调用本地 Ollama 模型,Claude 仍是总指挥,可把任务交给本地模型。默认提供列出模型、生成回复两个工具;开启管理选项后,还能拉取、删除、查看模型等。",
-    "when": "当用户要求用 Ollama 处理任务、让 Claude 调用本地模型,或询问本地有哪些模型时触发。",
+    "what": "安装后,Claude 可通过 MCP 工具调用本机 Ollama 的模型:列出已装模型、向指定模型发送提示词;若开启管理开关,还能拉取、删除模型、查看模型信息和内存中运行状态。",
+    "when": "当用户要求为项目接入 Ollama 本地模型、让容器里的代理使用 Ollama,或提到 Ollama 集成时触发。",
     "say": [
       {
-        "text": "用 Ollama 告诉我法国的首都是什么",
-        "note": "Claude 会先列出模型,再用合适的模型生成回答。"
+        "text": "用 ollama 告诉我法国的首都",
+        "note": "Claude 会先列出模型再生成回答。"
       },
       {
-        "text": "列出当前已安装的 Ollama 模型",
-        "note": "会调用列表工具,返回模型名称、大小等信息。"
+        "text": "把 gemma3:1b 模型拉下来",
+        "note": "需在 .env 开启管理工具才会执行。"
       },
       {
-        "text": "帮我拉取 gemma3:1b 模型",
-        "note": "若已启用管理工具,会执行拉取下载。"
+        "text": "现在内存里加载了哪些 ollama 模型?",
+        "note": "需开启管理工具才会列出。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:d8474643a5cf86e8446bf461282f88444a9d0a87b7d7844c025ec229ec594779",
+    "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-17T04:01:17.059Z",
+    "generated_at": "2026-08-27T14:41:13.116Z",
     "lint_pass": true,
-    "what_en": "After installation, the agent can call local Ollama models via MCP. Claude stays the orchestrator and can hand work to local models. Default tools: list models and generate. With the admin flag: pull, delete, inspect models.",
-    "when_en": "Triggered when the user asks to use Ollama for a task, wants Claude to call a local model, or asks which local models are available.",
+    "what_en": "After installation, Claude can use local Ollama models through MCP tools: list installed models and send prompts to a specified model. If the admin flag is enabled, it can also pull/delete models, show model details, and list models loaded in memory.",
+    "when_en": "Triggered when the user asks to integrate Ollama into the project, have the container agent use local models, or mentions adding the Ollama MCP server.",
     "say_en": [
       {
-        "text": "Use Ollama to tell me the capital of France.",
-        "note": "Claude lists models, picks one, and generates the answer."
+        "text": "Use ollama to tell me the capital of France",
+        "note": "Claude will list models first, then generate an answer."
       },
       {
-        "text": "List the currently installed Ollama models.",
-        "note": "Calls the list tool, returning names, sizes, and families."
+        "text": "Pull the gemma3:1b model",
+        "note": "Requires the admin tools flag enabled in .env."
       },
       {
-        "text": "Pull the gemma3:1b model for me.",
-        "note": "Executes the pull if admin tools are enabled."
+        "text": "Which ollama models are currently loaded in memory?",
+        "note": "Requires the admin tools flag to be enabled."
       }
     ]
   }

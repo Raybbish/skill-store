@@ -3,31 +3,28 @@
   "meta": {
     "id": "thedotmack/claude-mem/mem-search",
     "name": "mem-search",
-    "description": "Search claude-mem's persistent cross-session memory database. Use when user asks \"did we already solve this?\", \"how did we do X last time?\", or needs work from previous sessions.",
-    "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/mem-search",
-    "upstream_commit": "fae697a45d107aae567d605916391ab64d8ecae1",
-    "content_hash": "sha256:8d42ec7668c9c60878193d26750fd61992a2fc1a6de9a4f36706c4952cb6f410",
+    "description": "This skill should be used when the user asks to \"search memory\", \"what do you remember about X\", \"check claude-mem\", \"mem search\", \"find past observations\", \"what did we do last session\", or wants prior-session context about a project, decision, file, or task. Searches the user's Claude-Mem (cmem.ai) memory.\n",
+    "upstream": "https://github.com/thedotmack/claude-mem/tree/main/cowork/skills/mem-search",
+    "upstream_commit": "866a0ca3b34cddd8aa4c5fba72b9ad2b3a5621fe",
+    "content_hash": "sha256:ad7868555719e59588b7db3f3037597ce946932604e5cf00f002a500d284e37a",
     "license": "Apache-2.0",
-    "hosting": "mirrored",
-    "mirror_complete": false,
-    "category": "dev",
+    "hosting": "indexed",
+    "category": "uncategorized",
     "version": null,
     "publisher": "thedotmack",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": [
-      "skill-tooling"
-    ]
+    "tags": []
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 90920,
+    "stars_github": 92056,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-17T03:44:38.788Z",
+    "fetched_at": "2026-08-27T13:37:00.249Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-16T12:09:11-07:00",
-    "repo_skill_count": 20
+    "upstream_commit_at": "2026-08-26T09:56:07-07:00",
+    "repo_skill_count": 22
   },
   "context_size": {
     "version": "1",
@@ -36,95 +33,95 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-17T03:44:38.788Z",
+    "generated_at": "2026-08-27T13:37:00.249Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 4081,
-        "chars": 4077,
-        "tokens": 865
+        "bytes": 2059,
+        "chars": 2041,
+        "tokens": 456
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 4081,
-        "chars": 4077,
-        "tokens": 865
+        "bytes": 2059,
+        "chars": 2041,
+        "tokens": 456
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 4081,
-        "chars": 4077,
-        "tokens": 865
+        "bytes": 2059,
+        "chars": 2041,
+        "tokens": 456
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "搜索跨会话记忆数据库，快速找回历史工作",
+    "tagline": "搜索历史记忆，找回之前的对话和项目背景",
     "scene_tags": [
-      "跨会话查询",
-      "历史记录检索",
-      "记忆回溯"
+      "找回上下文",
+      "回忆旧项目",
+      "会话续接"
     ],
-    "fit_line": "适合你，如果经常需要从之前的对话中找回解决方案或上下文",
-    "tagline_en": "Search cross-session memory database to quickly retrieve past work",
+    "fit_line": "适合你,如果经常需要查阅过去的会话记录来继续工作。",
+    "tagline_en": "Search past memories to retrieve prior conversations and project context.",
     "scene_tags_en": [
-      "cross-session query",
-      "history retrieval",
-      "memory recall"
+      "recall context",
+      "past projects",
+      "session handoff"
     ],
-    "fit_line_en": "For you if you often need to recall solutions or context from previous conversations",
+    "fit_line_en": "For you if you often need to look back at previous chat records to continue your work.",
     "source": "llm",
-    "content_hash": "sha256:8d42ec7668c9c60878193d26750fd61992a2fc1a6de9a4f36706c4952cb6f410",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-11T08:46:02.211Z",
+    "content_hash": "sha256:ad7868555719e59588b7db3f3037597ce946932604e5cf00f002a500d284e37a",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-27T14:10:09.527Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上该技能后，当对话涉及过往工作，Claude 会先搜索记忆库，列出带 ID 的索引，再围绕相关结果查看时间线，最后只获取选定记录的完整细节。",
-    "when": "当用户问起“之前解决过吗”“上次怎么做”或需要过往会话的工作内容时触发。",
+    "what": "装上后,Claude 会先用 search 工具搜索你跨会话的记忆库,再用 timeline 看前后上下文,最后只对筛选出的记录调 get_observations 取详情。",
+    "when": "当用户问起之前会话的内容,比如“上次怎么解决的”“上周发生了什么”,或明确说“搜索记忆/查 claude-mem”时触发。",
     "say": [
       {
-        "text": "我们上次是怎么修复登录报错的？",
-        "note": "Claude 会先搜出相关索引，再获取完整记录。"
+        "text": "帮我搜一下之前关于登录认证的记录",
+        "note": "会先返回带 ID 的搜索结果列表。"
       },
       {
-        "text": "上周这个项目的讨论都有什么？",
-        "note": "他会列出匹配结果，再帮你查看上下文。"
+        "text": "上次那个 bug 最后怎么修的?查一下记忆",
+        "note": "会搜索 bugfix 类观察并给时间线。"
       },
       {
-        "text": "帮我找一下之前关于性能优化的记录。",
-        "note": "先给索引，按需提取细节。"
+        "text": "把最近一周的项目进展调出来看看",
+        "note": "按日期范围搜索观察记录。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:8d42ec7668c9c60878193d26750fd61992a2fc1a6de9a4f36706c4952cb6f410",
+    "content_hash": "sha256:ad7868555719e59588b7db3f3037597ce946932604e5cf00f002a500d284e37a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-17T04:04:40.761Z",
+    "generated_at": "2026-08-27T14:49:04.734Z",
     "lint_pass": true,
-    "what_en": "After activation, Claude will search the persistent memory database, show an indexed table with IDs, inspect timelines around interesting results, then fetch full details only for selected IDs.",
-    "when_en": "Triggered when the user asks about previous sessions, such as 'did we already solve this?', 'how did we do X last time?', or needs past session work.",
+    "what_en": "After installation, Claude searches the cross-session memory index, inspects surrounding timeline context, then fetches details only for the records you select.",
+    "when_en": "Triggered when you ask about previous sessions, e.g. “how did we fix this last time?”, “what happened last week?”, or say “search memory”/“check claude-mem”.",
     "say_en": [
       {
-        "text": "How did we fix the login error last time?",
-        "note": "Claude searches relevant records first, then answers."
+        "text": "Search my memory for records about login authentication.",
+        "note": "Returns a result list with IDs first."
       },
       {
-        "text": "What did we discuss on this project last week?",
-        "note": "He returns an index of matching entries first, then drills down."
+        "text": "How did we fix that bug last time? Check memory.",
+        "note": "Searches bugfix observations and shows a timeline."
       },
       {
-        "text": "Find earlier notes about performance optimization.",
-        "note": "He lists candidates with IDs, then fetches details on request."
+        "text": "Show me project progress from the last week.",
+        "note": "Searches observations by date range."
       }
     ]
   }

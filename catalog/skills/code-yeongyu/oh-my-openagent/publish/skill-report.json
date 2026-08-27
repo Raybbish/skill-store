@@ -3,10 +3,10 @@
   "meta": {
     "id": "code-yeongyu/oh-my-openagent/publish",
     "name": "publish",
-    "description": "Publish oh-my-opencode to npm by triggering the GitHub Actions publish workflow and verifying its artifacts. Ship-only: never runs pre-publish-review or re-reviews merged code unless the user explicitly asks. Argument: <patch|minor|major>. Triggers: publish, release, deploy, npm publish.",
+    "description": "Publish oh-my-opencode to npm by triggering the GitHub Actions publish workflow and verifying its artifacts. Ship-only: never runs pre-publish-review or re-reviews merged code unless the user explicitly asks. Argument: <patch|minor|major|explicit-semver>. Triggers: publish, release, deploy, npm publish.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/publish",
-    "upstream_commit": "94e954721ccb02fbcbc8bb583f9da1d244a0a06b",
-    "content_hash": "sha256:7e6219f548a57d75c2198763f4c05a353958c4df57b40f0e7d1f83257842ee6d",
+    "upstream_commit": "7eef1179013d77037d07276ed70510e0905ed312",
+    "content_hash": "sha256:910eb9d75f5fd8fd6e1b4b6d17f49babfa0fb9a9c62bac5ed5f43dd65948b95e",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
     "category": "dev",
@@ -16,19 +16,19 @@
     "duplicate_of": null,
     "tags": [
       "deployment",
-      "cli",
       "github"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67965,
+    "stars_github": 68430,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-17T03:44:44.982Z",
+    "fetched_at": "2026-08-27T13:37:06.727Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-17T06:41:22+09:00",
-    "repo_skill_count": 50
+    "upstream_commit_at": "2026-08-27T21:43:15+09:00",
+    "repo_skill_count": 52,
+    "bulk_source": true
   },
   "context_size": {
     "version": "1",
@@ -37,93 +37,91 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-17T03:44:44.982Z",
+    "generated_at": "2026-08-27T13:37:06.727Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 20670,
-        "chars": 20250,
-        "tokens": 4439
+        "bytes": 21937,
+        "chars": 21519,
+        "tokens": 4726
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 20670,
-        "chars": 20250,
-        "tokens": 4439
+        "bytes": 21937,
+        "chars": 21519,
+        "tokens": 4726
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 20670,
-        "chars": 20250,
-        "tokens": 4439
+        "bytes": 21937,
+        "chars": 21519,
+        "tokens": 4726
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "把项目新版本发布到 npm 并验证发布产物",
+    "tagline": "把新版本发布到 npm 并确认发布成功",
     "scene_tags": [
       "版本发布",
-      "发布上线"
+      "上线前发布"
     ],
-    "fit_line": "适合你，如果你需要一键把代码包发布到 npm 并确认发布成功",
-    "tagline_en": "Publish a new version of your project to npm and verify the outputs",
+    "fit_line": "适合你,如果发布了新版本后需要确认它真正上线了",
+    "tagline_en": "Publish a new version to npm and confirm the release succeeded",
     "scene_tags_en": [
-      "version release",
-      "go-live deployment"
+      "release a version",
+      "pre-launch publish"
     ],
-    "fit_line_en": "For you if you need to ship a code package to npm and confirm it succeeded",
+    "fit_line_en": "For you if you need to ship a new version and verify it went live",
     "source": "llm",
-    "content_hash": "sha256:7e6219f548a57d75c2198763f4c05a353958c4df57b40f0e7d1f83257842ee6d",
+    "content_hash": "sha256:910eb9d75f5fd8fd6e1b4b6d17f49babfa0fb9a9c62bac5ed5f43dd65948b95e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-02T05:58:24.681Z",
+    "generated_at": "2026-08-27T13:48:37.984Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "你说要发布时,Claude 会先确认版本升级类型(patch/minor/major),同步代码、触发 GitHub Actions 发布工作流,验证 npm 包和 GitHub 发布,写发布说明并发 Discord 公告。它只发布,不顺手改代码或做审查,除非你明确要求。",
-    "when": "当你说出「publish」「release」「deploy」等触发词,或要求发布到 npm 时触发。它会先确认你要的版本升级类型(patch/minor/major);你没说,它会停下来问。",
+    "what": "安装了此技能后,当你要求发布时,Claude 会按完整流程执行:触发 GitHub Actions 的 publish 工作流,期间持续监控进度,然后核对 GitHub Release、npm 包版本和 Discord 公告,最后汇报结果。它不会进行代码审查或修复。",
+    "when": "当你明确要求发布/部署,说出 “publish”“release” 等触发词,并同时给出发布级别(patch、minor、major 或具体版本号)时触发。若未给出级别,Claude 会先停下询问。",
     "say": [
       {
-        "text": "发布一个 patch 版本",
-        "note": "自动升补丁版本,然后跑完整发布流程"
+        "text": "帮我发布一个 patch 版本"
       },
       {
-        "text": "把最新改动以 minor 版本发布到 npm",
-        "note": "升次版本号,发布后验证 npm 和 GitHub"
+        "text": "执行 minor 发布,新版本 1.2.0"
       },
       {
-        "text": "用 major 版本发布,并记得发 Discord 公告",
-        "note": "主版本升级,发布完成后会在 Discord 发公告"
+        "text": "用 npm publish 发布 5.0.0-beta.9",
+        "note": "按显式语义版本号执行发布。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:7e6219f548a57d75c2198763f4c05a353958c4df57b40f0e7d1f83257842ee6d",
+    "content_hash": "sha256:910eb9d75f5fd8fd6e1b4b6d17f49babfa0fb9a9c62bac5ed5f43dd65948b95e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-17T03:56:42.912Z",
+    "generated_at": "2026-08-27T14:23:20.757Z",
     "lint_pass": true,
-    "what_en": "On publish: confirms bump type, syncs code, triggers the GitHub Actions workflow, verifies npm/GitHub release, drafts notes, posts to Discord. Ships only; no fixes unless asked.",
-    "when_en": "Triggers on keywords like 'publish', 'release', 'deploy' (or asking to publish to npm). It first asks for the bump type (patch/minor/major) and stops to ask if none was provided.",
+    "what_en": "After installing, when you ask to publish, Claude runs the full release workflow: triggers the GitHub Actions publish workflow, monitors it, then verifies the GitHub Release, npm versions, and Discord announcement, and reports back. It does not run code review or fixes.",
+    "when_en": "Triggers when you ask to publish or deploy using trigger words like \"publish\" or \"release\", and provide a release selector (patch, minor, major, or an explicit semver). Without one, it stops and asks.",
     "say_en": [
       {
-        "text": "Publish a patch version",
-        "note": "Bumps the patch version and runs the full release workflow"
+        "text": "Publish a patch release.",
+        "note": "Claude runs the publish workflow end to end."
       },
       {
-        "text": "Publish the latest changes to npm as a minor version",
-        "note": "Bumps minor, verifies npm and GitHub after release"
+        "text": "Do a minor release to version 1.2.0.",
+        "note": "Publishes at that version and verifies npm and GitHub."
       },
       {
-        "text": "Release with a major version and remember to post the Discord announcement",
-        "note": "Major bump; posts to Discord after release completes"
+        "text": "Publish 5.0.0-beta.9 via npm.",
+        "note": "Uses the explicit semver selector."
       }
     ]
   }
