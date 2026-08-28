@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "Decision guide for delegating to caveman-style subagents. Tells the main thread WHEN to spawn `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit), or `cavecrew-reviewer` (diff review) instead of doing the work inline or using vanilla `Explore`. Subagent output is caveman-compressed so the tool-result injected back into main context is ~60% smaller — main context lasts longer across long sessions. Trigger: \"delegate to subagent\", \"use cavecrew\", \"spawn investigator/builder/reviewer\", \"save context\", \"compressed agent output\".\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "81536f57b3303b7de7f5bc5b564cc344f9112d68",
+    "upstream_commit": "17f9f2ec2377b0bfe16b52ee03a462e7f0a02bc8",
     "content_hash": "sha256:5b9553c80fdab25088c5851d1f8f2c306f5c787214ca33f03654ebc16dafe2a3",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 270200,
-    "fetched_at": "2026-08-27T13:40:07.880Z",
+    "installs_skills_sh": 272000,
+    "fetched_at": "2026-08-28T14:50:35.090Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-08-25T01:31:19+02:00"
+    "upstream_commit_at": "2026-08-25T18:17:28+02:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:40:07.880Z",
+    "generated_at": "2026-08-28T14:50:35.090Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,33 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按任务类型把“查代码位置”“改1-2个文件”“审查diff”分别交给三个子代理执行,它们返回压缩格式的结果,注入主对话的体积约比普通输出小六成。",
-    "when": "当你提到“delegate to subagent”“use cavecrew”“save context”等关键词,或要求spawn investigator/builder/reviewer中的某个子代理时触发。",
+    "what": "装上后,Claude 会按指南判断何时把任务交给三个专用子代理:找代码、改一两个文件、审查改动。它们用极简压缩格式汇报,占用的上下文更小,长会话能持续更久。",
+    "when": "当你说出 'delegate to subagent'、'use cavecrew'、'save context' 等触发词时,Claude 就会按此指南决定是否派子代理以及派哪个。",
     "say": [
       {
-        "text": "叫 cavecrew-reviewer 审一下刚才的 diff 有没有问题。",
-        "note": "返回按严重度排列的问题列表。"
+        "text": "用 cavecrew 找一下 `foo` 在哪个文件定义",
+        "note": "会派 investigator 返回路径和行号。"
+      },
+      {
+        "text": "用 cavecrew-reviewer 检查这个 diff",
+        "note": "会派 reviewer 审差异,按路径列问题。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5b9553c80fdab25088c5851d1f8f2c306f5c787214ca33f03654ebc16dafe2a3",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:29:33.261Z",
+    "generated_at": "2026-08-28T15:04:00.351Z",
     "lint_pass": true,
-    "what_en": "After install, Claude routes three task types — locating code, editing 1-2 files, reviewing diffs — to dedicated caveman-style subagents. Their results come back in a compressed fixed format, so the text injected into the main thread is about 60% smaller.",
-    "when_en": "Triggers when you say phrases like \"delegate to subagent\", \"use cavecrew\", or \"save context\", or when you ask for a specific subagent such as investigator/builder/reviewer.",
+    "what_en": "After install, Claude consults the guide to decide when to hand tasks to three subagents: locate code, edit 1-2 files, review changes. They report in terse compressed form, using less context, so long sessions last longer.",
+    "when_en": "It triggers when you say 'delegate to subagent', 'use cavecrew', 'save context', etc.; Claude then consults the guide to decide whether and which subagent to spawn.",
     "say_en": [
       {
-        "text": "Spawn cavecrew-investigator to find where calculateTax is defined.",
-        "note": "Returns a path:line list."
+        "text": "Use cavecrew to find where `foo` is defined",
+        "note": "Spawns investigator to return path and line."
       },
       {
-        "text": "Use cavecrew-builder to fix the error message at src/utils.ts:15.",
-        "note": "Returns a concise edit summary or too-big."
+        "text": "Use cavecrew-builder to change line 20 of `app.js` to `bar`",
+        "note": "Spawns builder for a small single-file edit."
       },
       {
-        "text": "Have cavecrew-reviewer check the current diff for bugs.",
-        "note": "Returns findings sorted by severity."
+        "text": "Use cavecrew-reviewer to check this diff",
+        "note": "Spawns reviewer to audit the diff and list issues."
       }
     ]
   }

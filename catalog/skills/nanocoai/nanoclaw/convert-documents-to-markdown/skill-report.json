@@ -5,7 +5,7 @@
     "name": "convert-documents-to-markdown",
     "description": "Convert an attached Word document, presentation, spreadsheet, OpenDocument file, RTF, EPUB, CSV, or text-based PDF into local Markdown. Use when a message supplies a local attachment path that must be read without uploading it to an external parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc/container-skills/convert-documents-to-markdown",
-    "upstream_commit": "99283f3e274b2b1dae47b141ac4f11f56ad8eb2d",
+    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,9 +21,9 @@
   "signals": {
     "stars_github": 30627,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:21.454Z",
+    "fetched_at": "2026-08-28T14:48:48.528Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-08-26T23:04:22+02:00",
+    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
     "repo_skill_count": 58,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:21.454Z",
+    "generated_at": "2026-08-28T14:48:48.528Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,41 +86,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把附带的 Word、PPT、Excel、OpenDocument、RTF、EPUB、CSV 或文本型 PDF 在本地容器内转换成 Markdown 文件，并告诉您输出路径。转换不上传外部解析器。",
-    "when": "当您发送消息并附带本地附件路径（如 /workspace/inbox/ 下的 Word、PPT、Excel 等文件），需要读取且不上传外部解析器时触发。",
+    "what": "当用户发来带本地路径的文档附件时，Claude 会在容器内将 Word、PPT、Excel、PDF 等文件转换成 Markdown 文件，再读取其内容回答用户，不会把文件上传到外部解析服务。",
+    "when": "当消息中给出本地附件路径，且文件是支持转换的文档格式（如 Word、PDF、CSV 等）时触发。",
     "say": [
       {
-        "text": "请把附带的 Word 文档转成 Markdown",
-        "note": "Claude 会在本地转换并给出输出文件路径。"
-      },
-      {
-        "text": "把附件里的 Excel 转成 Markdown，别上传",
-        "note": "转换不上传外部解析器，但数字格式可能有损。"
-      },
-      {
-        "text": "将这个文本型 PDF 转成 Markdown",
-        "note": "扫描件或图片版 PDF 会报不支持。"
+        "text": "帮我转换这个电子表格 /tmp/数据.csv，注意说明格式丢失情况。",
+        "note": "Claude 会转换并提示可能的格式损失。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:42:37.267Z",
+    "generated_at": "2026-08-28T15:07:13.470Z",
     "lint_pass": true,
-    "what_en": "Converts attached Word, PPT, Excel, OpenDocument, RTF, EPUB, CSV, or text-based PDF files to local Markdown using Firecrawl AnyDoc CLI in the agent container. Saves the output file and reports its path. No upload to external parsers.",
-    "when_en": "Triggered when a message supplies a local attachment path (e.g., Word, PPT, Excel files under /workspace/inbox/) that must be read without uploading to an external parser.",
+    "what_en": "When the user provides a local attachment path, Claude converts documents (Word, PPT, Excel, PDF, etc.) to Markdown inside its container and reads the output, without uploading to external services.",
+    "when_en": "Triggered when a message includes a local attachment path for a supported document format such as Word, PDF, or CSV.",
     "say_en": [
       {
-        "text": "Please convert the attached Word document to Markdown",
-        "note": "It will convert locally and give the output file path."
+        "text": "Convert /workspace/inbox/msg/report.docx to Markdown and summarize the key points.",
+        "note": "Claude converts locally and reads the content."
       },
       {
-        "text": "Convert the Excel attachment to Markdown, don't upload it",
-        "note": "No upload to external parsers; number formatting may be lossy."
+        "text": "Is /data/file.pdf a scanned or image-only PDF? If so, explain that it can't be converted.",
+        "note": "Claude checks and reports whether it is supported."
       },
       {
-        "text": "Convert this text-based PDF to Markdown",
-        "note": "Scanned or image-only PDFs are not supported."
+        "text": "Convert this spreadsheet /tmp/data.csv and note any formatting loss.",
+        "note": "Claude converts and mentions potential formatting issues."
       }
     ]
   }

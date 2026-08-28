@@ -5,7 +5,7 @@
     "name": "dag-library",
     "description": "Store a dag definition once and re-run it in one or two lines, instead of pasting the full definition JSON into every eval cell. MUST USE whenever the user wants to save a DAG for reuse, run a previously saved/named DAG, schedule the same graph repeatedly (nightly/weekly audits, recurring multi-agent pipelines), or asks where to put a dag definition file. Triggers: dag library, save this dag, reuse a dag, run the saved dag, stored dag definition, recurring dag, nightly dag, dag 정의 저장, 저장된 dag 실행, dag 반복 실행, DAG 만들어두고 여러 번.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/dag-library",
-    "upstream_commit": "7eef1179013d77037d07276ed70510e0905ed312",
+    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
     "content_hash": "sha256:f18ceee7ac638ff83c2b16ec320b7a2ca301c455bd7d945615df4f712e9d4c9c",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68430,
+    "stars_github": 68470,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:06.727Z",
+    "fetched_at": "2026-08-28T14:48:38.475Z",
     "first_seen_at": "2026-08-27T13:37:06.727Z",
-    "upstream_commit_at": "2026-08-27T21:43:15+09:00",
+    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:06.727Z",
+    "generated_at": "2026-08-28T14:48:38.475Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude会把DAG定义存入库文件，以后只需一两行代码就能重新运行已保存的图，无需重复粘贴定义。每次运行默认自动追加UTC时间戳键，避免覆盖旧结果；也支持指定后缀或完全复用。",
-    "when": "当你想保存DAG以便复用、运行已保存的DAG、或反复调度同一张图（如夜间/每周审计）等时触发。",
+    "what": "装了这个技能后，Claude 会把你要复用的 DAG 定义存成文件，之后你只要说出名字，它就用一两行代码调出来运行，不用每次贴一大段 JSON。",
+    "when": "当你要求保存 DAG 以便复用、运行已保存的 DAG、或反复运行同一个图（如夜间/每周审计）等时触发。",
     "say": [
       {
-        "text": "把这个DAG保存为nightly-audit",
-        "note": "写入库文件并运行一次确认"
+        "text": "保存当前 DAG 为 nightly-audit 到 .omo/dags。",
+        "note": "会写入文件并试运行一次。"
       },
       {
-        "text": "运行我之前保存的nightly-audit",
-        "note": "以新时间戳键启动一次新运行"
+        "text": "运行保存过的 nightly-audit，自动加时间戳执行新实例。",
+        "note": "每次运行生成新时间戳，不覆盖旧结果。"
       },
       {
-        "text": "用后缀20260818重新运行nightly-audit，复用上次结果",
-        "note": "同后缀复用同一逻辑运行，便于幂等恢复"
+        "text": "用固定后缀 20260818 运行 nightly-audit，复用上次结果。",
+        "note": "同 key 同图会复用旧运行，适合幂等恢复。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f18ceee7ac638ff83c2b16ec320b7a2ca301c455bd7d945615df4f712e9d4c9c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:21:21.280Z",
+    "generated_at": "2026-08-28T14:56:24.715Z",
     "lint_pass": true,
-    "what_en": "Claude stores a DAG definition as a named JSON file in the library and later reruns it with one or two lines instead of pasting the full definition. By default each run appends a UTC timestamp to the key, so reruns never clobber old results; a custom suffix or full reuse is also supported.",
-    "when_en": "Triggers when you want to save a DAG for reuse, run a previously saved/named DAG, or schedule the same graph repeatedly (nightly/weekly audits, recurring multi-agent pipelines).",
+    "what_en": "This skill lets Claude save a DAG definition once as a named file and later re-run it with one or two lines, instead of pasting the full JSON each time.",
+    "when_en": "It triggers when the user wants to save a DAG for reuse, run a saved/named DAG, schedule a graph repeatedly (nightly/weekly), or asks where to put the definition file.",
     "say_en": [
       {
-        "text": "Save this DAG as nightly-audit",
-        "note": "Writes the library file and runs it once to confirm."
+        "text": "Save the current DAG as nightly-audit to .omo/dags.",
+        "note": "Writes the file and runs it once to confirm."
       },
       {
-        "text": "Run my saved DAG nightly-audit",
-        "note": "Starts a fresh run with a new timestamp key."
+        "text": "Run the saved nightly-audit with an auto timestamp for a fresh run.",
+        "note": "Each run gets a new timestamp, avoiding clashes."
       },
       {
-        "text": "Run nightly-audit with suffix 20260818 to reuse last result",
-        "note": "Same suffix reuses the same logical run."
+        "text": "Run nightly-audit with fixed suffix 20260818 to reuse the previous result.",
+        "note": "Same key and graph reuse the old run, for idempotent recovery."
       }
     ]
   }
