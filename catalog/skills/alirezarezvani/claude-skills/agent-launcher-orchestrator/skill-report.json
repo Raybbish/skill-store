@@ -1,0 +1,136 @@
+{
+  "schema_version": "2",
+  "meta": {
+    "id": "alirezarezvani/claude-skills/agent-launcher-orchestrator",
+    "name": "agent-launcher-orchestrator",
+    "description": "Use when a user wants to build, launch, grade, or schedule a Claude Managed Agent (CMA) in their own Anthropic account — \"build me an agent\", \"launch this as a managed agent\", \"run this on a schedule\", \"grade my agent against a rubric\", \"set up a nightly worker\". Reads the per-session goal (./my-agent/goal.json), routes deterministically to one of five phase sub-skills (interview → stage-launch → grade-iterate → run-without-you → wrap-up) via goal_router.py, and compiles the goal+phase into an execution shape (single-pass workflow / bounded grade→iterate loop / recurring cron deployment loop) via loop_compiler.py. Forks context so heavy intake (build sheets, payloads, eval cases) stays out of the parent thread. All launches are emitted as BYOK curl the user runs with their own key; no tool makes API calls. Inspired by anthropics/launch-your-agent (Apache-2.0). Distinct from engineering/agent-harness (generic domain loop) and engineering/write-a-skill (authors Claude Code skills, not CMAs).",
+    "upstream": "https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/agent-launcher-orchestrator",
+    "upstream_commit": "19392f7a08264ed00486a251f5b2098321771f94",
+    "content_hash": "sha256:d6f31baf5799ae9d17702b27b67e93ae08a16c28aa31097e7843e72159a0d14d",
+    "license": "MIT",
+    "hosting": "indexed",
+    "category": "dev",
+    "version": "2.11.2",
+    "publisher": "alirezarezvani",
+    "publisher_verified": false,
+    "duplicate_of": null,
+    "tags": [
+      "agent-ops",
+      "automation",
+      "cli",
+      "python"
+    ]
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "signals": {
+    "stars_github": 25065,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-08-27T13:37:27.998Z",
+    "first_seen_at": "2026-08-27T13:37:27.998Z",
+    "upstream_commit_at": "2026-08-26T15:53:02+02:00",
+    "repo_skill_count": 449,
+    "bulk_source": true
+  },
+  "context_size": {
+    "version": "1",
+    "counter": {
+      "id": "static-mixed-estimate-v1.1",
+      "method": "heuristic",
+      "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
+    },
+    "generated_at": "2026-08-27T13:37:27.998Z",
+    "scopes": {
+      "activation_core": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 5362,
+        "chars": 5312,
+        "tokens": 1203
+      },
+      "activation_with_declared_refs": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 5362,
+        "chars": 5312,
+        "tokens": 1203
+      },
+      "package_total_text": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 5362,
+        "chars": 5312,
+        "tokens": 1203
+      }
+    }
+  },
+  "eval": null,
+  "copy": {
+    "tagline": "构建并发布你自己的托管智能体,支持定时运行与考核",
+    "scene_tags": [
+      "搭建智能体",
+      "定时任务",
+      "发布上线",
+      "效果评估"
+    ],
+    "fit_line": "适合你,如果你希望在 Anthropic 上创建并持续管理自己的托管智能体",
+    "tagline_en": "Build and launch your own managed agents with scheduling and grading",
+    "scene_tags_en": [
+      "building agents",
+      "scheduled tasks",
+      "deployment",
+      "performance review"
+    ],
+    "fit_line_en": "For you if you want to create and manage your own managed agents on Anthropic",
+    "source": "llm",
+    "content_hash": "sha256:d6f31baf5799ae9d17702b27b67e93ae08a16c28aa31097e7843e72159a0d14d",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-27T13:43:05.569Z",
+    "lint_pass": true
+  },
+  "howto": {
+    "what": "它根据你的一句话目标,判断该走哪个阶段:访谈、构建、评分、无人值守运行或收尾,并生成对应的执行计划(单次、评分循环或定时任务)。启动代理时,它只输出一条用你自己密钥运行的 curl 命令,自己从不调用 API。",
+    "when": "当你想构建、启动、评分等管理 Claude 托管代理时触发;若没有目标或目标含糊,它会先要求你把任务说成一句话。",
+    "say": [
+      {
+        "text": "帮我做一个托管代理,每天整理收件箱。",
+        "note": "它会先访谈确认任务,再生成构建步骤。"
+      },
+      {
+        "text": "让这个代理每周一早上9点自动运行。",
+        "note": "它会生成一个定时循环的部署计划。"
+      },
+      {
+        "text": "按这份评分标准给代理的运行结果打分,再改进。",
+        "note": "它会进入评分-改进循环,循环次数有上限。"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:d6f31baf5799ae9d17702b27b67e93ae08a16c28aa31097e7843e72159a0d14d",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-27T14:17:28.141Z",
+    "lint_pass": true,
+    "what_en": "It reads your one-sentence goal, routes to one of five phases, and compiles an execution plan (single-pass, grade-iterate, or cron loop). On launch it emits a BYOK curl for you to run with your own key; it never calls APIs.",
+    "when_en": "Triggers when you want to build, launch, or grade a Claude Managed Agent; if no goal or a vague goal exists, it asks for a one-sentence goal first.",
+    "say_en": [
+      {
+        "text": "Help me build a managed agent to organize my inbox daily.",
+        "note": "It interviews you, then generates build steps."
+      },
+      {
+        "text": "Run this agent automatically every Monday at 9am.",
+        "note": "It generates a recurring cron deployment plan."
+      },
+      {
+        "text": "Grade the agent's runs against this rubric, then improve it.",
+        "note": "It enters a bounded grade-then-iterate loop."
+      }
+    ]
+  }
+}

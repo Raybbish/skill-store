@@ -5,7 +5,7 @@
     "name": "cellxgene-census",
     "description": "Query the CZ CELLxGENE Census programmatically for versioned public single-cell and spatial transcriptomics data. Use when you need population-scale cell metadata, gene expression slices, Census summary counts, source H5AD URIs/downloads, embeddings, spatial Census data, or reference atlas comparisons across organisms, tissues, diseases, assays, and cell types. For analyzing your own local single-cell data use scanpy, anndata, or scvi-tools.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/cellxgene-census",
-    "upstream_commit": "336c4f838a6c21b54e1e1f58cbbeae143d151fe2",
+    "upstream_commit": "36d8f13a1e754618794bf42f417884940077b4ae",
     "content_hash": "sha256:af4a4b6a3ce7a3b7d41773f6b003b9d2879fac037e44c7a62b1146fac0579a66",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33605,
+    "stars_github": 35043,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-16T03:43:12.484Z",
+    "fetched_at": "2026-08-27T13:37:16.869Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-15T20:12:06-07:00",
-    "repo_skill_count": 162,
+    "upstream_commit_at": "2026-08-24T09:22:54Z",
+    "repo_skill_count": 163,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-16T03:43:12.484Z",
+    "generated_at": "2026-08-27T13:37:16.869Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "让 Claude 能按细胞类型、组织、疾病等条件，查询 CZ CELLxGENE Census 里的公开单细胞和空间转录组数据，返回基因表达、细胞元数据、数据集摘要等信息，不用先下载整个数据集。",
-    "when": "当用户需要获取版本化的公共单细胞/空间转录组数据，如按物种、组织、疾病查询基因表达、细胞元数据、数据集计数等时触发。",
+    "what": "装上后，Claude 可查询 CZ CELLxGene Census 公共数据库的单细胞和空间转录组数据，获取细胞元数据、基因表达、摘要统计、H5AD 下载地址等，并支持与 Scanpy 等工具配合。",
+    "when": "当用户需要查询 CELLxGene Census 的公共单细胞数据时触发，例如获取基因表达、查看摘要计数、下载 H5AD 文件等。",
     "say": [
       {
-        "text": "查一下人类肺部B细胞的基因表达数据",
-        "note": "会调用 get_anndata 按条件拉取表达矩阵"
+        "text": "查一下人脑中包含哪些细胞类型",
+        "note": "会调用 get_obs 查看细胞元数据并列出唯一类型。"
       },
       {
-        "text": "2025-11-08 版 Census 总共有多少细胞和数据集？",
-        "note": "读取 summary 统计信息"
+        "text": "统计 2025-11-08 版 Census 的总细胞数和数据集数",
+        "note": "会读取 census_info.summary 的标签值。"
       },
       {
-        "text": "用 is_primary_data 过滤，统计大脑组织中各细胞类型的数量",
-        "note": "通过 get_obs 返回按细胞类型计数的结果"
+        "text": "查询肺组织 B 细胞中 CD4 和 CD8A 的表达数据"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:af4a4b6a3ce7a3b7d41773f6b003b9d2879fac037e44c7a62b1146fac0579a66",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-16T03:53:50.706Z",
+    "generated_at": "2026-08-27T14:31:31.181Z",
     "lint_pass": true,
-    "what_en": "Enables Claude to query the CZ CELLxGENE Census for public single-cell and spatial transcriptomics data, returning gene expression, cell metadata, dataset summaries, and more without downloading entire datasets first.",
-    "when_en": "Triggers when users need versioned public single-cell/spatial data, such as querying gene expression, cell metadata, or dataset counts by organism, tissue, or disease.",
+    "what_en": "After install, Claude can query the CZ CELLxGene Census for public single-cell/spatial data: cell metadata, gene expression slices, summary counts, H5AD URIs, embeddings, etc., and integrate with Scanpy.",
+    "when_en": "Triggers when the user needs data from CELLxGene Census: e.g., querying expression by cell type/tissue/disease, fetching summary counts, or downloading H5AD files.",
     "say_en": [
       {
-        "text": "Get gene expression for human lung B cells",
-        "note": "Uses get_anndata to fetch the expression matrix"
+        "text": "List the cell types in human brain.",
+        "note": "Calls get_obs and returns unique cell types."
       },
       {
-        "text": "How many cells and datasets in the 2025-11-08 Census release?",
-        "note": "Reads summary statistics"
+        "text": "Report total and unique cell counts for the 2025-11-08 release.",
+        "note": "Reads census_info.summary label/value rows."
       },
       {
-        "text": "Count cell types in brain tissue filtered by is_primary_data",
-        "note": "Returns per-cell-type counts via get_obs"
+        "text": "Get expression of CD4 and CD8A in lung B cells.",
+        "note": "Uses get_anndata with filters and returns an AnnData object."
       }
     ]
   }

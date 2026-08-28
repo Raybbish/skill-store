@@ -5,8 +5,8 @@
     "name": "mass-ulw",
     "description": "Run a dependency graph of child agents in one call with the native dag tool. Use when the user asks for mass-ulw, a DAG of tasks, fan-out/fan-in work, or multi-agent execution where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "94e954721ccb02fbcbc8bb583f9da1d244a0a06b",
-    "content_hash": "sha256:c4de8daea8d703248577473ec76e7cedafb56587bc1c819e4ae973d4a9d2664c",
+    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "content_hash": "sha256:c0e0433ce5adac9d0370b3b81a00bbbc414d10f519b5359437841c5a4714e6bb",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
     "category": "dev",
@@ -21,12 +21,13 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 67965,
+    "stars_github": 68470,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-17T03:44:44.982Z",
+    "fetched_at": "2026-08-28T14:48:38.475Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-08-17T06:41:22+09:00",
-    "repo_skill_count": 50
+    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
+    "repo_skill_count": 52,
+    "bulk_source": true
   },
   "context_size": {
     "version": "1",
@@ -35,96 +36,95 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-17T03:44:44.982Z",
+    "generated_at": "2026-08-28T14:48:38.475Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 4696,
-        "chars": 4696,
-        "tokens": 1094
+        "bytes": 8996,
+        "chars": 8996,
+        "tokens": 2076
       },
       "activation_with_declared_refs": {
         "files": [
-          "SKILL.md"
+          "SKILL.md",
+          "references/planning.md"
         ],
-        "text_files": 1,
-        "bytes": 4696,
-        "chars": 4696,
-        "tokens": 1094
+        "text_files": 2,
+        "bytes": 28441,
+        "chars": 28441,
+        "tokens": 6593
       },
       "package_total_text": {
         "files": [
           "SKILL.md",
-          "skill-contract.test.ts"
+          "references/planning.md"
         ],
         "text_files": 2,
-        "bytes": 16314,
-        "chars": 16314,
-        "tokens": 3413
+        "bytes": 28441,
+        "chars": 28441,
+        "tokens": 6593
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "一次调用编排多个智能体按依赖顺序执行",
+    "tagline": "执行多个依赖子任务,一次调用完成",
     "scene_tags": [
-      "多任务编排",
-      "并行执行",
-      "依赖任务"
+      "多步骤任务",
+      "子任务分工"
     ],
-    "fit_line": "适合你，如果你需要管理多个智能体协同完成相互依赖的任务",
-    "tagline_en": "Orchestrate multiple agents with dependencies in one call",
+    "fit_line": "适合你,如果你要同时运行多个子任务,且任务间有先后依赖。",
+    "tagline_en": "Execute multiple dependent subtasks in one call.",
     "scene_tags_en": [
-      "multi-agent orchestration",
-      "parallel execution",
-      "dependent tasks"
+      "multi-step tasks",
+      "subtask delegation"
     ],
-    "fit_line_en": "For you if you manage agent workflows where tasks depend on each other",
+    "fit_line_en": "For you if you need to run multiple subtasks with dependencies in a single orchestrated call.",
     "source": "llm",
-    "content_hash": "sha256:c4de8daea8d703248577473ec76e7cedafb56587bc1c819e4ae973d4a9d2664c",
+    "content_hash": "sha256:c0e0433ce5adac9d0370b3b81a00bbbc414d10f519b5359437841c5a4714e6bb",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-17T03:48:56.072Z",
+    "generated_at": "2026-08-27T13:49:12.846Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "当你要求运行多个子代理且它们之间有先后依赖时，Claude 会用 dag 工具把任务组织成依赖图，按依赖顺序分波执行，全部完成后返回结果。",
-    "when": "当用户提到 mass-ulw、任务 DAG、扇出/扇入 等，或需要多代理按依赖顺序执行时触发。",
+    "what": "装上后,Claude 会把复杂任务拆成若干子任务,按依赖关系分层、并行地分派给多个子代理执行,并在运行中监控进度、纠正偏差。它还会先做规划、登记目标,最后用证据验证结果,而不是只看子代理自报完成。",
+    "when": "当用户提到 mass-ulw、任务 DAG、扇出/扇入工作,或要求多代理执行且有任务必须等待其它任务完成时,技能会接管。",
     "say": [
       {
-        "text": "用 mass-ulw 跑一个文档刷新流程：先审计、再重写、最后验证。",
-        "note": "Claude 会按依赖分波执行这三个子任务。"
+        "text": "用 dag 跑一个任务图:先审计文档,再重写,最后验证",
+        "note": "会按依赖分波执行并验证"
       },
       {
-        "text": "创建一个任务 DAG：任务 A 和 B 并行，C 等 A、B 完成后再做。",
-        "note": "依赖关系被尊重，C 会等待前序完成。"
+        "text": "帮我做 mass-ulw,任务 C 依赖 A 和 B",
+        "note": "先建图,再并行跑 A、B,最后跑 C"
       },
       {
-        "text": "帮我用 dag 工具编排这个多代理任务，把需要先完成的任务标记为依赖。",
-        "note": "Claude 会定义节点并启动运行。"
+        "text": "这次多代理工作需要扇出/扇入,请用 dag 编排",
+        "note": "触发依赖图编排流程"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:c4de8daea8d703248577473ec76e7cedafb56587bc1c819e4ae973d4a9d2664c",
+    "content_hash": "sha256:c0e0433ce5adac9d0370b3b81a00bbbc414d10f519b5359437841c5a4714e6bb",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-17T03:55:40.859Z",
+    "generated_at": "2026-08-28T14:57:22.193Z",
     "lint_pass": true,
-    "what_en": "When asked to run multiple child agents with ordering constraints, Claude uses the dag tool to define and execute a dependency graph, running nodes in parallel waves as dependencies clear, then returns the final result.",
-    "when_en": "Triggered when the user asks for mass-ulw, a task DAG, fan-out/fan-in, or multi-agent execution where some tasks must wait on others.",
+    "what_en": "Claude breaks a complex task into subtasks and runs them as a dependency graph, dispatching child agents in parallel waves as dependencies clear. It plans first, registers the goal, and verifies results with evidence instead of trusting self-reports.",
+    "when_en": "Triggered when the user asks for mass-ulw, a task DAG, fan-out/fan-in work, or multi-agent execution where some tasks must wait on others.",
     "say_en": [
       {
-        "text": "Run a docs-refresh DAG with mass-ulw: audit, then rewrite, then verify.",
-        "note": "Claude will execute the three nodes in dependency order."
+        "text": "Run a task DAG: audit docs, then rewrite, then verify.",
+        "note": "Executes in waves with verification."
       },
       {
-        "text": "Create a task DAG where A and B run in parallel, and C waits for both.",
-        "note": "Dependencies are respected during the run."
+        "text": "Use mass-ulw with task C depending on A and B.",
+        "note": "A and B run in parallel, then C."
       },
       {
-        "text": "Use the dag tool to orchestrate this multi-agent job, marking prerequisites as dependencies.",
-        "note": "Claude defines the nodes and starts the run."
+        "text": "This multi-agent job needs fan-out/fan-in; orchestrate with dag.",
+        "note": "Starts dependency-graph orchestration."
       }
     ]
   }

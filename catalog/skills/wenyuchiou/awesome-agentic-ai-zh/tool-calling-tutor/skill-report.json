@@ -3,28 +3,29 @@
   "meta": {
     "id": "wenyuchiou/awesome-agentic-ai-zh/tool-calling-tutor",
     "name": "tool-calling-tutor",
+    "description": "Use when a tool-calling agent does not call a tool, sends wrong arguments, loops without stopping, or needs a function schema. Guides a four-branch diagnosis and five-step schema repair. Do not use for framework-specific, MCP-server, or production-observability questions.",
     "upstream": "https://github.com/WenyuChiou/awesome-agentic-ai-zh/tree/main/examples/stage-5/tool-calling-tutor",
-    "upstream_commit": "53243f49de7f60411a11377ed46e4746b0abbc6d",
-    "content_hash": "sha256:a81fe368ad5b9f38b4b4cdc0b10c666a236a80e81b4da5f4c7ae00c22e16517e",
+    "upstream_commit": "39e461d84f9807459e44c343bb78db14ed5bb4ab",
+    "content_hash": "sha256:064e05a09a63f8ff8a4cdfdbdda5bc4c7165ebd8652178c99ea72c818899ac02",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "uncategorized",
+    "category": "dev",
     "version": null,
     "publisher": "wenyuchiou",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": []
+    "tags": [
+      "debugging"
+    ]
   },
-  "frontmatter_valid": false,
-  "frontmatter_issues": [
-    "frontmatter YAML 解析失败: Nested mappings are not allowed in compact mappings at line 2, column 14:\n\ndescription: When the user is building a tool-calling agent and gets stuck — \"為…\n             ^\n"
-  ],
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5249,
+    "stars_github": 6468,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-16T03:43:48.253Z",
+    "fetched_at": "2026-08-28T14:49:22.032Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-15T07:59:44-04:00",
+    "upstream_commit_at": "2026-08-28T08:46:02-04:00",
     "repo_skill_count": 1
   },
   "context_size": {
@@ -34,28 +35,25 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-16T03:43:48.253Z",
+    "generated_at": "2026-08-28T14:49:22.032Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 7677,
-        "chars": 5731,
-        "tokens": 2022
+        "bytes": 7965,
+        "chars": 5941,
+        "tokens": 2069
       },
       "activation_with_declared_refs": {
         "files": [
-          "SKILL.md",
-          "references/debug-flowchart.md",
-          "references/schema-evolution.md",
-          "references/sdk-diff.md"
+          "SKILL.md"
         ],
-        "text_files": 4,
-        "bytes": 22573,
-        "chars": 18434,
-        "tokens": 5571
+        "text_files": 1,
+        "bytes": 7965,
+        "chars": 5941,
+        "tokens": 2069
       },
       "package_total_text": {
         "files": [
@@ -63,6 +61,7 @@
           "README.md",
           "README.zh-Hans.md",
           "SKILL.md",
+          "evals/check_evals.py",
           "evals/evals.json",
           "references/debug-flowchart.en.md",
           "references/debug-flowchart.md",
@@ -76,12 +75,68 @@
           "translations/SKILL.en.md",
           "translations/SKILL.zh-Hans.md"
         ],
-        "text_files": 16,
-        "bytes": 89347,
-        "chars": 76290,
-        "tokens": 20713
+        "text_files": 17,
+        "bytes": 90303,
+        "chars": 75715,
+        "tokens": 20705
       }
     }
   },
-  "eval": null
+  "eval": null,
+  "copy": {
+    "tagline": "修复智能体工具调用失灵与参数报错",
+    "scene_tags": [
+      "智能体调试",
+      "参数异常排查",
+      "接口调用排错"
+    ],
+    "fit_line": "适合你,如果你的AI智能体总是不调用工具或传错参数,需要定位根因",
+    "tagline_en": "Fix AI tool-calling failures and wrong arguments",
+    "scene_tags_en": [
+      "agent debugging",
+      "parameter troubleshooting",
+      "API call debugging"
+    ],
+    "fit_line_en": "For you if you're debugging an AI agent that fails to call tools or passes wrong arguments",
+    "source": "llm",
+    "content_hash": "sha256:064e05a09a63f8ff8a4cdfdbdda5bc4c7165ebd8652178c99ea72c818899ac02",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-28T14:52:27.171Z",
+    "lint_pass": true
+  },
+  "howto": {
+    "what": "引导你为函数调用类问题分四类诊断：模型不调工具、参数传错、循环不停、从零设计 schema；随后按对应路线检查 description、参数类型、循环控制或走五步设计法，并给出好/坏写法对照和 SDK 差异表。它不会替你写代码。",
+    "when": "当你做函数调用类 Agent 时模型不调用工具、参数传错、循环停不下来，或需要设计函数参数规格时触发；框架相关、MCP 服务器、生产监控问题不会接管。",
+    "say": [
+      {
+        "text": "我的 Agent 一直不调用工具，直接文字回答，帮我排查。",
+        "note": "它会让你从四种症状里选一种，再分步诊断。"
+      },
+      {
+        "text": "ReAct 循环跑不停，是不是 messages 忘加回去了？",
+        "note": "它会按 control flow 分支检查常见原因。"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:064e05a09a63f8ff8a4cdfdbdda5bc4c7165ebd8652178c99ea72c818899ac02",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-28T15:09:44.183Z",
+    "lint_pass": true,
+    "what_en": "Guides the user through a four-branch diagnostic for tool-calling issues plus a five-step schema design process. It asks which of four symptoms applies, then walks through checks with bad/good schema references and an SDK-diff table. It does not write code for the user.",
+    "when_en": "Triggers when a user building a tool-calling agent reports the LLM does not call a tool, sends wrong arguments, loops endlessly, or needs a function schema. Not for framework-specific, MCP-server, or production-observability questions.",
+    "say_en": [
+      {
+        "text": "My agent never calls tools and just answers in text. Help me debug.",
+        "note": "It asks you to pick one of four symptoms, then guides diagnosis."
+      },
+      {
+        "text": "My function schema keeps passing wrong args; I typed everything as string. How do I fix it?",
+        "note": "It guides you to fix types, required, and enums in the schema."
+      },
+      {
+        "text": "My ReAct loop never stops. Did I forget to add the assistant message back?",
+        "note": "It checks common causes in the control-flow branch."
+      }
+    ]
+  }
 }

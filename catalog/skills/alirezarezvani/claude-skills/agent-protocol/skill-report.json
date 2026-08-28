@@ -5,7 +5,7 @@
     "name": "agent-protocol",
     "description": "Inter-agent communication protocol for C-suite agent teams. Defines invocation syntax, loop prevention, isolation rules, and response formats. Use when C-suite agents need to query each other, coordinate cross-functional analysis, or run board meetings with multiple agent roles.",
     "upstream": "https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/agent-protocol",
-    "upstream_commit": "aa8d778811a557a2c28ccadda4cf3d0bd028a4cc",
+    "upstream_commit": "19392f7a08264ed00486a251f5b2098321771f94",
     "content_hash": "sha256:da73b769881e27ca26a1c172f047c6894e9f4c5830c92926a63f6e1a317a33f8",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 22735,
+    "stars_github": 25065,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-18T05:19:51.537Z",
+    "fetched_at": "2026-08-27T13:37:27.998Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-17T15:02:50+02:00",
-    "repo_skill_count": 426,
+    "upstream_commit_at": "2026-08-26T15:53:02+02:00",
+    "repo_skill_count": 449,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-18T05:19:51.537Z",
+    "generated_at": "2026-08-27T13:37:27.998Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,31 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装后，Claude 可以扮演CEO、CFO等高管角色，使用[INVOKE:角色|问题]格式互相提问，并按照固定格式回复。它还会自动遵守防循环规则，在董事会会议中执行独立分析等流程。",
-    "when": "当Claude被要求进行跨部门分析、高管团队协作或召开董事会会议时触发。",
+    "what": "装上后,Claude 会在高管角色间按协议互相调用:用 [INVOKE:角色|问题] 查询,按固定格式回应(关键发现、支持数据、置信度、注意事项),并强制防自调用、深度上限2、防循环。",
+    "when": "当需要多个高管角色互相查询、协调跨职能分析,或召开多人董事会会议时触发。",
     "say": [
       {
-        "text": "请CFO分析一下Q3招聘5名工程师对现金流的影响。"
+        "text": "用 [INVOKE:cfo|招聘5名工程师对现金流的影响] 查询 CFO。",
+        "note": "CFO 按协议返回结构化回答。"
       },
       {
-        "text": "召开董事会会议，请各角色独立分析当前战略风险。",
-        "note": "Claude会进入董事会模式，各角色独立分析，禁止互相调用。"
+        "text": "让 CFO 和 CTO 互相查询,评估新功能上线的预算和工期。",
+        "note": "跨职能协调,受防循环规则约束。"
+      },
+      {
+        "text": "召开董事会会议,先独立分析再交叉讨论。",
+        "note": "隔离阶段禁止互相调用,之后恢复。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:da73b769881e27ca26a1c172f047c6894e9f4c5830c92926a63f6e1a317a33f8",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-18T05:22:31.306Z",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-27T14:17:49.475Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can role-play C-suite agents (CEO, CFO, etc.), query each other using [INVOKE:role|question] syntax, and respond in a structured format. It enforces loop-prevention rules and isolation phases during board meetings.",
-    "when_en": "Triggered when Claude is asked to perform cross-functional analysis, coordinate C-suite agent teams, or run board meetings with multiple agent roles.",
+    "what_en": "After install, Claude lets C-suite roles query each other via [INVOKE:role|question], returns responses in a fixed format (key finding, supporting data, confidence, caveat), and enforces hard rules: no self-invocation, max depth 2, no circular calls.",
+    "when_en": "Triggers when you need C-suite agents to query each other, coordinate cross-functional analysis, or run board meetings with multiple agent roles.",
     "say_en": [
       {
-        "text": "Ask CFO to analyze the burn rate impact of hiring 5 engineers in Q3.",
-        "note": "Claude responds as CFO with key finding, supporting data, and confidence."
+        "text": "Query the CFO with [INVOKE:cfo|Impact of hiring 5 engineers on cash flow]",
+        "note": "CFO returns a structured response per protocol."
       },
       {
-        "text": "Conduct a board meeting with independent analysis of strategic risks."
+        "text": "Have the CFO and CTO query each other on the new feature's budget and timeline.",
+        "note": "Cross-functional coordination, loop rules apply."
+      },
+      {
+        "text": "Run a board meeting: independent analysis first, then cross-pollination.",
+        "note": "Isolation phase blocks invocations until later."
       }
     ]
   }

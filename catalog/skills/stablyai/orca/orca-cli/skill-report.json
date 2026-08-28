@@ -5,7 +5,7 @@
     "name": "orca-cli",
     "description": "Use the public `orca` CLI to operate Orca-managed worktrees, folder contexts, terminals, repos, automations, artifacts, skill sharing, worktree comments, and the browser embedded inside the Orca app. Use when the user says \"$orca-cli\", \"use orca cli\", \"Orca worktree\", \"child worktree\", \"cardStatus\", \"spawn codex/claude in a worktree\", \"read/wait/send Orca terminal\", \"terminal send\", \"full handoff\", \"handover\", \"give this to another agent\", \"another worktree\", \"Orca browser\", \"orca artifacts\", \"share HTML/Markdown\", \"public artifact link\", \"share skills\", or \"control the browser inside Orca\". Prefer this over raw `git worktree`, ad hoc PTYs, Playwright, or Computer Use when the task touches Orca-managed state. Use Computer Use for browser windows, webviews, or desktop UI outside Orca's embedded browser.",
     "upstream": "https://github.com/stablyai/orca/tree/main/skills/orca-cli",
-    "upstream_commit": "5e9e38fa75d694fe5b59ad5b88d5f829f2bf36e6",
+    "upstream_commit": "94e7586665c22aeaedf0503c2b854b97d200da55",
     "content_hash": "sha256:686c88008f6b6e5b998650554bf131ae06d11483aae86f8b03129a36cf599147",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 138300,
-    "fetched_at": "2026-08-17T03:48:22.454Z",
+    "installs_skills_sh": 184200,
+    "fetched_at": "2026-08-28T14:51:07.015Z",
     "first_seen_at": "2026-08-08T04:12:29.204Z",
-    "upstream_commit_at": "2026-08-16T20:47:02-07:00"
+    "upstream_commit_at": "2026-08-28T04:17:45-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-17T03:48:22.454Z",
+    "generated_at": "2026-08-28T14:51:07.015Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,40 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "使用该技能后,涉及 Orca 管理的 worktree、终端、浏览器等状态时,Claude 改用 `orca` 命令处理,而非直接跑 git worktree、PTY 或 Playwright。它会先加载对应版本的完整指南再执行命令。",
-    "when": "当你说出 “$orca-cli”、“Orca worktree” 等触发词,或要求操作 Orca 管理的 worktree、终端等时触发。",
+    "what": "装上后,Claude 会在处理 Orca 管理的 worktree、终端、浏览器等状态时改用 orca CLI,并先加载版本匹配的完整指南再执行,依据环境选择正确的 orca 命令。",
+    "when": "当用户提到「$orca-cli」「Orca worktree」「terminal send」等触发词,或要求操作 Orca 的 worktree、终端、内嵌浏览器等状态时触发。",
     "say": [
       {
-        "text": "用 orca-cli 查看当前所有 worktree 状态"
+        "text": "用 orca CLI 列出当前所有 worktree 的状态",
+        "note": "返回工作区列表"
       },
       {
-        "text": "把这个任务交接给另一个 worktree 里的 agent",
-        "note": "触发 orca 的 handover 流程。"
+        "text": "向 Orca 终端发送命令 pwd 并等待输出",
+        "note": "在终端执行并返回结果"
       },
       {
-        "text": "用 orca-cli 读取 Orca 终端的最新输出",
-        "note": "会调用终端读取命令。"
+        "text": "把当前 HTML 工件生成一个公开链接",
+        "note": "调用工件分享功能"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:686c88008f6b6e5b998650554bf131ae06d11483aae86f8b03129a36cf599147",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-17T04:04:05.370Z",
+    "generated_at": "2026-08-28T15:09:12.216Z",
     "lint_pass": true,
-    "what_en": "With this skill, when a task touches Orca-managed state (worktrees, terminals, browser, automations), Claude uses the `orca` CLI instead of raw git worktree, ad-hoc PTYs, or Playwright. It first loads the version-matched guide via `orca skills get orca-cli`, then runs the needed commands.",
-    "when_en": "Triggered when the user says \"$orca-cli\", \"Orca worktree\", or similar triggers, or asks to operate Orca-managed worktrees or terminals.",
+    "what_en": "After installation, Claude will use the orca CLI for tasks involving Orca-managed state, such as worktrees, terminals, and the embedded browser. It first loads the version-matched full guide, then picks the correct orca executable for the environment.",
+    "when_en": "Triggers when the user mentions keywords like '$orca-cli', 'Orca worktree', 'terminal send', or asks to manage Orca worktrees, terminals, or the embedded browser.",
     "say_en": [
       {
-        "text": "List all Orca worktrees with orca-cli.",
-        "note": "Runs orca worktree commands and returns JSON output."
+        "text": "List all current Orca worktree statuses using the orca CLI.",
+        "note": "Returns the worktree list."
       },
       {
-        "text": "Hand off this task to another agent in a worktree.",
-        "note": "Triggers Orca's handover flow."
+        "text": "Send the command 'pwd' to the Orca terminal and wait for output.",
+        "note": "Executes in the terminal and reads the result."
       },
       {
-        "text": "Read the latest output from the Orca terminal.",
-        "note": "Calls the terminal read command."
+        "text": "Create a public link for the current HTML artifact.",
+        "note": "Invokes the artifact sharing feature."
       }
     ]
   }

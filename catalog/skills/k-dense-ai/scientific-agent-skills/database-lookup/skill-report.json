@@ -5,7 +5,7 @@
     "name": "database-lookup",
     "description": "Query documented public database APIs with explicit endpoints, filters, pagination, and provenance. Use when a scientific, regulatory, financial, or other database-backed fact must be retrieved reproducibly from a named source rather than inferred from general knowledge.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/database-lookup",
-    "upstream_commit": "336c4f838a6c21b54e1e1f58cbbeae143d151fe2",
+    "upstream_commit": "36d8f13a1e754618794bf42f417884940077b4ae",
     "content_hash": "sha256:1e3f4cfddadada43338dfbf170215534bd3883e4969e80dcd6ea9f305b3ed8a1",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33605,
+    "stars_github": 35043,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-16T03:43:12.484Z",
+    "fetched_at": "2026-08-27T13:37:16.869Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-15T20:12:06-07:00",
-    "repo_skill_count": 162,
+    "upstream_commit_at": "2026-08-24T09:22:54Z",
+    "repo_skill_count": 163,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-16T03:43:12.484Z",
+    "generated_at": "2026-08-27T13:37:16.869Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -248,26 +248,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会把你的问题转成对公开数据库 API 的可重复查询:先选定权威数据库(如 PubChem、UniProt、USGS 等),再按参考文件调用接口,并返回查询来源、参数、日期与条数核对等可追溯信息。",
-    "when": "当你需要从科学、法规、金融等公开数据库中取数,并要求可复现、有来源时触发;例如查化合物、地震记录、基因信息等。",
+    "what": "装上后,Claude 会改用公开数据库的官方接口来回答科学、监管、财务等事实类问题,缺关键条件时先问清再查,并把查询过程记录成可复查的步骤(查了哪些库、用了什么筛选条件、查到多少条、什么日期),而不是凭记忆推断。",
+    "when": "当需要可复核地获取某个科学、监管、财务或其他数据库记录的事实,且要标明具体来源而不是凭一般知识推断时。也就是说,用户问这类事实型问题时触发。",
     "say": [
       {
-        "text": "查一下阿司匹林的 PubChem CID 和分子式",
-        "note": "会返回 PubChem 的查询来源与结果。"
+        "text": "查一下阿司匹林在 PubChem 里的分子量是多少。",
+        "note": "会调用 PubChem 并返回来源可核对的结果。"
       },
       {
-        "text": "帮我从 USGS 查最近一周加州 4 级以上地震",
-        "note": "会调用 USGS 地震接口并按过滤条件返回。"
+        "text": "帮我查 2023 年加州 5 级以上的地震有哪些。",
+        "note": "会查 USGS 地震数据库并按条件返回记录。"
       },
       {
-        "text": "BRCA1 基因在 UniProt 里有什么功能注释?",
-        "note": "会返回 UniProt 条目与信息来源。"
+        "text": "查一下 TP53 这个基因的 Ensembl ID 和染色体位置。",
+        "note": "会从 Ensembl 等库获取并核对标识符。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1e3f4cfddadada43338dfbf170215534bd3883e4969e80dcd6ea9f305b3ed8a1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-16T03:54:36.512Z",
-    "lint_pass": true
+    "generated_at": "2026-08-27T14:33:02.075Z",
+    "lint_pass": true,
+    "what_en": "Claude turns lookups into reproducible retrievals from 78 documented public database APIs, returning auditable results: databases used, endpoints, parameters, counts, and access dates, rather than relying on general knowledge.",
+    "when_en": "When a scientific, regulatory, financial, or other database-backed fact must be retrieved reproducibly from a named source rather than inferred; i.e., for such factual questions.",
+    "say_en": [
+      {
+        "text": "Look up the molecular weight of aspirin in PubChem.",
+        "note": "It queries PubChem and returns a citable result."
+      },
+      {
+        "text": "Find earthquakes of magnitude 5 or higher in California in 2023.",
+        "note": "It queries USGS and returns matching records."
+      },
+      {
+        "text": "What is the Ensembl ID and chromosomal location of TP53?",
+        "note": "It verifies identifiers from Ensembl and other sources."
+      }
+    ]
   }
 }

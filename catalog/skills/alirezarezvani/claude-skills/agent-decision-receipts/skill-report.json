@@ -5,7 +5,7 @@
     "name": "agent-decision-receipts",
     "description": "Mint a tamper-evident, post-quantum-signed receipt for a consequential agent action (deploy, delete, pay, grant-access, model decision) so it can be verified later from the certificate alone. Use when an autonomous agent takes a side-effecting action that may need to be proven later, or when satisfying EU AI Act Article 12 record-keeping. Three decisions: whether an action needs a receipt, minting it, verifying it. Signing is delegated to the open-source OpenAgentOntology package. Not after-the-fact log analysis; not a hosted notary; not a legal opinion.",
     "upstream": "https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/agent-decision-receipts",
-    "upstream_commit": "aa8d778811a557a2c28ccadda4cf3d0bd028a4cc",
+    "upstream_commit": "19392f7a08264ed00486a251f5b2098321771f94",
     "content_hash": "sha256:315f81571671f28d32904ad5cad02b0c08c4fef710c7e00a838923235ee3223a",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 22735,
+    "stars_github": 25065,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-18T05:19:51.537Z",
+    "fetched_at": "2026-08-27T13:37:27.998Z",
     "first_seen_at": "2026-07-18T05:19:51.537Z",
-    "upstream_commit_at": "2026-07-17T15:02:50+02:00",
-    "repo_skill_count": 426,
+    "upstream_commit_at": "2026-08-26T15:53:02+02:00",
+    "repo_skill_count": 449,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-18T05:19:51.537Z",
+    "generated_at": "2026-08-27T13:37:27.998Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,32 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会判断一个操作是否需要防篡改收据，然后生成并验证它。收据包含谁、做了什么、依据什么规则，并用后量子签名加密，之后可离线验证真伪。",
-    "when": "当 Claude 要执行部署、删除、支付、授权等有外部影响且可能被追责的操作时触发。也适用于满足欧盟 AI 法案第 12 条记录义务。",
+    "what": "装好后，Claude 会判断某个代理操作（部署、删除、付款、授权等）要不要留证；需要时，在执行前或执行时生成一份带签名的防篡改收据，记录谁、做了什么、依据什么政策，之后可仅凭这份收据离线验证真伪。",
+    "when": "当代理要执行有副作用、影响重大且事后可能需证明的操作（如部署、删除、付款），或需要满足欧盟《人工智能法》第 12 条留档要求时。",
     "say": [
       {
-        "text": "帮我为这次部署生成一个收据。",
-        "note": "Claude 会构建操作清单并签名生成收据。"
+        "text": "给这次部署生成一张收据，政策按欧盟 AI 法案第 12 条。",
+        "note": "会构造操作清单并签名出收据。"
       },
       {
-        "text": "验证这个收据是否被篡改过。",
-        "note": "Claude 会检查哈希和签名，返回验证结果。"
+        "text": "验证这份 receipt.json，只凭证书，不联网。",
+        "note": "会重新计算哈希并检查每个签名。"
+      },
+      {
+        "text": "刚才的权限授予操作也开一张收据，政策按内部变更控制。",
+        "note": "为授权动作生成收据。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:315f81571671f28d32904ad5cad02b0c08c4fef710c7e00a838923235ee3223a",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-18T05:22:29.344Z",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-27T14:16:58.022Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude decides whether an action needs a tamper-evident receipt, then mints and verifies it. The receipt records who, what, and under which policy, signed with post-quantum cryptography, and can be verified offline later.",
-    "when_en": "Triggered when Claude is about to perform a side-effecting action like deploy, delete, pay, or grant access that may need to be proven later. Also when satisfying EU AI Act Article 12 record-keeping.",
+    "what_en": "After install, Claude decides whether an action needs a receipt, mints a signed tamper-evident receipt recording who/what/policy, and later verifies authenticity and integrity from the certificate alone, offline.",
+    "when_en": "When an autonomous agent is about to take a side-effecting, consequential action that may need proof later (e.g., deploy, delete, pay), or when EU AI Act Article 12 record-keeping applies.",
     "say_en": [
       {
-        "text": "Generate a receipt for this deployment.",
-        "note": "Claude will build the action manifest and sign it to produce a receipt."
+        "text": "Mint a receipt for this deploy, policy under EU AI Act Art 12.",
+        "note": "Builds the action manifest and signs a receipt."
       },
       {
-        "text": "Verify if this receipt has been tampered with."
+        "text": "Verify this receipt.json from the certificate alone, offline.",
+        "note": "Recomputes the hash and checks each signature leg."
+      },
+      {
+        "text": "Also issue a receipt for that grant-access action, policy internal change control.",
+        "note": "Mints a receipt for the authorization action."
       }
     ]
   }
