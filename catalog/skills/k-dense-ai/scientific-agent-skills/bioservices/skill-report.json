@@ -5,7 +5,7 @@
     "name": "bioservices",
     "description": "Unified Python interface to 40+ bioinformatics services. Use when querying multiple databases (UniProt, KEGG, ChEMBL, Reactome) in a single workflow with consistent API. Best for cross-database analysis, ID mapping across services. For quick single-database lookups use gget; for sequence/file manipulation use biopython.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/bioservices",
-    "upstream_commit": "336c4f838a6c21b54e1e1f58cbbeae143d151fe2",
+    "upstream_commit": "36d8f13a1e754618794bf42f417884940077b4ae",
     "content_hash": "sha256:f2f52cf2213ae4ed1e17fb48ad17dd913e601253d28eba45a0a990a5e8055fc2",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 33605,
+    "stars_github": 35043,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-16T03:43:12.484Z",
+    "fetched_at": "2026-08-27T13:37:16.869Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-15T20:12:06-07:00",
-    "repo_skill_count": 162,
+    "upstream_commit_at": "2026-08-24T09:22:54Z",
+    "repo_skill_count": 163,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-16T03:43:12.484Z",
+    "generated_at": "2026-08-27T13:37:16.869Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -104,37 +104,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后 Claude 会用 Python 调 40 多个生物信息学数据库的接口,帮你在同一个流程里查生物数据、转换跨库 ID、跑 BLAST 等。",
-    "when": "当你要求一次性查询多个生物数据库(如 UniProt、KEGG、ChEMBL 等),或需要跨数据库做 ID 转换、通路分析时触发。",
+    "what": "装好后,Claude 会用统一 Python 接口访问 40 多个生物信息学数据库(UniProt、KEGG、ChEMBL 等),检索序列、找通路、搜化合物、跨库转换 ID,并支持 BLAST 等分析。",
+    "when": "当用户要求同时查询多个生物数据库(如 UniProt、KEGG、ChEMBL、Reactome)、做跨库 ID 映射或整合分析时触发;单库快速查询改用 gget,序列或文件处理用 biopython。",
     "say": [
       {
-        "text": "帮我查蛋白 P43403 的 FASTA 序列,并映射到 KEGG 数据库。",
-        "note": "会调用 UniProt 的检索与 ID 映射。"
+        "text": "查 UniProt 里 ZAP70 的序列,再映射到 KEGG 找相关通路。",
+        "note": "会调用 UniProt 检索和 ID 映射。"
       },
       {
-        "text": "用 KEGG 找人类中与 T 细胞相关的通路。",
-        "note": "会查 pathway 并把结果解析成结构化数据。"
+        "text": "搜 KEGG 化合物 Geldanamycin,再转成 ChEMBL ID。",
+        "note": "走 KEGG 查询加 UniChem 跨库映射。"
+      },
+      {
+        "text": "帮我找人类基因 TP53 参与的所有 KEGG 通路。",
+        "note": "KEGG 按基因返回相关通路。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f2f52cf2213ae4ed1e17fb48ad17dd913e601253d28eba45a0a990a5e8055fc2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-16T03:53:59.041Z",
+    "generated_at": "2026-08-27T14:31:45.977Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can use the BioServices Python package to query 40+ bioinformatics web services, retrieve biological data, map identifiers across databases, and run BLAST in one workflow.",
-    "when_en": "Triggered when the user asks to query multiple bio databases (e.g., UniProt, KEGG, ChEMBL) in one workflow, or to map IDs / analyze pathways across services, rather than quick single-database lookups.",
+    "what_en": "Claude uses the bioservices Python package to access 40+ bioinformatics services: retrieve sequences/annotations, find pathways, search compounds, map IDs across databases, run BLAST.",
+    "when_en": "Triggered when querying multiple bio-databases (UniProt, KEGG, ChEMBL, Reactome) in one workflow or doing cross-database ID mapping. Use gget for single-db lookups; biopython for sequence/file tasks.",
     "say_en": [
       {
-        "text": "Look up FASTA sequence for protein P43403 and map its ID to KEGG.",
-        "note": "Uses UniProt search and ID mapping."
+        "text": "Look up ZAP70 in UniProt, then map the ID to KEGG pathways.",
+        "note": "Calls UniProt search plus ID mapping."
       },
       {
-        "text": "Use KEGG to find human pathways related to T cells.",
-        "note": "Fetches pathway data and parses it."
+        "text": "Find Geldanamycin in KEGG, then map the compound to ChEMBL.",
+        "note": "Uses KEGG search and UniChem mapping."
       },
       {
-        "text": "Convert the KEGG ID for Geldanamycin into a ChEMBL ID.",
-        "note": "Uses UniChem for cross-database lookup."
+        "text": "Find all KEGG pathways that contain the human gene TP53.",
+        "note": "Returns pathways via KEGG get_pathway_by_gene."
       }
     ]
   }

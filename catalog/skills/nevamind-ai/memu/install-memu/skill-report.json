@@ -5,8 +5,8 @@
     "name": "install-memu",
     "description": "Install or uninstall memU for whatever agent you are — identify your host, print its packaged guide, and follow it to wire (or unwire) both seams (record and inject). Use when the user asks to install, set up, integrate, remove, or uninstall memU.",
     "upstream": "https://github.com/NevaMind-AI/memU/tree/main/",
-    "upstream_commit": "96fd3ec08853b40a9e4c743794446553df0a3bc4",
-    "content_hash": "sha256:51b1c7b6efe2bee0fab7b80f8ecbebb33b47b58c4f53d1ac678e71c6ee7b7f56",
+    "upstream_commit": "8b17fa4702fce7d5c124df4a4bb96b6dd1681709",
+    "content_hash": "sha256:f1959962fe068c12306fa8a4152634eaa436d5c08fc43284179e65934796b5c2",
     "license": "Apache-2.0",
     "hosting": "indexed",
     "category": "dev",
@@ -14,16 +14,19 @@
     "publisher": "nevamind-ai",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": []
+    "tags": [
+      "deployment",
+      "agent-ops"
+    ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 14295,
+    "stars_github": 14355,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-13T04:47:42.621Z",
+    "fetched_at": "2026-08-27T13:37:41.619Z",
     "first_seen_at": "2026-07-16T05:35:56.628Z",
-    "upstream_commit_at": "2026-08-13T00:37:56+09:00",
+    "upstream_commit_at": "2026-08-26T10:02:01+09:00",
     "repo_skill_count": 1
   },
   "context_size": {
@@ -33,25 +36,25 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-13T04:47:42.621Z",
+    "generated_at": "2026-08-27T13:37:41.619Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 6849,
-        "chars": 6801,
-        "tokens": 1584
+        "bytes": 7530,
+        "chars": 7480,
+        "tokens": 1746
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 6849,
-        "chars": 6801,
-        "tokens": 1584
+        "bytes": 7530,
+        "chars": 7480,
+        "tokens": 1746
       },
       "package_total_text": {
         "files": [
@@ -89,6 +92,8 @@
           "docs/adr/0014-paginated-list-all-recall-files.md",
           "docs/adr/0015-bridging-must-not-mine-its-own-run.md",
           "docs/adr/0016-client-event-reporting.md",
+          "docs/adr/0017-config-env-as-a-command.md",
+          "docs/adr/0018-cowork-through-claude-code-bridge.md",
           "docs/adr/README.md",
           "docs/sqlite.md",
           "npm/README.md",
@@ -106,6 +111,7 @@
           "src/memu/app/settings.py",
           "src/memu/cli.py",
           "src/memu/cloud.py",
+          "src/memu/config_file.py",
           "src/memu/database/__init__.py",
           "src/memu/database/factory.py",
           "src/memu/database/inmemory/__init__.py",
@@ -180,7 +186,10 @@
           "src/memu/hosts/claude_code/UNINSTALL.md",
           "src/memu/hosts/claude_code/__init__.py",
           "src/memu/hosts/claude_code/cli.py",
+          "src/memu/hosts/claude_code/cowork_cmd.py",
+          "src/memu/hosts/claude_code/desktop_sessions.py",
           "src/memu/hosts/claude_code/sessions.py",
+          "src/memu/hosts/claude_records.py",
           "src/memu/hosts/codex/BRIDGING_TASK.md",
           "src/memu/hosts/codex/INSTALL.md",
           "src/memu/hosts/codex/UNINSTALL.md",
@@ -193,6 +202,9 @@
           "src/memu/hosts/cola/__init__.py",
           "src/memu/hosts/cola/cli.py",
           "src/memu/hosts/cola/sessions.py",
+          "src/memu/hosts/config_cmd.py",
+          "src/memu/hosts/cowork/__init__.py",
+          "src/memu/hosts/cowork/sessions.py",
           "src/memu/hosts/cursor/BRIDGING_TASK.md",
           "src/memu/hosts/cursor/INSTALL.md",
           "src/memu/hosts/cursor/UNINSTALL.md",
@@ -232,9 +244,12 @@
           "src/memu/hosts/workbuddy/__init__.py",
           "src/memu/hosts/workbuddy/cli.py",
           "src/memu/hosts/workbuddy/sessions.py",
+          "src/memu/retry.py",
+          "src/memu/trust.py",
           "src/memu/vector.py",
           "tests/__init__.py",
           "tests/conftest.py",
+          "tests/fixtures/cowork/audit.jsonl",
           "tests/test_agentic.py",
           "tests/test_bridging_promotion.py",
           "tests/test_bridging_self_sessions.py",
@@ -242,6 +257,9 @@
           "tests/test_cli.py",
           "tests/test_cli_stdio.py",
           "tests/test_cloud.py",
+          "tests/test_config_cmd.py",
+          "tests/test_cowork_sessions.py",
+          "tests/test_cowork_verify.py",
           "tests/test_cursor_self_sessions.py",
           "tests/test_doctor_proxy_hint.py",
           "tests/test_embedding.py",
@@ -257,71 +275,74 @@
           "tests/test_postgres_migration_config.py",
           "tests/test_recall_file_backfill.py",
           "tests/test_scheduling_windows.py",
+          "tests/test_segment_vector_search.py",
+          "tests/test_task_naming.py",
+          "tests/test_trust.py",
           "tests/test_vector.py"
         ],
-        "text_files": 203,
-        "bytes": 1260649,
-        "chars": 1254357,
-        "tokens": 254320
+        "text_files": 221,
+        "bytes": 1511515,
+        "chars": 1504672,
+        "tokens": 304854
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "自动识别主机,接通或移除记忆读写接口",
+    "tagline": "安装或移除智能体的记忆组件",
     "scene_tags": [
-      "安装记忆组件",
-      "卸载记忆组件"
+      "加记忆功能",
+      "卸记忆功能"
     ],
-    "fit_line": "适合你,如果正在给 agent 接入记忆系统,需要自动完成安装与接线。",
-    "tagline_en": "Automatically identify your host and wire or unwire memory read/write seams",
+    "fit_line": "适合你,如果你的智能体需要长期记忆",
+    "tagline_en": "Install or remove memory for your AI agent",
     "scene_tags_en": [
-      "install memory add-on",
-      "remove memory add-on"
+      "add memory",
+      "remove memory"
     ],
-    "fit_line_en": "For you if you are wiring memory into your agent and need automated setup.",
+    "fit_line_en": "For you if you want your AI agent to have memories",
     "source": "llm",
-    "content_hash": "sha256:51b1c7b6efe2bee0fab7b80f8ecbebb33b47b58c4f53d1ac678e71c6ee7b7f56",
+    "content_hash": "sha256:f1959962fe068c12306fa8a4152634eaa436d5c08fc43284179e65934796b5c2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-13T04:54:27.866Z",
+    "generated_at": "2026-08-27T14:06:04.182Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会识别自己是哪种 agent，选择对应的 memU 安装程序，并照着指南把长期记忆功能接入：定时记录会话、回答前检索已有记忆。",
-    "when": "当你说要安装、集成或卸载 memU 等时触发。",
+    "what": "装上后,Claude 会定期把会话中的关键信息存入 memU 的长期记忆,并在回答前检索这些记忆来辅助回复。安装过程会自动识别主机、按官方指南配置,完成后给出模板报告。",
+    "when": "当用户要求安装、设置或卸载 memU 等接入相关操作时触发。",
     "say": [
       {
-        "text": "请安装 memU",
-        "note": "Claude 会识别宿主并执行安装流程。"
+        "text": "请帮我安装 memU,使用默认设置。",
+        "note": "会自动完成安装并输出模板报告。"
       },
       {
-        "text": "用本地模式安装 memU，不要云存储",
-        "note": "会按默认配置完成后端选择。"
+        "text": "用本地记忆模式安装 memU。",
+        "note": "会以 local 模式初始化记忆。"
       },
       {
-        "text": "卸载 memU",
-        "note": "Claude 会运行移除指南并保留记忆。"
+        "text": "卸载 memU,但保留我的记忆数据。",
+        "note": "会执行卸载指南,保留记忆库。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:51b1c7b6efe2bee0fab7b80f8ecbebb33b47b58c4f53d1ac678e71c6ee7b7f56",
+    "content_hash": "sha256:f1959962fe068c12306fa8a4152634eaa436d5c08fc43284179e65934796b5c2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-13T05:09:09.154Z",
+    "generated_at": "2026-08-27T14:43:24.492Z",
     "lint_pass": true,
-    "what_en": "Claude identifies which agent it is, picks the matching memU installer, and follows the guide to wire in long-term memory: scheduled session logging and retrieval before answering.",
-    "when_en": "Triggers when you ask to install, integrate, or uninstall memU, etc.",
+    "what_en": "Once installed, Claude periodically saves key session info into memU's long-term memory and retrieves it before answering. It auto-detects the host, follows the official guide, and reports with a template.",
+    "when_en": "Triggers when the user asks to install, set up, or uninstall memU, or similar integration/removal requests.",
     "say_en": [
       {
-        "text": "Please install memU",
-        "note": "Claude will identify the host and run the install."
+        "text": "Please install memU with default settings.",
+        "note": "Runs full install and returns the template report."
       },
       {
-        "text": "Install memU with local mode, not cloud",
-        "note": "Defaults are used for the backend choice."
+        "text": "Install memU with local memory mode.",
+        "note": "Initializes with local mode."
       },
       {
-        "text": "Uninstall memU",
-        "note": "Claude runs the removal guide and keeps memory."
+        "text": "Uninstall memU but keep my memory data.",
+        "note": "Follows uninstall guide, keeps memory store."
       }
     ]
   }

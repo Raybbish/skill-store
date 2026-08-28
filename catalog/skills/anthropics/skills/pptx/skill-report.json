@@ -5,7 +5,7 @@
     "name": "pptx",
     "description": "Use this skill any time a .pptx or .potx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx or .potx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates (.potx), layouts, speaker notes, or comments. Trigger whenever the user mentions \"deck,\" \"slides,\" \"presentation,\" or references a .pptx or .potx filename, regardless of what they plan to do with the content afterward. If a .pptx or .potx file needs to be opened, created, or touched, use this skill.",
     "upstream": "https://github.com/anthropics/skills/tree/main/skills/pptx",
-    "upstream_commit": "f6656c1256d5a8adfa37db9110046ef20bac644c",
+    "upstream_commit": "3b3fad96af16a10759d930941b4520ba0c40edae",
     "content_hash": "sha256:84e93b426a56288ae533ce553d34e5fded752407cbdfe1e74d08af4622ae29df",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,9 +21,9 @@
   "signals": {
     "stars_github": null,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-14T04:44:47.626Z",
+    "fetched_at": "2026-08-27T13:36:17.261Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-08-13T11:09:54-07:00",
+    "upstream_commit_at": "2026-08-21T10:10:53-07:00",
     "appear_count": 2,
     "list_count": 2
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-14T04:44:47.626Z",
+    "generated_at": "2026-08-27T13:36:17.261Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -109,41 +109,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装后,Claude 能创建、读取和修改 .pptx/.potx 演示文件:通过脚本生成新幻灯片、从现有文件提取文字、编辑模板/备注/图表,并用脚本验证或转 PDF。",
-    "when": "用户提到 deck、slides、presentation 等词,给出 .pptx/.potx 文件名,或要求新建、读取、编辑演示文稿时触发。",
+    "what": "Claude 会用它处理 .pptx/.potx：新建用 pptxgenjs 脚本，编辑用解压改 XML，读取用 markitdown 与缩略图；最后用校验脚本防止 PowerPoint 拒开。",
+    "when": "当你要新建、编辑或拆合 .pptx/.potx 文件，或提到“deck”“slides”“presentation”等词时触发。",
     "say": [
       {
-        "text": "把 报告.pptx 里的文字提取成摘要",
-        "note": "会解析幻灯片并返回摘要。"
+        "text": "帮我把这份 deck.pptx 里每页的文字提取出来",
+        "note": "会调用 markitdown 按页输出文字。"
       },
       {
-        "text": "新建一个 16:9 的 3 页演示文稿,主题用深蓝和冰蓝",
-        "note": "会生成新 .pptx 文件。"
+        "text": "用这个模板新建一个十页的产品发布演示",
+        "note": "先出缩略图选版式，再写脚本生成。"
       },
       {
-        "text": "把 template.potx 第 2 页复制到第 3 页,再改标题文字",
-        "note": "会复制幻灯片并修改标题。"
+        "text": "把这几个 pptx 合并成一个，删掉第三页",
+        "note": "调整页面清单后重新打包并校验。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:84e93b426a56288ae533ce553d34e5fded752407cbdfe1e74d08af4622ae29df",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-15T03:49:25.845Z",
+    "generated_at": "2026-08-27T14:20:38.062Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can create, read, and modify .pptx/.potx files: it generates new slides via scripts, extracts text from existing files, edits templates/notes/charts, validates, and converts to PDF.",
-    "when_en": "Triggered when the user mentions 'deck,' 'slides,' 'presentation,' gives a .pptx/.potx filename, or asks to create, read, or edit a presentation.",
+    "what_en": "Claude handles .pptx/.potx files: it creates decks with pptxgenjs scripts, edits by unzipping and changing slide XML, reads via markitdown and thumbnails, and validates output so PowerPoint won't reject it.",
+    "when_en": "Triggers whenever a .pptx/.potx file is involved as input or output, or when the user mentions \"deck,\" \"slides,\" \"presentation,\" or a .pptx/.potx filename.",
     "say_en": [
       {
-        "text": "Extract the text from 报告.pptx into a summary.",
-        "note": "Parses slides and returns a summary."
+        "text": "Extract the text from each slide in this deck.pptx",
+        "note": "Uses markitdown and prints per-slide blocks."
       },
       {
-        "text": "Create a new 16:9 three-slide deck with navy and ice-blue accents.",
-        "note": "Generates a new .pptx file."
+        "text": "Build a 10-slide product launch deck from this template",
+        "note": "Creates thumbnails for layout picking, then scripts the deck."
       },
       {
-        "text": "Duplicate page 2 of template.potx as page 3, then change the title.",
-        "note": "Duplicates and edits the slide."
+        "text": "Merge these pptx files and delete slide 3",
+        "note": "Reorders the slide list, cleans up, repacks, and validates."
       }
     ]
   }

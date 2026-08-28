@@ -5,8 +5,8 @@
     "name": "notebooklm",
     "description": "Complete API for Google NotebookLM - full programmatic access including features not in the web UI. Create notebooks, add sources, generate all artifact types, download in multiple formats. Activates on explicit /notebooklm or intent like \"create a podcast about X\"",
     "upstream": "https://github.com/teng-lin/notebooklm-py/tree/main/",
-    "upstream_commit": "2d47b372776ee4a54ed021314b364dca56ada137",
-    "content_hash": "sha256:6842ab8eb20af509dbe89490504422c82df9bfc7a0839f1fd59a4d180418aa01",
+    "upstream_commit": "068f876b5d51c85a0b2032a9315433db4461aa15",
+    "content_hash": "sha256:0b0282f817c37abfb88a3866e26dd90788e18a53f5dc9cd01caf53edc351fe50",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 18709,
+    "stars_github": 18960,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-15T03:34:55.322Z",
+    "fetched_at": "2026-08-27T13:37:36.432Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-14T17:49:44-04:00",
+    "upstream_commit_at": "2026-08-26T23:32:51-04:00",
     "repo_skill_count": 1
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-15T03:34:55.322Z",
+    "generated_at": "2026-08-27T13:37:36.432Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -176,6 +176,7 @@
           "scripts/_onetime_rescrub_cookies.py",
           "scripts/_onetime_retarget_cassette_hosts.py",
           "scripts/_strip_audit_refs.py",
+          "scripts/_tracked_files.py",
           "scripts/api-compat-allowlist.json",
           "scripts/audit_auth_import_graph.py",
           "scripts/audit_auth_patch_sites.py",
@@ -278,6 +279,7 @@
           "src/notebooklm/_auth/master_token_file.py",
           "src/notebooklm/_auth/master_token_types.py",
           "src/notebooklm/_auth/mint_service.py",
+          "src/notebooklm/_auth/navigation_errors.py",
           "src/notebooklm/_auth/paths.py",
           "src/notebooklm/_auth/profile_account.py",
           "src/notebooklm/_auth/profile_document.py",
@@ -559,7 +561,10 @@
           "tests/__init__.py",
           "tests/_baselines/__init__.py",
           "tests/_baselines/cli_contract.py",
+          "tests/_baselines/guardrail_literals.py",
+          "tests/_baselines/module_size.py",
           "tests/_baselines/registry.py",
+          "tests/_baselines/storage_transaction_policy.py",
           "tests/_fixtures/__init__.py",
           "tests/_fixtures/chain.py",
           "tests/_fixtures/cli_exit_markers.py",
@@ -639,6 +644,7 @@
           "tests/_guardrails/test_no_flat_cookies_on_the_wire.py",
           "tests/_guardrails/test_no_forbidden_monkeypatches.py",
           "tests/_guardrails/test_no_inline_deprecation_warnings.py",
+          "tests/_guardrails/test_no_large_inline_snapshots.py",
           "tests/_guardrails/test_no_legacy_rpc_callable_aliases.py",
           "tests/_guardrails/test_no_module_shadowing.py",
           "tests/_guardrails/test_no_pinned_cassette_values.py",
@@ -729,6 +735,9 @@
           "tests/fixtures/bad_cassettes/bad_sid_starting_with_s.yaml",
           "tests/fixtures/baselines/auth_import_graph.json",
           "tests/fixtures/baselines/auth_patch_sites.json",
+          "tests/fixtures/baselines/guardrail_inline_literals.json",
+          "tests/fixtures/baselines/module_size.json",
+          "tests/fixtures/baselines/storage_transaction_policy.json",
           "tests/fixtures/baselines/types_all.json",
           "tests/fixtures/baselines/ungated_surface.json",
           "tests/fixtures/notebooklm_html.html",
@@ -1148,6 +1157,7 @@
           "tests/unit/test_authed_post_pipeline.py",
           "tests/unit/test_authtokens_jar_sync.py",
           "tests/unit/test_backoff.py",
+          "tests/unit/test_baseline_registry.py",
           "tests/unit/test_browser_capture_cdp_arm.py",
           "tests/unit/test_browser_capture_headless_arm.py",
           "tests/unit/test_browser_capture_launch_errors.py",
@@ -1250,6 +1260,7 @@
           "tests/unit/test_live_auth_matrix.py",
           "tests/unit/test_logging.py",
           "tests/unit/test_logging_correlation.py",
+          "tests/unit/test_login_wait_navigation_failure.py",
           "tests/unit/test_login_wait_trace.py",
           "tests/unit/test_loop_bound.py",
           "tests/unit/test_mcp_desktop_extension.py",
@@ -1350,6 +1361,7 @@
           "tests/unit/test_timeout_composition.py",
           "tests/unit/test_token_regex.py",
           "tests/unit/test_tracing_middleware.py",
+          "tests/unit/test_tracked_files.py",
           "tests/unit/test_transport_drain.py",
           "tests/unit/test_typed_returns_compat.py",
           "tests/unit/test_types.py",
@@ -1369,69 +1381,71 @@
           "tests/unit/test_youtube_extraction.py",
           "tests/vcr_config.py"
         ],
-        "text_files": 1311,
-        "bytes": 21397674,
-        "chars": 21359128,
-        "tokens": 3705648
+        "text_files": 1323,
+        "bytes": 21493494,
+        "chars": 21454895,
+        "tokens": 3721046
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "用程序自动创建笔记,汇总资料并生成播客等多格式内容",
+    "tagline": "让 AI 按你的要求自动生成播客、摘要和笔记本",
     "scene_tags": [
       "播客生成",
-      "学习笔记"
+      "笔记整理",
+      "文档摘要"
     ],
-    "fit_line": "适合你,如果想把 AI 笔记与播客生成能力集成到自己的应用里",
-    "tagline_en": "Automate notebook creation and generate podcasts via API",
+    "fit_line": "适合你,如果常需要把文档资料快速变成播客或要点摘要",
+    "tagline_en": "Generate podcasts, summaries, and notebooks automatically from your materials",
     "scene_tags_en": [
-      "podcast generation",
-      "study notes"
+      "podcast creation",
+      "note organization",
+      "content summarization"
     ],
-    "fit_line_en": "For you if you want to integrate AI notebook and podcast generation into your own application",
+    "fit_line_en": "For you if you regularly turn documents into podcasts or key takeaways.",
     "source": "llm",
-    "content_hash": "sha256:6842ab8eb20af509dbe89490504422c82df9bfc7a0839f1fd59a4d180418aa01",
+    "content_hash": "sha256:0b0282f817c37abfb88a3866e26dd90788e18a53f5dc9cd01caf53edc351fe50",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-15T03:45:46.933Z",
+    "generated_at": "2026-08-27T14:10:07.715Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能用 notebooklm 命令操作 Google NotebookLM:新建笔记本、添加网址/PDF/视频等资料、提问聊天、生成播客/测验/思维导图等产物,并按多种格式下载。首次使用需先登录 Google 账号。",
-    "when": "当你说“/notebooklm”或提出“把 X 做成播客”“总结这些链接”“生成测验”等与 NotebookLM 相关的请求时触发。",
+    "what": "装上后，Claude 能通过命令行访问 Google NotebookLM 的完整 API：创建笔记本，添加网址、PDF、音视频等来源，生成各种成稿（播客、测验、信息图等）并以多种格式下载，包括网页界面没有的功能。",
+    "when": "当用户明确说出“/notebooklm”或“使用 notebooklm”，或表达“创建关于某主题的播客”“总结这些网址/文档”等意图时触发。",
     "say": [
       {
-        "text": "用 notebooklm 把这篇 PDF 添加为资料,再创建一份测验。",
-        "note": "需先登录并选定一个笔记本。"
+        "text": "用 NotebookLM 给这些链接生成一个播客",
+        "note": "会创建笔记本并添加这些链接，生成播客"
       },
       {
-        "text": "notebooklm 帮我生成一个关于光合作用的播客。",
-        "note": "生成类任务耗时长,会先征求确认。"
+        "text": "把这份 PDF 和这个视频网址加到 NotebookLM",
+        "note": "会把这些作为来源添加到当前笔记本"
       },
       {
-        "text": "把当前笔记本内容做成思维导图并下载。",
-        "note": "下载会写文件,所以会先征求确认。"
+        "text": "从我的研究资料里生成一套测验",
+        "note": "会生成测验成稿，可下载"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:6842ab8eb20af509dbe89490504422c82df9bfc7a0839f1fd59a4d180418aa01",
+    "content_hash": "sha256:0b0282f817c37abfb88a3866e26dd90788e18a53f5dc9cd01caf53edc351fe50",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-15T04:07:06.332Z",
+    "generated_at": "2026-08-27T14:48:24.985Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can use the notebooklm CLI to control Google NotebookLM: create notebooks, add sources, chat with content, generate artifacts (podcasts, quizzes, videos, etc.) and download them in multiple formats. Login is required first.",
-    "when_en": "Activates when the user says /notebooklm, names the tool, or voices an intent such as “create a podcast about X”, “summarize these links”, or “generate a quiz”.",
+    "what_en": "After installation, Claude can access Google NotebookLM's complete API via the command line: create notebooks, add sources (URLs, PDFs, audio/video), generate artifacts (podcasts, quizzes, infographics, etc.) and download in multiple formats, including features not in the web UI.",
+    "when_en": "Activates when the user explicitly says \"/notebooklm\" or \"use notebooklm\", or expresses intent such as \"create a podcast about X\" or \"summarize these URLs/documents\".",
     "say_en": [
       {
-        "text": "Use notebooklm to add this PDF as a source, then create a quiz.",
-        "note": "Make sure login is set up and a notebook is selected."
+        "text": "Generate a podcast about these links with NotebookLM",
+        "note": "Creates a notebook, adds links, generates a podcast"
       },
       {
-        "text": "notebooklm, generate a podcast about photosynthesis.",
-        "note": "Generation is long-running; confirmation may be requested."
+        "text": "Add this PDF and this video URL to NotebookLM",
+        "note": "These will be added as sources to the current notebook"
       },
       {
-        "text": "Turn the current notebook into a mind map and download it.",
-        "note": "Downloads write to filesystem, so Claude asks first."
+        "text": "Generate a quiz from my research materials",
+        "note": "Produces a quiz artifact that can be downloaded"
       }
     ]
   }

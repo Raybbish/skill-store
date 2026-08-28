@@ -5,7 +5,7 @@
     "name": "understand-chat",
     "description": "Use when you need to ask questions about a codebase or understand code using a knowledge graph",
     "upstream": "https://github.com/Egonex-AI/Understand-Anything/tree/main/understand-anything-plugin/skills/understand-chat",
-    "upstream_commit": "32944829e7a63a9fa9c55d811d7f98a9530c6a6a",
+    "upstream_commit": "ba450c43425f3de6d43daf76526950ad8ca93536",
     "content_hash": "sha256:15b5def8d9bdc468904686768c41f01f5d57dc616a3142c82e55348c8e4f4f2e",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 79005,
+    "stars_github": 80705,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-12T04:44:08.380Z",
+    "fetched_at": "2026-08-27T13:37:02.458Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-11T22:13:36+08:00",
+    "upstream_commit_at": "2026-08-26T02:38:15-04:00",
     "repo_skill_count": 9
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-12T04:44:08.380Z",
+    "generated_at": "2026-08-27T13:37:02.458Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，当你在项目中提问时，Claude 会先检查知识图谱文件是否存在，然后用搜索读取相关节点和连接，基于这些信息回答关于代码库的问题，并指出具体文件或函数的位置与关系。",
-    "when": "当你想了解当前代码库的结构、询问某个模块或函数的用途与调用关系时触发。",
+    "what": "装好后,Claude 会用项目里的知识图谱文件回答代码库问题:先查项目信息,再按关键词搜索节点、连接关系和分层,最后给出指向具体文件/函数的答案。",
+    "when": "当你提出关于当前代码库的问题,且项目里有 `.understand-anything/knowledge-graph.json` 时触发;若没有该文件,会提示先运行 `/understand`。",
     "say": [
       {
-        "text": "这个项目里 user 模块是做什么的？",
-        "note": "会检索知识图谱中的对应节点并回答。"
+        "text": "这个函数被哪些地方调用了?",
+        "note": "会沿 calls/imports 边查上游引用。"
       },
       {
-        "text": "函数 getUser 被哪些地方调用了？",
-        "note": "会找出相关的调用边并说明调用链。"
+        "text": "项目架构分哪几层?",
+        "note": "读取 layers 和节点归属来回答。"
       },
       {
-        "text": "这个代码库的分层结构是怎样的？",
-        "note": "会读取 layers 信息并解释架构分层。"
+        "text": "该模块依赖哪些文件?",
+        "note": "按 depends_on/imports 关系列出下游依赖。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:15b5def8d9bdc468904686768c41f01f5d57dc616a3142c82e55348c8e4f4f2e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-12T04:57:45.496Z",
+    "generated_at": "2026-08-27T14:25:32.845Z",
     "lint_pass": true,
-    "what_en": "When installed, Claude checks for the knowledge graph file, then greps for relevant nodes and edges to answer questions about the codebase, referencing specific files, functions and their relationships.",
-    "when_en": "Triggered when you ask questions about the current codebase or want to understand code using the knowledge graph.",
+    "what_en": "After installation, Claude answers codebase questions using the project's knowledge graph file: it first reads project metadata, then searches relevant nodes, edges, and layers by keyword, and finally gives answers pointing to specific files/functions.",
+    "when_en": "Triggered when you ask about the current codebase and `.understand-anything/knowledge-graph.json` exists; if absent, it asks you to run `/understand` first.",
     "say_en": [
       {
-        "text": "What does the user module do in this project?",
-        "note": "Looks up matching nodes in the graph."
+        "text": "Which functions call this one?",
+        "note": "Traces upstream references via calls/imports edges."
       },
       {
-        "text": "Where is the function getUser called from?",
-        "note": "Finds edges to trace the call chain."
+        "text": "What layers is the project architecture split into?",
+        "note": "Reads layers and node memberships."
       },
       {
-        "text": "What is the layered structure of this codebase?",
-        "note": "Reads layer info and explains architecture."
+        "text": "What files does this module depend on?",
+        "note": "Lists downstream dependencies via depends_on/imports."
       }
     ]
   }

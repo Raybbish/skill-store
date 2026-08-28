@@ -5,7 +5,7 @@
     "name": "agenthub",
     "description": "Multi-agent collaboration plugin that spawns N parallel subagents competing on the same task via git worktree isolation. Agents work independently, results are evaluated by metric or LLM judge, and the best branch is merged. Use when: user wants multiple approaches tried in parallel — code optimization, content variation, research exploration, or any task that benefits from parallel competition. Requires: a git repo.",
     "upstream": "https://github.com/alirezarezvani/claude-skills/tree/main/.gemini/skills/agenthub",
-    "upstream_commit": "aa8d778811a557a2c28ccadda4cf3d0bd028a4cc",
+    "upstream_commit": "19392f7a08264ed00486a251f5b2098321771f94",
     "content_hash": "sha256:5f96de83bc10659ddc24dd10c2bf3334630f6e1b657064fc265f1a16730fb538",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 22735,
+    "stars_github": 25065,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-18T05:19:51.537Z",
+    "fetched_at": "2026-08-27T13:37:27.998Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-17T15:02:50+02:00",
-    "repo_skill_count": 426,
+    "upstream_commit_at": "2026-08-26T15:53:02+02:00",
+    "repo_skill_count": 449,
     "bulk_source": true
   },
   "context_size": {
@@ -37,34 +37,34 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-18T05:19:51.537Z",
+    "generated_at": "2026-08-27T13:37:27.998Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 7902,
-        "chars": 7835,
-        "tokens": 1658
+        "bytes": 7918,
+        "chars": 7851,
+        "tokens": 1660
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 7902,
-        "chars": 7835,
-        "tokens": 1658
+        "bytes": 7918,
+        "chars": 7851,
+        "tokens": 1660
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 7902,
-        "chars": 7835,
-        "tokens": 1658
+        "bytes": 7918,
+        "chars": 7851,
+        "tokens": 1660
       }
     }
   },
@@ -90,30 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 可以同时启动多个独立 AI 子代理，每个代理在隔离的 git 工作区中并行尝试不同方案完成任务。最后自动评估所有结果，合并最优方案。",
-    "when": "当你需要为同一任务尝试多种不同方法时触发，例如代码优化、内容变体、研究探索等。要求当前项目是一个 git 仓库。",
+    "what": "装上后,Claude 可把同一任务拆给多个互不可见的子代理,在各自独立的 git worktree 里并行做;完成后按指标或由 LLM 评判排名,再把得分最高的分支合并回主分支。",
+    "when": "当用户说“尝试多种方法”“让代理竞争”“并行优化”等,或要求并行探索多种方案时触发;前提是当前项目是一个 git 仓库。",
     "say": [
       {
-        "text": "帮我用三个代理并行优化这段代码的性能。"
+        "text": "请用多个代理并行尝试不同的优化方案,最后合并最好的。",
+        "note": "会初始化会话并生成多个隔离分支。"
       },
       {
-        "text": "让五个代理同时写不同的文案版本，然后选出最好的。",
-        "note": "Claude 会并行生成多个文案，评估后合并最优版本。"
+        "text": "开 4 个竞争代理,分别写不同文案,按质量打分。",
+        "note": "可用 /hub:eval 或让 Claude 评判。"
+      },
+      {
+        "text": "对比三种重构思路,跑测试后留下通过且改动最少的一个。",
+        "note": "适合用 /hub:merge 收尾。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5f96de83bc10659ddc24dd10c2bf3334630f6e1b657064fc265f1a16730fb538",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-18T05:22:32.434Z",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-08-27T14:17:38.722Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can spawn multiple independent AI subagents that work in parallel on the same task, each in an isolated git worktree. Results are evaluated and the best branch is merged automatically.",
-    "when_en": "Triggered when you want multiple approaches tried in parallel for the same task, such as code optimization, content variation, or research exploration. Requires a git repository.",
+    "what_en": "After installation, Claude can split one task among N hidden subagents, each working in an isolated git worktree. Results are ranked by metric or LLM judge, and the winning branch is merged.",
+    "when_en": "Triggers when the user asks to try multiple approaches, have agents compete, parallel-optimize, generate variants, or similar; requires an existing git repo.",
     "say_en": [
       {
-        "text": "Use three agents to optimize this code in parallel."
+        "text": "Try several optimization approaches in parallel with agents and merge the best one.",
+        "note": "Creates a session and isolated branches."
       },
       {
-        "text": "Have five agents write different copy versions and pick the best."
+        "text": "Spawn 4 competing agents to draft different copy and rank by quality.",
+        "note": "Use /hub:eval or have Claude judge."
+      },
+      {
+        "text": "Compare three refactoring plans, run tests, and keep the smallest passing change.",
+        "note": "Wrap up with /hub:merge."
       }
     ]
   }
