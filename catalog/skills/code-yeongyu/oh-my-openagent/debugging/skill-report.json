@@ -5,7 +5,7 @@
     "name": "debugging",
     "description": "MUST USE for any real runtime debugging across ANY language or binary — crashes, silent failures, wrong responses, stuck processes, memory leaks, async misbehavior, unexplained timing, reverse engineering. Runs a hypothesis-driven loop: form ≥3 hypotheses, investigate in parallel, after 2 failed rounds spawn Oracles from orthogonal angles, confirm root cause, lock with a failing test, fix minimally, QA by actually USING the system, scrub artifacts. The actual HOW lives in `references/` — READ THEM. Triggers: 'debug this', 'why is X not working', 'hanging', 'attach a debugger', 'reverse engineer', 'pwndbg', 'gdb', 'lldb', 'node inspect', 'pdb', 'dlv', 'delve', 'rust-gdb', 'set a breakpoint', 'context window exploded', 'why is the response empty', 'why is this happening', 'trace this bug', 'reproduce and fix', 'silent failure', 'HTTP 200 but empty', 'why did it stop', 'inspect the binary', 'playwright', 'flaky test', 'fails intermittently', 'passes in isolation', 'only fails in CI'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/debugging",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "42e106cb42133ef2d6b626df9f43fb33b3dacbfd",
     "content_hash": "sha256:328f1b7c79859648912a494962b7e741b736a50921c476599c1fc5495f461979",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68488,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-08-29T09:39:22.062Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
+    "upstream_commit_at": "2026-08-29T18:26:43+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-08-29T09:39:22.062Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -137,26 +137,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "调试任何运行时报错或异常行为时,Claude 会按固定流程工作:先建立日志跟踪每次改动,提出至少 3 个假设并行排查;连续两轮失败后从不同角度生成“Oracle”子代理;确认根因后先写失败测试再修复,最后实际运行系统验证并清理调试痕迹。",
-    "when": "当你描述程序崩溃、无声失败、卡住、内存泄漏、响应为空、二进制逆向等调试需求,或说出“debug this”“为什么 X 不工作”“挂起”“逆向”等触发词时触发。",
+    "what": "面对运行时故障时，Claude 会先读该语言/运行时的参考文档，把调试过程记入日志，并行验证至少三个假设；两轮失败后生成多个方向的 Oracle 子代理；确认根因后先写失败测试，做最小修复，再实际运行系统做 QA，最后清理调试产物。",
+    "when": "当用户报告真实运行时故障，如崩溃、静默失败、进程卡住等，或说出 debug this、why is X not working、hanging 等触发词，或要求 attach a debugger、reverse engineer 时触发。",
     "say": [
       {
-        "text": "帮我调试这个 Python 脚本:它经常卡住不退出。",
-        "note": "先按 Python 运行时参考设置调试环境再排查。"
+        "text": "为什么我的爬虫偶尔卡死？帮我查一下根因。",
+        "note": "Claude 会先读运行时文档并建立调试日志。"
       },
       {
-        "text": "为什么这个接口返回 200 但内容为空?",
-        "note": "会作为无声失败场景走完整假设验证流程。"
+        "text": "这个 API 返回 200 但 body 为空，帮我定位。",
+        "note": "会按静默失败模式并行排查。"
       },
       {
-        "text": "这个测试只在 CI 里偶发失败,帮我查。",
-        "note": "会先读取偶发问题排查参考,再进入假设阶段。"
+        "text": "把目标二进制用 pwndbg 跑起来，逆向这个协议。",
+        "note": "会先读对应参考文档再附加。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:328f1b7c79859648912a494962b7e741b736a50921c476599c1fc5495f461979",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:56:05.814Z",
-    "lint_pass": true
+    "generated_at": "2026-08-29T09:44:39.876Z",
+    "lint_pass": true,
+    "what_en": "On a runtime failure, Claude reads the runtime reference, journals artifacts, investigates at least three hypotheses in parallel; after two failed rounds it spawns Oracles; once confirmed, writes a failing test first, fixes minimally, QA by using the system, then cleans up.",
+    "when_en": "Triggers when the user reports a real runtime failure (crash, silent failure, stuck process, etc.), mentions trigger phrases like debug this, why is X not working, hanging, or asks to attach a debugger or reverse engineer.",
+    "say_en": [
+      {
+        "text": "Why does my crawler occasionally hang? Help me find the root cause.",
+        "note": "Reads the runtime doc and starts the debug journal."
+      },
+      {
+        "text": "This API returns 200 but the body is empty. Help me trace it.",
+        "note": "Treats it as a silent failure and investigates in parallel."
+      },
+      {
+        "text": "Run the target binary under pwndbg and reverse this protocol.",
+        "note": "Reads the native-binary and pwndbg references first."
+      }
+    ]
   }
 }
