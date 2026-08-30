@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "MUST USE for ANY git operations. Atomic commits, rebase/squash, history search (blame, bisect, log -S). STRONGLY RECOMMENDED: Use with task(category='quick', load_skills=['git-master'], ...) to save context. Triggers: 'commit', 'rebase', 'squash', 'who wrote', 'when was X added', 'find the commit that'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-opencode/src/features/builtin-skills/git-master",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "42e106cb42133ef2d6b626df9f43fb33b3dacbfd",
     "content_hash": "sha256:3b8a86289df510ac57d9b0cadb1291fb665484a9802d513855e689251acf24b2",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68488,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-08-29T09:39:22.062Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
+    "upstream_commit_at": "2026-08-29T18:26:43+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -39,7 +39,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-08-29T09:39:22.062Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,26 +93,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会先判断你是在提交、改写历史还是查历史,再动手。它默认把多处改动拆成多个小提交(例如改10个文件至少5个提交),并模仿仓库现有的提交信息语言和风格,还会让测试和实现代码待在同一个提交里。",
-    "when": "当你提到 commit、rebase、squash、who wrote、when was X added 等关键词,或提出任何和 git 操作有关的请求时触发。",
+    "what": "装好后,当你进行 git 操作时,Claude 会先分析仓库现状和提交风格,再把改动拆成多个独立的小提交,每个提交只讲一件事;它也能帮你整理提交历史(如变基、压缩),或查出一段代码是何时由谁加入的。",
+    "when": "当你提到 commit、rebase、squash 等关键词,或询问某段代码是谁写的、何时加入时,它会接管。",
     "say": [
       {
-        "text": "帮我把这些改动拆成几个逻辑清晰的提交",
-        "note": "它会先给出提交计划,再逐个执行。"
+        "text": "帮我把这次改动拆成几个小提交,每个只做一件事。",
+        "note": "它会按目录和逻辑拆分文件,生成多个提交。"
       },
       {
-        "text": "把这几个提交 rebase 合并成一个",
-        "note": "它会在安全前提下用 autosquash 重写历史。"
+        "text": "把最近的几个提交压缩成一个,并整理好提交信息。",
+        "note": "它会自动变基合并,并沿用仓库风格重写信息。"
       },
       {
-        "text": "查一下这行代码是谁什么时候加的",
-        "note": "它会用 blame 或 log -S 定位来源。"
+        "text": "查一下这段代码是谁写的,什么时候加的?",
+        "note": "它会用 blame/log 定位来源提交。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3b8a86289df510ac57d9b0cadb1291fb665484a9802d513855e689251acf24b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:56:30.099Z",
-    "lint_pass": true
+    "generated_at": "2026-08-29T09:45:23.328Z",
+    "lint_pass": true,
+    "what_en": "After installation, Claude will analyze the repo state and commit style before splitting your changes into multiple small, independent commits. It can also rewrite history (rebase/squash) and trace when/where a piece of code was introduced.",
+    "when_en": "Triggers when you mention commit, rebase, squash, or ask who wrote a line / when something was added, or request finding the commit that introduced a change.",
+    "say_en": [
+      {
+        "text": "Split my changes into several small commits, each with one purpose.",
+        "note": "It groups by directory/logic and commits each."
+      },
+      {
+        "text": "Squash the last few commits into one with a clean message.",
+        "note": "Rebases and rewrites messages in repo style."
+      },
+      {
+        "text": "Find who wrote this line and when it was added.",
+        "note": "Uses blame/log to locate the source commit."
+      }
+    ]
   }
 }

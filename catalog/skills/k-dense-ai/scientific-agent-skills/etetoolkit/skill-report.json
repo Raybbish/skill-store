@@ -5,7 +5,7 @@
     "name": "etetoolkit",
     "description": "Analyze, manipulate, compare, annotate, and visualize phylogenetic or other hierarchical trees with ETE 4. Use for Newick/Nexus tree I/O, topology edits and pattern matching, Robinson-Foulds comparisons, gene-tree evolutionary events and reconciliation, NCBI/GTDB taxonomy, SmartView exploration, and publication rendering. Do not use it to infer trees from raw sequences; align sequences and infer a tree first.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/etetoolkit",
-    "upstream_commit": "36d8f13a1e754618794bf42f417884940077b4ae",
+    "upstream_commit": "895b4be37ef0ca1cd55c6e628e7ff937ba5a1cf1",
     "content_hash": "sha256:09bc766b5f3aaa042afd8d6e0c28c50fa80e2593e44602831e5c851985fcfb6d",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 35043,
+    "stars_github": 37141,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:16.869Z",
+    "fetched_at": "2026-08-29T09:39:30.849Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-24T09:22:54Z",
+    "upstream_commit_at": "2026-08-28T14:41:21-07:00",
     "repo_skill_count": 163,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:16.869Z",
+    "generated_at": "2026-08-29T09:39:30.849Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,41 +100,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 可以读取、修改、比较和可视化系统发育树(树状分支图),支持 Newick 等格式;能进行拓扑编辑、计算 Robinson-Foulds 距离、检测基因树的复制与分化事件、查询 NCBI 分类,并输出 PDF/SVG 图片。",
-    "when": "当用户要求读取、编辑或比较树文件(如 Newick/Nexus),检测基因树事件,或查询 NCBI 分类并可视化时触发;不会用于从原始序列直接推断树。",
+    "what": "装上后,Claude 会使用 ETE 4 读取和改写 Newick 等树文件,进行修剪、定根、拓扑比较,识别基因树中的复制与分化事件,调用 NCBI 分类注释节点,并输出 PDF/SVG 图像。",
+    "when": "当用户要求读取/改写树文件、比较树拓扑差异或识别基因树演化事件时触发;也用于 NCBI 分类注释与树图渲染。不用于从原始序列推断谱系树。",
     "say": [
       {
-        "text": "读取 tree.nw,统计叶子数和节点数",
-        "note": "会返回树的统计信息。"
-      },
-      {
-        "text": "比较 tree1.nw 和 tree2.nw 的拓扑差异",
-        "note": "给出 Robinson-Foulds 距离和独有分区。"
-      },
-      {
-        "text": "把 gene_tree.nw 画成 PDF,节点按支持度着色",
-        "note": "生成带样式的树图文件。"
+        "text": "帮我读取 tree.nw,打印叶子数和节点数。",
+        "note": "会用 ETE 打开并输出统计。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:09bc766b5f3aaa042afd8d6e0c28c50fa80e2593e44602831e5c851985fcfb6d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:33:33.613Z",
+    "generated_at": "2026-08-29T09:53:29.100Z",
     "lint_pass": true,
-    "what_en": "Claude can read, edit, compare, annotate, and visualize phylogenetic trees with ETE 4: Newick/NHX/PhyloXML/NeXML I/O, topology edits, Robinson-Foulds distances, gene-tree duplication/speciation detection, NCBI taxonomy lookups, and PDF/SVG rendering.",
-    "when_en": "Triggered when the user asks to load, edit, compare, or visualize existing tree files (e.g., Newick/Nexus), detect gene-tree duplication/speciation events, or query NCBI taxonomy. Not for inferring trees from raw sequences.",
+    "what_en": "After installation, Claude can use ETE 4 to read/write Newick, NHX, PhyloXML, and NeXML tree files; prune, root, and edit topology; compute Robinson-Foulds distances; detect duplication and speciation events in gene trees; integrate NCBI taxonomy; and render PDF/SVG figures.",
+    "when_en": "Triggers when the user asks to parse/edit tree files, compare tree topologies, identify gene-tree evolutionary events, use NCBI taxonomy annotation, or render tree figures; not for inferring trees from raw sequences.",
     "say_en": [
       {
-        "text": "Read tree.nw and report leaf and node counts.",
-        "note": "Returns tree statistics."
+        "text": "Read tree.nw and print the number of leaves and nodes.",
+        "note": "Claude loads it with ETE and outputs stats."
       },
       {
-        "text": "Compare tree1.nw and tree2.nw for topological differences.",
-        "note": "Gives Robinson-Foulds distance and unique partitions."
+        "text": "Midpoint-root gene_tree.nw, prune to species in keep.txt, and save.",
+        "note": "ETE processes and writes the modified file."
       },
       {
-        "text": "Render gene_tree.nw as PDF, coloring nodes by support.",
-        "note": "Generates a styled tree figure."
+        "text": "Compare tree1.nw and tree2.nw with Robinson-Foulds and explain the result.",
+        "note": "Returns RF distance and shared/unique partitions."
       }
     ]
   }
