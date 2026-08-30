@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "MUST USE whenever a task needs a commit or git-history investigation. Covers atomic commits, staging, commit-message style, rebase, squash, fixup/autosquash, blame, bisect, reflog, git log -S/-G, and questions like who wrote this or when was this added. Do not use for ordinary code edits unless the user asks for git work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "42e106cb42133ef2d6b626df9f43fb33b3dacbfd",
+    "upstream_commit": "59d0a674ce95e39e3fc2fcfd919aef9221014d66",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68488,
+    "stars_github": 68513,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-29T09:39:22.062Z",
+    "fetched_at": "2026-08-30T08:51:08.533Z",
     "first_seen_at": "2026-07-15T03:55:58.117Z",
-    "upstream_commit_at": "2026-08-29T18:26:43+09:00",
+    "upstream_commit_at": "2026-08-30T16:25:30+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -39,7 +39,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-29T09:39:22.062Z",
+    "generated_at": "2026-08-30T08:51:08.533Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,26 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "遇到提交或查 git 历史的任务时,先判断请求属于提交、改写历史、查历史还是查状态,再走对应流程。提交时会按仓库既有信息风格拆分原子提交,逐个暂存、提交并核对;改写历史前先做安全检查;查历史时选用匹配问题的命令,并在答复中引用提交哈希、文件路径等证据。",
-    "when": "当你说要提交代码、整理提交记录,或问某行是谁写的、何时加的这种 git 历史问题时触发。普通代码修改不会触发,除非你明确要求做 git 操作。",
+    "what": "装好后，当你要做 Git 提交或查历史时，Claude 会先判断请求类型，再把改动拆成相互独立的小提交，或查证后给出附证据的答案；它只动你要求的改动，并保留无关内容。",
+    "when": "当用户要求 Git 提交、改写历史，或询问某段代码是谁/何时改的时触发；普通代码编辑除非点名要 Git 操作否则不触发。",
     "say": [
       {
-        "text": "把我改的代码按逻辑分成几个提交,用项目风格写提交信息",
-        "note": "会先看历史风格,再拆分、暂存并逐一提交"
+        "text": "把这几个文件的改动提交成两个独立的 commit",
+        "note": "Claude 会按原子提交规则拆分并提交。"
       },
       {
-        "text": "查一下这个文件里这段是谁、哪个提交改的",
-        "note": "会用 git blame 定位并给出哈希和上下文"
+        "text": "第 50 到 60 行是谁改的？"
       },
       {
-        "text": "把最近三个提交合并成一个,改好提交信息",
-        "note": "会走 rebase 合并流程,推送前会先问你"
+        "text": "把最近三个提交合并成一个",
+        "note": "Claude 会执行 rebase 并注意是否已推送。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-29T09:44:58.120Z",
-    "lint_pass": true
+    "generated_at": "2026-08-30T08:57:53.620Z",
+    "lint_pass": true,
+    "what_en": "After installation, when you ask for a Git commit or history investigation, Claude first classifies the request, then splits changes into independent small commits or answers with evidence-based findings; it touches only what you asked and preserves unrelated work.",
+    "when_en": "Triggers when you ask for a Git commit, history rewrite, or who/when changed something; not for ordinary code edits unless Git work is requested.",
+    "say_en": [
+      {
+        "text": "Commit these file changes as two separate commits.",
+        "note": "Claude will split and commit atomically."
+      },
+      {
+        "text": "Who changed lines 50 to 60?",
+        "note": "Claude will run git blame and show hash and context."
+      },
+      {
+        "text": "Squash the last three commits into one.",
+        "note": "Claude will rebase and check if they were pushed."
+      }
+    ]
   }
 }

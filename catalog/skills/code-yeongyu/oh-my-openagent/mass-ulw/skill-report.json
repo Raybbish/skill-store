@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Run a dependency graph of child agents in one call with the native workflow tool. Use when the user asks for mass-ulw, a DAG of tasks, fan-out/fan-in work, or multi-agent execution where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "42e106cb42133ef2d6b626df9f43fb33b3dacbfd",
+    "upstream_commit": "59d0a674ce95e39e3fc2fcfd919aef9221014d66",
     "content_hash": "sha256:a85cb6d4d980a1fbcc694ffd5d300d34f4097cacea29e2f7622a550b9d9224e6",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68488,
+    "stars_github": 68513,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-29T09:39:22.062Z",
+    "fetched_at": "2026-08-30T08:51:08.533Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-08-29T18:26:43+09:00",
+    "upstream_commit_at": "2026-08-30T16:25:30+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-29T09:39:22.062Z",
+    "generated_at": "2026-08-30T08:51:08.533Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,42 +91,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后,Claude 会把你的请求拆成有依赖关系的子任务图,按依赖顺序分波并行调度多个子代理;每个节点自带指令、类别和可选的依赖项。执行前它必读规划文档并登记目标与验证标准,运行中可对单个节点重试、发消息或修改后重跑。",
-    "when": "当你说出 mass-ulw、任务 DAG、扇出/扇入等,或要求做多代理执行且部分任务需等其它任务先完成时触发。",
+    "what": "装上后，当用户要求按依赖关系跑多智能体任务时，Claude 会先把任务拆成有前后依赖的节点图，读规划文档后，用原生 workflow 工具一次启动整个图，按依赖自动并行执行，并支持中途发消息、重试或修改单个节点。",
+    "when": "当用户要求“mass-ulw”、任务依赖图（DAG）、扇出/扇入等需等待前置任务的多智能体场景时触发。",
     "say": [
       {
-        "text": "用 mass-ulw 把“审查文档→重写→校验”做成依赖图,依次执行。",
-        "note": "Claude 会按阶段拆分节点并运行。"
+        "text": "用 mass-ulw 把这个文档更新拆成审计、改写、验证三步，后两步依赖前一步。",
+        "note": "会按依赖图并行执行。"
       },
       {
-        "text": "帮我把三个子任务排成 DAG:A 先跑,等它完成后再并行跑 B 和 C。",
-        "note": "它会按依赖顺序分波并行执行。"
+        "text": "刚才那个 DAG 里校验节点失败了，重试一下那个节点。",
+        "note": "只重试指定节点，已完成节点复用。"
       },
       {
-        "text": "用 mass-ulw 跑一次工作流:先审查代码,再写测试,测试通过后补文档。",
-        "note": "每个节点会等前置节点完成。"
+        "text": "把节点 B 的提示改成注重并发安全，然后 amend 这个运行。",
+        "note": "只重跑变更节点及其下游。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a85cb6d4d980a1fbcc694ffd5d300d34f4097cacea29e2f7622a550b9d9224e6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-29T09:46:31.991Z",
-    "lint_pass": true,
-    "what_en": "Claude turns the request into a dependency graph of child-agent tasks and runs them in waves in dependency order. It reads the planning doc, sets a goal with verification, and can retry, message, or amend individual nodes.",
-    "when_en": "Triggered when the user mentions \"mass-ulw\", a task DAG, fan-out/fan-in work, or multi-agent execution where some tasks must wait on others.",
-    "say_en": [
-      {
-        "text": "Use mass-ulw to turn 'audit -> rewrite -> verify' into a dependency graph and run it.",
-        "note": "Claude splits it into staged nodes and runs them."
-      },
-      {
-        "text": "Make a DAG of three subtasks: run A first, then run B and C in parallel once A finishes.",
-        "note": "It executes in dependency order."
-      },
-      {
-        "text": "Run a mass-ulw workflow: audit the code, write tests, then update docs after tests pass.",
-        "note": "Each node waits for its dependencies."
-      }
-    ]
+    "generated_at": "2026-08-30T08:58:50.268Z",
+    "lint_pass": true
   }
 }

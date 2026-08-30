@@ -5,7 +5,7 @@
     "name": "deeptools",
     "description": "NGS analysis toolkit. BAM to bigWig conversion, QC (correlation, PCA, fingerprints), heatmaps/profiles (TSS, peaks), for ChIP-seq, RNA-seq, ATAC-seq visualization.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/deeptools",
-    "upstream_commit": "895b4be37ef0ca1cd55c6e628e7ff937ba5a1cf1",
+    "upstream_commit": "f6fcafeb1cc8c82eca0160a18bc41c38427b8e0f",
     "content_hash": "sha256:3ca61a6cac165b8a85784fd41d147faa37339485289c2d0d4f0de335c71882c7",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 37141,
+    "stars_github": 38224,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-29T09:39:30.849Z",
+    "fetched_at": "2026-08-30T08:51:17.928Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T14:41:21-07:00",
+    "upstream_commit_at": "2026-08-29T15:54:53-07:00",
     "repo_skill_count": 163,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-29T09:39:30.849Z",
+    "generated_at": "2026-08-30T08:51:17.928Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -104,39 +104,36 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会调用 deepTools 命令行工具来处理高通量测序数据：把 BAM 转成 bigWig 覆盖率文件，做质控（相关性、PCA、指纹图），并围绕 TSS 或峰区生成热图和剖面图，适用 ChIP-seq、RNA-seq、ATAC-seq 等。",
-    "when": "用户要求转换 BAM 到 bigWig、做质控（如相关性、指纹图）、生成热图/剖面图，或分析 ChIP-seq、RNA-seq、ATAC-seq 数据时触发。",
+    "what": "装上后，Claude 能用 deepTools 处理测序数据：把 BAM 转成 bigWig/bedGraph 覆盖轨道，做相关性、PCA、fingerprint 等质控，生成 TSS 或峰区周围的热图与剖面图。还会先校验 BAM/BED 文件，并生成可执行的 ChIP-seq、RNA-seq、ATAC-seq 工作流脚本。",
+    "when": "当用户要求把 BAM 转成 bigWig、做质控（如相关性和 fingerprint）、画 TSS/峰区热图等 deepTools 分析时触发。",
     "say": [
       {
-        "text": "把 sample.bam 转成 bigWig 文件"
+        "text": "把 treatment.bam 转成 bigWig，用 RPGC 归一化。",
+        "note": "会调用 bamCoverage 生成覆盖度轨道。"
       },
       {
-        "text": "比较处理组和对照组的信号",
-        "note": "会调用 bamCompare 输出 log2 比值图。"
-      },
-      {
-        "text": "画基因 TSS 周围的热图"
+        "text": "生成 TSS 周围 3kb 的热图和剖面图。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3ca61a6cac165b8a85784fd41d147faa37339485289c2d0d4f0de335c71882c7",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-29T09:52:59.217Z",
-    "lint_pass": true,
-    "what_en": "After installation, Claude can run deepTools commands to handle sequencing data: convert BAM to bigWig coverage, run QC (correlation, PCA, fingerprint), and generate heatmaps/profiles around TSS or peaks, for ChIP-seq, RNA-seq, ATAC-seq.",
-    "when_en": "Triggers when users ask for BAM-to-bigWig conversion, QC (e.g., correlation, fingerprint), heatmap/profile plots, or analysis of ChIP-seq, RNA-seq, ATAC-seq data.",
+    "generated_at": "2026-08-30T09:07:41.364Z",
+    "lint_pass": false,
+    "what_en": "Claude gains deepTools-based NGS analysis: BAM→bigWig/bedGraph conversion, QC (correlation, PCA, fingerprint), and TSS/peak heatmaps & profiles. It validates input files and generates executable ChIP/RNA/ATAC workflows.",
+    "when_en": "Triggers when users ask for BAM-to-bigWig conversion, QC (e.g., correlation, fingerprint), TSS/peak heatmaps, or other deepTools analyses.",
     "say_en": [
       {
-        "text": "Convert sample.bam to bigWig.",
-        "note": "Runs bamCoverage to generate normalized bigWig."
+        "text": "Convert treatment.bam to bigWig with RPGC normalization.",
+        "note": "Runs bamCoverage to produce a coverage track."
       },
       {
-        "text": "Compare treatment vs control signal.",
-        "note": "Calls bamCompare to output log2 ratio track."
+        "text": "Compare treatment and control BAMs, output log2 ratio.",
+        "note": "Uses bamCompare."
       },
       {
-        "text": "Plot a heatmap around gene TSS.",
-        "note": "Uses computeMatrix and plotHeatmap."
+        "text": "Generate heatmap and profile around TSS within 3kb.",
+        "note": "Uses computeMatrix and plotHeatmap/plotProfile."
       }
     ]
   }
