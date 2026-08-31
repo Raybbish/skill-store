@@ -5,7 +5,7 @@
     "name": "ultimate-browsing",
     "description": "Escalation skill for blocked or hard-to-reach web access — load it when a normal browse/fetch is blocked (WAF, 403, Cloudflare, JS-only render, login-gated, or a platform a generic fetcher cannot read). Tiered router: TIER 1 insane-search (headless extraction + WAF bypass via curl_cffi TLS impersonation, yt-dlp, Jina Reader, public APIs, Playwright real-Chrome fallback); TIER 1.5 agent-reach (platform-native readers for Chinese and social platforms: Xiaohongshu, Douyin, Weibo, Bilibili, V2EX, WeChat, plus Twitter/Reddit/LinkedIn/GitHub); TIER 2 Chrome stealth (CloakBrowser stealth Chromium + agent-browser CDP for clicks, forms, screenshots, video, cookie login). Triggers: blocked site, bypass bot detection, cloudflare/WAF bypass, scrape, stealth browser, import cookies, fill form, screenshot, play youtube, xiaohongshu, douyin, weibo, bilibili, v2ex, wechat article, podcast transcript. NOT for simple searches (use web-search) or plain fetches (use webfetch).",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ultimate-browsing",
-    "upstream_commit": "59d0a674ce95e39e3fc2fcfd919aef9221014d66",
+    "upstream_commit": "09f8e43f5d169a3365d91cfe8a9a0f22e538637f",
     "content_hash": "sha256:435b154aea7553cea2d59a9de354a06c2a8b3c63068b5ab0bf266dc936cafb31",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68513,
+    "stars_github": 68542,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-30T08:51:08.533Z",
+    "fetched_at": "2026-08-31T09:13:39.829Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-30T16:25:30+09:00",
+    "upstream_commit_at": "2026-08-31T17:42:39+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-30T08:51:08.533Z",
+    "generated_at": "2026-08-31T09:13:39.829Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -159,42 +159,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，普通浏览被拦时 Claude 会按三层依次升级：先后台自动抓取绕过封锁；遇到小红书、抖音、微博等平台改用专用接口；仍失败则开隐身浏览器模拟真人点击、填表、截图等操作。最终交付文字、字幕、截图等结果。",
-    "when": "当普通浏览或抓取打不开网页（被 WAF/Cloudflare 拦截、报 403、需要登录等），或目标是小红书、抖音、微博等通用工具读不了的平台，或需要点击、填表、截图等页面操作时触发。简单搜索、普通抓取不要用它。",
+    "what": "装上后,普通网页抓取被拦截时,Claude会改用分层策略:先用无头浏览器和反封锁手段提取内容;遇到国内或社交平台则调用其官方API;需要点击、填表、截图时启动隐身Chromium操作。产出文本、媒体信息或截图,并注明快照时间。",
+    "when": "当网页被WAF/403/Cloudflare等封锁,需要读取小红书、抖音等平台内容,或需要点击、填表、截图时触发。普通搜索和简单抓取不会触发。",
     "say": [
       {
-        "text": "这个网页被 Cloudflare 拦了，帮我把正文抓下来。",
-        "note": "Claude 会先绕过拦截把正文提取出来。"
+        "text": "这个网页被Cloudflare拦截了,帮我提取正文内容",
+        "note": "将尝试Tier1无头提取与反封锁"
       },
       {
-        "text": "帮我读一下这篇小红书笔记的内容。",
-        "note": "走小红书专用通道读取，不用通用抓取。"
+        "text": "帮我获取这条抖音视频的标题和文案",
+        "note": "走Tier1.5平台API"
       },
       {
-        "text": "用隐身浏览器打开这个链接，点一下按钮再截图。",
-        "note": "Claude 启动隐身浏览器完成点击和截图。"
+        "text": "用隐身浏览器打开需要登录的页面并截图",
+        "note": "走Tier2隐身浏览器"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:435b154aea7553cea2d59a9de354a06c2a8b3c63068b5ab0bf266dc936cafb31",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T09:02:33.226Z",
-    "lint_pass": true,
-    "what_en": "When a normal fetch is blocked, Claude escalates through three tiers: headless extraction to bypass blocks; platform-native readers for Chinese/social sites; a stealth browser for clicks, forms, screenshots, etc. Delivers text, subtitles, screenshots, etc.",
-    "when_en": "Triggered when a normal fetch is blocked (WAF, 403, login-gated), the target is a Chinese/social platform (Xiaohongshu, Douyin, Weibo, etc.), or clicks/forms/screenshots needed. Not for simple searches or plain fetches.",
-    "say_en": [
-      {
-        "text": "Fetch the article from this page; Cloudflare is blocking me.",
-        "note": "Claude will bypass the block with headless extraction."
-      },
-      {
-        "text": "Read the content of this Xiaohongshu post.",
-        "note": "Uses the platform's native reader."
-      },
-      {
-        "text": "Open this link in a stealth browser, click the button, then screenshot.",
-        "note": "Stealth browser clicks and screenshots."
-      }
-    ]
+    "generated_at": "2026-08-31T09:24:16.053Z",
+    "lint_pass": true
   }
 }

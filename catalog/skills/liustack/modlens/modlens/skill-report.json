@@ -5,8 +5,8 @@
     "name": "modlens",
     "description": "Plug-in vision for text-only models. Hard rule: when a file path or URL with an image extension (.png, .jpg, .jpeg, .webp, .gif, .heic, .heif) appears anywhere in the conversation (typed by the user, injected as a `[Image: source: <path>]` line, or inside a tag) and you cannot see that image's content, run this skill on it before any other approach: no self-built OCR, no PIL, no tesseract. Also triggers on pasted-image placeholders such as `[Image #1]` and `[Unsupported Image]`. If you can actually see the image, do not use this skill. When unsure, run `modlens guard` before the first read of a session: a deny verdict means the active model has native vision and must read the image itself. Runs the modlens CLI to convert the image into structured JSON evidence: every word transcribed, layout regions, semantics, visual clues. Also use when the user asks how to install, configure, or switch modlens providers (Gemini API key, OpenAI-compatible endpoints, Claude API or Claude Code CLI).",
     "upstream": "https://github.com/liustack/modlens/tree/main/skills/modlens",
-    "upstream_commit": "147356e6dde04c69a6a3eeb95d1e21ffeb057d6c",
-    "content_hash": "sha256:465919ccc9c2e39fd6e57dd4e38a4cc9e150bdf541a4e29302b8efe7d7a23d23",
+    "upstream_commit": "4f724704eed025c77ad2c6d40fabe17cb3a8d714",
+    "content_hash": "sha256:24f6d037650be999036a2218d32fe470a7a02ab01fbcc577c598bd9ffd1f86dc",
     "license": "MIT",
     "hosting": "indexed",
     "category": "data-ai",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 3736,
+    "stars_github": 3789,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:49:33.050Z",
+    "fetched_at": "2026-08-31T09:14:26.767Z",
     "first_seen_at": "2026-08-14T04:47:37.284Z",
-    "upstream_commit_at": "2026-08-28T01:32:13+08:00",
+    "upstream_commit_at": "2026-08-30T17:55:41+08:00",
     "repo_skill_count": 1
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:49:33.050Z",
+    "generated_at": "2026-08-31T09:14:26.767Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -79,62 +79,60 @@
   },
   "eval": null,
   "copy": {
-    "tagline": "把图像内容转成文字，让纯文本模型也能看懂图片",
+    "tagline": "把图片转成文字给AI阅读",
     "scene_tags": [
-      "图片消息",
-      "截图解读",
-      "扫描件"
+      "带图对话",
+      "图片转文字"
     ],
-    "fit_line": "适合你,如果你用纯文本模型但需要处理图片内容",
-    "tagline_en": "Turn images into text for text-only models.",
+    "fit_line": "适合你,如果 你的AI助手看不见图片,而你常需要它处理图片",
+    "tagline_en": "Turn images into text for AI to read",
     "scene_tags_en": [
-      "image messages",
-      "screenshot reading",
-      "scanned files"
+      "chat with images",
+      "image to text"
     ],
-    "fit_line_en": "For you if you use a text-only model but need it to understand images.",
+    "fit_line_en": "For you if your AI assistant can't see images and you often need it to process them",
     "source": "llm",
-    "content_hash": "sha256:465919ccc9c2e39fd6e57dd4e38a4cc9e150bdf541a4e29302b8efe7d7a23d23",
+    "content_hash": "sha256:24f6d037650be999036a2218d32fe470a7a02ab01fbcc577c598bd9ffd1f86dc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:52:56.075Z",
+    "generated_at": "2026-08-31T09:20:09.503Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,遇到 Claude 自己看不到内容的图片时,它会调用 modlens 工具把图片转成结构化 JSON 证据(文字转写、版面区域、语义、视觉线索),并依据这些证据回答;不会自建 OCR 去读图。",
-    "when": "当对话里出现以 .png、.jpg 等图片扩展名结尾的文件路径或 URL,或出现 [Image #1] 等粘贴图片占位符,且 Claude 看不到图片内容时;用户在询问安装、配置或切换服务商时也会触发。",
+    "what": "装上后,当对话里出现图片路径/链接或图片占位符而你看不到图时,你会调用 modlens 把图转成结构化 JSON 证据:逐字转录、版块布局、语义和视觉线索,再据此回答。",
+    "when": "当对话里出现带图片后缀的路径或网址(.png、.jpg 等)、或类似「[Image #1]」的占位符,而你看不到图时触发;用户询问安装、配置或切换 modlens 服务商时也会接管。",
     "say": [
       {
-        "text": "帮我读一下 /home/user/photo.png 里的文字",
-        "note": "Claude 会用 modlens 输出图片中的文字转写。"
+        "text": "帮我读这张图 /path/to/photo.png,把上面的文字列出来。",
+        "note": "modlens 会把图片转成 JSON 再回答你。"
       },
       {
-        "text": "这份截图在 /tmp/screen.jpg,帮我总结里面的内容",
-        "note": "Claude 通过 modlens 读取截图后给出总结。"
+        "text": "刚才我贴的截图里,标题和正文分别是什么?",
+        "note": "会定位对话里的图片占位符并读取。"
       },
       {
-        "text": "教我怎么配置 modlens 的 Gemini API key",
-        "note": "Claude 会按配置文档一步步说明。"
+        "text": "帮我配置 modlens,用 Gemini API 密钥。",
+        "note": "会按配置文档引导你设置服务商。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:465919ccc9c2e39fd6e57dd4e38a4cc9e150bdf541a4e29302b8efe7d7a23d23",
+    "content_hash": "sha256:24f6d037650be999036a2218d32fe470a7a02ab01fbcc577c598bd9ffd1f86dc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:04:12.035Z",
+    "generated_at": "2026-08-31T09:28:54.654Z",
     "lint_pass": true,
-    "what_en": "When Claude encounters an image it cannot see, it runs the modlens CLI to convert the image into structured JSON evidence (transcribed text, layout regions, semantics, visual clues) and answers from that JSON; it does not build its own OCR.",
-    "when_en": "Triggered when an image path/URL or a pasted-image placeholder appears in the conversation and Claude cannot see the image content. Also triggered when the user asks to install, configure, or switch modlens providers.",
+    "what_en": "When an image path/URL or placeholder appears and you cannot see it, this skill runs modlens to produce structured JSON evidence: transcribed text, layout regions, semantics, and visual clues, then answers from that.",
+    "when_en": "Triggers when an image path/URL or paste placeholder ('[Image #1]') appears and you cannot see the image; also when the user asks to install/configure/switch modlens providers.",
     "say_en": [
       {
-        "text": "Read the text in /home/user/photo.png for me.",
-        "note": "Claude runs modlens and returns the transcribed text."
+        "text": "Read this image /path/to/photo.png and list the text in it.",
+        "note": "modlens converts it to JSON before answering."
       },
       {
-        "text": "This screenshot is at /tmp/screen.jpg; summarize what's in it.",
-        "note": "Claude reads the image via modlens and gives a summary."
+        "text": "In the screenshot I just pasted, what are the heading and body?",
+        "note": "It locates the pasted-image placeholder and reads it."
       },
       {
-        "text": "Teach me how to configure a Gemini API key for modlens.",
-        "note": "Claude follows the configuration reference to guide you."
+        "text": "Set up modlens with my Gemini API key.",
+        "note": "It walks you through provider configuration."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "senpi-qa",
     "description": "QA the omo Senpi adapter (packages/omo-senpi, packages/senpi-task) against the REAL senpi binary in strict isolation, and write every artifact to the one canonical evidence path .omo/evidence/omo-senpi-adapter/<slug>/. The live drivers under packages/omo-senpi/scripts/qa/ create their own isolated SENPI_CODING_AGENT_DIR and ignore the caller's, so the real ~/.senpi/agent is never written. Ships scripts/resolve-evidence-dir.mjs, which is the ONLY sanctioned way to pick an evidence directory: it rejects traversal, separators, absolute paths, and stray roots such as local-ignore/qa-evidence. Use whenever someone changes anything under packages/omo-senpi or packages/senpi-task, or wants to QA, smoke-test, verify, or debug the Senpi adapter, the task/team engine, the DAG, task RPC, or skill delivery. Triggers: senpi qa, qa senpi, senpi-qa, test senpi adapter, verify senpi task, senpi task e2e, senpi team e2e, task dag qa, live senpi driver, senpi evidence path.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/senpi-qa",
-    "upstream_commit": "59d0a674ce95e39e3fc2fcfd919aef9221014d66",
+    "upstream_commit": "09f8e43f5d169a3365d91cfe8a9a0f22e538637f",
     "content_hash": "sha256:d49f5d6eacf8478926439e6302a84941dacb433143fb01baf8abaadd07e853b3",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68513,
+    "stars_github": 68542,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-30T08:51:08.533Z",
+    "fetched_at": "2026-08-31T09:13:39.829Z",
     "first_seen_at": "2026-08-27T13:37:06.727Z",
-    "upstream_commit_at": "2026-08-30T16:25:30+09:00",
+    "upstream_commit_at": "2026-08-31T17:42:39+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-30T08:51:08.533Z",
+    "generated_at": "2026-08-31T09:13:39.829Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -95,40 +95,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你要对 Senpi 适配器做质量测试时,Claude 会用真实的 senpi 程序在隔离环境中运行测试,所有测试产物统一保存到指定证据目录,且不会改动你原有的 senpi 配置。若缺少 senpi 程序,会明确报告无法测试,而不是假装通过。",
-    "when": "当你说出 “senpi qa”、“qa senpi” 等关键词,或要求测试、验证、调试 Senpi 适配器或相关代码时触发。",
+    "what": "当你要对 Senpi 适配器或任务引擎做 QA 时，Claude 会用真实 senpi 程序在隔离环境里运行测试，把产物统一写到 .omo/evidence/omo-senpi-adapter/ 下，并生成供审核的证明文档。",
+    "when": "当你说“senpi qa”、“verify senpi task”等，或要求对适配器、任务引擎、DAG 做 QA/验证/调试时触发。",
     "say": [
       {
-        "text": "帮我跑一遍 Senpi 适配器的 QA 测试。",
-        "note": "Claude 会启动隔离测试,并把证据写到规范目录。"
+        "text": "请帮我跑一遍 senpi qa，验证刚才的改动",
+        "note": "用真实 senpi 在隔离环境里测试。"
       },
       {
-        "text": "验证一下 senpi task 的端到端流程。"
+        "text": "验证一下 senpi task 的端到端流程",
+        "note": "运行 task-e2e 驱动。"
       },
       {
-        "text": "对 Senpi 适配器做一次冒烟测试。",
-        "note": "Claude 会执行驱动脚本并检查隔离状态。"
+        "text": "把证据目录定到 20260820-senpi-fix 这个 slug",
+        "note": "用正规脚本选证据目录。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d49f5d6eacf8478926439e6302a84941dacb433143fb01baf8abaadd07e853b3",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T09:01:22.645Z",
+    "generated_at": "2026-08-31T09:24:10.138Z",
     "lint_pass": true,
-    "what_en": "Claude runs the real senpi binary in isolation to QA the Senpi adapter, saves every artifact to one canonical evidence path, and never touches your existing senpi config. Missing senpi -> reports SKIP, not silence.",
-    "when_en": "When you say “senpi qa”, “qa senpi”, or ask to test, verify, or debug the Senpi adapter or related code, this skill activates.",
+    "what_en": "When asked to QA the Senpi adapter or task engine, Claude runs tests against the real senpi binary in an isolated environment and writes all artifacts under .omo/evidence/omo-senpi-adapter/, plus a reviewable README.",
+    "when_en": "Triggered by keywords like 'senpi qa' or 'verify senpi task', or when the user asks to QA, verify, or debug the adapter, task engine, or DAG.",
     "say_en": [
       {
-        "text": "Run the Senpi adapter QA test for me.",
-        "note": "Claude runs isolated test, saves evidence."
+        "text": "Run senpi QA for me and verify that change.",
+        "note": "Uses the real senpi in isolation."
       },
       {
-        "text": "Verify the end-to-end flow of senpi task.",
-        "note": "Claude runs task-e2e driver, generates evidence."
+        "text": "Verify the senpi task end-to-end flow.",
+        "note": "Runs the task-e2e driver."
       },
       {
-        "text": "Do a smoke test of the Senpi adapter.",
-        "note": "Claude runs driver script and checks isolation."
+        "text": "Set the evidence slug to 20260820-senpi-fix.",
+        "note": "Picks the canonical evidence dir."
       }
     ]
   }

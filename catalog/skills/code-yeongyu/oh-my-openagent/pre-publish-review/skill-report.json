@@ -5,7 +5,7 @@
     "name": "pre-publish-review",
     "description": "Nuclear-grade 16-agent pre-publish release gate. Runs /get-unpublished-changes to detect all changes since last npm release, spawns up to 10 ultrabrain agents for deep per-change analysis, invokes /review-work (5 agents) for holistic review, and 1 oracle for overall release synthesis. Runs ONLY when the user explicitly asks for a pre-publish review — a plain publish/release request MUST NOT trigger this; /publish ships directly. Triggers: 'pre-publish review', 'review before publish', 'release review', 'pre-release review', 'ready to publish?', 'can I publish?', 'pre-publish', 'safe to publish', 'publishing review', 'pre-publish check'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/pre-publish-review",
-    "upstream_commit": "59d0a674ce95e39e3fc2fcfd919aef9221014d66",
+    "upstream_commit": "09f8e43f5d169a3365d91cfe8a9a0f22e538637f",
     "content_hash": "sha256:25635e8ad94f652cd3d4b2e0add73a4ebd32be7c0ebae07b3144310909016009",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68513,
+    "stars_github": 68542,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-30T08:51:08.533Z",
+    "fetched_at": "2026-08-31T09:13:39.829Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-30T16:25:30+09:00",
+    "upstream_commit_at": "2026-08-31T17:42:39+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -39,7 +39,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-30T08:51:08.533Z",
+    "generated_at": "2026-08-31T09:13:39.829Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,41 +93,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你说要做发布前检查时,Claude 会先找出上次 npm 发布以来的代码改动,再同时派出最多 16 个后台检查员(10 个查每组改动、5 个查整体质量、1 个综合评估),最后报告:可否发布、版本号建议、破坏性变更和变更日志草稿。",
-    "when": "只在你说出“pre-publish review”“ready to publish?”等发布前审查要求时触发;普通发布请求不会触发,会直接发布。",
+    "what": "要求发布前审查时,Claude 会找出自上次 npm 发布以来的全部改动,再同时派出最多 16 个后台代理分组检查,最后汇总成发布就绪报告,含版本号建议、破坏性变更清单、变更日志和风险等级。",
+    "when": "仅在用户明确要求“发布前审查”(如说“pre-publish review”“release review”等)时触发;普通发布请求不会触发,会直接发布。",
     "say": [
       {
-        "text": "帮我做一次 pre-publish review",
-        "note": "开始发布前检查,读取未发布改动并派后台审查员"
+        "text": "帮我做一次发布前审查,看看现在能发布吗?"
       },
       {
-        "text": "发布前检查一下,现在能发吗?",
-        "note": "触发整体发布审查,给可否发布的结论"
+        "text": "运行 pre-publish review,检查自上次发布以来所有改动",
+        "note": "会先检测未发布的改动,再逐项深度分析。"
       },
       {
-        "text": "对最近的改动做 release review",
-        "note": "运行发布审查,给出版本号升级建议"
+        "text": "发布前检查有没有破坏性变更,顺便给个版本号建议",
+        "note": "会返回破坏性变更清单和推荐版本号。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:25635e8ad94f652cd3d4b2e0add73a4ebd32be7c0ebae07b3144310909016009",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T09:00:12.146Z",
+    "generated_at": "2026-08-31T09:23:48.648Z",
     "lint_pass": true,
-    "what_en": "On request, Claude detects changes since last npm release, spawns up to 16 reviewers (10 per-change, 5 holistic, 1 oracle), then outputs release readiness, version bump, breaking changes, changelog draft.",
-    "when_en": "Runs only on explicit pre-publish review requests (e.g. 'pre-publish review', 'release review', 'safe to publish'). Plain publish requests must NOT trigger it; /publish ships directly.",
+    "what_en": "When asked, Claude detects changes since last npm release, spawns up to 16 background agents (10 deep-dive, 5 holistic, 1 synthesis), and outputs a readiness report: version bump, breaking changes, changelog draft, risk.",
+    "when_en": "Only triggers when the user explicitly asks for a pre-publish review (e.g., 'pre-publish review' or 'release review'). Plain publish/release requests must not trigger it; /publish ships directly.",
     "say_en": [
       {
-        "text": "Run a pre-publish review for me.",
-        "note": "Starts the release gate and checks unpublished changes."
+        "text": "Run a pre-publish review and tell me if I can publish now.",
+        "note": "Claude runs 16 agents and gives a readiness report."
       },
       {
-        "text": "Check before publish, can I release now?",
-        "note": "Triggers the full review and returns a go/no-go verdict."
+        "text": "Run pre-publish review to check all changes since last release.",
+        "note": "It detects unpublished changes, then deep-dives each one."
       },
       {
-        "text": "Do a release review of the recent changes.",
-        "note": "Runs holistic review and suggests a version bump."
+        "text": "Before publishing, check for breaking changes and suggest a version bump.",
+        "note": "Returns breaking-change list and version bump recommendation."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "MUST USE whenever a task needs a commit or git-history investigation. Covers atomic commits, staging, commit-message style, rebase, squash, fixup/autosquash, blame, bisect, reflog, git log -S/-G, and questions like who wrote this or when was this added. Do not use for ordinary code edits unless the user asks for git work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "59d0a674ce95e39e3fc2fcfd919aef9221014d66",
+    "upstream_commit": "09f8e43f5d169a3365d91cfe8a9a0f22e538637f",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68513,
+    "stars_github": 68542,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-30T08:51:08.533Z",
+    "fetched_at": "2026-08-31T09:13:39.829Z",
     "first_seen_at": "2026-07-15T03:55:58.117Z",
-    "upstream_commit_at": "2026-08-30T16:25:30+09:00",
+    "upstream_commit_at": "2026-08-31T17:42:39+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -39,7 +39,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-30T08:51:08.533Z",
+    "generated_at": "2026-08-31T09:13:39.829Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,40 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后，当你要做 Git 提交或查历史时，Claude 会先判断请求类型，再把改动拆成相互独立的小提交，或查证后给出附证据的答案；它只动你要求的改动，并保留无关内容。",
-    "when": "当用户要求 Git 提交、改写历史，或询问某段代码是谁/何时改的时触发；普通代码编辑除非点名要 Git 操作否则不触发。",
+    "what": "装上后，当你要求提交代码或调查 Git 历史时，Claude 会先分清任务类型、查看仓库现状，再按流程操作：提交时把改动拆成独立的小提交并沿用现有的提交信息风格；重写历史前先做安全检查；回答历史问题时给出命令依据。",
+    "when": "当任务需要提交代码或调查 Git 历史时触发（例如提交、rebase、blame 等）。普通代码编辑不会触发，除非你明确要求 Git 操作。",
     "say": [
       {
-        "text": "把这几个文件的改动提交成两个独立的 commit",
-        "note": "Claude 会按原子提交规则拆分并提交。"
+        "text": "帮我把这些改动分成两个提交，第一个是功能 A，第二个是重构。",
+        "note": "Claude 会拆分并提交。"
       },
       {
-        "text": "第 50 到 60 行是谁改的？"
+        "text": "查一下这个文件里 'timeout' 是哪次提交引入的。",
+        "note": "Claude 用 git log -S 查找并给证据。"
       },
       {
-        "text": "把最近三个提交合并成一个",
-        "note": "Claude 会执行 rebase 并注意是否已推送。"
+        "text": "把 feature 分支上最近的三个提交 squash 成一个。",
+        "note": "Claude 会执行交互式 rebase 安全合并。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T08:57:53.620Z",
+    "generated_at": "2026-08-31T09:22:11.895Z",
     "lint_pass": true,
-    "what_en": "After installation, when you ask for a Git commit or history investigation, Claude first classifies the request, then splits changes into independent small commits or answers with evidence-based findings; it touches only what you asked and preserves unrelated work.",
-    "when_en": "Triggers when you ask for a Git commit, history rewrite, or who/when changed something; not for ordinary code edits unless Git work is requested.",
+    "what_en": "When installed, Claude handles Git commits and history research with a structured workflow: classifies the request, inspects repo state, then acts—atomic commits with detected message style, safety checks before history rewrites, and evidence-cited answers for history questions.",
+    "when_en": "Triggered whenever a task needs a commit or git-history investigation (e.g., commit, rebase, blame). Not for ordinary code edits unless the user asks for git work.",
     "say_en": [
       {
-        "text": "Commit these file changes as two separate commits.",
-        "note": "Claude will split and commit atomically."
+        "text": "Split these changes into two commits: first feature A, then refactor.",
+        "note": "Claude will split and commit."
       },
       {
-        "text": "Who changed lines 50 to 60?",
-        "note": "Claude will run git blame and show hash and context."
+        "text": "Which commit introduced 'timeout' in this file?",
+        "note": "Claude uses git log -S and shows evidence."
       },
       {
-        "text": "Squash the last three commits into one.",
-        "note": "Claude will rebase and check if they were pushed."
+        "text": "Squash the last three commits on feature into one.",
+        "note": "Claude does an interactive rebase."
       }
     ]
   }

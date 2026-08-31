@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Expert data processing with a hybrid engine strategy: resident-kernel engines first - DuckDB plus a resident Python stack (Polars/numpy/matplotlib) in persistent js/py eval kernels where the harness has them, bun/uv one-shots elsewhere - and per-action placement judgment (in-memory vs streaming vs remote-in-place). Triggers: 'analyze the data', 'what is in this CSV/parquet/json', 'summarize this', 'group by', 'filter rows', 'sort by', 'join these files', 'merge datasets', 'time series trend', 'compare yesterday and today', 'distribution/histogram', 'correlation', 'clean duplicates', 'handle missing values', 'dataset larger than RAM', 'SQL query on files', 'DataFrame operations', 'chart/plot this data', DuckDB vs Polars selection, quick data exploration CLI. NOT for plain text/code inspection, configs, or tiny inline math.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "59d0a674ce95e39e3fc2fcfd919aef9221014d66",
+    "upstream_commit": "09f8e43f5d169a3365d91cfe8a9a0f22e538637f",
     "content_hash": "sha256:15728324e347ce8fc2ce81c96478e0c097abb927d3bc03c7c79218bbacb0d62f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68513,
+    "stars_github": 68542,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-30T08:51:08.533Z",
+    "fetched_at": "2026-08-31T09:13:39.829Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-08-30T16:25:30+09:00",
+    "upstream_commit_at": "2026-08-31T17:42:39+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-30T08:51:08.533Z",
+    "generated_at": "2026-08-31T09:13:39.829Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -109,42 +109,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会专门处理数据文件（CSV/Parquet/JSON）的查询、统计、绘图。先探测数据大小，再选内存、流式或远程计算，用 DuckDB/Polars 等引擎作答，并报行数与耗时。答完即止，不做多余图表。",
-    "when": "当用户要求分析数据、查询或汇总 CSV/Parquet/JSON、画数据图时触发；分组、过滤等也会接管。不用于纯文本检查、配置或简单数学。",
+    "what": "装上后，Claude 处理数据问答时会先探明数据规模和内存，再选最省资源的引擎（DuckDB、Polars、numpy、matplotlib）和运行位置（内存、流式或远程），只回答题目本身，不额外做图或探索。",
+    "when": "当用户要求分析数据、查看 CSV/Parquet/JSON 内容、按列分组/筛选/排序、合并文件、时间序列、分布、相关性、去重、缺失值、SQL 查询或画图等。纯文本/代码检查、配置、简单数学不触发。",
     "say": [
       {
-        "text": "分析这个 CSV：按部门统计平均薪资，并画柱状图。",
-        "note": "它会读取文件，用 DuckDB 聚合，然后画图并检查图表。"
+        "text": "分析 data.csv，按类别分组求和，给出行数和耗时。",
+        "note": "会先用 DuckDB 直接查文件并报告统计。"
       },
       {
-        "text": "这个 Parquet 有 10GB，内存不够，帮我算每月总销售额。",
-        "note": "它会选流式或磁盘溢出方式，避免内存占满。"
+        "text": "这个 JSON 很大，超出内存，用 Polars 流式算出每月的均值。",
+        "note": "会选流式引擎避免占满内存。"
       },
       {
-        "text": "把这两个 JSON 按用户 ID 合并，并清理重复行。",
-        "note": "它会合并数据，并报告行数变化。"
+        "text": "画一张销售额随月份的趋势图，并检查质量。",
+        "note": "会按可视化规范出图并自查。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:15728324e347ce8fc2ce81c96478e0c097abb927d3bc03c7c79218bbacb0d62f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T08:57:52.886Z",
-    "lint_pass": true,
-    "what_en": "Specializes in querying/summarizing/plotting data files (CSV/Parquet/JSON). Probes data size, picks in-memory vs streaming vs remote compute, uses DuckDB/Polars etc., reports row counts & timing. Stops after answering; no bonus charts.",
-    "when_en": "Triggers when the user asks to analyze data, query or summarize CSV/Parquet/JSON files, or plot data; also takes over for operations like grouping or filtering. Not for plain-text inspection, configs, or simple math.",
-    "say_en": [
-      {
-        "text": "Analyze this CSV: average salary by department, then plot a bar chart.",
-        "note": "Reads file, aggregates, plots, and verifies the chart."
-      },
-      {
-        "text": "This Parquet is 10GB, not enough RAM; compute monthly total sales.",
-        "note": "Uses streaming or disk spill to avoid running out of memory."
-      },
-      {
-        "text": "Merge these two JSONs by user ID and clean duplicate rows.",
-        "note": "Joins the data and reports row-count changes."
-      }
-    ]
+    "generated_at": "2026-08-31T09:21:32.253Z",
+    "lint_pass": true
   }
 }
