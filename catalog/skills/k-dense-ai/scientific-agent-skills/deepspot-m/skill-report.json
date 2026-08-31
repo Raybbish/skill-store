@@ -5,7 +5,7 @@
     "name": "deepspot-m",
     "description": "Generate transcriptome-wide virtual spatial transcriptomics from H&E histology with DeepSpot-M. Use when you need spatial gene expression in log1p-CPM for 224x224 tiles at about 20x, want to query protein-coding genes by symbol instead of a fixed panel, or want to run prediction across a whole slide after tiling with histolab.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/deepspot-m",
-    "upstream_commit": "36d8f13a1e754618794bf42f417884940077b4ae",
+    "upstream_commit": "f6fcafeb1cc8c82eca0160a18bc41c38427b8e0f",
     "content_hash": "sha256:4bb725875a6cd163b398cbd077c5c45a808439240f2cf6ca084d730d5095c0b2",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 35043,
+    "stars_github": 38224,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:16.869Z",
+    "fetched_at": "2026-08-30T08:51:17.928Z",
     "first_seen_at": "2026-08-08T04:09:18.811Z",
-    "upstream_commit_at": "2026-08-24T09:22:54Z",
+    "upstream_commit_at": "2026-08-29T15:54:53-07:00",
     "repo_skill_count": 163,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:16.869Z",
+    "generated_at": "2026-08-30T08:51:17.928Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,37 +92,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能从 H&E 组织切片图像(224×224 像素、约 20 倍放大)预测每个图像块内约 1.9 万个蛋白质编码基因的表达量,结果以 log1p-CPM 为单位,并按图像块位置排布。",
-    "when": "当你需要从 H&E 切片图像预测空间基因表达、按基因符号(而非固定 panel)查询蛋白质编码基因,或想对整张切片(先分块)做预测时触发。需提供 224×224 像素、约 20 倍的图像块。",
+    "what": "安装后,Claude 可调用 DeepSpot-M,从 H&E 组织学图像切块(224x224)预测指定蛋白编码基因的表达量(log1p-CPM),支持约 19k 基因按符号查询,并可将整张切片分块批量预测,输出基因×位置矩阵。",
+    "when": "当用户需要 224x224 小块的空间基因表达(log1p-CPM)、按符号查询蛋白编码基因,或用 histolab 分块后做整张切片预测时。",
     "say": [
       {
-        "text": "先用 histolab 把整张切片分块,再预测 MKI67 的空间表达。",
-        "note": "会得到整张切片的表达图谱。"
+        "text": "我想查询 MYC 基因在这个肿瘤切片上的空间表达分布。",
+        "note": "输出按网格排列的表达值。"
       },
       {
-        "text": "分别用 evo2 和 scgpt 嵌入来源,预测同一张图的 TP53。",
-        "note": "可比较两种基因嵌入下的结果。"
+        "text": "把这张切片用 histolab 分块,再批量预测这 5 个基因的表达。",
+        "note": "得到基因×位置矩阵,可放入 AnnData。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4bb725875a6cd163b398cbd077c5c45a808439240f2cf6ca084d730d5095c0b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:32:38.263Z",
+    "generated_at": "2026-08-30T09:07:22.502Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can take an H&E histology tile (224x224 px, ~20x) and predict expression for ~19k protein-coding genes per tile in log1p-CPM, arranged on the tile grid.",
-    "when_en": "Triggers when you need spatial gene expression from H&E tiles, want to query genes by symbol instead of a fixed panel, or want whole-slide prediction after tiling. Tiles must be 224x224 RGB at about 20x.",
+    "what_en": "With this skill, Claude can use DeepSpot-M to predict spatial gene expression (log1p-CPM) for queried protein-coding genes from 224x224 H&E tiles, supporting a ~19k gene panel queried by symbol and whole-slide prediction by tiling with histolab.",
+    "when_en": "Triggered when the user needs spatial gene expression for 224x224 tiles at ~20x, wants to query protein-coding genes by symbol, or wants whole-slide prediction after tiling with histolab.",
     "say_en": [
       {
-        "text": "Predict EPCAM and CD3D expression for this 224x224 tile with DeepSpot-M.",
-        "note": "Returns log1p-CPM values for those genes."
+        "text": "Predict EPCAM and CD3D expression for this H&E tile using DeepSpot-M.",
+        "note": "Returns log1p-CPM per tile."
       },
       {
-        "text": "Tile the whole slide with histolab, then predict MKI67 spatially.",
-        "note": "Produces a slide-wide expression map."
+        "text": "Query the spatial expression of MYC in this tumor section.",
+        "note": "Outputs grid-aligned values."
       },
       {
-        "text": "Run prediction on the same tile with evo2 and scgpt sources for TP53.",
-        "note": "Lets you compare embedding sources."
+        "text": "Tile this slide with histolab and predict expression for these 5 genes.",
+        "note": "Produces a genes-by-tiles matrix for AnnData."
       }
     ]
   }

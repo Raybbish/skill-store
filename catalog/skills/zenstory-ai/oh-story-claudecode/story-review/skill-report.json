@@ -5,7 +5,7 @@
     "name": "story-review",
     "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/story-review、/审查、「审查一下」「帮我审一下」。",
     "upstream": "https://github.com/zenstory-ai/oh-story-claudecode/tree/main/skills/story-review",
-    "upstream_commit": "73b6c74538c2ef24e8a5481b2de9aef57d8cbe46",
+    "upstream_commit": "70c294b20ce89440e70edb766b0446d3057bc077",
     "content_hash": "sha256:a6263f34a97a413413289e9f362f17e2081c887d9e6807e3caeab5e8e50a2039",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6182,
+    "stars_github": 6193,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:49:22.686Z",
+    "fetched_at": "2026-08-29T09:39:57.388Z",
     "first_seen_at": "2026-08-27T13:37:59.445Z",
-    "upstream_commit_at": "2026-08-28T07:31:52-07:00",
+    "upstream_commit_at": "2026-08-28T11:24:25-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:49:22.686Z",
+    "generated_at": "2026-08-29T09:39:57.388Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -115,26 +115,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会当小说审查员：检查章节，按多视角找出结构、角色、文字、设定问题并给出修改建议；条件允许时并行派出多个子代理，否则自动降级为直接审查。",
-    "when": "当你说「帮我审一下」「审查一下」或输入 /审查 等触发词时启动；也可用 /story-review 指定 full/lean/solo。",
+    "what": "装上后，Claude会从结构、角色、文字、设定等视角审查小说正文，输出带严重级别（S1-S4）和修改建议的报告；它只找问题，不改正文。",
+    "when": "当你说出 /story-review、/审查、审查一下 等触发词时触发；未指定模式时默认按 full 执行。",
     "say": [
       {
-        "text": "帮我审一下这份小说稿",
-        "note": "会按默认 full 模式多角度审查并出报告。"
+        "text": "帮我审一下最近修改的第三章。",
+        "note": "会先定位最近修改的正文再审查。"
       },
       {
-        "text": "审查一下第三章，重点看角色和对话",
-        "note": "会以角色、对话等视角找问题。"
+        "text": "用番茄的 rubric 审查当前章节。",
+        "note": "按番茄平台标准出报告。"
       },
       {
-        "text": "用 /story-review solo 快速检查这段",
-        "note": "不派子代理，由当前会话直接审。"
+        "text": "/story-review lean，审一下开头三章。",
+        "note": "只启用精简双视角审查。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a6263f34a97a413413289e9f362f17e2081c887d9e6807e3caeab5e8e50a2039",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:10:54.505Z",
-    "lint_pass": true
+    "generated_at": "2026-08-29T09:58:57.973Z",
+    "lint_pass": true,
+    "what_en": "Claude reviews novel text from structure, character, prose, and setting angles, outputs findings with S1–S4 severity and concrete fixes, and never edits the text.",
+    "when_en": "Triggers when you say /story-review, /审查, 审查一下, etc.; defaults to full mode when no mode is specified.",
+    "say_en": [
+      {
+        "text": "Please review the third chapter I just modified.",
+        "note": "It will locate the recently edited text first."
+      },
+      {
+        "text": "Review the current chapter using the Fanqie rubric.",
+        "note": "Report follows Fanqie platform standards."
+      },
+      {
+        "text": "/story-review lean, review the first three chapters.",
+        "note": "Only two reviewer perspectives are spawned."
+      }
+    ]
   }
 }

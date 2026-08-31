@@ -5,7 +5,7 @@
     "name": "add-mnemon",
     "description": "Add persistent graph-based memory via mnemon. Agents recall past context before responding and remember insights after each turn.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-mnemon",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "858421aff4523ab77b8db09d1ba6a607872e17cf",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30647,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-08-30T08:51:22.222Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
+    "upstream_commit_at": "2026-08-30T00:18:06+03:00",
     "repo_skill_count": 58,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-08-30T08:51:22.222Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,41 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude在每次回答前会先回想相关的过往对话,并在每轮结束后把新的要点存入记忆。这些记忆按智能体工作区分开保存,容器重启后依然存在。",
-    "when": "当智能体使用默认的Claude提供商时,每次容器启动会启用记忆功能,之后Claude在每次回应前调取相关记忆,每轮后保存新内容。",
+    "what": "装上这个技能后，Claude 每次回答前会先翻看以前保存的相关记忆，回答完会把新对话中的要点存起来。记忆按 agent 分组保存，容器重启后仍保留。",
+    "when": "在 agent 使用默认 Claude 提供方（未设置 provider 或为 claude）时，每次对话回答前自动召回相关记忆，回答后自动存储新内容。容器启动时也会运行 mnemon setup 注册钩子。",
     "say": [
       {
-        "text": "你还记得我之前提过的那个客户需求吗?",
-        "note": "Claude会检索相关记忆并回应。"
+        "text": "你还记得我们上次讨论的定价方案吗？",
+        "note": "Claude 会从记忆中检索上次对话的相关内容并给出回答。"
       },
       {
-        "text": "请记住这个数据:本月销售额为100万。",
-        "note": "这条信息会被存入长期记忆。"
+        "text": "今天聊的要点，以后我需要时你会想起来吗？",
+        "note": "Claude 会把这轮对话的关键点存入长期记忆。"
       },
       {
-        "text": "结合我们过去的讨论,给我一些建议。",
-        "note": "Claude会基于已有记忆生成回答。"
+        "text": "新会话，谈谈我之前说的那个 bug。",
+        "note": "Claude 能跨会话引用之前的上下文。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:05:54.043Z",
+    "generated_at": "2026-08-30T09:11:55.250Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude recalls relevant past conversations before responding and stores new insights after each turn. Memory is kept per agent group in the .claude mount and survives container restarts.",
-    "when_en": "Triggered when the agent group uses the default Claude provider (no 'provider' key or 'provider':'claude'). On each container start, hooks fire before responding and after each turn.",
+    "what_en": "This skill installs mnemon. Claude then recalls relevant past context before each response and stores new insights after each turn. Memory lives in the per-agent-group .claude/ mount and survives container restarts.",
+    "when_en": "Fires only on agent groups with the default Claude provider. It recalls relevant memory before each response and stores new insights after each turn. mnemon setup also runs on every container start to register hooks.",
     "say_en": [
       {
-        "text": "Do you remember the client requirement I mentioned earlier?",
-        "note": "Claude will retrieve relevant memory and respond."
+        "text": "Do you remember the pricing plan we discussed last time?",
+        "note": "Claude recalls the relevant memory and answers."
       },
       {
-        "text": "Please remember this data: monthly sales are 1 million.",
-        "note": "This will be saved to long-term memory."
+        "text": "Will you remember today's key points for later?",
+        "note": "Claude saves this conversation's highlights to long-term memory."
       },
       {
-        "text": "Based on our past discussions, give me some advice.",
-        "note": "Claude will answer using existing memory."
+        "text": "New session: let's talk about that bug I mentioned before.",
+        "note": "Claude references prior context across sessions."
       }
     ]
   }

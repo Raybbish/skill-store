@@ -5,7 +5,7 @@
     "name": "debugging",
     "description": "MUST USE for any real runtime debugging across ANY language or binary — crashes, silent failures, wrong responses, stuck processes, memory leaks, async misbehavior, unexplained timing, reverse engineering. Runs a hypothesis-driven loop: form ≥3 hypotheses, investigate in parallel, after 2 failed rounds spawn Oracles from orthogonal angles, confirm root cause, lock with a failing test, fix minimally, QA by actually USING the system, scrub artifacts. The actual HOW lives in `references/` — READ THEM. Triggers: 'debug this', 'why is X not working', 'hanging', 'attach a debugger', 'reverse engineer', 'pwndbg', 'gdb', 'lldb', 'node inspect', 'pdb', 'dlv', 'delve', 'rust-gdb', 'set a breakpoint', 'context window exploded', 'why is the response empty', 'why is this happening', 'trace this bug', 'reproduce and fix', 'silent failure', 'HTTP 200 but empty', 'why did it stop', 'inspect the binary', 'playwright', 'flaky test', 'fails intermittently', 'passes in isolation', 'only fails in CI'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/debugging",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "59d0a674ce95e39e3fc2fcfd919aef9221014d66",
     "content_hash": "sha256:328f1b7c79859648912a494962b7e741b736a50921c476599c1fc5495f461979",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68513,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-08-30T08:51:08.533Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
+    "upstream_commit_at": "2026-08-30T16:25:30+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-08-30T08:51:08.533Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -137,26 +137,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "调试任何运行时报错或异常行为时,Claude 会按固定流程工作:先建立日志跟踪每次改动,提出至少 3 个假设并行排查;连续两轮失败后从不同角度生成“Oracle”子代理;确认根因后先写失败测试再修复,最后实际运行系统验证并清理调试痕迹。",
-    "when": "当你描述程序崩溃、无声失败、卡住、内存泄漏、响应为空、二进制逆向等调试需求,或说出“debug this”“为什么 X 不工作”“挂起”“逆向”等触发词时触发。",
+    "what": "程序出错时，Claude 改为假设驱动排查：先观察程序实际运行状态，形成至少三个可能原因并行调查；确认根因后，先用失败测试锁定问题，再做最小修复；最后实际运行系统验证，并清理全部调试痕迹。",
+    "when": "当你说出“debug this”“why is X not working”“挂起”等关键词，或报告程序崩溃、卡住、静默失败，或要求附加调试器、逆向分析时触发。",
     "say": [
       {
-        "text": "帮我调试这个 Python 脚本:它经常卡住不退出。",
-        "note": "先按 Python 运行时参考设置调试环境再排查。"
+        "text": "帮我调试：服务每天早六点准时卡住，日志里什么都没报。",
+        "note": "Claude 会先建立调试日志，再提多个假设并行排查。"
       },
       {
-        "text": "为什么这个接口返回 200 但内容为空?",
-        "note": "会作为无声失败场景走完整假设验证流程。"
+        "text": "这个接口返回 HTTP 200 但响应是空的，帮我查查原因。",
+        "note": "Claude 会从实际运行证据出发，确认根因后再修复。"
       },
       {
-        "text": "这个测试只在 CI 里偶发失败,帮我查。",
-        "note": "会先读取偶发问题排查参考,再进入假设阶段。"
+        "text": "测试本地单跑全过，一上 CI 就偶发失败，帮我排查。",
+        "note": "Claude 会先读偶发故障排查流程，再定位根因。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:328f1b7c79859648912a494962b7e741b736a50921c476599c1fc5495f461979",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:56:05.814Z",
-    "lint_pass": true
+    "generated_at": "2026-08-30T08:58:25.937Z",
+    "lint_pass": true,
+    "what_en": "On errors, Claude debugs by hypothesis: observe real runtime state, form at least 3 causes, investigate in parallel, confirm root cause, lock with a failing test, fix minimally, verify by using the system, then clean up.",
+    "when_en": "Triggers on runtime bugs — crashes, hangs, silent failures — or keywords like 'debug this', 'why is X not working', 'hanging'; also on requests to attach a debugger or reverse-engineer.",
+    "say_en": [
+      {
+        "text": "Debug this: my service hangs at 6 AM every day and logs show nothing.",
+        "note": "Claude journals and tests several hypotheses in parallel."
+      },
+      {
+        "text": "This API returns HTTP 200 but an empty response; find out why.",
+        "note": "Root cause from runtime evidence, then fix."
+      },
+      {
+        "text": "Tests pass locally but fail intermittently on CI; investigate.",
+        "note": "Claude reads the flaky-triage guide first."
+      }
+    ]
   }
 }

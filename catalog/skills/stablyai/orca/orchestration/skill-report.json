@@ -5,7 +5,7 @@
     "name": "orchestration",
     "description": "Use Orca orchestration for structured multi-agent coordination: threaded messages, blocking ask/reply flows, task dispatch, worker_done/escalation waits, task DAGs, decision gates, coordinator loops, or decomposing work across agents. Use `orca-cli` instead for full ownership handoffs, including requests phrased as \"hand off\", \"handoff\", \"handover\", \"give this to another agent\", or \"another worktree\" when the user did not explicitly ask to supervise, monitor, wait for results, or coordinate a DAG. Use `orca-cli` for ordinary terminal control, lightweight terminal prompts, shell commands, Orca worktree management, reading or waiting on terminals, and automation of the browser embedded inside Orca. Use Computer Use for browser windows, webviews, Orca app UI, or desktop UI outside Orca's embedded browser.",
     "upstream": "https://github.com/stablyai/orca/tree/main/skills/orchestration",
-    "upstream_commit": "94e7586665c22aeaedf0503c2b854b97d200da55",
+    "upstream_commit": "1215cc98f2e6b174e785640c3c1646665eaa15e8",
     "content_hash": "sha256:246b310ccc0b2c3f49746ccded3006a729da1c9cdc7afbf83a046f09c54f78cc",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 134400,
-    "fetched_at": "2026-08-28T14:51:07.015Z",
+    "installs_skills_sh": 137300,
+    "fetched_at": "2026-08-30T08:54:25.514Z",
     "first_seen_at": "2026-08-09T04:19:11.634Z",
-    "upstream_commit_at": "2026-08-28T04:17:45-07:00"
+    "upstream_commit_at": "2026-08-30T01:53:47-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:51:07.015Z",
+    "generated_at": "2026-08-30T08:54:25.514Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "需要协调多个智能体时，Claude 会使用 Orca 编排：先选对 orca 命令，再加载与版本匹配的完整指南，然后按指南分发任务、等待结果等。",
-    "when": "当你需要多个智能体分工协作，比如把任务拆成子任务分出去、等它们完成、或排好先后依赖顺序时触发。",
+    "what": "当需要多个智能体协作时，Claude 会先确定 Orca 命令行工具，读取当前版本的官方指南，再据此创建任务、分派给不同智能体、等待完成并汇总。",
+    "when": "当你需要结构化协调多个智能体，如分派任务、等待某个智能体完成、或设置任务间的先后依赖时。",
     "say": [
       {
-        "text": "用 Orca 把这几个子任务分给不同智能体并行处理。",
-        "note": "Claude 会创建并分发这些任务。"
+        "text": "帮我派两个智能体，一个写代码，一个做测试，等两个都完成再汇总。",
+        "note": "Claude 会通过 Orca 创建并跟踪这两个任务。"
       },
       {
-        "text": "让智能体 A 先调研，完成后通知 B 接着写报告。",
-        "note": "这会形成等待前置任务完成的任务流。"
+        "text": "派一个智能体去查资料，等它出结果后再继续下一步。",
+        "note": "会等待该智能体完成后再继续。"
       },
       {
-        "text": "把整个流程拆成几步，让多个智能体按依赖顺序协作完成。",
-        "note": "Claude 会按依赖顺序编排这些步骤。"
+        "text": "把这三个小任务依次发给不同智能体，最后统一汇总。",
+        "note": "按顺序派发并等待结果。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:246b310ccc0b2c3f49746ccded3006a729da1c9cdc7afbf83a046f09c54f78cc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:09:56.287Z",
+    "generated_at": "2026-08-30T09:15:29.115Z",
     "lint_pass": true,
-    "what_en": "When multi-agent coordination is needed, Claude uses Orca orchestration: picks the session's correct orca executable, loads the version-matched guide via `skills get orchestration`, then runs task-dispatch/wait commands from it.",
-    "when_en": "Triggered when the user needs structured multi-agent coordination: splitting work into subtasks, waiting on worker results, or sequencing task dependencies.",
+    "what_en": "When multi-agent coordination is needed, Claude resolves the correct Orca executable, fetches the version-matched guide via `orca skills get orchestration`, then uses it to create and dispatch tasks, wait for workers, and coordinate DAGs or decision gates.",
+    "when_en": "When you need structured multi-agent coordination: dispatching tasks, waiting for worker completion, or defining task dependencies (DAGs).",
     "say_en": [
       {
-        "text": "Split these subtasks across agents with Orca, in parallel.",
-        "note": "Claude creates and dispatches tasks via orca."
+        "text": "Assign two agents, one to code and one to test, then summarize when both finish.",
+        "note": "Claude tracks both tasks via Orca."
       },
       {
-        "text": "Have agent A research first, then notify agent B to write the report after.",
-        "note": "This creates a task flow with a worker-done wait."
+        "text": "Send an agent to research, and continue only after it returns results.",
+        "note": "Waits for that agent to finish."
       },
       {
-        "text": "Break the workflow into steps and have agents collaborate in dependency order.",
-        "note": "Claude arranges the steps as an ordered task chain via orca."
+        "text": "Dispatch these three subtasks to different agents in order and gather results.",
+        "note": "Dispatches sequentially and waits."
       }
     ]
   }
