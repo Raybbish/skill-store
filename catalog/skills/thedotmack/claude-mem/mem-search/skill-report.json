@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "This skill should be used when the user asks to \"search memory\", \"what do you remember about X\", \"check claude-mem\", \"mem search\", \"find past observations\", \"what did we do last session\", or wants prior-session context about a project, decision, file, or task. Searches the user's Claude-Mem (cmem.ai) memory.\n",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/cowork/skills/mem-search",
-    "upstream_commit": "866a0ca3b34cddd8aa4c5fba72b9ad2b3a5621fe",
+    "upstream_commit": "fa6a1e9ec12d23f98326a9b26e243acb0819e105",
     "content_hash": "sha256:ad7868555719e59588b7db3f3037597ce946932604e5cf00f002a500d284e37a",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 92056,
+    "stars_github": 92607,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:00.249Z",
+    "fetched_at": "2026-08-30T08:51:03.507Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-26T09:56:07-07:00",
+    "upstream_commit_at": "2026-08-29T16:41:03-07:00",
     "repo_skill_count": 22
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:00.249Z",
+    "generated_at": "2026-08-30T08:51:03.507Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会先用 search 工具搜索你跨会话的记忆库,再用 timeline 看前后上下文,最后只对筛选出的记录调 get_observations 取详情。",
-    "when": "当用户问起之前会话的内容,比如“上次怎么解决的”“上周发生了什么”,或明确说“搜索记忆/查 claude-mem”时触发。",
+    "what": "装上后,当用户提到过去的会话时,Claude 会去 Claude-Mem 记忆库中搜索相关记录。它先返回带 ID 的摘要表,再查看相关时间线,最后只对筛选出的 ID 获取完整详情。",
+    "when": "当用户询问过去会话内容,例如“还记得 X 吗”“上次怎么做的”“mem search”等时触发。",
     "say": [
       {
-        "text": "帮我搜一下之前关于登录认证的记录",
-        "note": "会先返回带 ID 的搜索结果列表。"
+        "text": "还记得我们上次怎么处理登录超时的吗?",
+        "note": "会先找到相关记录,再给你完整经过。"
       },
       {
-        "text": "上次那个 bug 最后怎么修的?查一下记忆",
-        "note": "会搜索 bugfix 类观察并给时间线。"
+        "text": "用 mem search 搜一下项目里关于“数据库迁移”的笔记。",
+        "note": "会按关键词匹配并返回摘要索引。"
       },
       {
-        "text": "把最近一周的项目进展调出来看看",
-        "note": "按日期范围搜索观察记录。"
+        "text": "查一下上周会议记录里做出的决定。",
+        "note": "会按日期范围检索并批量取详情。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ad7868555719e59588b7db3f3037597ce946932604e5cf00f002a500d284e37a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:49:04.734Z",
+    "generated_at": "2026-08-30T09:15:55.856Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude searches the cross-session memory index, inspects surrounding timeline context, then fetches details only for the records you select.",
-    "when_en": "Triggered when you ask about previous sessions, e.g. “how did we fix this last time?”, “what happened last week?”, or say “search memory”/“check claude-mem”.",
+    "what_en": "Claude queries the Claude-Mem cross-session memory database. It does: search index -> view timeline -> fetch full details for filtered IDs. Returns past records (title, narrative, facts, concepts, files).",
+    "when_en": "Triggers when the user asks about previous sessions, e.g. “What do you remember about X?”, “How did we do X last time?”, or “mem search”.",
     "say_en": [
       {
-        "text": "Search my memory for records about login authentication.",
-        "note": "Returns a result list with IDs first."
+        "text": "Do you remember how we handled login timeout last time?",
+        "note": "It finds relevant records and returns the full context."
       },
       {
-        "text": "How did we fix that bug last time? Check memory.",
-        "note": "Searches bugfix observations and shows a timeline."
+        "text": "Use mem search to find notes about database migration in this project.",
+        "note": "Matches by keyword and returns the summary index."
       },
       {
-        "text": "Show me project progress from the last week.",
-        "note": "Searches observations by date range."
+        "text": "Check the decisions made in last week's meeting notes.",
+        "note": "Searches by date range and fetches details in batch."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "09f8e43f5d169a3365d91cfe8a9a0f22e538637f",
     "content_hash": "sha256:f754e5eddeb322e559a7e2dd80061eb75d7f0e80fa7df4fbcf54e3e6c06fc5b7",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68542,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-08-31T09:13:39.829Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
+    "upstream_commit_at": "2026-08-31T17:42:39+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-08-31T09:13:39.829Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -115,41 +115,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按代码结构(而非文本)查找或改写代码:先校验查找/替换模式,展示改动预览,确认后才批量修改文件,支持 25 种语言。",
-    "when": "当问题依赖代码结构而非文本时触发,如按形状找出某类语法节点(函数、调用等)、批量改写某种写法(例:console.log 改成 logger.info),或应用 YAML 规则。纯文本、注释、文件名等场景交给 rg/grep。",
+    "what": "安装此技能后，Claude 会使用 ast-grep 工具按代码的语法结构（而非纯文本）进行搜索与改写，支持25种语言。它能匹配特定形状的函数、调用、导入等，批量替换代码，还能运行 YAML 规则扫描和自动修复。",
+    "when": "当用户要求按代码结构查找或改写，例如找特定形状的函数/调用/导入、重写 console.log 为 logger.info、移除 as any 时触发。若目标是文本内容，则改用 grep/rg。",
     "say": [
       {
-        "text": "找出所有接收 Request 参数的函数。",
-        "note": "用 ast-grep 按代码结构搜,不靠文本匹配。"
+        "text": "把项目里所有 console.log(x) 改成 logger.info(x)",
+        "note": "会先预览再实际改写"
       },
       {
-        "text": "把整个项目里 console.log(x) 改成 logger.info(x)。",
-        "note": "先预览改动,确认后才批量应用。"
+        "text": "找出所有接收 Request 参数的函数",
+        "note": "返回文件位置与匹配行"
       },
       {
-        "text": "去掉所有 as any 强转。",
-        "note": "同样会先 dry-run 再改写。"
+        "text": "移除所有 as any 类型断言",
+        "note": "先检查匹配再移除"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f754e5eddeb322e559a7e2dd80061eb75d7f0e80fa7df4fbcf54e3e6c06fc5b7",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:55:57.927Z",
+    "generated_at": "2026-08-31T09:21:40.163Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude uses ast-grep to find or rewrite code by structure rather than text: it validates the search/replace pattern, previews changes, and applies them only after confirmation. Works in 25 languages.",
-    "when_en": "Triggered when the problem depends on code shape, not text: find functions/calls by shape, batch-rewrite patterns, apply YAML rules. Text/comment/filename searches stay with rg/grep.",
+    "what_en": "With this skill, Claude uses ast-grep for AST-based search/rewrite in 25 languages. Matches functions/calls/imports by shape, does batch rewrites, and runs YAML rules with auto-fixes.",
+    "when_en": "Triggers when the user asks for structural code search or rewrite, e.g. find functions/calls/imports with a shape, change console.log to logger.info, or strip as any. Use grep/rg for text-level queries instead.",
     "say_en": [
       {
-        "text": "Find every function that takes a Request parameter.",
-        "note": "Searches by code structure, not text."
+        "text": "Rewrite every console.log(x) to logger.info(x) in the project.",
+        "note": "Shows a preview first, then applies after confirmation."
       },
       {
-        "text": "Rewrite every console.log(x) to logger.info(x) across the repo.",
-        "note": "Previews changes before applying them."
+        "text": "Find all functions that take a Request parameter.",
+        "note": "Returns file locations and matching lines."
       },
       {
-        "text": "Remove every 'as any' cast.",
-        "note": "Runs through the same dry-run-then-apply flow."
+        "text": "Remove all as any casts from the codebase.",
+        "note": "Checks matches first, then removes them."
       }
     ]
   }

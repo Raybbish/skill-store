@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "MUST USE whenever a task needs a commit or git-history investigation. Covers atomic commits, staging, commit-message style, rebase, squash, fixup/autosquash, blame, bisect, reflog, git log -S/-G, and questions like who wrote this or when was this added. Do not use for ordinary code edits unless the user asks for git work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "09f8e43f5d169a3365d91cfe8a9a0f22e538637f",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68542,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-08-31T09:13:39.829Z",
     "first_seen_at": "2026-07-15T03:55:58.117Z",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
+    "upstream_commit_at": "2026-08-31T17:42:39+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -39,7 +39,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-08-31T09:13:39.829Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,26 +94,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会在你需要提交或查 Git 历史时介入：它会先查仓库状态，然后按你的要求拆分原子提交、沿用仓库的提交信息风格、安全改写历史，或用 blame/log/bisect 等查证改动来源，并给出具体证据。",
-    "when": "当任务涉及 Git 提交（暂存、提交信息）或 Git 历史调查（如谁改的、何时加的、rebase 等）时触发；普通代码编辑不触发。",
+    "what": "装上后，当你要求提交代码或调查 Git 历史时，Claude 会先分清任务类型、查看仓库现状，再按流程操作：提交时把改动拆成独立的小提交并沿用现有的提交信息风格；重写历史前先做安全检查；回答历史问题时给出命令依据。",
+    "when": "当任务需要提交代码或调查 Git 历史时触发（例如提交、rebase、blame 等）。普通代码编辑不会触发，除非你明确要求 Git 操作。",
     "say": [
       {
-        "text": "把我这些改动拆成多个原子提交，按功能分组。",
-        "note": "会先分析 diff，再分组暂存并提交。"
+        "text": "帮我把这些改动分成两个提交，第一个是功能 A，第二个是重构。",
+        "note": "Claude 会拆分并提交。"
       },
       {
-        "text": "看看这段代码是谁改的？",
-        "note": "用 git blame 定位最后修改人和提交哈希。"
+        "text": "查一下这个文件里 'timeout' 是哪次提交引入的。",
+        "note": "Claude 用 git log -S 查找并给证据。"
       },
       {
-        "text": "把最近这 5 个提交 squash 成一个，并给个合适的提交信息。",
-        "note": "用交互式 rebase 合并提交，保留全部改动。"
+        "text": "把 feature 分支上最近的三个提交 squash 成一个。",
+        "note": "Claude 会执行交互式 rebase 安全合并。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3ef8f0c52e0d3a7bc63a734eb2defc437ebdc6d1a2da08293847522763e6291f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:56:45.764Z",
-    "lint_pass": true
+    "generated_at": "2026-08-31T09:22:11.895Z",
+    "lint_pass": true,
+    "what_en": "When installed, Claude handles Git commits and history research with a structured workflow: classifies the request, inspects repo state, then acts—atomic commits with detected message style, safety checks before history rewrites, and evidence-cited answers for history questions.",
+    "when_en": "Triggered whenever a task needs a commit or git-history investigation (e.g., commit, rebase, blame). Not for ordinary code edits unless the user asks for git work.",
+    "say_en": [
+      {
+        "text": "Split these changes into two commits: first feature A, then refactor.",
+        "note": "Claude will split and commit."
+      },
+      {
+        "text": "Which commit introduced 'timeout' in this file?",
+        "note": "Claude uses git log -S and shows evidence."
+      },
+      {
+        "text": "Squash the last three commits on feature into one.",
+        "note": "Claude does an interactive rebase."
+      }
+    ]
   }
 }

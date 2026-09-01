@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "09f8e43f5d169a3365d91cfe8a9a0f22e538637f",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68542,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-08-31T09:13:39.829Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
+    "upstream_commit_at": "2026-08-31T17:42:39+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-08-31T09:13:39.829Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，代码编辑会触发注释检查。若有警告，Claude 会停下，要求修复或解释被标记的注释，然后才继续。非编辑操作忽略，检查器缺失则无输出。",
-    "when": "在 Claude 成功完成 apply_patch、write、edit 等编辑操作后自动触发。非编辑操作不触发。",
+    "what": "装上后,每次用编辑工具成功修改代码,插件会自动检查注释;若发现警告,Codex 会收到阻塞反馈,需先修复或解释该注释再继续。",
+    "when": "当成功调用 apply_patch、write、edit 等编辑工具后,且注释检查器发出警告时触发。",
     "say": [
       {
-        "text": "修复被标记的注释。",
-        "note": "Claude 会修改该注释以通过检查。"
+        "text": "修复注释检查器刚指出的问题。",
+        "note": "触发 Codex 处理阻塞性反馈。"
       },
       {
-        "text": "解释为何这条注释被警告。",
-        "note": "Claude 会分析并说明原因。"
+        "text": "解释一下这条注释为什么被标记。",
+        "note": "Codex 会说明原因并决定去留。"
       },
       {
-        "text": "修复后继续下一步。",
-        "note": "Claude 修复后恢复执行。"
+        "text": "先解决注释警告,再继续下一步。",
+        "note": "确保警告被处理后才推进。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:56:58.187Z",
+    "generated_at": "2026-08-31T09:21:38.102Z",
     "lint_pass": true,
-    "what_en": "After successful edit-like actions, Claude runs a comment check. Warnings block progress until Claude fixes or explains the flagged comment. Non-edit tools are ignored; missing checker binaries cause no output.",
-    "when_en": "Triggered after successful edit calls such as apply_patch, write, edit, etc. Non-edit tools are ignored.",
+    "what_en": "After a successful edit via apply_patch, write, edit, multi_edit, or multiedit, this plugin runs a comment check. If it raises a warning, Codex receives blocking feedback and must fix or explain the flagged comment before continuing.",
+    "when_en": "Triggered after a successful edit-like PostToolUse hook, specifically after apply_patch, write, edit, multi_edit, or multiedit calls, when the comment-checker emits warnings.",
     "say_en": [
       {
-        "text": "Fix the flagged comment.",
-        "note": "Claude updates the comment to satisfy the checker."
+        "text": "Fix the issue the comment checker just flagged.",
+        "note": "Prompts Codex to handle the blocking feedback."
       },
       {
-        "text": "Explain why this comment is flagged.",
-        "note": "Claude analyzes and gives the reason."
+        "text": "Explain why this comment was flagged.",
+        "note": "Codex will give reasons and decide to keep or change it."
       },
       {
-        "text": "Fix it and continue.",
-        "note": "Claude then resumes the workflow."
+        "text": "Resolve the comment warning before continuing.",
+        "note": "Ensures the warning is handled before moving on."
       }
     ]
   }
