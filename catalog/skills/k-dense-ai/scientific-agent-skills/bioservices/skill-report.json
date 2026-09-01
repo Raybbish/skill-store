@@ -5,7 +5,7 @@
     "name": "bioservices",
     "description": "Unified Python interface to 40+ bioinformatics services. Use when querying multiple databases (UniProt, KEGG, ChEMBL, Reactome) in a single workflow with consistent API. Best for cross-database analysis, ID mapping across services. For quick single-database lookups use gget; for sequence/file manipulation use biopython.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/bioservices",
-    "upstream_commit": "f6fcafeb1cc8c82eca0160a18bc41c38427b8e0f",
+    "upstream_commit": "1dd0fccf46fc3c9855c4a0c313a0c57fe4319883",
     "content_hash": "sha256:f2f52cf2213ae4ed1e17fb48ad17dd913e601253d28eba45a0a990a5e8055fc2",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 38224,
+    "stars_github": 41089,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-30T08:51:17.928Z",
+    "fetched_at": "2026-09-01T08:13:11.757Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-29T15:54:53-07:00",
+    "upstream_commit_at": "2026-08-31T10:14:01-07:00",
     "repo_skill_count": 163,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-30T08:51:17.928Z",
+    "generated_at": "2026-09-01T08:13:11.757Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -104,37 +104,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会通过统一 Python 接口访问 40 多个生物数据库（如 UniProt、KEGG、ChEMBL 等），用于检索蛋白质、查通路、搜化合物、转换 ID，并在一个工作流中整合数据。",
-    "when": "当用户要求同时查询多个生物数据库（如 UniProt、KEGG、ChEMBL 等）、做跨库 ID 映射，或在一个流程中整合多个数据源时触发。",
+    "what": "装上后，Claude 会用 Python 调用约40个生物信息学服务（UniProt、KEGG、ChEMBL 等），完成蛋白质检索、通路分析、化合物搜索、跨库 ID 映射和 BLAST 比对，并把结果整合到同一流程。",
+    "when": "当用户要求跨多个数据库（如 UniProt、KEGG、ChEMBL 等）查询或整合数据、做 ID 映射、通路分析或 BLAST 比对时。单库快速查询请用 gget，序列/文件处理用 biopython。",
     "say": [
       {
-        "text": "帮我用 UniProt 查 P43403 的序列，并映射到 KEGG。",
-        "note": "会先检索序列，再调用映射接口转换 ID。"
+        "text": "查 UniProt 的 P43403，取序列并映射到 KEGG ID。",
+        "note": "会调用 bioservices 执行检索与 ID 映射。"
       },
       {
-        "text": "分析 KEGG 通路 hsa04660 的蛋白互作，并转成 SIF 格式。",
-        "note": "会提取通路关系并输出 SIF 文件。"
+        "text": "分析 KEGG hsa04660 通路，提取蛋白质相互作用。",
+        "note": "会用 parse_kgml_pathway 解析通路数据。"
+      },
+      {
+        "text": "用 BLAST 比对这段蛋白序列，数据库选 uniprotkb。",
+        "note": "需要先设置 NCBI_EMAIL 邮箱。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f2f52cf2213ae4ed1e17fb48ad17dd913e601253d28eba45a0a990a5e8055fc2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T09:06:36.149Z",
+    "generated_at": "2026-09-01T08:30:50.242Z",
     "lint_pass": true,
-    "what_en": "Claude will use a unified Python interface to query 40+ bioinformatics databases (e.g., UniProt, KEGG, ChEMBL) for retrieving proteins, pathways, compounds, converting IDs, and integrating data in one workflow.",
-    "when_en": "Triggers when the user asks to query multiple biological databases (e.g., UniProt, KEGG, ChEMBL) in one workflow, perform cross-database ID mapping, or integrate several data sources.",
+    "what_en": "After installation, Claude can use Python to access ~40 bioinformatics services (UniProt, KEGG, ChEMBL, Reactome) for protein retrieval, pathway analysis, compound search, cross-database ID mapping, and BLAST, integrating results in one workflow.",
+    "when_en": "When the user asks to query or integrate data across multiple databases (UniProt, KEGG, ChEMBL), map IDs, analyze pathways, or run BLAST. For quick single-db lookups use gget; for sequence/file handling use biopython.",
     "say_en": [
       {
-        "text": "Look up the sequence for P43403 in UniProt and map it to KEGG.",
-        "note": "Retrieves the sequence then converts the identifier."
+        "text": "Look up UniProt P43403, get its sequence, and map it to a KEGG ID.",
+        "note": "Runs retrieval and ID mapping via bioservices."
       },
       {
-        "text": "Analyze KEGG pathway hsa04660 interactions and export as SIF.",
-        "note": "Extracts pathway relations and exports SIF."
+        "text": "Analyze KEGG pathway hsa04660 and extract protein interactions.",
+        "note": "Parses KGML to get pathway relations."
       },
       {
-        "text": "Convert the KEGG ID for compound Geldanamycin to a ChEMBL ID.",
-        "note": "Uses UniChem for cross-database mapping."
+        "text": "Run BLAST on this protein sequence against uniprotkb.",
+        "note": "Requires NCBI_EMAIL to be set."
       }
     ]
   }

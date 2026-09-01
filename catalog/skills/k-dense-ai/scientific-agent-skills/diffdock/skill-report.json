@@ -5,7 +5,7 @@
     "name": "diffdock",
     "description": "DiffDock and DiffDock-L molecular docking. Use for protein-small-molecule pose prediction from PDB or sequence plus SMILES/SDF/MOL2, batch docking, virtual screening, and pose-confidence interpretation. Not for binding affinity prediction.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/diffdock",
-    "upstream_commit": "f6fcafeb1cc8c82eca0160a18bc41c38427b8e0f",
+    "upstream_commit": "1dd0fccf46fc3c9855c4a0c313a0c57fe4319883",
     "content_hash": "sha256:0d34cf7713c21a0e1a4197a494392b92a82dbc8cb8d0ce41f08590e43d027f95",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 38224,
+    "stars_github": 41089,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-30T08:51:17.928Z",
+    "fetched_at": "2026-09-01T08:13:11.757Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-29T15:54:53-07:00",
+    "upstream_commit_at": "2026-08-31T10:14:01-07:00",
     "repo_skill_count": 163,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-30T08:51:17.928Z",
+    "generated_at": "2026-09-01T08:13:11.757Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,26 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能使用 DiffDock 完成蛋白-小分子对接:根据蛋白质结构(PDB)或序列,结合配体的 SMILES/SDF/MOL2,预测配体的 3D 结合姿态并给出置信度分数;支持单次对接、批量对接和虚拟筛选;不预测结合亲和力,只给出姿态与置信度。",
-    "when": "当用户要求做蛋白-配体分子对接、预测结合姿态或虚拟筛选时触发;不用于结合亲和力预测。",
+    "what": "Claude 会根据蛋白 PDB/序列和配体 SMILES/结构文件,用 DiffDock 预测小分子与蛋白结合的三维姿势并给置信度分数。支持单个、批量对接和虚拟筛选。不预测结合亲和力,需另用评分工具。",
+    "when": "当你说“对接这个配体”“预测结合姿势”“做虚拟筛选”等分子对接相关请求,或提供蛋白 PDB/序列与配体 SMILES/结构文件时触发。批量对接同样支持。",
     "say": [
       {
-        "text": "请对这个蛋白和配体做分子对接,预测结合姿态。",
-        "note": "会调用 DiffDock 生成姿态与置信度文件。"
+        "text": "用这个蛋白 PDB 和配体 SMILES 做分子对接,输出置信度分数。"
       },
       {
-        "text": "对这份 CSV 里的复合物做批量对接,并按置信度排序。",
-        "note": "会准备批量输入并运行对接。"
+        "text": "帮我批量对接 CSV 里的蛋白-配体对,并分析结果排名。",
+        "note": "会走批量模式并运行 analyze_results.py。"
       },
       {
-        "text": "帮我做一次虚拟筛选,给化合物库按置信度排名。",
-        "note": "会按置信度高/中/低分类输出。"
+        "text": "这次对接置信度太低,把采样数量提高到 30 再跑。",
+        "note": "调高 samples_per_complex 后重跑。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0d34cf7713c21a0e1a4197a494392b92a82dbc8cb8d0ce41f08590e43d027f95",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T09:08:15.084Z",
-    "lint_pass": true
+    "generated_at": "2026-09-01T08:33:59.954Z",
+    "lint_pass": true,
+    "what_en": "Predicts 3D ligand poses with DiffDock from PDB/sequence and SMILES/structure, outputting confidence scores. Supports single, batch, and virtual-screen docking. No affinity prediction; use scoring tools.",
+    "when_en": "Triggered when the user asks to dock a ligand, predict a pose, or run virtual screening, or provides a protein PDB/sequence plus a ligand SMILES/structure. Batch docking also supported.",
+    "say_en": [
+      {
+        "text": "Dock this ligand to this protein PDB using this SMILES, with confidence scores.",
+        "note": "Claude runs inference and produces ranked pose files."
+      },
+      {
+        "text": "Batch-dock the complexes in this CSV and analyze the results.",
+        "note": "Uses batch mode and analyze_results.py."
+      },
+      {
+        "text": "Confidence is low; rerun with 30 samples per complex.",
+        "note": "Increases samples_per_complex and reruns."
+      }
+    ]
   }
 }

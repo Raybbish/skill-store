@@ -1,6 +1,6 @@
 ---
 name: portfolio-strategy
-description: Decides where capital and attention go across business lines, products, and markets — what to fund, hold, harvest, or exit, and on what evidence. Use this to allocate budget across businesses, evaluate whether a product line should continue, decide market entry or exit, structure a portfolio review, or when several initiatives compete for the same limited investment.
+description: Decides where capital and attention go across business lines, products, and markets — what to fund, hold, harvest, or exit, and on what evidence. Use this to allocate budget across businesses, evaluate whether a product line should continue, decide whether to exit one, structure a portfolio review, or when several initiatives compete for the same limited investment.
 ---
 
 # Portfolio strategy
@@ -53,6 +53,13 @@ the criteria and weights **before** seeing the numbers — weighting afterward r
 allocation you already had.
 
 Force a ranking. Tiers are how everything stays funded.
+
+## Never
+
+- Fund a line because it is large. Fund it on marginal return.
+- Keep a line alive on sunk cost.
+- Starve a line without deciding to exit it. Slow starvation costs more than a clean exit.
+- Review the portfolio only when a line is already in trouble.
 
 ## Return contract
 

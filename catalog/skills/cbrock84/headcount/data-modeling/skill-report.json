@@ -5,7 +5,7 @@
     "name": "data-modeling",
     "description": "Designs the warehouse and semantic layer — source-to-mart structure, dimensional modeling, grain, slowly changing dimensions, and the metric layer analytics reads through. Use this to design or restructure a warehouse, model a new source, decide on grain or table structure, build a semantic or metric layer, or diagnose why queries are slow, wrong, or impossible to write.",
     "upstream": "https://github.com/cbrock84/headcount/tree/main/plugins/data-analytics/skills/data-modeling",
-    "upstream_commit": "1c4d03bb9258e1be5454ad56b1cac81378ea6fda",
+    "upstream_commit": "0cb04d56e04ca5718daaf0e5915b2010a7253870",
     "content_hash": "sha256:37fe79cb5ab6a1ae9257b7a86c20f6898c49bbe716b7f8f8ac5e244802ce9fb7",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 761,
+    "stars_github": 882,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-31T09:15:10.253Z",
+    "fetched_at": "2026-09-01T08:14:58.749Z",
     "first_seen_at": "2026-08-31T09:15:10.253Z",
-    "upstream_commit_at": "2026-08-30T18:18:40-04:00",
-    "repo_skill_count": 146,
+    "upstream_commit_at": "2026-08-31T23:53:16-04:00",
+    "repo_skill_count": 172,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-31T09:15:10.253Z",
+    "generated_at": "2026-09-01T08:14:58.749Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "帮你把数据仓库分成原始、暂存、集市三层,定义每张表的粒度,设计维度表和事实表,统一指标口径,并诊断查询慢或错误的原因。",
-    "when": "当你要设计或重构数据仓库、为新数据源建模、决定粒度表结构等,或排查查询慢/错/写不出来时触发。",
+    "what": "Claude 会按 Raw/Staging/Marts 三层来设计数仓和语义层:给表定粒度、区分事实/维度、处理缓慢变化维度,并在 Marts 之上统一定义指标;也能诊断查询慢或结果错是否由粒度/分区/业务逻辑错层引起。",
+    "when": "当你想设计或重构数仓、建模新数据源,或处理粒度/表结构/语义层等问题时会触发。",
     "say": [
       {
-        "text": "帮我设计数据仓库的三层结构,每层的职责怎么划分?",
-        "note": "按原始、暂存、集市三层说明分工。"
+        "text": "帮我给这个订单数据建模,先定每张表的粒度。",
+        "note": "Claude 会从 grain 开始设计表结构。"
       },
       {
-        "text": "新加了一个登录事件表,帮我确定粒度并建模。",
-        "note": "他会定义一行代表什么,并给事实表结构建议。"
+        "text": "我们的报表数字偏高,帮我查一下是不是 join 导致 fan-out。",
+        "note": "会先检查粒度,再查逻辑。"
       },
       {
-        "text": "为什么按日期过滤还是很慢?该怎么分区聚簇?",
-        "note": "他会排查慢的原因并建议分区聚簇。"
+        "text": "在 marts 上搭一个统一语义层,把收入指标定义一次。",
+        "note": "之后各报表都读同一指标,避免口径漂移。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:37fe79cb5ab6a1ae9257b7a86c20f6898c49bbe716b7f8f8ac5e244802ce9fb7",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-31T09:34:35.828Z",
+    "generated_at": "2026-09-01T08:46:08.623Z",
     "lint_pass": true,
-    "what_en": "Helps you split a warehouse into raw, staging, and marts; define grain per table; model facts and dimensions; unify metrics in a semantic layer; and diagnose slow or wrong queries.",
-    "when_en": "Triggers when you design/restructure a warehouse, model a new source, decide grain/table structure, etc., or diagnose slow/wrong/unwritable queries.",
+    "what_en": "Claude designs warehouses and semantic layers across Raw/Staging/Marts: it sets grain per table, separates facts from dimensions, handles slowly changing dimensions, and defines metrics once above marts. It can also diagnose slow or wrong queries via grain, partitioning, or misplaced business logic.",
+    "when_en": "Triggers when you ask to design or restructure a warehouse, model a new source, or handle grain/table-structure/semantic-layer issues.",
     "say_en": [
       {
-        "text": "Help me design the 3-layer warehouse. What does each layer do?",
-        "note": "It will outline the three layers and their roles."
+        "text": "Help me model this order data; first set the grain for each table.",
+        "note": "Starts with grain before table structure."
       },
       {
-        "text": "We've added a login events table. Help me set grain and model it.",
-        "note": "It will define the grain and suggest a fact table structure."
+        "text": "Our report numbers are too high. Check whether a join causes fan-out.",
+        "note": "Checks grain before logic."
       },
       {
-        "text": "Why is filtering by date still slow? How should I partition and cluster?",
-        "note": "It will check the model and recommend partitioning and clustering."
+        "text": "Build a unified semantic layer above marts and define revenue once.",
+        "note": "All dashboards then read the same metric."
       }
     ]
   }

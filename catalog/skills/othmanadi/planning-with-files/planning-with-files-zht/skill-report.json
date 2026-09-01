@@ -5,8 +5,8 @@
     "name": "planning-with-files-zht",
     "description": "用於多步驟 AI 代理工作的持久化檔案規劃。將 task_plan.md、findings.md 與 progress.md 保存在磁碟上，生命週期鉤子會注入選定的專案規劃內容。自動恢復只讀取專案規劃檔案；只有明確執行 session-catchup.py --metadata 才會檢查本機同一專案的代理工作階段中繼資料，--replay 則會輸出有界且以 nonce 框定的摘錄。選用的閘門模式只會在主機支援時要求繼續，而且絕不執行 Markdown 中宣告的命令。此技能沒有網路上傳路徑。適用於研究或需要超過 5 次工具呼叫的工作。觸發詞：任務規劃、專案計畫、制定計畫、分解任務、多步驟規劃、進度追蹤、檔案規劃、幫我規劃、拆解專案",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-zht",
-    "upstream_commit": "d5d35e6a2316459418e7381faa2682b2894d02c1",
-    "content_hash": "sha256:3bd793103d0d656cb31473b69c5950d73cab73b59147433d1b3cd6db17d34b71",
+    "upstream_commit": "f21d94bbcb68e3e1ef321b34a839a950cf62f49c",
+    "content_hash": "sha256:57f7b7c1fd3c61b816c35f145b23b9386cff6f6e704a570824f18be609980622",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -15,19 +15,17 @@
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "automation",
-      "agent-ops",
       "python"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26422,
+    "stars_github": 26531,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-30T08:51:23.334Z",
+    "fetched_at": "2026-09-01T08:13:18.509Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-30T09:51:42+02:00",
+    "upstream_commit_at": "2026-08-31T13:39:19+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -37,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-30T08:51:23.334Z",
+    "generated_at": "2026-09-01T08:13:18.509Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,70 +89,70 @@
           "templates/task_plan.md"
         ],
         "text_files": 24,
-        "bytes": 211415,
-        "chars": 201121,
-        "tokens": 43982
+        "bytes": 215867,
+        "chars": 205575,
+        "tokens": 44684
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "让AI代理在长任务中通过文件保持计划与进度",
+    "tagline": "拆分多步任务并保存计划，随时恢复进度",
     "scene_tags": [
-      "研究任务",
-      "长任务规划",
-      "进度追踪"
+      "多步任务",
+      "进度恢复",
+      "研究规划"
     ],
-    "fit_line": "适合你，如果你在构建需要跨多次调用保持规划与上下文的AI代理。",
-    "tagline_en": "Persist task plans to files so multi-step AI agents never lose track",
+    "fit_line": "适合你，如果你经常让 AI 代理处理需要多步规划和进度跟踪的复杂任务",
+    "tagline_en": "Break down multi-step tasks into file plans and resume progress anytime",
     "scene_tags_en": [
-      "research tasks",
-      "long-running workflows",
-      "progress tracking"
+      "multi-step tasks",
+      "progress resume",
+      "research planning"
     ],
-    "fit_line_en": "For you if you're building AI agents that need to maintain planning context across many steps.",
+    "fit_line_en": "For you if you often ask AI agents to handle complex tasks needing planning and progress tracking",
     "source": "llm",
-    "content_hash": "sha256:3bd793103d0d656cb31473b69c5950d73cab73b59147433d1b3cd6db17d34b71",
+    "content_hash": "sha256:57f7b7c1fd3c61b816c35f145b23b9386cff6f6e704a570824f18be609980622",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T08:56:20.534Z",
+    "generated_at": "2026-09-01T08:21:09.511Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会为多步任务维护 task_plan.md、findings.md、progress.md 三个文件，持续更新进度；恢复或 /clear 后自动读取这些文件，且把计划内容当数据，不执行其中的指令。",
-    "when": "当你请求规划或拆解多步骤/研究任务、任务预计超过 5 次工具调用，或检测到已有 task_plan.md 等规划文件时。",
+    "what": "Claude 会把任务拆成阶段,存在 task_plan.md、findings.md、progress.md 三个文件里;每次操作后自动更新进度,开始任务前先读回这些文件恢复上下文。",
+    "when": "当你说“帮我规划”等关键词,要求拆解多步骤任务、做研究,或工作需超过 5 次工具调用时触发。",
     "say": [
       {
-        "text": "帮我把这个研究任务拆解成步骤并建立计划文件",
-        "note": "会创建 task_plan.md 并开始跟踪进度"
+        "text": "帮我把这个项目拆成阶段,建好 task_plan.md 并开始执行。",
+        "note": "Claude 会创建规划文件并按阶段推进。"
       },
       {
-        "text": "规划一下这个多步骤任务，分阶段推进，记录发现",
-        "note": "会写入 findings.md 和 progress.md"
+        "text": "记录一下当前进度,更新 progress.md。",
+        "note": "会把本次操作写进进度文件。"
       },
       {
-        "text": "继续之前的规划，先读取计划文件恢复上下文",
-        "note": "会读取 task_plan.md 等并自动接续"
+        "text": "做研究时把发现记到 findings.md。",
+        "note": "新发现会持续写入研究笔记。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:3bd793103d0d656cb31473b69c5950d73cab73b59147433d1b3cd6db17d34b71",
+    "content_hash": "sha256:57f7b7c1fd3c61b816c35f145b23b9386cff6f6e704a570824f18be609980622",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T09:15:21.624Z",
+    "generated_at": "2026-09-01T08:41:36.645Z",
     "lint_pass": true,
-    "what_en": "Claude maintains task_plan.md, findings.md, and progress.md for multi-step tasks, updating progress; on resume or after /clear it re-reads these files and treats plan content as data, not executable instructions.",
-    "when_en": "When you ask to plan or break down multi-step/research work, when the task is expected to take more than 5 tool calls, or when existing plan files like task_plan.md are detected.",
+    "what_en": "Claude breaks the task into phases, stores them in task_plan.md, findings.md and progress.md, updates progress after each write/edit, and re-reads these files when starting work to restore context.",
+    "when_en": "Activates when you ask to plan or break down a multi-step task, do research, or when the work needs more than 5 tool calls; keywords such as '帮我规划' also trigger it.",
     "say_en": [
       {
-        "text": "Break down this research task into steps and create a plan file.",
-        "note": "Creates task_plan.md and starts tracking."
+        "text": "Break this project into phases, create task_plan.md, and start.",
+        "note": "Claude creates the planning files and works phase by phase."
       },
       {
-        "text": "Plan this multi-step task, work in phases, and log findings.",
-        "note": "Writes to findings.md and progress.md."
+        "text": "Log our current progress into progress.md.",
+        "note": "Writes the recent action into the progress log."
       },
       {
-        "text": "Resume the previous plan: read the planning files first to restore context.",
-        "note": "Re-reads task_plan.md and continues."
+        "text": "Save research findings to findings.md.",
+        "note": "New discoveries are appended to the research notes."
       }
     ]
   }

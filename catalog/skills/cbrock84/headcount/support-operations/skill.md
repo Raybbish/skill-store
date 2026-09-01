@@ -68,3 +68,20 @@ by a wide margin and then blames the team.
 
 Review a sample of resolved contacts against a rubric agreed with the team, and coach against it.
 Reviewing only escalations trains for defense rather than quality.
+
+## Tooling
+
+Ticketing: Zendesk, Freshdesk, Intercom, Front, Help Scout, and similar; Jira Service
+Management where support and engineering work one queue.
+
+Knowledge base: usually the ticketing tool's own, or Confluence, Notion, or Guru.
+
+Quality review and workforce management — Klaus, Assembled, and similar — start paying off
+once you staff shifts rather than a team. Before that they are overhead.
+
+## Never
+
+- Staff to average volume. Support arrives in peaks.
+- Publish a service level you have not staffed to meet.
+- Manage on handle time. It optimizes for closing tickets, not for solving problems.
+- Let a repeat driver stay a support problem. Route it to whoever owns the cause.

@@ -5,7 +5,7 @@
     "name": "add-dial-tool",
     "description": "Give chosen NanoClaw agents a real phone number as a container tool — the `dial` CLI baked into the agent image plus OneCLI credential injection for api.getdial.ai, scoped per agent, so the agents you pick can send SMS, place AI voice calls, and receive verification codes from inside the sandbox. Independent of the Dial channel; idempotent; re-run to change which agents may use it. Use when the user wants agents to text, call, or run `dial …` from a chat, without wiring Dial as a messaging channel.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-dial-tool",
-    "upstream_commit": "858421aff4523ab77b8db09d1ba6a607872e17cf",
+    "upstream_commit": "5ab775451b9f10f80c05f50e40ad5a9c56f5e98a",
     "content_hash": "sha256:c30bce35e47f03cd1f21e1035c25b376a59b83a0725b8b8decd4e461ec28defd",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30647,
+    "stars_github": 30672,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-30T08:51:22.222Z",
+    "fetched_at": "2026-09-01T08:13:17.339Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-08-30T00:18:06+03:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-01T01:54:56+03:00",
+    "repo_skill_count": 61,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-30T08:51:22.222Z",
+    "generated_at": "2026-09-01T08:13:17.339Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -96,41 +96,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会给选中的 NanoClaw 代理装好 dial 命令行工具并注入 Dial 账号凭据,让这些代理能发短信、拨打 AI 语音电话、接收验证码;未选中的代理会被网关拦截,返回 403。",
-    "when": "当用户想让代理发短信、打电话,或让它在聊天里直接运行 `dial` 命令,且不把 Dial 配成消息通道时,会触发该技能。",
+    "what": "安装后，你选中的代理会在其容器内得到 `dial` 工具和访问凭据，从而能直接发送短信、拨打 AI 语音电话、接收验证码；未选中的代理访问会被网关拒绝。",
+    "when": "当你想让代理在聊天中发短信、打电话或运行 `dial` 命令，又不想把 Dial 接入为消息渠道时，会用到这个技能。",
     "say": [
       {
-        "text": "给我的销售代理开启 Dial,让它能发短信和打电话。",
-        "note": "选中对应代理组,注入凭据并移除阻止。"
+        "text": "给 +1 555 123 4567 发短信，说“项目明天截止”",
+        "note": "代理会用 dial 给该号码发送短信"
       },
       {
-        "text": "把 Dial 工具加到所有代理,但先不要授权任何代理。",
-        "note": "安装工具,所有代理暂时被阻止。"
+        "text": "用 dial 拨打 +86 138 0013 8000",
+        "note": "代理会发起 AI 语音电话"
       },
       {
-        "text": "让 `ag-xyz` 这个代理也能接收验证码。",
-        "note": "把该代理加入授权列表。"
+        "text": "查一下发到 555-1234 的验证码",
+        "note": "代理会从短信中读出验证码"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c30bce35e47f03cd1f21e1035c25b376a59b83a0725b8b8decd4e461ec28defd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T09:11:24.364Z",
+    "generated_at": "2026-09-01T08:37:41.067Z",
     "lint_pass": true,
-    "what_en": "Selected NanoClaw agents get the `dial` CLI plus an OneCLI credential for api.getdial.ai, so they can send SMS, place AI voice calls, and get verification codes in the sandbox. Unselected agents are blocked and get 403 blocked_by_policy.",
-    "when_en": "Triggered when the user wants agents to text, call, or run `dial …` from a chat, without wiring Dial as a messaging channel.",
+    "what_en": "After installation, the agents you select get the `dial` CLI and access credentials inside their container, letting them send SMS, make AI voice calls, and receive verification codes directly; unselected agents are blocked at the gateway.",
+    "when_en": "This is used when you want an agent to text, call, or run `dial …` from a chat, without wiring Dial as a messaging channel.",
     "say_en": [
       {
-        "text": "Give my sales agent Dial so it can send texts and make calls.",
-        "note": "Adds the agent to the allowed list, injects the credential."
+        "text": "Text +1 555 123 4567: \"Project is due tomorrow\"",
+        "note": "Agent sends an SMS via dial"
       },
       {
-        "text": "Install Dial for all agents but block everyone for now.",
-        "note": "Installs the tool with every agent blocked."
+        "text": "Use dial to call +86 138 0013 8000",
+        "note": "Agent makes an AI voice call"
       },
       {
-        "text": "Let agent ag-xyz receive verification codes too.",
-        "note": "Adds that agent to the Dial-enabled list."
+        "text": "Check the verification code sent to 555-1234",
+        "note": "Agent retrieves the code from SMS"
       }
     ]
   }

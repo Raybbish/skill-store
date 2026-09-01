@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Expert data processing with a hybrid engine strategy: resident-kernel engines first - DuckDB plus a resident Python stack (Polars/numpy/matplotlib) in persistent js/py eval kernels where the harness has them, bun/uv one-shots elsewhere - and per-action placement judgment (in-memory vs streaming vs remote-in-place). Triggers: 'analyze the data', 'what is in this CSV/parquet/json', 'summarize this', 'group by', 'filter rows', 'sort by', 'join these files', 'merge datasets', 'time series trend', 'compare yesterday and today', 'distribution/histogram', 'correlation', 'clean duplicates', 'handle missing values', 'dataset larger than RAM', 'SQL query on files', 'DataFrame operations', 'chart/plot this data', DuckDB vs Polars selection, quick data exploration CLI. NOT for plain text/code inspection, configs, or tiny inline math.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "09f8e43f5d169a3365d91cfe8a9a0f22e538637f",
+    "upstream_commit": "f9e0b33171b7c9121aa6bcec9280ac7f8a6667a0",
     "content_hash": "sha256:15728324e347ce8fc2ce81c96478e0c097abb927d3bc03c7c79218bbacb0d62f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,13 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68542,
+    "stars_github": 68570,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-31T09:13:39.829Z",
+    "fetched_at": "2026-09-01T08:13:03.103Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-08-31T17:42:39+09:00",
-    "repo_skill_count": 52,
-    "bulk_source": true
+    "upstream_commit_at": "2026-09-01T16:41:19+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -37,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-31T09:13:39.829Z",
+    "generated_at": "2026-09-01T08:13:03.103Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -109,26 +108,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 处理数据问答时会先探明数据规模和内存，再选最省资源的引擎（DuckDB、Polars、numpy、matplotlib）和运行位置（内存、流式或远程），只回答题目本身，不额外做图或探索。",
-    "when": "当用户要求分析数据、查看 CSV/Parquet/JSON 内容、按列分组/筛选/排序、合并文件、时间序列、分布、相关性、去重、缺失值、SQL 查询或画图等。纯文本/代码检查、配置、简单数学不触发。",
+    "what": "帮你分析表格类数据:读取 CSV、Parquet、JSON 等文件,做查询、分组、筛选、合并、统计和画图;会先判断数据放内存还是流式处理,并优先使用 DuckDB 和 Python 数据分析工具;回答问题时附带行数和耗时。",
+    "when": "当你要求分析数据、查看数据文件或做汇总等操作时触发;不处理纯文本、配置或简单数学。",
     "say": [
       {
-        "text": "分析 data.csv，按类别分组求和，给出行数和耗时。",
-        "note": "会先用 DuckDB 直接查文件并报告统计。"
+        "text": "帮我分析这份 CSV,按类别汇总销售额。",
+        "note": "它会读取文件并用 DuckDB 做分组汇总。"
       },
       {
-        "text": "这个 JSON 很大，超出内存，用 Polars 流式算出每月的均值。",
-        "note": "会选流式引擎避免占满内存。"
+        "text": "这个 Parquet 文件里有什么?描述一下结构。",
+        "note": "它会快速给出文件概览。"
       },
       {
-        "text": "画一张销售额随月份的趋势图，并检查质量。",
-        "note": "会按可视化规范出图并自查。"
+        "text": "把这两个数据集按 ID 合并,再画个趋势图。",
+        "note": "它会合并后绘图并做视觉检查。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:15728324e347ce8fc2ce81c96478e0c097abb927d3bc03c7c79218bbacb0d62f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-31T09:21:32.253Z",
-    "lint_pass": true
+    "generated_at": "2026-09-01T08:22:44.145Z",
+    "lint_pass": true,
+    "what_en": "Helps analyze tabular data: reads CSV/Parquet/JSON files, performs queries, grouping, filtering, merging, stats, and charts; decides whether to process in memory or stream, preferring DuckDB and Python data tools; reports row counts and timing.",
+    "when_en": "Triggers when you ask to analyze data, inspect data files, or summarize; not for plain text, configs, or small inline math.",
+    "say_en": [
+      {
+        "text": "Analyze this CSV and sum sales by category.",
+        "note": "It reads the file and groups with DuckDB."
+      },
+      {
+        "text": "What's in this Parquet file? Describe the structure.",
+        "note": "It gives a quick overview."
+      },
+      {
+        "text": "Merge these datasets by ID and plot a trend.",
+        "note": "It joins, plots, and runs visual QA."
+      }
+    ]
   }
 }
