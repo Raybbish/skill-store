@@ -5,7 +5,7 @@
     "name": "add-dial-number",
     "description": "Add another phone number to an existing Dial channel — a second (or third) public line for the agent, so one NanoClaw install answers SMS and AI voice calls on multiple numbers. Use when Dial is already installed and the operator wants an additional number (e.g. a personal line plus a support line). Requires the Dial channel to already be installed (see /add-dial).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-dial-number",
-    "upstream_commit": "5ab775451b9f10f80c05f50e40ad5a9c56f5e98a",
+    "upstream_commit": "5c3082a1c5d15d84a10f96f54f25459266e7037e",
     "content_hash": "sha256:9bfad30e6458d6dcf130a254bf44d22ef6c7b0f42dbd7407b69b92df79c8ab00",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30672,
+    "stars_github": 30682,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:17.339Z",
+    "fetched_at": "2026-09-02T07:32:00.226Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-01T01:54:56+03:00",
+    "upstream_commit_at": "2026-09-01T21:29:33+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:17.339Z",
+    "generated_at": "2026-09-02T07:32:00.226Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会在已有的 Dial 通道上再添加一个电话号码，把它设为独立的公开线路。每个号码有独立的会话线程，别人发来短信或 AI 语音来电时，代理会从收到消息的那个号码回复。现有线路不受影响。",
-    "when": "当 Dial 通道已经安装，操作者想为同一个 NanoClaw 安装增加第二个（或更多）电话号码时触发。必须已有 Dial 通道，否则需先执行 /add-dial。",
+    "what": "为已安装的 Dial 渠道新增一个电话号码，使同一 NanoClaw 安装能应答多个线路的短信和 AI 语音电话。技能会验证号码与代理组、设置线路名称与访问策略（strict 或 public）、创建消息群组并绑定，重启服务后确认新号生效。",
+    "when": "当 Dial 渠道已安装，操作员希望再增加一个号码（如个人号旁再加一条支持号）时触发。若 Dial 未安装，需先使用 /add-dial 技能。",
     "say": [
       {
-        "text": "给 Dial 频道增加一个号码 +14155550123，分配给客服组。",
-        "note": "会创建该号码的独立线路并接入指定的 agent 组。"
+        "text": "帮我给 Dial 渠道添加一个新号码 +14155550123。",
+        "note": "会先引导选择代理组并设置访问权限。"
       },
       {
-        "text": "再添加一个公开号码，名字叫支持专线，允许所有人接入。",
-        "note": "会询问选择号码和 agent 组，然后完成配置。"
+        "text": "给 Dial 再加一条线路，访问设为 public，名称用 Support。",
+        "note": "需要确认号码归属后才会创建线路。"
       },
       {
-        "text": "把 14155550124 设为严格模式，只允许已知用户拨打。",
-        "note": "会校验号码归属后配置访问权限。"
+        "text": "我想给 Dial 增加号码并限制为 strict（仅已知用户可呼入）。",
+        "note": "技能会校验号码与代理组，然后完成接线。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9bfad30e6458d6dcf130a254bf44d22ef6c7b0f42dbd7407b69b92df79c8ab00",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:36:59.712Z",
+    "generated_at": "2026-09-02T07:59:32.305Z",
     "lint_pass": true,
-    "what_en": "Adds another phone number to an existing Dial channel as a separate threaded public line. The agent replies from whichever number received the SMS or AI voice call. Existing lines unchanged.",
-    "when_en": "Triggered when Dial is already installed and the operator wants an additional number (e.g. a personal line plus a support line). Requires an existing Dial channel; run /add-dial first if not present.",
+    "what_en": "Adds another phone number to an existing Dial channel, so one NanoClaw install serves multiple lines. Claude validates selections, sets line name and access (strict/public), creates the group and wiring, restarts, verifies.",
+    "when_en": "Triggered when Dial is already installed and the operator wants to add another number. Dial must be installed first; otherwise run /add-dial.",
     "say_en": [
       {
-        "text": "Add number +14155550123 to Dial for the support group.",
-        "note": "Creates a separate line for that number connected to the chosen agent group."
+        "text": "Please add a new number +14155550123 to the Dial channel.",
+        "note": "You will be guided to select an agent group and set access."
       },
       {
-        "text": "Add another public line named Support Hotline, open to everyone.",
-        "note": "Prompts for number and agent group, then wires it up."
+        "text": "Add another Dial line with public access and name Support.",
+        "note": "The number must be confirmed before creation."
       },
       {
-        "text": "Set 14155550124 to strict mode, only known users.",
-        "note": "Verifies ownership and sets access policy."
+        "text": "I want to add a Dial number restricted to strict mode.",
+        "note": "Skill validates the number and agent, then wires it."
       }
     ]
   }

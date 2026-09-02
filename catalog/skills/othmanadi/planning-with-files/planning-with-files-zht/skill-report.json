@@ -5,8 +5,8 @@
     "name": "planning-with-files-zht",
     "description": "用於多步驟 AI 代理工作的持久化檔案規劃。將 task_plan.md、findings.md 與 progress.md 保存在磁碟上，生命週期鉤子會注入選定的專案規劃內容。自動恢復只讀取專案規劃檔案；只有明確執行 session-catchup.py --metadata 才會檢查本機同一專案的代理工作階段中繼資料，--replay 則會輸出有界且以 nonce 框定的摘錄。選用的閘門模式只會在主機支援時要求繼續，而且絕不執行 Markdown 中宣告的命令。此技能沒有網路上傳路徑。適用於研究或需要超過 5 次工具呼叫的工作。觸發詞：任務規劃、專案計畫、制定計畫、分解任務、多步驟規劃、進度追蹤、檔案規劃、幫我規劃、拆解專案",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-zht",
-    "upstream_commit": "f21d94bbcb68e3e1ef321b34a839a950cf62f49c",
-    "content_hash": "sha256:57f7b7c1fd3c61b816c35f145b23b9386cff6f6e704a570824f18be609980622",
+    "upstream_commit": "9ad1f2653a36580e60640656b3e1b000f0f16925",
+    "content_hash": "sha256:fec4173c742f65f227d48383d0ebdcb7ea9126619520cfbb9ca4fc4ab613b1d3",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -15,17 +15,18 @@
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
+      "agent-ops",
       "python"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26531,
+    "stars_github": 26574,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:18.509Z",
+    "fetched_at": "2026-09-02T07:32:01.535Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-31T13:39:19+02:00",
+    "upstream_commit_at": "2026-09-02T09:08:41+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -35,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:18.509Z",
+    "generated_at": "2026-09-02T07:32:01.535Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -97,62 +98,58 @@
   },
   "eval": null,
   "copy": {
-    "tagline": "拆分多步任务并保存计划，随时恢复进度",
+    "tagline": "让 AI 代理把多步计划存成文件，重开任务也能接着干",
     "scene_tags": [
-      "多步任务",
+      "多步任务规划",
       "进度恢复",
-      "研究规划"
+      "长任务执行"
     ],
-    "fit_line": "适合你，如果你经常让 AI 代理处理需要多步规划和进度跟踪的复杂任务",
-    "tagline_en": "Break down multi-step tasks into file plans and resume progress anytime",
+    "fit_line": "适合你，如果想让 AI 代理在多步骤任务中自动保存计划、发现和进度，跨会话接续工作。",
+    "tagline_en": "Persist AI agent plans and progress so long tasks survive across sessions.",
     "scene_tags_en": [
-      "multi-step tasks",
-      "progress resume",
-      "research planning"
+      "multi-step task planning",
+      "progress recovery",
+      "long task execution"
     ],
-    "fit_line_en": "For you if you often ask AI agents to handle complex tasks needing planning and progress tracking",
+    "fit_line_en": "For you if you want your AI agent to remember plans and progress across many steps.",
     "source": "llm",
-    "content_hash": "sha256:57f7b7c1fd3c61b816c35f145b23b9386cff6f6e704a570824f18be609980622",
+    "content_hash": "sha256:fec4173c742f65f227d48383d0ebdcb7ea9126619520cfbb9ca4fc4ab613b1d3",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:21:09.511Z",
+    "generated_at": "2026-09-02T07:37:34.695Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把任务拆成阶段,存在 task_plan.md、findings.md、progress.md 三个文件里;每次操作后自动更新进度,开始任务前先读回这些文件恢复上下文。",
-    "when": "当你说“帮我规划”等关键词,要求拆解多步骤任务、做研究,或工作需超过 5 次工具调用时触发。",
+    "what": "装上后，Claude 会把复杂任务拆成分阶段计划，并将计划、发现、进度分别保存到 task_plan.md、findings.md、progress.md 三个文件。在对话过程中，它会在开始和工具调用时自动读取这些文件恢复上下文，并在每个阶段完成后更新进度，让长任务能继续。",
+    "when": "当你请求任务规划、拆解项目等，或任务是研究类/需要超过5次工具调用时，会触发此技能。",
     "say": [
       {
-        "text": "帮我把这个项目拆成阶段,建好 task_plan.md 并开始执行。",
-        "note": "Claude 会创建规划文件并按阶段推进。"
+        "text": "帮我把这个项目拆解成任务计划，建立 task_plan 文件。",
+        "note": "会生成任务计划文件并开始规划。"
       },
       {
-        "text": "记录一下当前进度,更新 progress.md。",
-        "note": "会把本次操作写进进度文件。"
-      },
-      {
-        "text": "做研究时把发现记到 findings.md。",
-        "note": "新发现会持续写入研究笔记。"
+        "text": "把目前进展记录到 progress，并标注已完成阶段。",
+        "note": "会同步进度文件。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:57f7b7c1fd3c61b816c35f145b23b9386cff6f6e704a570824f18be609980622",
+    "content_hash": "sha256:fec4173c742f65f227d48383d0ebdcb7ea9126619520cfbb9ca4fc4ab613b1d3",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:41:36.645Z",
+    "generated_at": "2026-09-02T08:07:00.961Z",
     "lint_pass": true,
-    "what_en": "Claude breaks the task into phases, stores them in task_plan.md, findings.md and progress.md, updates progress after each write/edit, and re-reads these files when starting work to restore context.",
-    "when_en": "Activates when you ask to plan or break down a multi-step task, do research, or when the work needs more than 5 tool calls; keywords such as '帮我规划' also trigger it.",
+    "what_en": "After installation, Claude breaks complex tasks into phased plans and stores goals, findings, and progress in task_plan.md, findings.md, and progress.md on disk. During a session it reads these files to restore context and updates progress after each completed phase, letting long tasks continue.",
+    "when_en": "It triggers when you request task planning or project breakdown, or when the task is research-like or requires more than 5 tool calls.",
     "say_en": [
       {
-        "text": "Break this project into phases, create task_plan.md, and start.",
-        "note": "Claude creates the planning files and works phase by phase."
+        "text": "Break this project into a task plan and create the task_plan file.",
+        "note": "Will generate the plan file and start."
       },
       {
-        "text": "Log our current progress into progress.md.",
-        "note": "Writes the recent action into the progress log."
+        "text": "Create task_plan, findings, and progress files for my research task.",
+        "note": "Sets up the three tracking files."
       },
       {
-        "text": "Save research findings to findings.md.",
-        "note": "New discoveries are appended to the research notes."
+        "text": "Log current progress and mark completed phases.",
+        "note": "Syncs the progress file."
       }
     ]
   }

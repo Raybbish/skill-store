@@ -5,7 +5,7 @@
     "name": "migrate-nanoclaw",
     "description": "Extracts user customizations from a fork, generates a replayable migration guide, and upgrades to upstream by reapplying customizations on a clean base. Replaces merge-based upgrades with intent-based migration.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-nanoclaw",
-    "upstream_commit": "5ab775451b9f10f80c05f50e40ad5a9c56f5e98a",
+    "upstream_commit": "5c3082a1c5d15d84a10f96f54f25459266e7037e",
     "content_hash": "sha256:016530678881a523b5477fabfd43149640f2a8d570028475ec71c6e3e085bdcb",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30672,
+    "stars_github": 30682,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:17.339Z",
+    "fetched_at": "2026-09-02T07:32:00.226Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-01T01:54:56+03:00",
+    "upstream_commit_at": "2026-09-01T21:29:33+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:17.339Z",
+    "generated_at": "2026-09-02T07:32:00.226Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,26 +90,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会先分析 fork 与上游的差异，把配置、源码、角色和技能改动整理成迁移指南，记录意图和细节；升级时在独立工作区检出干净上游，再按指南重新应用，避免合并冲突。",
-    "when": "当你想把 fork 升级到上游最新版、或让 Claude 提取自定义改动生成迁移指南时触发；它会先自刷新技能、检查工作区并创建回滚点。",
+    "what": "装上后，Claude 会把你在 NanoClaw 分叉里的改动写成一份迁移指南；升级上游时先取干净的上游代码，再按指南重放改动，不再用 git 合并。",
+    "when": "当你想把 NanoClaw 分叉升级到上游，或想把自定义改动整理成迁移指南时触发。已有迁移指南时，Claude 会先问你是直接升级还是更新指南。",
     "say": [
       {
-        "text": "把当前 fork 升级到上游最新版，保留我所有的自定义改动。",
-        "note": "会先提取自定义改写迁移指南再升级。"
+        "text": "帮我升级 NanoClaw 到上游，保留我的改动",
+        "note": "会先提取改动，再按指南重放"
       },
       {
-        "text": "帮我分析仓库里对源码和配置的修改，生成一份迁移指南。",
-        "note": "会先探索代码库并向你确认意图。"
+        "text": "把这次分叉的改动整理成迁移指南",
+        "note": "进入提取阶段，生成指南"
       },
       {
-        "text": "用迁移指南的方式重新应用我的自定义，别用 git merge。",
-        "note": "升级时避免合并冲突。"
+        "text": "迁移指南已存在，直接按它升级",
+        "note": "跳过提取，直接进入升级阶段"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:016530678881a523b5477fabfd43149640f2a8d570028475ec71c6e3e085bdcb",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:40:05.164Z",
-    "lint_pass": true
+    "generated_at": "2026-09-02T08:05:22.817Z",
+    "lint_pass": true,
+    "what_en": "With this skill installed, Claude turns your custom changes in a NanoClaw fork into a replayable migration guide; when upgrading upstream, it takes a clean copy and reapplies those changes from the guide instead of running git merge.",
+    "when_en": "Triggered when you ask to upgrade a customized NanoClaw fork to upstream or to export customizations. If a guide exists, Claude offers to skip straight to upgrade.",
+    "say_en": [
+      {
+        "text": "Upgrade this NanoClaw fork to upstream, keeping my changes",
+        "note": "Extracts then reapplies"
+      },
+      {
+        "text": "Turn this fork's customizations into a migration guide",
+        "note": "Runs the Extract phase"
+      },
+      {
+        "text": "A migration guide already exists — use it to upgrade",
+        "note": "Skips to the Upgrade phase"
+      }
+    ]
   }
 }

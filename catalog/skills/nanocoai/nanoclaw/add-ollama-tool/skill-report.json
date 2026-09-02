@@ -5,7 +5,7 @@
     "name": "add-ollama-tool",
     "description": "Add Ollama MCP server so the container agent can call local models and optionally manage the Ollama model library.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-tool",
-    "upstream_commit": "5ab775451b9f10f80c05f50e40ad5a9c56f5e98a",
+    "upstream_commit": "5c3082a1c5d15d84a10f96f54f25459266e7037e",
     "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30672,
+    "stars_github": 30682,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:17.339Z",
+    "fetched_at": "2026-09-02T07:32:00.226Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-01T01:54:56+03:00",
+    "upstream_commit_at": "2026-09-01T21:29:33+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:17.339Z",
+    "generated_at": "2026-09-02T07:32:00.226Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,39 +98,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 可通过 Ollama MCP 服务器调用本机运行的 Ollama 模型：能列出已装模型、向指定模型发送提示并取回回答；若开启管理工具，还能拉取、删除、查看模型及查看运行中模型。Claude 仍负责编排，但可将部分任务交给本地模型。",
-    "when": "当用户要求为容器代理添加 Ollama 集成或让代理调用本地模型时触发。",
+    "what": "安装此技能后，Claude 会连接本机 Ollama，新增“列出模型”和“让指定模型生成回答”的能力；若开启管理开关，还能下载/删除模型、查看模型细节和正在运行的模型。Claude 仍是主导，只把具体生成任务交给本地模型。",
+    "when": "用户要求用 Ollama / 本地模型回答问题或生成内容，或请求列出/管理模型时，会自动触发相应工具。",
     "say": [
       {
-        "text": "用 Ollama 告诉我法国的首都",
-        "note": "代理会先列出模型，再用生成工具回答。"
+        "text": "用 Ollama 告诉我法国的首都。",
+        "note": "Claude 会先列出模型，再调用生成工具回答。"
       },
       {
-        "text": "列出已安装的 Ollama 模型"
+        "text": "列出当前已装的 Ollama 模型。",
+        "note": "只触发模型列表，不调用生成。"
       },
       {
-        "text": "拉取 gemma3:1b 模型"
+        "text": "拉取 gemma3:1b 模型。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:38:18.563Z",
+    "generated_at": "2026-09-02T08:00:40.185Z",
     "lint_pass": true,
-    "what_en": "After install, Claude can call local Ollama models via MCP: it can list models and generate responses; with admin tools enabled, also pull, delete, inspect models and list running ones. Claude still orchestrates but can offload work.",
-    "when_en": "When the user asks to add Ollama integration to the container agent or enable local model calls.",
+    "what_en": "After installation, Claude gains tools to list local Ollama models and call them for responses; with the admin flag, it can also pull/delete models and list running ones. Claude orchestrates, while local models do the concrete work.",
+    "when_en": "Triggered when the user asks to use Ollama or local models for answering or generating text, or (if enabled) to list/manage models.",
     "say_en": [
       {
-        "text": "Tell me the capital of France using Ollama.",
-        "note": "Agent will list models and generate an answer."
+        "text": "Use Ollama to tell me the capital of France.",
+        "note": "Claude will list models, then generate an answer."
       },
       {
-        "text": "List installed Ollama models.",
-        "note": "Agent calls ollama_list_models."
+        "text": "List the currently installed Ollama models.",
+        "note": "Only triggers the listing tool."
       },
       {
         "text": "Pull the gemma3:1b model.",
-        "note": "Requires OLLAMA_ADMIN_TOOLS; agent calls ollama_pull_model."
+        "note": "Works only if OLLAMA_ADMIN_TOOLS is enabled."
       }
     ]
   }

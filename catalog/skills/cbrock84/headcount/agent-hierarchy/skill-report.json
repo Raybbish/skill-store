@@ -5,7 +5,7 @@
     "name": "agent-hierarchy",
     "description": "Designs orchestrator-and-subagent hierarchies for a repository — splitting agents by exclusive write surface, pairing every producer with an independent auditor, and enforcing the split with a script that runs in CI. Use this whenever the user wants to set up, expand, audit, or fix a multi-agent or subagent structure for a codebase; asks how to divide work between agents; wants agent charters, roles, or a surface map written; or is hitting agents that collide on the same files, review their own work, or drift from their remit. Also use when sizing a roster or deciding whether a new agent is justified.",
     "upstream": "https://github.com/cbrock84/headcount/tree/main/plugins/executive/skills/agent-hierarchy",
-    "upstream_commit": "0cb04d56e04ca5718daaf0e5915b2010a7253870",
+    "upstream_commit": "d58a7ee2821fc04fe99b382a65ca1b96e3a6a832",
     "content_hash": "sha256:49d27191d48e34b711b6eacde05585e40856aa2f711af4f2663b2ea0a54e086c",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 882,
+    "stars_github": 987,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:14:58.749Z",
+    "fetched_at": "2026-09-02T07:33:13.469Z",
     "first_seen_at": "2026-08-31T09:15:10.253Z",
-    "upstream_commit_at": "2026-08-31T23:53:16-04:00",
+    "upstream_commit_at": "2026-09-01T20:32:43-04:00",
     "repo_skill_count": 172,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:14:58.749Z",
+    "generated_at": "2026-09-02T07:33:13.469Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,41 +98,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会先查看仓库文件,按文件区域划分代理,每个写代理配一个只读审查代理;产出代理名单、表面地图,并用 CI 脚本检查没有区域冲突。",
-    "when": "当你想为代码库搭建或调整多代理/子代理结构,询问如何给代理分工,或遇到代理改同一文件、自审自己工作等问题时触发。",
+    "what": "会按“写面”而非主题拆分代理:先盘点仓库文件,提出每个代理独占的修改范围,配对生产者与独立审查者,生成一张写面地图和 CI 校验脚本,由主会话统一提交。",
+    "when": "当你说要搭建、扩展、审查或修复代码库的多代理结构,问怎么给代理分工,或代理互相冲突、自审、越界时触发。",
     "say": [
       {
-        "text": "给这个仓库设计代理层级:按文件表面划分,配审查代理。",
-        "note": "Claude 会先盘点文件再提出名单和地图。"
+        "text": "帮我把这个仓库的代理结构按独占写面拆一下",
+        "note": "它会先盘点文件,再提出代理名单和写面地图。"
       },
       {
-        "text": "生成 scripts/agent-guard.mjs 并接入 CI。",
-        "note": "会生成可执行的检查脚本。"
+        "text": "两个代理总改同一批文件,怎么分开?",
+        "note": "会按写面拆分,并给每个生产者配独立审查者。"
       },
       {
-        "text": "两个代理都在改 tokens.css,怎么拆开?",
-        "note": "会按表面拆分并更新地图。"
+        "text": "给现有代理补一份章程,格式照 playbook",
+        "note": "会按顺序在写面地图和守卫脚本之后补写。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:49d27191d48e34b711b6eacde05585e40856aa2f711af4f2663b2ea0a54e086c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:44:21.509Z",
+    "generated_at": "2026-09-02T08:10:46.305Z",
     "lint_pass": true,
-    "what_en": "Claude will inventory the repo's file tree, propose a minimal agent roster partitioned by exclusive write surfaces, pair each writer with a read-only reviewer, and produce a surface map plus a CI guard script.",
-    "when_en": "Triggered when the user wants to set up, expand, audit, or fix a multi-agent structure, asks how to divide work among agents, or faces agents colliding, self-reviewing, or drifting.",
+    "what_en": "It arranges agents by exclusive write surface, not topic: inventories the repository, proposes a roster where no two agents share files, pairs each producer with an independent auditor, records a surface map, and wires a CI guard script. The main session commits everything.",
+    "when_en": "Triggered when you ask to set up, expand, audit, or fix a multi-agent or subagent structure in a codebase, ask how to divide work between agents, or report agents colliding on files, reviewing their own work, or drifting from their remit.",
     "say_en": [
       {
-        "text": "Design an agent hierarchy for this repo, split by file surface and add reviewers.",
-        "note": "Claude inventories files first, then proposes roster and map."
+        "text": "Split this repo's agent structure by exclusive write surface",
+        "note": "It will inventory files first, then propose a roster and surface map."
       },
       {
-        "text": "Generate scripts/agent-guard.mjs and wire it into CI.",
-        "note": "Produces an executable guard script."
+        "text": "Two agents keep editing the same files; how do we separate them?"
       },
       {
-        "text": "Two agents are both editing tokens.css—how do we split them?",
-        "note": "Splits by surface and updates the map."
+        "text": "Add a charter for an existing agent, following the playbook format",
+        "note": "It will write it after the surface map and guard are in place."
       }
     ]
   }

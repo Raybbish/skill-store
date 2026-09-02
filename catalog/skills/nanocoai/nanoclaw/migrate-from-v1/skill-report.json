@@ -5,7 +5,7 @@
     "name": "migrate-from-v1",
     "description": "Finish migrating a NanoClaw v1 install into v2. Run after `bash migrate-v2.sh` completes. Seeds the owner, migrates legacy memory, reconciles container configs, and helps port custom v1 code. Triggers on \"migrate from v1\", \"finish migration\", \"v1 migration\".",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-from-v1",
-    "upstream_commit": "5ab775451b9f10f80c05f50e40ad5a9c56f5e98a",
+    "upstream_commit": "5c3082a1c5d15d84a10f96f54f25459266e7037e",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30672,
+    "stars_github": 30682,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:17.339Z",
+    "fetched_at": "2026-09-02T07:32:00.226Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-01T01:54:56+03:00",
+    "upstream_commit_at": "2026-09-01T21:29:33+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:17.339Z",
+    "generated_at": "2026-09-02T07:32:00.226Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,40 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会接手 NanoClaw 从 v1 升级到 v2 的收尾工作:先检查升级脚本是否运行,再设置管理员、迁移旧记忆等。",
-    "when": "当你说出“migrate from v1”“finish migration”等关键词时触发;若 `bash migrate-v2.sh` 尚未运行,Claude 会先提示你运行该脚本。",
+    "what": "此技能用于完成 NanoClaw v1→v2 的迁移收尾:它会读取交接文件,确认 v2 能正常收发消息,给主人账号授权,调整陌生人访问策略,从 v1 导入或迁移记忆与用户数据,并校验容器配置。整个过程不修改 v1 原始文件。",
+    "when": "当你说出 “migrate from v1”、“finish migration”、“v1 migration” 等短语,或在 `bash migrate-v2.sh` 已完成后被调用时触发。",
     "say": [
       {
-        "text": "继续 v1 到 v2 的迁移",
-        "note": "Claude 会先读取交接文件,再逐阶段处理。"
+        "text": "帮我完成 v1 到 v2 的迁移收尾。",
+        "note": "Claude 会读取迁移交接文件,处理尚未完成的步骤。"
       },
       {
-        "text": "迁移后帮我设管理员账号",
-        "note": "Claude 会查询用户列表并为你授予 owner 角色。"
+        "text": "迁移脚本已跑完,请继续处理 v1 迁移。",
+        "note": "对应技能入口,立即开始收尾流程。"
       },
       {
-        "text": "帮我迁移旧版记忆"
+        "text": "把 v1 里的旧联系人授权为 v2 用户。",
+        "note": "会让 Claude 导入并展示待确认的用户列表。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:40:45.804Z",
+    "generated_at": "2026-09-02T08:05:04.694Z",
     "lint_pass": true,
-    "what_en": "When installed, Claude handles the final part of a NanoClaw v1-to-v2 migration: verifies the setup script, sets up the owner, migrates old memory, and more.",
-    "when_en": "Triggers when you say “migrate from v1”, “finish migration”, or similar phrases. If `bash migrate-v2.sh` hasn't run yet, Claude first tells you to run it in your terminal.",
+    "what_en": "Finishes a NanoClaw v1→v2 migration: reads handoff file, smoke-tests real messaging, grants owner role, sets sender policy, may import v1 users, migrates memory, checks container config, archives fork tweaks. Never modifies the v1 install.",
+    "when_en": "Triggered when you say \"migrate from v1\", \"finish migration\", or \"v1 migration\", or when it's invoked after `bash migrate-v2.sh` finishes.",
     "say_en": [
       {
-        "text": "Help me finish the migration",
-        "note": "Claude reads the handoff file and starts the follow-up phases."
+        "text": "Help me finish the v1 to v2 migration.",
+        "note": "Reads handoff file and continues pending steps."
       },
       {
-        "text": "Set me as the owner after migration",
-        "note": "Claude queries the users and grants the owner role."
+        "text": "The migration script ran; please continue v1 migration.",
+        "note": "Starts the post-script handoff flow."
       },
       {
-        "text": "Migrate my legacy memory to v2",
-        "note": "Claude runs /migrate-memory for the imported groups."
+        "text": "Import my old v1 contacts into v2.",
+        "note": "Triggers the import review and authorization flow."
       }
     ]
   }

@@ -5,28 +5,27 @@
     "name": "planning-with-files-es",
     "description": "Planificación persistente basada en archivos para tareas multipaso de agentes de IA. Mantiene task_plan.md, findings.md y progress.md en disco; los hooks del ciclo de vida inyectan contexto seleccionado de planificación del proyecto. La recuperación automática solo lee los archivos de planificación del proyecto. session-catchup.py --metadata, solicitado de forma explícita, puede inspeccionar metadatos locales de sesiones del mismo proyecto; --replay puede emitir extractos limitados y enmarcados con nonce. El modo con gate opcional solo puede solicitar que el host continúe si este lo admite y nunca ejecuta comandos declarados en Markdown. El skill no tiene ninguna ruta de carga por red. Úsalo para investigación o trabajo que requiera 5 o más llamadas a herramientas.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-es",
-    "upstream_commit": "f21d94bbcb68e3e1ef321b34a839a950cf62f49c",
-    "content_hash": "sha256:0a9236d4a7ef58b0917ebee06fdcdd9c642afa47d5e8d0e8c6622a2eb7f911c1",
+    "upstream_commit": "9ad1f2653a36580e60640656b3e1b000f0f16925",
+    "content_hash": "sha256:80538851505816d8b869aa7decf67d480689eec6571b7a0baf45dec3c97825fe",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "dev",
+    "category": "uncategorized",
     "version": null,
     "publisher": "othmanadi",
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "python",
       "agent-ops"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26531,
+    "stars_github": 26574,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:18.509Z",
+    "fetched_at": "2026-09-02T07:32:01.535Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-31T13:39:19+02:00",
+    "upstream_commit_at": "2026-09-02T09:08:41+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -36,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:18.509Z",
+    "generated_at": "2026-09-02T07:32:01.535Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,61 +97,47 @@
   },
   "eval": null,
   "copy": {
-    "tagline": "让 AI 助手分步规划任务并跟踪进度",
+    "tagline": "把复杂任务拆成分步计划,并持续记录和跟踪进展",
     "scene_tags": [
-      "多步任务规划",
-      "长任务执行"
+      "复杂任务拆解",
+      "长周期项目",
+      "研究调研"
     ],
-    "fit_line": "适合你,如果你在用 AI 智能体做需要多步规划的研究或开发工作",
-    "tagline_en": "Plan and track multi-step tasks for AI agents",
+    "fit_line": "适合你,如果你常让AI处理需要许多步骤才能完成的复杂工作",
+    "tagline_en": "Break complex jobs into step-by-step plans and keep tracking progress across the work",
     "scene_tags_en": [
-      "multi-step task planning",
-      "long-running tasks"
+      "complex task breakdown",
+      "long-term project",
+      "research sprint"
     ],
-    "fit_line_en": "For you if you run AI agents on complex research or development tasks needing persistent planning.",
+    "fit_line_en": "For you if you often ask AI to carry out complicated work that takes many steps to finish",
     "source": "llm",
-    "content_hash": "sha256:0a9236d4a7ef58b0917ebee06fdcdd9c642afa47d5e8d0e8c6622a2eb7f911c1",
+    "content_hash": "sha256:80538851505816d8b869aa7decf67d480689eec6571b7a0baf45dec3c97825fe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:20:55.573Z",
+    "generated_at": "2026-09-02T07:37:50.243Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会在项目里创建并维护 task_plan.md、findings.md、progress.md 三个文件,把计划、发现和进度写进磁盘;动手前先读取这些文件,做完一步后更新进度;任务需 5 次以上工具调用时按文件规划推进。",
-    "when": "当用户要求做计划、拆解或组织多步项目,或做研究/工作需 5 次以上工具调用时;执行 /clear 后也会自动读取上次计划文件继续。",
+    "what": "Claude 会在项目里把分步计划存在 task_plan.md,发现存在 findings.md,进度存在 progress.md;开始前读取,每完成一阶段更新,跨对话续做。计划只当数据,不当指令。",
+    "when": "用户要求规划、拆解或组织多步任务(如研究或需 5 次以上工具调用的工作时)会触发;已有 task_plan.md 或活跃计划时,Claude 会在交互前后自动读取计划并提示同步进度。",
     "say": [
       {
-        "text": "把这件事拆成多步计划,建计划文件再开始做。",
-        "note": "Claude 会创建这几个文件并按计划推进。"
+        "text": "帮我把这个任务拆成几步,建好 task_plan.md 并开始执行。",
+        "note": "会创建计划文件并逐阶段推进。"
       },
       {
-        "text": "先做调研,发现写进 findings.md,再给我阶段汇报。",
-        "note": "发现会被写入 findings.md,后续自动读取。"
+        "text": "先读 task_plan.md,继续上次没完成的研究。",
+        "note": "会读取计划与进度,从断点继续。"
       },
       {
-        "text": "检查上次会话进度,然后继续未完成的部分。",
-        "note": "触发 session-catchup 并读取计划文件。"
+        "text": "这个调研会很耗时,请把发现写进 findings.md。",
+        "note": "研究过程被持久化,便于后续复用。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:0a9236d4a7ef58b0917ebee06fdcdd9c642afa47d5e8d0e8c6622a2eb7f911c1",
+    "content_hash": "sha256:80538851505816d8b869aa7decf67d480689eec6571b7a0baf45dec3c97825fe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:41:35.648Z",
-    "lint_pass": true,
-    "what_en": "Claude creates and keeps task_plan.md, findings.md and progress.md in the project as disk memory. It reads them before acting, updates progress after each step, and follows the plan for research or tasks needing 5+ tool calls.",
-    "when_en": "When the user asks to plan, break down or organize a multi-step project, or asks for research/work needing more than 5 tool calls. After /clear it automatically re-reads the previous plan files and continues.",
-    "say_en": [
-      {
-        "text": "Break this into a multi-step plan, create the plan files, then start.",
-        "note": "Creates task_plan.md etc. and works from them."
-      },
-      {
-        "text": "Research this, log findings in findings.md, then give me phase updates.",
-        "note": "Findings are recorded and read back later."
-      },
-      {
-        "text": "Check the previous session's progress and continue what's unfinished.",
-        "note": "Triggers session-catchup and plan-file reading."
-      }
-    ]
+    "generated_at": "2026-09-02T08:06:56.729Z",
+    "lint_pass": true
   }
 }

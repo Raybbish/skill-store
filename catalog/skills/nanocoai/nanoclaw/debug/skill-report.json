@@ -5,7 +5,7 @@
     "name": "debug",
     "description": "Debug container agent issues. Use when things aren't working, container fails, authentication problems, or to understand how the container system works. Covers logs, session DBs, mounts, and common issues.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/debug",
-    "upstream_commit": "5ab775451b9f10f80c05f50e40ad5a9c56f5e98a",
+    "upstream_commit": "5c3082a1c5d15d84a10f96f54f25459266e7037e",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30672,
+    "stars_github": 30682,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:17.339Z",
+    "fetched_at": "2026-09-02T07:32:00.226Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-01T01:54:56+03:00",
+    "upstream_commit_at": "2026-09-01T21:29:33+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:17.339Z",
+    "generated_at": "2026-09-02T07:32:00.226Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,40 +91,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "使 Claude 能按指南诊断容器代理故障,检查主机与容器日志、会话数据库、挂载配置,定位重复实例、认证失败等常见问题,并给出修复步骤。",
-    "when": "当用户报告容器不工作、容器启动失败、认证出错,或想弄清容器系统的工作方式时,触发该技能。",
+    "what": "当容器化的智能体系统出故障时,Claude会检查错误日志、会话数据库和挂载点,指出问题所在并给出处理办法。",
+    "when": "当出现系统运行异常、容器失败或认证错误等情况,或你想了解容器系统原理时触发。",
     "say": [
       {
-        "text": "NanoClaw 容器没回复,帮我查日志和会话数据库。"
+        "text": "容器没回复,帮我查错误日志和入站消息状态。"
       },
       {
-        "text": "检查一下是否有重复的 NanoClaw 服务在运行。",
-        "note": "会检查进程列表和系统服务。"
+        "text": "我怀疑有两个服务在同时运行,帮我停掉旧的那个。",
+        "note": "Claude 会检查进程列表和 systemd 服务。"
       },
       {
-        "text": "消息发出去没回音,看看是不是投递环节丢了。",
-        "note": "会核对 outbound 数据库与平台消息 ID。"
+        "text": "帮我重启 group-a 的容器,然后立刻发一条测试消息。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:39:26.657Z",
+    "generated_at": "2026-09-02T08:03:52.826Z",
     "lint_pass": true,
-    "what_en": "Enables Claude to diagnose container agent failures by checking host and container logs, session databases, mount configurations, and common issues like duplicate instances or auth failures, and to provide fix steps.",
-    "when_en": "Triggered when the user reports container problems, startup failures, authentication issues, or asks how the container system works.",
+    "what_en": "When the container-based agent system misbehaves, Claude inspects error logs, session databases, and mounted paths, then identifies the problem and suggests how to fix it.",
+    "when_en": "Triggered when things aren't working, container fails, authentication errors occur, or the user wants to understand how the container system works.",
     "say_en": [
       {
-        "text": "Container not replying—check logs and session DBs.",
-        "note": "Follows the skill: error log first, then session DBs."
+        "text": "The container isn't replying. Check the error log and inbound messages.",
+        "note": "Claude checks nanoclaw.error.log, then inbound.db."
       },
       {
-        "text": "Check if a duplicate NanoClaw service is running.",
-        "note": "Checks process list and systemd units."
+        "text": "I suspect two service instances are running. Please stop the stale one.",
+        "note": "Claude checks process list and systemd units."
       },
       {
-        "text": "Message sent, no reply—check delivery.",
-        "note": "Verifies outbound.db and platform message IDs."
+        "text": "Restart the group-a container and send a test message right away.",
+        "note": "Runs ncl groups restart with --message."
       }
     ]
   }

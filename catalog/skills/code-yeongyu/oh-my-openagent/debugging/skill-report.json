@@ -5,7 +5,7 @@
     "name": "debugging",
     "description": "MUST USE for any real runtime debugging across ANY language or binary — crashes, silent failures, wrong responses, stuck processes, memory leaks, async misbehavior, unexplained timing, reverse engineering. Runs a hypothesis-driven loop: form ≥3 hypotheses, investigate in parallel, after 2 failed rounds spawn Oracles from orthogonal angles, confirm root cause, lock with a failing test, fix minimally, QA by actually USING the system, scrub artifacts. The actual HOW lives in `references/` — READ THEM. Triggers: 'debug this', 'why is X not working', 'hanging', 'attach a debugger', 'reverse engineer', 'pwndbg', 'gdb', 'lldb', 'node inspect', 'pdb', 'dlv', 'delve', 'rust-gdb', 'set a breakpoint', 'context window exploded', 'why is the response empty', 'why is this happening', 'trace this bug', 'reproduce and fix', 'silent failure', 'HTTP 200 but empty', 'why did it stop', 'inspect the binary', 'playwright', 'flaky test', 'fails intermittently', 'passes in isolation', 'only fails in CI'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/debugging",
-    "upstream_commit": "f9e0b33171b7c9121aa6bcec9280ac7f8a6667a0",
+    "upstream_commit": "3216a23fa975794628d4489b501acebfbed4dfb1",
     "content_hash": "sha256:328f1b7c79859648912a494962b7e741b736a50921c476599c1fc5495f461979",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68570,
+    "stars_github": 68598,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:03.103Z",
+    "fetched_at": "2026-09-02T07:31:49.405Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-01T16:41:19+09:00",
+    "upstream_commit_at": "2026-09-02T16:24:03+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:03.103Z",
+    "generated_at": "2026-09-02T07:31:49.405Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -136,42 +136,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 排障时以真实运行状态为准,不凭读代码猜测;先形成 3 个以上假设并同时验证,连续失败两轮后换角度重查,找到根因,先写失败测试再最小修复,最后真跑一遍确认修好并清理调试临时文件。",
-    "when": "任何真实运行时调试都会触发:程序崩溃、卡住、静默失败,或你说“debug this”“why is X not working”“attach a debugger”等调试请求。",
+    "what": "装上后,当程序崩溃、卡住、报错或行为异常时,Claude 会按步骤排查:先建日志、提出至少 3 个假设并并行调查;两轮失败后派出多个不同角度的“Oracle”子代理;确认根因后用测试锁定、做最小修复,再实际运行系统验证,最后清理临时产物。",
+    "when": "当你提到“调试”“为什么 X 不工作”“挂起”“附加调试器”“逆向”等词,或提到 gdb、lldb、pdb 等工具名,以及出现“静默失败”“HTTP 200 但为空”等情况时触发。",
     "say": [
       {
-        "text": "帮我查一下为什么这个 Python 服务内存一直涨,然后修好它。",
-        "note": "Claude 会先看真实内存状态,再形成假设定位泄漏。"
+        "text": "帮我调试:服务启动后不报错但接口一直无响应",
+        "note": "会先建日志并并行排查多个假设"
       },
       {
-        "text": "这个接口返回 200 但 body 是空的,怎么回事?",
-        "note": "Claude 会实际请求并跟踪响应,定位静默失败原因。"
+        "text": "为什么这个 Python 脚本偶尔卡死?附上日志",
+        "note": "读到 Python 运行参考后开始阶段排查"
       },
       {
-        "text": "这个测试单独跑能过,一到 CI 就挂,帮我查。",
-        "note": "Claude 会按间歇性故障流程排查 CI 环境差异。"
+        "text": "用 gdb 定位这个崩溃是哪里触发的",
+        "note": "会先读对应运行时的参考文档再操作"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:328f1b7c79859648912a494962b7e741b736a50921c476599c1fc5495f461979",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:24:54.955Z",
-    "lint_pass": true,
-    "what_en": "Claude debugs from observed runtime state, not guesses. Tests 3+ hypotheses in parallel, spawns Oracles after 2 failed rounds, confirms root cause with a failing test, fixes minimally, runs the system to verify, cleans up artifacts.",
-    "when_en": "Triggers on any real runtime debugging: crashes, hangs, silent failures, or requests like 'debug this', 'why is X not working', 'attach a debugger'.",
-    "say_en": [
-      {
-        "text": "Why does my Python service's memory keep growing? Fix it.",
-        "note": "Claude checks live memory state to locate the leak."
-      },
-      {
-        "text": "This endpoint returns 200 but empty body. Why?",
-        "note": "Claude traces the real response to find the silent failure."
-      },
-      {
-        "text": "This test passes in isolation but fails in CI. Investigate.",
-        "note": "Claude uses flaky-test triage to narrow environment causes."
-      }
-    ]
+    "generated_at": "2026-09-02T07:42:38.089Z",
+    "lint_pass": true
   }
 }

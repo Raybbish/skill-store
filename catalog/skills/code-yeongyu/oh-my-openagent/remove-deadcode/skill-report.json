@@ -5,7 +5,7 @@
     "name": "remove-deadcode",
     "description": "Remove unused code from this project with ultrawork mode, LSP-verified safety, atomic commits. Triggers: remove dead code, dead code, cleanup, remove unused.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/remove-deadcode",
-    "upstream_commit": "f9e0b33171b7c9121aa6bcec9280ac7f8a6667a0",
+    "upstream_commit": "3216a23fa975794628d4489b501acebfbed4dfb1",
     "content_hash": "sha256:5e87c2118e567b4a1ddcb9d423ec86110488347fce8b2acaa7d1d0a3bd47ebf1",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68570,
+    "stars_github": 68598,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:03.103Z",
+    "fetched_at": "2026-09-02T07:31:49.405Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-01T16:41:19+09:00",
+    "upstream_commit_at": "2026-09-02T16:24:03+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:03.103Z",
+    "generated_at": "2026-09-02T07:31:49.405Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会扫描项目，找出未使用的函数、变量、类型和导入，验证确实没被引用后，分批并行删除或重命名，并生成多次独立提交。它不会动入口文件、测试和配置等关键文件。",
-    "when": "当你说出“remove dead code”、“dead code”、“cleanup”等触发词时触发，用于清理项目中未使用的代码。",
+    "what": "Claude会扫描项目,找出未使用的代码,并用代码引用检查确认确实未被引用。随后把删除任务分给多个并行代理,每个代理负责一批文件,独立提交,最后Claude汇总结果。",
+    "when": "当用户要求清理未使用代码,说出“remove dead code”、“dead code”、“cleanup”等触发词时,技能会启动。如果指令中带上具体文件、目录或符号名,扫描会缩小到该范围。",
     "say": [
       {
-        "text": "帮我把项目里的死代码清理掉。",
-        "note": "启动扫描并删除未使用代码。"
+        "text": "请清理这个项目里的死代码。",
+        "note": "Claude会扫描全项目并派发多个并行代理删除。"
       },
       {
-        "text": "只清理 src/utils.ts 中的未使用代码。",
-        "note": "指定文件，缩小扫描范围。"
+        "text": "找出未在任何地方使用的文件和导出符号并删除。",
+        "note": "Claude会重点寻找未被引用的文件和导出项。"
       },
       {
-        "text": "找出未使用的导出并移除。",
-        "note": "针对未使用的导出符号。"
+        "text": "请只清理 src/legacy 目录里的未使用代码。",
+        "note": "会把扫描范围限定在该目录,不会全库扫描。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5e87c2118e567b4a1ddcb9d423ec86110488347fce8b2acaa7d1d0a3bd47ebf1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:26:19.590Z",
+    "generated_at": "2026-09-02T07:46:39.926Z",
     "lint_pass": true,
-    "what_en": "Claude scans the project for unused functions, variables, types and imports, verifies they are unused, then deletes or renames them in parallel batches, committing atomically. It skips entry points, tests, and config files.",
-    "when_en": "Triggers when you say 'remove dead code', 'dead code', 'cleanup', or similar cleanup requests, typically to clean up unused code in the project.",
+    "what_en": "Claude finds unused code, verifies it via LSP reference checks, then delegates the deletions to parallel agents. Each agent cleans one batch and commits it, and Claude reports a final summary.",
+    "when_en": "Triggers when the user asks to clean up unused code with phrases like \"remove dead code\", \"dead code\", or \"cleanup\". If a file, directory, or symbol name is given, scanning is narrowed to that scope.",
     "say_en": [
       {
-        "text": "Clean up dead code in my project.",
-        "note": "Starts a scan and removes unused code."
+        "text": "Clean up dead code in this project.",
+        "note": "Claude will scan and delegate removals to parallel agents."
       },
       {
-        "text": "Only remove unused code in src/utils.ts.",
-        "note": "Scopes the scan to a specific file."
+        "text": "Find and remove files or exported symbols that are never referenced.",
+        "note": "This searches for orphaned files and unused exports."
       },
       {
-        "text": "Find and remove unused exports.",
-        "note": "Targets unused exported symbols."
+        "text": "Only clean up unused code in the src/legacy directory.",
+        "note": "Restricts the scan to that directory only."
       }
     ]
   }

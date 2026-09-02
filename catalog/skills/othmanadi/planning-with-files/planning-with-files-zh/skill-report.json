@@ -5,29 +5,27 @@
     "name": "planning-with-files-zh",
     "description": "用于多步骤 AI 代理工作的持久化文件规划系统。将 task_plan.md、findings.md 和 progress.md 保存在磁盘上，生命周期钩子会注入选定的项目规划上下文。自动恢复只读取项目规划文件。只有显式运行 session-catchup.py --metadata 才会检查本机同项目的会话元数据；--replay 可输出有长度限制且由 nonce 框定的同项目摘录。可选门禁仅在宿主支持时请求继续，绝不执行 Markdown 中声明的命令。本技能没有网络上传路径。适用于研究或需要 5 次以上工具调用的工作。触发词：任务规划、项目计划、制定计划、分解任务、多步骤规划、进度跟踪、文件规划、帮我规划、拆解项目",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-zh",
-    "upstream_commit": "f21d94bbcb68e3e1ef321b34a839a950cf62f49c",
-    "content_hash": "sha256:d3780765ea3a3a3f32d3cea3dbf83be1521b092285b5b0ad76a26e0c7de776fc",
+    "upstream_commit": "9ad1f2653a36580e60640656b3e1b000f0f16925",
+    "content_hash": "sha256:b73b8f2f6779976edb66ac6d8e09cf31295e066aa451df651e13f24f98b229a0",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "dev",
+    "category": "productivity",
     "version": null,
     "publisher": "othmanadi",
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "python",
-      "cli",
       "agent-ops"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26531,
+    "stars_github": 26574,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:18.509Z",
+    "fetched_at": "2026-09-02T07:32:01.535Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-31T13:39:19+02:00",
+    "upstream_commit_at": "2026-09-02T09:08:41+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -37,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:18.509Z",
+    "generated_at": "2026-09-02T07:32:01.535Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -99,62 +97,49 @@
   },
   "eval": null,
   "copy": {
-    "tagline": "自动保存并恢复多步骤任务计划，持续跟踪进度",
+    "tagline": "让AI助手把长任务拆成分步计划，随时保存进度，中断也能接续",
     "scene_tags": [
       "多步任务",
-      "项目研究",
-      "进度跟踪"
+      "任务规划",
+      "进度跟踪",
+      "长项目执行"
     ],
-    "fit_line": "适合你,如果你常让 AI 助手处理步骤多、需要持续记录进展的任务",
-    "tagline_en": "Automatically save and restore multi-step task plans and track progress",
+    "fit_line": "适合你,如果 你常让AI助手处理复杂多步工作，希望它能记住干到哪、下一步干嘛",
+    "tagline_en": "Track AI task plans in files and resume multi-step work anytime",
     "scene_tags_en": [
       "multi-step tasks",
-      "research projects",
-      "progress tracking"
+      "project planning",
+      "progress tracking",
+      "long-running work"
     ],
-    "fit_line_en": "For you if you often ask AI assistants to handle complex tasks that need step-by-step planning and progress tracking",
+    "fit_line_en": "For you if you often delegate lengthy multi-step tasks to an AI and need it to remember its place.",
     "source": "llm",
-    "content_hash": "sha256:d3780765ea3a3a3f32d3cea3dbf83be1521b092285b5b0ad76a26e0c7de776fc",
+    "content_hash": "sha256:b73b8f2f6779976edb66ac6d8e09cf31295e066aa451df651e13f24f98b229a0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:21:11.495Z",
+    "generated_at": "2026-09-02T07:37:37.181Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "面对复杂任务，Claude 会在项目目录创建并维护 task_plan.md、findings.md、progress.md；每次对话自动注入计划内容，工具调用后提示更新进度，阶段完成时更新状态。",
-    "when": "当你说出“任务规划”“拆解项目”等关键词，或要求规划多步骤/研究类任务，或任务预计需要超过 5 次工具调用时。",
+    "what": "Claude 会把任务拆分成阶段，在项目目录里创建并维护 task_plan.md、findings.md、progress.md 三个文件，分别记录计划、研究结果和进度；每次重要操作或阶段性完成后更新这些文件，并在对话恢复时重新读取，以便持续跟踪多步骤任务。",
+    "when": "当你说“任务规划”“项目计划”等关键词，或要求拆解多步骤项目/研究任务，以及任务需要超过 5 次工具调用时，本技能会开始创建或读取规划文件来管理任务进度。",
     "say": [
       {
-        "text": "帮我规划这个研究项目，列出阶段",
-        "note": "会创建 task_plan.md 并拆分阶段。"
+        "text": "帮我把这个项目拆成阶段，建好规划文件再开始。",
+        "note": "Claude 会创建 task_plan.md 等文件。"
       },
       {
-        "text": "把当前任务拆解成步骤，保存到计划文件",
-        "note": "生成计划并写入磁盘。"
+        "text": "先读取上次的规划，继续推进未完成部分。",
+        "note": "自动恢复任务上下文。"
       },
       {
-        "text": "更新进度：标记当前阶段完成，记录错误"
+        "text": "研究每一步的新发现都记到 findings.md。",
+        "note": "把发现写入磁盘保持持久化。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:d3780765ea3a3a3f32d3cea3dbf83be1521b092285b5b0ad76a26e0c7de776fc",
+    "content_hash": "sha256:b73b8f2f6779976edb66ac6d8e09cf31295e066aa451df651e13f24f98b229a0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:41:48.415Z",
-    "lint_pass": true,
-    "what_en": "For complex tasks, Claude creates and maintains task_plan.md, findings.md, and progress.md; injects plan content each message, prompts progress updates after tool calls, and updates status when a phase completes.",
-    "when_en": "When you say keywords like 'task planning' or 'break down project', ask to plan multi-step or research tasks, or the task will need more than 5 tool calls.",
-    "say_en": [
-      {
-        "text": "Plan this research project and list phases.",
-        "note": "Creates task_plan.md and breaks it into phases."
-      },
-      {
-        "text": "Break the current task into executable steps and save them to plan files.",
-        "note": "Generates a plan and writes it to disk."
-      },
-      {
-        "text": "Update progress: mark current phase complete and log errors.",
-        "note": "Syncs progress.md and task_plan.md."
-      }
-    ]
+    "generated_at": "2026-09-02T08:06:43.386Z",
+    "lint_pass": true
   }
 }

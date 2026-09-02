@@ -5,7 +5,7 @@
     "name": "standup",
     "description": "Facilitate a read-only standup across git worktrees, branches, or PRs to compare changes and produce one consolidation plan.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/standup",
-    "upstream_commit": "8f085b4f8861122201a5524be71d696a49a812a3",
+    "upstream_commit": "1627ded4bfcf6d1e3cd1536527cff0d43e939ca2",
     "content_hash": "sha256:9f930921b4da027db63add61887ce9a0559d7e92134ae8edfb9b056f669c9ae9",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 92800,
+    "stars_github": 92959,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:12:57.861Z",
+    "fetched_at": "2026-09-02T07:31:45.138Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-31T14:37:53-07:00",
+    "upstream_commit_at": "2026-09-01T23:44:06-07:00",
     "repo_skill_count": 22
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:12:57.861Z",
+    "generated_at": "2026-09-02T07:31:45.138Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,26 +94,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会当主持人:把你的多个 git 工作区、分支或 PR 各派成一个“分支代理”,在共享聊天文件里分轮发言,比对改动,最后产出唯一合并方案(目标工作区+合并顺序+冲突解决),并用大白话向你汇报。",
-    "when": "当你让 Claude 对多个 git 工作区、分支或 PR 做“站会”式比对,想把分散改动合并成一个方案时触发。",
+    "what": "Claude 会当主持人,把每个 git 分支、工作树或 PR 当成一个发言者,让它们在共享聊天记录里轮流介绍自己的改动、回应冲突,最后把结论写成一份合并方案:以哪个分支为基础、按什么顺序合并、哪些决定留给你。整个过程只读,不真正合并代码。",
+    "when": "当你要求把多个分支、工作树或 PR 的改动整合成一份合并方案时触发。没指定时间范围时,Claude 会提供 1 小时、4 小时、24 小时等窗口;候选对象不足两个时,它会说明无法站会并建议扩大范围。",
     "say": [
       {
-        "text": "帮我对最近 24 小时活跃的工作区做站会,出个合并方案。",
-        "note": "Claude 会收集工作区并派代理发言。"
+        "text": "帮我开个只读站会,把最近开发的分支汇成一份合并计划。",
+        "note": "Claude 会先确认参与对象,再开始逐轮讨论。"
       },
       {
-        "text": "把 A 分支和 B 分支拉进站会,比对后给出唯一合并计划。",
-        "note": "会让你先确认名单再开场。"
+        "text": "这几天的分支和那两个 PR 一起,讨论好合并顺序再给我定夺。",
+        "note": "各分支/PR 会先自我介绍,冲突会单独追问。"
       },
       {
-        "text": "按最近 7 天的改动做站会,最后用大白话告诉我结论。",
-        "note": "会给出目标工作区和合并顺序。"
+        "text": "先不要合并,报告哪些分支有实际代码,哪些是空壳。",
+        "note": "用于最终汇总前的判断。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f930921b4da027db63add61887ce9a0559d7e92134ae8edfb9b056f669c9ae9",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:42:58.221Z",
-    "lint_pass": true
+    "generated_at": "2026-09-02T08:11:18.456Z",
+    "lint_pass": true,
+    "what_en": "Claude hosts a read-only standup: each git branch/PR speaks in a shared chat file, introduces changes, resolves conflicts in rounds. It then writes one consolidation plan (target worktree + merge order + human decisions), without merging.",
+    "when_en": "Triggered when you ask to consolidate multiple branches/worktrees/PRs into one plan. Without a window, Claude offers 1h/4h/24h/7d; fewer than two candidates stops the standup and suggests widening.",
+    "say_en": [
+      {
+        "text": "Run a read-only standup for my recent branches and give me one merge plan.",
+        "note": "Claude confirms participants and starts the rounds."
+      },
+      {
+        "text": "Discuss these branches and those PRs, then propose a merge order I can approve.",
+        "note": "Each introduces itself; conflicts handled."
+      },
+      {
+        "text": "Don't merge yet; tell me which branches have real code and which are empty.",
+        "note": "Helps you decide before approving the plan."
+      }
+    ]
   }
 }

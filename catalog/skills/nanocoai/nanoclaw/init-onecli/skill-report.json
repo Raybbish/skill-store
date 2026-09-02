@@ -5,7 +5,7 @@
     "name": "init-onecli",
     "description": "Install and initialize OneCLI Agent Vault. Migrates existing .env credentials to the vault. Use after /update-nanoclaw brings in OneCLI as a breaking change, or for first-time OneCLI setup.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/init-onecli",
-    "upstream_commit": "5ab775451b9f10f80c05f50e40ad5a9c56f5e98a",
+    "upstream_commit": "5c3082a1c5d15d84a10f96f54f25459266e7037e",
     "content_hash": "sha256:20b0e44016b41ff88ed693ad019de0ed4c0cb6622df7d4bd41aa6c2ae8eb75b5",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30672,
+    "stars_github": 30682,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:17.339Z",
+    "fetched_at": "2026-09-02T07:32:00.226Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-01T01:54:56+03:00",
+    "upstream_commit_at": "2026-09-01T21:29:33+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:17.339Z",
+    "generated_at": "2026-09-02T07:32:00.226Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude会安装OneCLI并配置Agent Vault网关,把.env里的凭据迁入保险库,再从.env删除明文密钥,最后重新构建并重启服务,验证网关日志。",
-    "when": "在/update-nanoclaw引入OneCLI破坏性变更后,或首次设置OneCLI时触发;若检测到已配置,会先询问保留现状还是重配。",
+    "what": "它会检查 OneCLI 是否可用;若没有,就安装 OneCLI、配置 Agent Vault 网关,把 .env 里的凭据迁入保险库并移除明文密钥,随后重建并重启服务。过程中会询问保留或重新配置。",
+    "when": "在用户执行 /init-onecli 时;或 /update-nanoclaw 更新引入 OneCLI 之后,以及首次搭建 OneCLI 时。",
     "say": [
       {
-        "text": "重新配置 OneCLI,让网关统一注入密钥。",
-        "note": "走重配流程,重新注册 Anthropic 凭据。"
+        "text": "/init-onecli",
+        "note": "触发安装与初始化 OneCLI Agent Vault。"
       },
       {
-        "text": "把 OPENAI_API_KEY 也迁到 OneCLI 保险库。",
-        "note": "迁移后原变量从 .env 移除,由网关注入。"
+        "text": "把 .env 里的 Anthropic 密钥迁入 OneCLI 保险库。",
+        "note": "会扫描 .env,迁移后删除明文密钥。"
+      },
+      {
+        "text": "重新配置 OneCLI,从零注册凭据。",
+        "note": "会放弃现有配置,执行重装流程。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:20b0e44016b41ff88ed693ad019de0ed4c0cb6622df7d4bd41aa6c2ae8eb75b5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:39:37.390Z",
+    "generated_at": "2026-09-02T08:04:11.710Z",
     "lint_pass": true,
-    "what_en": "Installs OneCLI, configures the Agent Vault gateway, migrates .env credentials into the vault, removes raw keys from .env, rebuilds, restarts the service, and verifies gateway logs.",
-    "when_en": "Triggers after /update-nanoclaw introduces OneCLI as a breaking change, or on first-time OneCLI setup; if OneCLI is already configured, it asks whether to keep or reconfigure.",
+    "what_en": "Checks if OneCLI exists. If not, installs it, configures the Agent Vault gateway, migrates credentials from .env into the vault, removes plaintext keys, rebuilds and restarts the service. It asks whether to keep or reconfigure current setup.",
+    "when_en": "Triggers when the user invokes /init-onecli, after /update-nanoclaw introduces OneCLI as a breaking change, or on first-time OneCLI setup.",
     "say_en": [
       {
-        "text": "Run /init-onecli and migrate the Anthropic key from .env to the vault.",
-        "note": "Installs OneCLI and migrates the credentials."
+        "text": "/init-onecli",
+        "note": "Triggers install and initialization of the OneCLI Agent Vault."
       },
       {
-        "text": "Reconfigure OneCLI so the gateway injects secrets centrally.",
-        "note": "Re-registers Anthropic credentials."
+        "text": "Migrate the Anthropic keys from .env to the OneCLI vault.",
+        "note": "It scans .env, migrates, then removes plaintext keys."
       },
       {
-        "text": "Move OPENAI_API_KEY into the OneCLI vault too.",
-        "note": "The variable is removed from .env after migration."
+        "text": "Reconfigure OneCLI and register credentials from scratch.",
+        "note": "It discards current config and runs a fresh setup."
       }
     ]
   }

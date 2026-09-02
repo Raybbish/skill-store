@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Run a dependency graph of child agents in one call with the native workflow tool. Use when the user asks for mass-ulw, a DAG of tasks, fan-out/fan-in work, or multi-agent execution where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "f9e0b33171b7c9121aa6bcec9280ac7f8a6667a0",
+    "upstream_commit": "3216a23fa975794628d4489b501acebfbed4dfb1",
     "content_hash": "sha256:a85cb6d4d980a1fbcc694ffd5d300d34f4097cacea29e2f7622a550b9d9224e6",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68570,
+    "stars_github": 68598,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-01T08:13:03.103Z",
+    "fetched_at": "2026-09-02T07:31:49.405Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-01T16:41:19+09:00",
+    "upstream_commit_at": "2026-09-02T16:24:03+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-01T08:13:03.103Z",
+    "generated_at": "2026-09-02T07:31:49.405Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,37 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会把复杂任务拆成一张有依赖关系的任务图:先读规划文件,再定义每个任务和先后顺序,一次启动整张图;有依赖的任务会等前置任务完成后自动开始,全图跑完后还会按预定标准核对结果。",
-    "when": "当用户要求 mass-ulw、任务 DAG、扇出/扇入等有依赖的多代理执行时触发。",
+    "what": "装上后,Claude 会把一个多步骤任务按依赖关系拆成子代理节点图,一次跑完;先并行执行无依赖的节点,再推进后续节点,过程中会检查节点是否越界,并在目标核实通过前不把完成结果当真。",
+    "when": "当用户提出“mass-ulw”、任务 DAG 或扇出/扇入式的多代理执行,且部分任务必须等其它任务完成时,该技能会接管。",
     "say": [
       {
-        "text": "把这些子任务按依赖关系用 mass-ulw 编排运行。",
-        "note": "根据 dependsOn 组织执行顺序。"
+        "text": "用 mass-ulw 把这三件事按依赖排成 DAG,一次跑完。",
+        "note": "它会生成并运行节点图,先跑可并行的部分。"
       },
       {
-        "text": "用 mass-ulw 做扇出/扇入:先抓数据,再并行处理,最后汇总。",
-        "note": "会生成依赖图并监督运行。"
+        "text": "写个多代理任务:先调研,再写正文,最后校对,每步等前一步。",
+        "note": "它会按依赖构建图并分批并行执行。"
+      },
+      {
+        "text": "帮我重跑刚才那个失败节点,并改一下它的提示词。",
+        "note": "它会用新提示对那个节点发起重试。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a85cb6d4d980a1fbcc694ffd5d300d34f4097cacea29e2f7622a550b9d9224e6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-01T08:25:29.309Z",
+    "generated_at": "2026-09-02T07:45:07.565Z",
     "lint_pass": true,
-    "what_en": "Installed: Claude reads planning doc, defines a task DAG, runs it in one call, starts dependent tasks only after prerequisites finish, and verifies results.",
-    "when_en": "Triggers when the user asks for mass-ulw, a task DAG, fan-out/fan-in, etc., or any multi-agent job with ordering dependencies.",
+    "what_en": "With this skill, Claude runs child agents as a dependency DAG in one go: it plans the graph, executes independent nodes in parallel as dependencies clear, monitors for scope drift, and treats completion as false until proved by success criteria.",
+    "when_en": "Triggered when the user asks for mass-ulw, a task DAG, fan-out/fan-in work, or multi-agent execution where some tasks must wait on others.",
     "say_en": [
       {
-        "text": "Run a mass-ulw DAG: A first, then B and C in parallel, D after B/C.",
-        "note": "Claude reads planning and defines dependent nodes."
+        "text": "Use mass-ulw to turn these three steps into a DAG with dependencies and run it at once.",
+        "note": "It will build and run the node graph, starting independent nodes."
       },
       {
-        "text": "Run these subtasks with mass-ulw, ordered by dependencies.",
-        "note": "Nodes scheduled by dependsOn."
+        "text": "Create a multi-agent task: research, then write, then proofread, each waiting on the previous.",
+        "note": "It will build the dependency graph and execute in waves."
       },
       {
-        "text": "Use mass-ulw fan-out/fan-in: fetch data, process in parallel, aggregate.",
-        "note": "Builds a dependency graph and supervises it."
+        "text": "Retry that failed node with an updated prompt.",
+        "note": "It will retry the node with the new instruction."
       }
     ]
   }
