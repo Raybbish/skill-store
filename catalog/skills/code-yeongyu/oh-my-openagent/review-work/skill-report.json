@@ -5,7 +5,7 @@
     "name": "review-work",
     "description": "Post-implementation review orchestrator. Launches 5 parallel background sub-agents: Oracle (goal/constraint verification), Oracle (code quality), Oracle (security), unspecified-high (hands-on QA execution), unspecified-high (context mining from GitHub/git/Slack/Notion). All must pass for review to pass. MUST USE before a PR handoff or when the user explicitly asks to review completed work. Triggers: 'review work', 'review my work', 'review changes', 'QA my work', 'verify implementation', 'check my work', 'validate changes', 'post-implementation review'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/review-work",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "f9e0b33171b7c9121aa6bcec9280ac7f8a6667a0",
     "content_hash": "sha256:b1eb017e788d8fd7fb70bafa1e5874c9947d2ce7f5a23c6fac8fba975c326ad4",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,13 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68570,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-01T08:13:03.103Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
-    "bulk_source": true
+    "upstream_commit_at": "2026-09-01T16:41:19+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -37,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-01T08:13:03.103Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude会启动5个并行后台子代理，分别检查目标达成、代码质量、安全性、实际运行、上下文遗漏。5个全通过，审查才算通过。",
-    "when": "当用户明确要求审查已完成的工作（如说“review work”、“check my work”等），或准备提交PR前，Claude会启动审查。",
+    "what": "装上后,用户要求审查已完成的工作时,Claude 会并行启动 5 个后台子代理:核对目标与约束、检查代码质量、审计安全、实际运行应用做 QA、挖掘 GitHub/git/Slack/Notion 等上下文。5 项全过才通过,任一失败即整体失败。",
+    "when": "在 PR 交接前,或用户明确要求审查已完成的工作时触发,比如说 'review work'、'QA my work'、'verify implementation' 等。",
     "say": [
       {
-        "text": "审查我刚完成的工作。",
-        "note": "触发5路并行审查。"
+        "text": "请 review 我这次改的代码,重点核对是否实现了原始目标和要求。",
+        "note": "会并行启动 5 个子代理分头审查。"
       },
       {
-        "text": "检查我最近的改动是否达标。",
-        "note": "会对照目标与约束逐项核对。"
+        "text": "在交接 PR 之前,审查当前分支的代码质量和安全性。",
+        "note": "包含代码审查与安全审计两个子代理。"
       },
       {
-        "text": "帮我验证这次实现有没有问题。",
-        "note": "所有子代理都通过才算过。"
+        "text": "QA 一下我的实现,实际运行应用,检查功能是否正常。",
+        "note": "QA 子代理会实际跑应用做验证。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:b1eb017e788d8fd7fb70bafa1e5874c9947d2ce7f5a23c6fac8fba975c326ad4",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:58:47.013Z",
+    "generated_at": "2026-09-01T08:26:07.356Z",
     "lint_pass": true,
-    "what_en": "Claude starts 5 parallel background sub-agents for goal/constraint check, code quality, security, hands-on QA, and context mining from GitHub/git/Slack/Notion. All must pass for review to pass.",
-    "when_en": "Triggers when the user explicitly asks to review completed work (e.g., says 'review work' or 'check my work'), or right before a PR handoff.",
+    "what_en": "When asked to review completed work, Claude launches 5 parallel sub-agents: goal/constraint check, code quality, security audit, hands-on QA run, and context mining from GitHub/git/Slack/Notion. All must pass; one failure fails the review.",
+    "when_en": "Triggers before a PR handoff or when the user explicitly asks to review done work, e.g. saying 'review work', 'QA my work', 'verify implementation', etc.",
     "say_en": [
       {
-        "text": "Review the work I just finished.",
-        "note": "Triggers the 5-lane parallel review."
+        "text": "Please review my changes and verify they meet the original goal.",
+        "note": "Spawns 5 parallel reviewers."
       },
       {
-        "text": "Check whether my recent changes meet the goals.",
-        "note": "Cross-checks against goals and constraints."
+        "text": "Review the current branch's code quality and security before PR handoff.",
+        "note": "Covers code review and a security audit."
       },
       {
-        "text": "Help me verify this implementation for issues.",
-        "note": "Passes only if all sub-agents pass."
+        "text": "QA my implementation — run the app and check it works.",
+        "note": "The QA sub-agent actually runs the app."
       }
     ]
   }

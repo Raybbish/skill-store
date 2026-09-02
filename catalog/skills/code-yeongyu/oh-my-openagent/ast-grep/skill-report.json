@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "f9e0b33171b7c9121aa6bcec9280ac7f8a6667a0",
     "content_hash": "sha256:f754e5eddeb322e559a7e2dd80061eb75d7f0e80fa7df4fbcf54e3e6c06fc5b7",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,13 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68570,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-01T08:13:03.103Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
-    "bulk_source": true
+    "upstream_commit_at": "2026-09-01T16:41:19+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -37,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-01T08:13:03.103Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -115,41 +114,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按代码结构(而非文本)查找或改写代码:先校验查找/替换模式,展示改动预览,确认后才批量修改文件,支持 25 种语言。",
-    "when": "当问题依赖代码结构而非文本时触发,如按形状找出某类语法节点(函数、调用等)、批量改写某种写法(例:console.log 改成 logger.info),或应用 YAML 规则。纯文本、注释、文件名等场景交给 rg/grep。",
+    "what": "装上后,Claude 能按代码结构而非文本搜索和改写代码,比如把 console.log 改成 logger.info、去掉 as any。它会先预览改动位置,确认后再修改文件;也能扫描 YAML 规则。",
+    "when": "当你要求按代码结构而非文本查找或改写代码,比如找出特定形状的函数、把 console.log 换成 logger.info、扫描 YAML 规则时触发。目标若是字符串、注释、文件名等文本,则改用 grep/rg。",
     "say": [
       {
-        "text": "找出所有接收 Request 参数的函数。",
-        "note": "用 ast-grep 按代码结构搜,不靠文本匹配。"
+        "text": "找出所有接收 Request 参数的函数",
+        "note": "Claude 用 ast-grep 按结构搜索并列出位置。"
       },
       {
-        "text": "把整个项目里 console.log(x) 改成 logger.info(x)。",
-        "note": "先预览改动,确认后才批量应用。"
+        "text": "把仓库里所有 console.log 改成 logger.info,先预览",
+        "note": "先 dry-run 展示改动,确认后再实际改写。"
       },
       {
-        "text": "去掉所有 as any 强转。",
-        "note": "同样会先 dry-run 再改写。"
+        "text": "扫描 src 并应用 YAML 规则",
+        "note": "运行 sg scan,展示违反规则的位置。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f754e5eddeb322e559a7e2dd80061eb75d7f0e80fa7df4fbcf54e3e6c06fc5b7",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:55:57.927Z",
+    "generated_at": "2026-09-01T08:22:56.551Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude uses ast-grep to find or rewrite code by structure rather than text: it validates the search/replace pattern, previews changes, and applies them only after confirmation. Works in 25 languages.",
-    "when_en": "Triggered when the problem depends on code shape, not text: find functions/calls by shape, batch-rewrite patterns, apply YAML rules. Text/comment/filename searches stay with rg/grep.",
+    "what_en": "After installing, Claude can search and rewrite code by structure (not text), e.g., turning console.log into logger.info or removing 'as any'. It previews changes before applying them, and can run YAML rules for bulk scans.",
+    "when_en": "Triggers when you ask to find/rewrite code by structure, e.g., shaped functions, console.log→logger.info, or scanning YAML rules. For text targets (strings, comments, filenames), use grep/rg instead.",
     "say_en": [
       {
-        "text": "Find every function that takes a Request parameter.",
-        "note": "Searches by code structure, not text."
+        "text": "Find all functions that take a Request parameter",
+        "note": "Searches by structure and lists locations."
       },
       {
-        "text": "Rewrite every console.log(x) to logger.info(x) across the repo.",
-        "note": "Previews changes before applying them."
+        "text": "Rewrite every console.log to logger.info in the repo, preview first",
+        "note": "Dry-run first; apply only after you confirm."
       },
       {
-        "text": "Remove every 'as any' cast.",
-        "note": "Runs through the same dry-run-then-apply flow."
+        "text": "Scan src and apply the YAML rules",
+        "note": "Runs sg scan and shows violations."
       }
     ]
   }
