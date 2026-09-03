@@ -5,7 +5,7 @@
     "name": "give-me-tips",
     "description": "Explains any senpi tip in depth - startup tips, working tips, and any Tip: line shown in the TUI (including the Fable-5-refusal fallback tip). Use when the user asks about a Tip: line, says give-me-tips, asks what a tip means, how a tipped feature works, or which tips they can see. Queries the live tip list (senpi --list-tips) first, checks what THIS user can actually see, then verifies the real feature code before explaining.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/give-me-tips",
-    "upstream_commit": "3216a23fa975794628d4489b501acebfbed4dfb1",
+    "upstream_commit": "65c55dc6b470e0b21f60ff3c16c8e9594d575cd8",
     "content_hash": "sha256:2a2952cd7c58505d508f45d89a577249186ba833c79bd58368e37dcfb9f61f2d",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68598,
+    "stars_github": 68633,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-02T07:31:49.405Z",
+    "fetched_at": "2026-09-03T07:38:56.546Z",
     "first_seen_at": "2026-07-29T05:46:43.900Z",
-    "upstream_commit_at": "2026-09-02T16:24:03+09:00",
+    "upstream_commit_at": "2026-09-03T16:29:55+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-02T07:31:49.405Z",
+    "generated_at": "2026-09-03T07:38:56.546Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -85,40 +85,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "你问某条 senpi 提示(Tip)是什么意思时,Claude 会先查看系统里的提示清单,再核对你在当前设置下实际能看到哪些提示,最后对照源码,用你提问的语言解释这条提示背后的具体机制。",
-    "when": "当你说出“give-me-tips”,或询问某条 Tip: 的含义、如何运作,或问自己能看到哪些提示时触发。",
+    "what": "现在当你问起任何“Tip:”行时，Claude 会先运行 senpi --list-tips 获取实时提示，再读取你的 senpi 设置判断你确实能看到哪些，然后打开对应功能的源码核实真实机制，最后用你提问的语言深入解释并列出依据文件。若代码与提示文字不符，以代码为准。",
+    "when": "当你说“give-me-tips”、问某条“Tip:”行的含义或机制，或想知道当前环境有哪些提示可见时触发。",
     "say": [
       {
-        "text": "解释一下启动时那条“失败会自动重试”的提示,具体怎么运作?",
-        "note": "Claude 会先查提示列表,再读相关源码解释机制。"
+        "text": "帮我解释一下刚才那条“Tip:”行具体在讲什么？",
+        "note": "技能会先查实时提示列表和你的设置再解释。"
       },
       {
-        "text": "按我的设置,我现在能看到哪些提示?挑一条详细讲讲。"
+        "text": "give-me-tips，这条提示背后靠什么机制实现？",
+        "note": "技能会打开对应源码核实后详细说明。"
       },
       {
-        "text": "Fable 5 拒绝后出现的那条 Tip,背后是什么流程?",
-        "note": "Claude 会查相关组件源码,解释这条提示为何会出现。"
+        "text": "我当前能看到哪些提示？为什么是这些？",
+        "note": "技能会读取你的 senpi 配置来回答可见范围。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2a2952cd7c58505d508f45d89a577249186ba833c79bd58368e37dcfb9f61f2d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T07:43:42.555Z",
+    "generated_at": "2026-09-03T07:55:37.056Z",
     "lint_pass": true,
-    "what_en": "If you ask what a senpi tip means, Claude fetches the live tip list, verifies which tips are visible for you, reads the real source, and explains the mechanism in your language.",
-    "when_en": "Triggers when you say \"give-me-tips\", ask what a Tip: line means or how it works, or ask which tips you can see.",
+    "what_en": "Asked about any Tip: line, Claude runs senpi --list-tips, reads your settings to see which tips you can see, and checks source code before explaining in your language, citing files. Code wins if tip text conflicts.",
+    "when_en": "Triggers when you say 'give-me-tips', ask about the meaning or mechanism of a 'Tip:' line, or ask which tips are visible to you.",
     "say_en": [
       {
-        "text": "How does the startup tip about retrying on failure actually work?",
-        "note": "Claude lists live tips and digs into the source."
+        "text": "Explain what that 'Tip:' line actually means.",
+        "note": "It first fetches the live tip list and reads your settings."
       },
       {
-        "text": "Which tips can I see with my current settings? Pick one and explain it.",
-        "note": "Claude reads your settings and shows only what you can see."
+        "text": "give-me-tips, what mechanism is behind this tip?",
+        "note": "It opens the real source code and cites files before answering."
       },
       {
-        "text": "What's behind the Fable 5 refusal tip?",
-        "note": "Claude traces the fallback-architect pipeline in source."
+        "text": "Which tips can I currently see?",
+        "note": "It reads your senpi settings to tell you the exact visible set."
       }
     ]
   }

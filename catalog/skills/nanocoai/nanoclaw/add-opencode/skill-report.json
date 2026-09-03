@@ -5,7 +5,7 @@
     "name": "add-opencode",
     "description": "Use OpenCode as an agent provider. OpenRouter, OpenAI, Google, DeepSeek, etc. via OpenCode config — not the Anthropic Agent SDK. Per group via `ncl groups config update --provider opencode`; host passes OPENCODE_* and XDG mount when spawning containers.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-opencode",
-    "upstream_commit": "5c3082a1c5d15d84a10f96f54f25459266e7037e",
+    "upstream_commit": "0d9328d2fe9e0e935d00678f96584984d954ae0b",
     "content_hash": "sha256:47173fe8c138a8229844e5b13f5651a8e40fa7229583a87c2827ad4aaaca7c46",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30682,
+    "stars_github": 30686,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-02T07:32:00.226Z",
+    "fetched_at": "2026-09-03T07:39:11.329Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-01T21:29:33+03:00",
+    "upstream_commit_at": "2026-09-03T02:42:40+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-02T07:32:00.226Z",
+    "generated_at": "2026-09-03T07:39:11.329Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,33 +92,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "NanoClaw 会新增 OpenCode 作为 agent 后端选项。管理员可把某 agent 组的 provider 改为 opencode,该组的模型请求即经 OpenCode 转发到 OpenRouter、DeepSeek 等第三方模型。",
-    "when": "当 NanoClaw 中还没有 OpenCode 后端文件,而你想让某个 agent 组改用 OpenCode 支持的模型(如 DeepSeek、OpenRouter)时。",
+    "what": "给 NanoClaw 增加 OpenCode，把它作为各 agent 组的一个模型提供方，从而接 DeepSeek、OpenRouter 等模型。执行时会复制文件、装依赖、重建镜像并同步已有组。",
+    "when": "用户要求某个 agent 组改用 OpenCode 作为提供方，或要求接 DeepSeek、OpenRouter 等模型时进入；若所需文件都已存在，则跳过安装直接配置。",
     "say": [
       {
-        "text": "切换 provider 后帮我跑 /migrate-memory 迁移记忆",
-        "note": "否则记忆不会自动带过去。"
+        "text": "用 OpenCode 给 g1 组接 DeepSeek 模型",
+        "note": "会更新该组配置并重启。"
+      },
+      {
+        "text": "给 NanoClaw 加 OpenCode，让模型能走 OpenRouter",
+        "note": "会先补装文件，再配 OpenRouter 上游。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:47173fe8c138a8229844e5b13f5651a8e40fa7229583a87c2827ad4aaaca7c46",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T08:00:54.471Z",
+    "generated_at": "2026-09-03T08:21:13.517Z",
     "lint_pass": true,
-    "what_en": "After install, NanoClaw gains OpenCode as an agent provider option. Admin can set a group's provider to opencode; that group's model calls then go through OpenCode to OpenRouter, DeepSeek, OpenAI, Google, etc.",
-    "when_en": "When you want a NanoClaw agent group to use OpenCode-backed models (DeepSeek, OpenRouter, Google, etc.) instead of default Claude, and the OpenCode provider files are not yet present.",
+    "what_en": "Adds OpenCode as a NanoClaw agent provider, letting groups use DeepSeek/OpenRouter models. Copies provider files into host/container, pins SDK+CLI, rebuilds the image, and updates existing per-group overlays.",
+    "when_en": "Triggered when the user asks to use OpenCode for an agent group, e.g. with DeepSeek/OpenRouter models. If all preflight files are present, installation is skipped and config continues.",
     "say_en": [
       {
-        "text": "Switch agent group buyer's provider to opencode and restart it.",
-        "note": "After this, the buyer group calls models via OpenCode."
+        "text": "Use OpenCode to give group g1 a DeepSeek model",
+        "note": "Updates the group config and restarts it."
       },
       {
-        "text": "Set up OpenCode to use OpenRouter's claude-sonnet-4.",
-        "note": "Requires OPENCODE_MODEL and ANTHROPIC_BASE_URL in .env."
-      },
-      {
-        "text": "After switching provider, run /migrate-memory to move memory over.",
-        "note": "Memory won't carry over automatically otherwise."
+        "text": "Add OpenCode to NanoClaw and route models through OpenRouter",
+        "note": "Installs missing files, then configures the OpenRouter upstream."
       }
     ]
   }

@@ -3,10 +3,10 @@
   "meta": {
     "id": "code-yeongyu/oh-my-openagent/mass-ulw",
     "name": "mass-ulw",
-    "description": "Run a dependency graph of child agents in one call with the native workflow tool. Use when the user asks for mass-ulw, a DAG of tasks, fan-out/fan-in work, or multi-agent execution where some tasks must wait on others.",
+    "description": "Drive dependency-ordered child work through the native workflow tool, one run per phase, recovering inside a run with retry, amend, and send. Use when the user asks for mass-ulw, a DAG of tasks, fan-out/fan-in work, or multi-agent execution where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "3216a23fa975794628d4489b501acebfbed4dfb1",
-    "content_hash": "sha256:a85cb6d4d980a1fbcc694ffd5d300d34f4097cacea29e2f7622a550b9d9224e6",
+    "upstream_commit": "65c55dc6b470e0b21f60ff3c16c8e9594d575cd8",
+    "content_hash": "sha256:7579f5a193c24511cb1f07fb1e7a5797061ebc6d2d9bc30926de548476756814",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
     "category": "dev",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68598,
+    "stars_github": 68633,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-02T07:31:49.405Z",
+    "fetched_at": "2026-09-03T07:38:56.546Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-02T16:24:03+09:00",
+    "upstream_commit_at": "2026-09-03T16:29:55+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,16 +36,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-02T07:31:49.405Z",
+    "generated_at": "2026-09-03T07:38:56.546Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 9026,
-        "chars": 9026,
-        "tokens": 2076
+        "bytes": 9725,
+        "chars": 9725,
+        "tokens": 2230
       },
       "activation_with_declared_refs": {
         "files": [
@@ -53,9 +53,9 @@
           "references/planning.md"
         ],
         "text_files": 2,
-        "bytes": 31272,
-        "chars": 31272,
-        "tokens": 7221
+        "bytes": 32032,
+        "chars": 32032,
+        "tokens": 7395
       },
       "package_total_text": {
         "files": [
@@ -63,68 +63,70 @@
           "references/planning.md"
         ],
         "text_files": 2,
-        "bytes": 31272,
-        "chars": 31272,
-        "tokens": 7221
+        "bytes": 32032,
+        "chars": 32032,
+        "tokens": 7395
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "一次调用让多个AI助手按依赖关系协同作业",
+    "tagline": "推进先后有序的多步骤任务,出错可修改再继续",
     "scene_tags": [
-      "复杂任务拆解",
-      "多步执行"
+      "分步推进",
+      "出错续跑",
+      "并行分工"
     ],
-    "fit_line": "适合你,如果 你有需要分步完成、且步骤间有先后依赖的复杂任务。",
-    "tagline_en": "Run dependent AI subtasks together in a single workflow.",
+    "fit_line": "适合你,如果你的任务要靠步骤推进,卡住时要能修正再继续",
+    "tagline_en": "Run multi-step tasks in order; if one fails, amend and resume",
     "scene_tags_en": [
-      "complex task breakdown",
-      "multi-step execution"
+      "step by step execution",
+      "resume after failure",
+      "parallel task branches"
     ],
-    "fit_line_en": "For you if you have a big task that can be split into dependent subtasks.",
+    "fit_line_en": "For you if you run tasks with multiple steps in order and need to recover when a step fails",
     "source": "llm",
-    "content_hash": "sha256:a85cb6d4d980a1fbcc694ffd5d300d34f4097cacea29e2f7622a550b9d9224e6",
+    "content_hash": "sha256:7579f5a193c24511cb1f07fb1e7a5797061ebc6d2d9bc30926de548476756814",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-29T09:42:07.623Z",
+    "generated_at": "2026-09-03T07:45:14.732Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会把一个多步骤任务按依赖关系拆成子代理节点图,一次跑完;先并行执行无依赖的节点,再推进后续节点,过程中会检查节点是否越界,并在目标核实通过前不把完成结果当真。",
-    "when": "当用户提出“mass-ulw”、任务 DAG 或扇出/扇入式的多代理执行,且部分任务必须等其它任务完成时,该技能会接管。",
+    "what": "它会先读规划文档，再把带依赖关系的任务拆成节点图，用工作流工具一次只跑一个阶段；每个节点等它依赖的节点完成后才执行。失败或跑偏的单个节点可单独重试或修正，已完成的节点结果会保留，不会整批重跑。",
+    "when": "当你说“mass-ulw”，或提到带依赖的任务 DAG、扇出/扇入、多智能体执行等需按顺序等待的工作时触发。",
     "say": [
       {
-        "text": "用 mass-ulw 把这三件事按依赖排成 DAG,一次跑完。",
-        "note": "它会生成并运行节点图,先跑可并行的部分。"
+        "text": "把这个任务按依赖拆开跑：先做准备工作，再并行跑两步，最后统一验证。",
+        "note": "会按依赖分批启动节点。"
       },
       {
-        "text": "写个多代理任务:先调研,再写正文,最后校对,每步等前一步。",
-        "note": "它会按依赖构建图并分批并行执行。"
+        "text": "帮我只重试那个失败的子任务，重试提示写得再具体一点。",
+        "note": "只会重跑失败的子任务，其他已完成节点保留。"
       },
       {
-        "text": "帮我重跑刚才那个失败节点,并改一下它的提示词。",
-        "note": "它会用新提示对那个节点发起重试。"
+        "text": "给正在执行的那个子任务发消息：不要改自己范围之外的内容。",
+        "note": "正在运行的子任务会按提示调整。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:a85cb6d4d980a1fbcc694ffd5d300d34f4097cacea29e2f7622a550b9d9224e6",
+    "content_hash": "sha256:7579f5a193c24511cb1f07fb1e7a5797061ebc6d2d9bc30926de548476756814",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T07:45:07.565Z",
+    "generated_at": "2026-09-03T07:57:42.608Z",
     "lint_pass": true,
-    "what_en": "With this skill, Claude runs child agents as a dependency DAG in one go: it plans the graph, executes independent nodes in parallel as dependencies clear, monitors for scope drift, and treats completion as false until proved by success criteria.",
-    "when_en": "Triggered when the user asks for mass-ulw, a task DAG, fan-out/fan-in work, or multi-agent execution where some tasks must wait on others.",
+    "what_en": "Claude reads planning, builds a dependency-ordered node graph, and runs it via the workflow tool one phase per run. Nodes wait on their dependencies. Retry/send/amend fix one bad node; finished nodes keep cached results.",
+    "when_en": "Triggers when you ask for mass-ulw, or mention a dependency-ordered task DAG, fan-out/fan-in, or multi-agent execution that must wait on dependencies.",
     "say_en": [
       {
-        "text": "Use mass-ulw to turn these three steps into a DAG with dependencies and run it at once.",
-        "note": "It will build and run the node graph, starting independent nodes."
+        "text": "Split this with mass-ulw: prep first, then two steps in parallel, verify.",
+        "note": "Starts nodes in dependency waves."
       },
       {
-        "text": "Create a multi-agent task: research, then write, then proofread, each waiting on the previous.",
-        "note": "It will build the dependency graph and execute in waves."
+        "text": "Retry only the failed child task with a more specific prompt.",
+        "note": "Only that node reruns; finished results stay cached."
       },
       {
-        "text": "Retry that failed node with an updated prompt.",
-        "note": "It will retry the node with the new instruction."
+        "text": "Message the running child: don't change anything outside your scope.",
+        "note": "Child continues with context and adjusts."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Expert data processing with a hybrid engine strategy: resident-kernel engines first - DuckDB plus a resident Python stack (Polars/numpy/matplotlib) in persistent js/py eval kernels where the harness has them, bun/uv one-shots elsewhere - and per-action placement judgment (in-memory vs streaming vs remote-in-place). Triggers: 'analyze the data', 'what is in this CSV/parquet/json', 'summarize this', 'group by', 'filter rows', 'sort by', 'join these files', 'merge datasets', 'time series trend', 'compare yesterday and today', 'distribution/histogram', 'correlation', 'clean duplicates', 'handle missing values', 'dataset larger than RAM', 'SQL query on files', 'DataFrame operations', 'chart/plot this data', DuckDB vs Polars selection, quick data exploration CLI. NOT for plain text/code inspection, configs, or tiny inline math.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "3216a23fa975794628d4489b501acebfbed4dfb1",
+    "upstream_commit": "65c55dc6b470e0b21f60ff3c16c8e9594d575cd8",
     "content_hash": "sha256:15728324e347ce8fc2ce81c96478e0c097abb927d3bc03c7c79218bbacb0d62f",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68598,
+    "stars_github": 68633,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-02T07:31:49.405Z",
+    "fetched_at": "2026-09-03T07:38:56.546Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-09-02T16:24:03+09:00",
+    "upstream_commit_at": "2026-09-03T16:29:55+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-02T07:31:49.405Z",
+    "generated_at": "2026-09-03T07:38:56.546Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -108,41 +108,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，遇到数据文件时，Claude会先判断采用内存、流式还是远程查询方式，再用DuckDB/Polars/numpy直接分析CSV、Parquet、JSON等文件，给出答案及行数/耗时，必要时生成图表。",
-    "when": "当你说“分析这些数据”、“这个CSV里有什么”、“按列分组”等，或要求对数据做筛选、合并、画图等操作时触发。",
+    "what": "装上后,面对数据文件,Claude 会先探测数据大小与内存情况,再选择合适引擎:常规查询用 DuckDB,DataFrame 类操作用 Polars,数值计算用 numpy,绘图用 matplotlib;它会报告行数与耗时,不加载超出内存的数据,也不用 pandas。",
+    "when": "当你说出「分析数据」、查看 CSV/Parquet/JSON 文件里有什么,或要求做分组、筛选、连接、绘图等数据处理时触发;不用于纯文本/代码检查、配置文件或小型数学计算。",
     "say": [
       {
-        "text": "帮我分析 sales.csv 的月销售额趋势。",
-        "note": "会用DuckDB聚合并画趋势图。"
+        "text": "帮我看看这个 CSV 里有什么,统计行数和各列类型。",
+        "note": "会触发文件概览并报告行数。"
       },
       {
-        "text": "用SQL查询这个parquet文件，按城市分组求平均。",
-        "note": "触发DuckDB就地查询，不整载入内存。"
+        "text": "把这两份数据按 id 合并,再展示每天的变化趋势。",
+        "note": "会触发连接与聚合操作。"
       },
       {
-        "text": "这个数据集比可用内存还大，帮我流式统计每一列的最大值。",
-        "note": "走Polars流式引擎，避免卡死。"
+        "text": "给销量画直方图,完成后再做一次可视化检查。",
+        "note": "会按可视化规范出图并检查。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:15728324e347ce8fc2ce81c96478e0c097abb927d3bc03c7c79218bbacb0d62f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T07:42:36.415Z",
+    "generated_at": "2026-09-03T07:54:02.677Z",
     "lint_pass": true,
-    "what_en": "After install, Claude analyzes data files (CSV/Parquet/JSON) via DuckDB/Polars/numpy: it picks in-memory vs streaming vs remote, then answers with row counts/timing, charts on request.",
-    "when_en": "It triggers when you say \"analyze the data\", \"what is in this CSV/parquet/json\", \"group by\", or ask for filtering, merging, or plotting, etc.",
+    "what_en": "With this skill, Claude probes data size and memory, picks an engine (DuckDB/Polars/numpy/matplotlib), reports row counts and timing, never loads beyond-RAM data, and avoids pandas.",
+    "when_en": "Triggered when you ask to 'analyze the data', inspect CSV/Parquet/JSON contents, or request grouping, filtering, joins, plotting, etc. Not for plain text/code inspection or tiny inline math.",
     "say_en": [
       {
-        "text": "Can you analyze monthly sales trends in sales.csv?",
-        "note": "Aggregates with DuckDB and plots a trend."
+        "text": "What's in this CSV? Give row count and column types.",
+        "note": "Triggers file overview with counts."
       },
       {
-        "text": "Use SQL to query this parquet file, group by city and average.",
-        "note": "Queries in place via DuckDB, no full load."
+        "text": "Join these two datasets by id and show the daily trend.",
+        "note": "Triggers join and aggregation."
       },
       {
-        "text": "This dataset is larger than RAM; stream and compute per-column max.",
-        "note": "Uses Polars streaming to avoid swapping."
+        "text": "Plot a histogram of sales and do the visual check.",
+        "note": "Creates chart following the visualization spec."
       }
     ]
   }

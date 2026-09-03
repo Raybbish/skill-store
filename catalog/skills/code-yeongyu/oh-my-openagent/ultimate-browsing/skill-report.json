@@ -5,7 +5,7 @@
     "name": "ultimate-browsing",
     "description": "Escalation skill for blocked or hard-to-reach web access — load it when a normal browse/fetch is blocked (WAF, 403, Cloudflare, JS-only render, login-gated, or a platform a generic fetcher cannot read). Tiered router: TIER 1 insane-search (headless extraction + WAF bypass via curl_cffi TLS impersonation, yt-dlp, Jina Reader, public APIs, Playwright real-Chrome fallback); TIER 1.5 agent-reach (platform-native readers for Chinese and social platforms: Xiaohongshu, Douyin, Weibo, Bilibili, V2EX, WeChat, plus Twitter/Reddit/LinkedIn/GitHub); TIER 2 Chrome stealth (CloakBrowser stealth Chromium + agent-browser CDP for clicks, forms, screenshots, video, cookie login). Triggers: blocked site, bypass bot detection, cloudflare/WAF bypass, scrape, stealth browser, import cookies, fill form, screenshot, play youtube, xiaohongshu, douyin, weibo, bilibili, v2ex, wechat article, podcast transcript. NOT for simple searches (use web-search) or plain fetches (use webfetch).",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ultimate-browsing",
-    "upstream_commit": "3216a23fa975794628d4489b501acebfbed4dfb1",
+    "upstream_commit": "65c55dc6b470e0b21f60ff3c16c8e9594d575cd8",
     "content_hash": "sha256:2b81284fab7d0b8641ed9516929d692c808b02bf8f283f4913d6bc8f147dd464",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68598,
+    "stars_github": 68633,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-02T07:31:49.405Z",
+    "fetched_at": "2026-09-03T07:38:56.546Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-02T16:24:03+09:00",
+    "upstream_commit_at": "2026-09-03T16:29:55+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-02T07:31:49.405Z",
+    "generated_at": "2026-09-03T07:38:56.546Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -157,42 +157,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 遇到普通方式打不开的网页时,会按三层顺序处理:先在后台抓取并尝试绕过拦截;不行再调用小红书、微博等平台的专用读取器;还不行就启动隐身浏览器,执行点击、填表、截图等操作,最终把文字、数据或截图给你。",
-    "when": "普通抓取被拦(如 WAF、403、Cloudflare 等)或目标平台通用抓取器读不了时触发,如小红书、抖音等;也用于绕过机器人检测、填表、截图等请求。简单搜索不用它。",
+    "what": "装上后，遇到被封锁或普通方式读不了的网页时，Claude 会改用多级抓取：先无头绕过封锁；若目标是小红书、抖音等平台则用专用接口；仍不行就启动隐身 Chrome 做点击、填表、截图等。",
+    "when": "当普通浏览/抓取被拦截（如 403、Cloudflare 验证），或目标页面需要登录、只靠 JS 渲染、或位于通用抓取器读不了的平台时触发。简单搜索请直接走 web-search。",
     "say": [
       {
-        "text": "这个网址被 Cloudflare 拦了,帮我提取正文",
-        "note": "会先尝试绕过拦截,不行再升到隐身浏览器"
+        "text": "这个网站被 Cloudflare 拦了，帮我把内容抓下来",
+        "note": "会尝试多级绕过，必要时转隐身浏览器。"
       },
       {
-        "text": "用隐身浏览器打开微博,登录后截图首页",
-        "note": "会启动隐身 Chromium 并按步骤操作"
+        "text": "打开 https://example.com，截图并保存",
+        "note": "会启动 CloakBrowser 操作并截图。"
       },
       {
-        "text": "抓取这条抖音视频的标题和评论",
-        "note": "走平台专用读取器,无需浏览器"
+        "text": "提取这条抖音视频的标题和作者",
+        "note": "会调用抖音的原生解析接口。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2b81284fab7d0b8641ed9516929d692c808b02bf8f283f4913d6bc8f147dd464",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T07:48:46.201Z",
-    "lint_pass": true,
-    "what_en": "Claude uses three tiers when a page is blocked or unreadable: background extraction and bypass; then platform-native readers (Xiaohongshu, Weibo); then a stealth browser to click, fill, or screenshot, returning the text, data, or image.",
-    "when_en": "Used when fetch is blocked (WAF, 403, Cloudflare) or the site can't be read by generic fetchers (Xiaohongshu, Douyin); also for bot bypass, forms, screenshots. Not for simple searches.",
-    "say_en": [
-      {
-        "text": "This URL is blocked by Cloudflare, please extract the article.",
-        "note": "Tries best-effort bypass first, then may use a stealth browser."
-      },
-      {
-        "text": "Open Weibo in the stealth browser, log in, and screenshot the feed.",
-        "note": "Launches CloakBrowser and performs the steps."
-      },
-      {
-        "text": "Fetch the title and comments of this Douyin video.",
-        "note": "Uses the platform-native reader."
-      }
-    ]
+    "generated_at": "2026-09-03T07:59:05.984Z",
+    "lint_pass": true
   }
 }

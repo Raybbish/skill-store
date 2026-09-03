@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Intelligent refactor command. Triggers: refactor, refactoring, cleanup, restructure, extract, simplify, modernize.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "3216a23fa975794628d4489b501acebfbed4dfb1",
+    "upstream_commit": "65c55dc6b470e0b21f60ff3c16c8e9594d575cd8",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68598,
+    "stars_github": 68633,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-02T07:31:49.405Z",
+    "fetched_at": "2026-09-03T07:38:56.546Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-02T16:24:03+09:00",
+    "upstream_commit_at": "2026-09-03T16:29:55+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-02T07:31:49.405Z",
+    "generated_at": "2026-09-03T07:38:56.546Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "触发 /refactor 后,Claude 会执行一套结构化重构流程:先确认意图和范围(不清楚就问),再分析代码依赖与测试覆盖,规划后逐步修改并每步运行测试,最后全量回归并总结改动。",
-    "when": "当用户发出 /refactor 命令,或提到 refactor、cleanup、extract 等触发词时启动。",
+    "what": "收到重构类请求后，Claude 不会直接改代码，而是先弄清目标、受影响的文件和测试情况，再制定分步计划；每改一步就运行测试，最后做回归检查并汇报改动清单。",
+    "when": "当你输入 /refactor 命令，或要求重构、清理、简化代码时接管；指令含糊时（如只说“改进”）会先追问目标和范围。",
     "say": [
       {
-        "text": "重构 src/auth/handler.ts",
-        "note": "Claude 会先分析该文件的影响范围。"
+        "text": "清理 src/services 里重复代码，保持对外行为完全一致",
+        "note": "“清理”属开放式指令，它会先确认具体要做什么。"
       },
       {
-        "text": "重构 AuthService 类,拆成独立模块",
-        "note": "Claude 会先确认范围和方案再动手。"
-      },
-      {
-        "text": "清理项目里弃用的 API 调用",
-        "note": "Claude 会全局查找并逐处调整。"
+        "text": "重构所有调用旧版 API 的地方，改用新的 auth 模块写法",
+        "note": "它会先查找全部引用，再统一替换并逐步验证。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T07:47:25.781Z",
+    "generated_at": "2026-09-03T07:58:13.016Z",
     "lint_pass": true,
-    "what_en": "Adds a structured refactor workflow: clarify scope (ask if unclear), analyze dependencies/test coverage, plan, change code step by step with checks, then run full regression and summarize.",
-    "when_en": "Triggers when the user runs the /refactor command or mentions trigger words such as refactor, cleanup, extract, etc.",
+    "what_en": "Claude will not edit code right away. It first confirms intent, maps affected files and dependencies, checks test coverage, and creates a plan. Each step runs tests; it finishes with a full regression check and a change summary.",
+    "when_en": "Activates when you run /refactor or ask to refactor, clean up, or simplify code; if the request is vague (e.g., just \"improve this\"), it asks clarifying questions first.",
     "say_en": [
       {
-        "text": "Refactor src/auth/handler.ts",
-        "note": "Claude inspects that file's affected scope first."
+        "text": "Refactor src/auth/handler.ts: extract validation logic into its own module.",
+        "note": "It checks scope and tests, then refactors incrementally."
       },
       {
-        "text": "Refactor the AuthService class into separate modules",
-        "note": "Claude confirms scope and approach before starting."
+        "text": "Clean up duplicated code in src/services while keeping behavior unchanged.",
+        "note": "Cleanup is vague, so Claude confirms the goal first."
       },
       {
-        "text": "Clean up deprecated API calls across the project",
-        "note": "Claude searches globally and adjusts each occurrence."
+        "text": "Refactor all callers of the old API to use the new auth module style.",
+        "note": "It finds all references first, replaces them step by step."
       }
     ]
   }

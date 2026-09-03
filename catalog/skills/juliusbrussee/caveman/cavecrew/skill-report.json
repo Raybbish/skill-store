@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "When to delegate to `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit) or `cavecrew-reviewer` (diff review) instead of working inline or using `Explore`. Their output is compressed, so main context lasts longer.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "df2ccd85c94ec3c8289cb62ac020d241ccfb0c60",
+    "upstream_commit": "3b74643f4d910f496babd4e634b1ba7168816f14",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 273800,
-    "fetched_at": "2026-08-30T08:53:34.068Z",
+    "installs_skills_sh": 280300,
+    "fetched_at": "2026-09-03T07:42:08.984Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-08-29T23:45:56+02:00"
+    "upstream_commit_at": "2026-09-02T15:48:49+02:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-30T08:53:34.068Z",
+    "generated_at": "2026-09-03T07:42:08.984Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 在处理查代码、改一两处文件、检查代码改动这类任务时，会先派给三个专门的子代理。这些子代理返回简短的结果，因此每轮任务占用的对话上下文更少。",
-    "when": "当你要求定位代码、做 1~2 个文件的精确修改、或审查代码 diff 时，Claude 会改用对应的子代理来处理；大范围重构或需要完整分析时不会用。",
+    "what": "装上 cavecrew 后，Claude 会把三类活儿交给专门的子代理，结果都用短格式返回：找代码位置给出「文件:行号」清单；改 1~2 个文件并在改后回读核对；审代码改动按行号列问题。这让主对话的上下文占用更少。",
+    "when": "当任务是定位代码、对已知位置的 1~2 个文件做精确修改、或审查代码改动找问题，且不需要长篇解释、简短输出就够用时。",
     "say": [
       {
-        "text": "帮我找一下 `login` 函数在哪里定义、谁在调用。",
-        "note": "会派 investigator 定位并返回精简结果。"
+        "text": "帮我找一下 validateInput 在哪定义、谁在调用它。",
+        "note": "Claude 派定位子代理，返回「文件:行号」清单和总数。"
       },
       {
-        "text": "把 `utils.py` 第 15 行的变量名改成 `count`。",
-        "note": "交给 builder 做精确的小修改。"
+        "text": "把 src/utils.ts 第 42 行的超时时间改成 3000 毫秒。",
+        "note": "Claude 交给单文件改动子代理，改后回读核对。"
       },
       {
-        "text": "审查刚提交的代码改动，列出问题。",
-        "note": "调用 reviewer 审查 diff，只返回问题清单。"
+        "text": "审查我这个分支代码改动，列出要修的地方。",
+        "note": "Claude 派审查子代理，按行号列出问题、严重度和修法。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-30T09:05:02.409Z",
+    "generated_at": "2026-09-03T08:04:28.350Z",
     "lint_pass": true,
-    "what_en": "When installed, Claude delegates code-locating, small (1-2 file) edits, and diff review to three dedicated subagents. Their compressed output saves main-context space on every delegation.",
-    "when_en": "Use these subagents when the task is locating code (definitions, callers), making a surgical edit of 1–2 files, or reviewing a diff/branch for bugs; skip them for big refactors or prose-style analysis.",
+    "what_en": "After installing, Claude routes three kinds of jobs to terse subagents: finding code (file:line lists), editing 1–2 files (with re-read verification), and reviewing code changes (line-sorted issue lists), so each task consumes less main context.",
+    "when_en": "Use when the task is to locate code, make a precise edit to 1–2 already-known files, or review a code change for problems, and a short answer is enough.",
     "say_en": [
       {
-        "text": "Find where the `login` function is defined and who calls it.",
-        "note": "Delegates to investigator and returns a compact list."
+        "text": "Find where validateInput is defined and who calls it.",
+        "note": "Returns a file:line list with totals."
       },
       {
-        "text": "Rename the variable on line 15 of utils.py to `count`.",
-        "note": "Handed to builder for a precise small edit."
+        "text": "Change the timeout at src/utils.ts:42 to 3000 ms.",
+        "note": "Single-file edit agent re-reads to verify."
       },
       {
-        "text": "Review the latest code changes and list issues.",
-        "note": "Reviewer audits the diff and reports findings only."
+        "text": "Review my branch code changes and list what needs fixing.",
+        "note": "Reviewer returns line-level issues and suggested fixes."
       }
     ]
   }

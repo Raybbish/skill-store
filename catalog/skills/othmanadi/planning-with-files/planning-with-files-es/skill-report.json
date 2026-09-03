@@ -5,27 +5,28 @@
     "name": "planning-with-files-es",
     "description": "Planificación persistente basada en archivos para tareas multipaso de agentes de IA. Mantiene task_plan.md, findings.md y progress.md en disco; los hooks del ciclo de vida inyectan contexto seleccionado de planificación del proyecto. La recuperación automática solo lee los archivos de planificación del proyecto. session-catchup.py --metadata, solicitado de forma explícita, puede inspeccionar metadatos locales de sesiones del mismo proyecto; --replay puede emitir extractos limitados y enmarcados con nonce. El modo con gate opcional solo puede solicitar que el host continúe si este lo admite y nunca ejecuta comandos declarados en Markdown. El skill no tiene ninguna ruta de carga por red. Úsalo para investigación o trabajo que requiera 5 o más llamadas a herramientas.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-es",
-    "upstream_commit": "9ad1f2653a36580e60640656b3e1b000f0f16925",
-    "content_hash": "sha256:80538851505816d8b869aa7decf67d480689eec6571b7a0baf45dec3c97825fe",
+    "upstream_commit": "03128b278b0926180854703e43abd7ea2ff18c00",
+    "content_hash": "sha256:99170d5a6f10c32131215b4e6842b5201702c9cea43e6d9c42bb66679fc16f68",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "uncategorized",
+    "category": "dev",
     "version": null,
     "publisher": "othmanadi",
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "agent-ops"
+      "agent-ops",
+      "python"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26574,
+    "stars_github": 26600,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-02T07:32:01.535Z",
+    "fetched_at": "2026-09-03T07:39:18.520Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-02T09:08:41+02:00",
+    "upstream_commit_at": "2026-09-03T01:29:59+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -35,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-02T07:32:01.535Z",
+    "generated_at": "2026-09-03T07:39:18.520Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,55 +90,68 @@
           "templates/task_plan.md"
         ],
         "text_files": 24,
-        "bytes": 220301,
-        "chars": 219797,
-        "tokens": 43608
+        "bytes": 231114,
+        "chars": 230606,
+        "tokens": 45919
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "把复杂任务拆成分步计划,并持续记录和跟踪进展",
+    "tagline": "让AI边干活边记录计划与发现,长任务不迷路",
     "scene_tags": [
-      "复杂任务拆解",
-      "长周期项目",
-      "研究调研"
+      "多步调研",
+      "长时任务"
     ],
-    "fit_line": "适合你,如果你常让AI处理需要许多步骤才能完成的复杂工作",
-    "tagline_en": "Break complex jobs into step-by-step plans and keep tracking progress across the work",
+    "fit_line": "适合你,如果常让AI分多步干活,又怕它忘了前文。",
+    "tagline_en": "Keep AI on track for long tasks by recording plans and progress.",
     "scene_tags_en": [
-      "complex task breakdown",
-      "long-term project",
-      "research sprint"
+      "multi-step research",
+      "long-duration tasks"
     ],
-    "fit_line_en": "For you if you often ask AI to carry out complicated work that takes many steps to finish",
+    "fit_line_en": "For you if you often ask AI to do multi-step research or development and worry it loses track.",
     "source": "llm",
-    "content_hash": "sha256:80538851505816d8b869aa7decf67d480689eec6571b7a0baf45dec3c97825fe",
+    "content_hash": "sha256:99170d5a6f10c32131215b4e6842b5201702c9cea43e6d9c42bb66679fc16f68",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T07:37:50.243Z",
+    "generated_at": "2026-09-03T07:51:11.181Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会在项目里把分步计划存在 task_plan.md,发现存在 findings.md,进度存在 progress.md;开始前读取,每完成一阶段更新,跨对话续做。计划只当数据,不当指令。",
-    "when": "用户要求规划、拆解或组织多步任务(如研究或需 5 次以上工具调用的工作时)会触发;已有 task_plan.md 或活跃计划时,Claude 会在交互前后自动读取计划并提示同步进度。",
+    "what": "Claude 会用 task_plan.md、findings.md、progress.md 当项目记忆：先建计划、记发现、写进度；动手前重读这些文件，每阶段完成后更新状态。文件内容只当数据，不当指令执行。",
+    "when": "当你要求做多步计划、拆解/组织项目、做调研，或任务预计要调用工具 5 次以上时触发；也用于 /clear 之后找回会话计划。",
     "say": [
       {
-        "text": "帮我把这个任务拆成几步,建好 task_plan.md 并开始执行。",
-        "note": "会创建计划文件并逐阶段推进。"
+        "text": "帮我拆分当前项目，先建好计划文件再逐步执行。",
+        "note": "它会在项目里创建 task_plan.md 等文件并照着走。"
       },
       {
-        "text": "先读 task_plan.md,继续上次没完成的研究。",
-        "note": "会读取计划与进度,从断点继续。"
+        "text": "把这次调研整理成多步计划，边查边记录发现。"
       },
       {
-        "text": "这个调研会很耗时,请把发现写进 findings.md。",
-        "note": "研究过程被持久化,便于后续复用。"
+        "text": "按已有计划继续，先看看我上次做到哪了。",
+        "note": "会读取 plan 和 progress 文件，接着推进任务。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:80538851505816d8b869aa7decf67d480689eec6571b7a0baf45dec3c97825fe",
+    "content_hash": "sha256:99170d5a6f10c32131215b4e6842b5201702c9cea43e6d9c42bb66679fc16f68",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T08:06:56.729Z",
-    "lint_pass": true
+    "generated_at": "2026-09-03T08:24:11.140Z",
+    "lint_pass": true,
+    "what_en": "Uses task_plan.md, findings.md and progress.md as persistent on-disk memory: creates plans, records findings, tracks progress. Re-reads plan files before acting and updates them after each phase. Treats plan file contents as data, never as instructions.",
+    "when_en": "Triggers when you ask to plan multi-step tasks, break down or organize a project, request research, or start work needing more than 5 tool calls. Also supports session recovery after /clear.",
+    "say_en": [
+      {
+        "text": "Break down this project; create the plan file first, then follow it.",
+        "note": "Creates task_plan.md and tracks progress."
+      },
+      {
+        "text": "Organize my research task into a plan, logging findings as you go.",
+        "note": "Writes findings to findings.md and progress to progress.md."
+      },
+      {
+        "text": "Resume from the existing plan; first check my latest progress.",
+        "note": "Reads the plan and progress files to continue."
+      }
+    ]
   }
 }

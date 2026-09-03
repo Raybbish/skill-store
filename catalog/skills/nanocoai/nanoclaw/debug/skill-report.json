@@ -5,7 +5,7 @@
     "name": "debug",
     "description": "Debug container agent issues. Use when things aren't working, container fails, authentication problems, or to understand how the container system works. Covers logs, session DBs, mounts, and common issues.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/debug",
-    "upstream_commit": "5c3082a1c5d15d84a10f96f54f25459266e7037e",
+    "upstream_commit": "0d9328d2fe9e0e935d00678f96584984d954ae0b",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30682,
+    "stars_github": 30686,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-02T07:32:00.226Z",
+    "fetched_at": "2026-09-03T07:39:11.329Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-01T21:29:33+03:00",
+    "upstream_commit_at": "2026-09-03T02:42:40+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-02T07:32:00.226Z",
+    "generated_at": "2026-09-03T07:39:11.329Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,39 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当容器化的智能体系统出故障时,Claude会检查错误日志、会话数据库和挂载点,指出问题所在并给出处理办法。",
-    "when": "当出现系统运行异常、容器失败或认证错误等情况,或你想了解容器系统原理时触发。",
+    "what": "Claude 会排查容器代理故障:查看日志定位错误、查询会话数据库确认消息是否到达并产生回复、检查挂载与认证配置,并按常见问题给出修复方案(如停掉重复实例、重建容器镜像)。",
+    "when": "当容器出问题(如启动失败、认证报错、消息无回复)或你想弄清容器系统如何运作时触发。",
     "say": [
       {
-        "text": "容器没回复,帮我查错误日志和入站消息状态。"
+        "text": "容器没回消息,帮我查日志和会话数据库。",
+        "note": "会查会话记录,定位消息卡在哪一步。"
       },
       {
-        "text": "我怀疑有两个服务在同时运行,帮我停掉旧的那个。",
-        "note": "Claude 会检查进程列表和 systemd 服务。"
+        "text": "日志报 'No adapter for channel type',怎么办?",
+        "note": "会检查是否重复运行了服务实例,并停掉旧的。"
       },
       {
-        "text": "帮我重启 group-a 的容器,然后立刻发一条测试消息。"
+        "text": "给我讲讲主机和容器之间是怎么传消息的。",
+        "note": "会以两个会话数据库为核心解释消息流。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T08:03:52.826Z",
+    "generated_at": "2026-09-03T08:22:54.021Z",
     "lint_pass": true,
-    "what_en": "When the container-based agent system misbehaves, Claude inspects error logs, session databases, and mounted paths, then identifies the problem and suggests how to fix it.",
-    "when_en": "Triggered when things aren't working, container fails, authentication errors occur, or the user wants to understand how the container system works.",
+    "what_en": "Claude can debug container agents by checking logs, querying session DBs to confirm message flow, inspecting mounts/auth, and walking through fixes for common issues.",
+    "when_en": "It applies when things aren't working, a container fails, authentication problems occur, or you want to understand how the container system works.",
     "say_en": [
       {
-        "text": "The container isn't replying. Check the error log and inbound messages.",
-        "note": "Claude checks nanoclaw.error.log, then inbound.db."
+        "text": "The container never replies. Check the logs and session DBs.",
+        "note": "Checks inbound/outbound DBs to see where it stalled."
       },
       {
-        "text": "I suspect two service instances are running. Please stop the stale one.",
-        "note": "Claude checks process list and systemd units."
+        "text": "The log says 'No adapter for channel type'. What should I do?",
+        "note": "Checks for duplicate instances and disables the stale one."
       },
       {
-        "text": "Restart the group-a container and send a test message right away.",
-        "note": "Runs ncl groups restart with --message."
+        "text": "Explain how the host and container exchange messages.",
+        "note": "Walks through the message flow using the two session DBs."
       }
     ]
   }

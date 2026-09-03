@@ -5,7 +5,7 @@
     "name": "add-vercel",
     "description": "Add Vercel deployment capability to NanoClaw agents. Installs the Vercel CLI in agent containers and sets up OneCLI credential injection for api.vercel.com. Use when the user wants agents to deploy web applications to Vercel.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-vercel",
-    "upstream_commit": "5c3082a1c5d15d84a10f96f54f25459266e7037e",
+    "upstream_commit": "0d9328d2fe9e0e935d00678f96584984d954ae0b",
     "content_hash": "sha256:b8726f9f2d75c738770e4e056c51307b0f79fa58fbda4202e7b07439e9532968",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30682,
+    "stars_github": 30686,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-02T07:32:00.226Z",
+    "fetched_at": "2026-09-03T07:39:11.329Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-01T21:29:33+03:00",
+    "upstream_commit_at": "2026-09-03T02:42:40+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-02T07:32:00.226Z",
+    "generated_at": "2026-09-03T07:39:11.329Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,26 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会获得自动给 NanoClaw agents 配置 Vercel 部署的能力：它会检查并安装 Vercel CLI、通过 OneCLI 设置并分配 Vercel API 密钥、同步到现有 agents 并重启容器，使 agents 能执行 Vercel 部署命令。",
-    "when": "当用户想让 agents 部署 Web 应用到 Vercel 时触发。",
+    "what": "装上后,Claude 代理的工作容器里会装好 Vercel 命令行工具,OneCLI 会把 Vercel 密钥自动注入到请求;代理能直接执行 vercel deploy、vercel ls 等命令,把网页应用部署到 Vercel。",
+    "when": "当用户要求让代理把网页应用部署到 Vercel 时触发;也可以直接执行 /add-vercel 启动这套安装流程。",
     "say": [
       {
-        "text": "帮我的 agents 加上 Vercel 部署能力。",
-        "note": "会自动安装 CLI 并配置密钥。"
+        "text": "请帮我把当前项目部署到 Vercel 生产环境。"
       },
       {
-        "text": "让 agents 能把网站部署到 Vercel。",
-        "note": "会同步配置并重启 agents。"
+        "text": "查看我在 Vercel 上的部署列表。",
+        "note": "代理会运行 vercel ls 拉取列表。"
       },
       {
-        "text": "给 agents 配置好 Vercel，用于生产部署。",
-        "note": "配置后即可执行 vercel deploy。"
+        "text": "帮我确认 Vercel 的登录身份。",
+        "note": "代理会运行 vercel whoami 验证凭据。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:b8726f9f2d75c738770e4e056c51307b0f79fa58fbda4202e7b07439e9532968",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T08:02:19.263Z",
-    "lint_pass": true
+    "generated_at": "2026-09-03T08:19:34.383Z",
+    "lint_pass": true,
+    "what_en": "Turns NanoClaw agent containers into Vercel deployers: it installs the Vercel CLI, configures OneCLI to inject the Vercel API token for api.vercel.com, and lets the agent run commands like vercel deploy/ls/whoami to ship web apps.",
+    "when_en": "Triggers when the user asks agents to deploy web applications to Vercel. It can also be started by running /add-vercel to set up the capability.",
+    "say_en": [
+      {
+        "text": "Please deploy this project to Vercel production.",
+        "note": "Agent runs vercel deploy --prod."
+      },
+      {
+        "text": "Show my existing Vercel deployments.",
+        "note": "Agent runs vercel ls."
+      },
+      {
+        "text": "Check whether I'm logged in to Vercel.",
+        "note": "Agent runs vercel whoami."
+      }
+    ]
   }
 }
