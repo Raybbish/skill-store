@@ -3,13 +3,13 @@
   "meta": {
     "id": "othmanadi/planning-with-files/pi-planning-with-files",
     "name": "pi-planning-with-files",
-    "description": "Manus-style persistent file-based planning for AI coding agents: keeps task_plan.md, findings.md, and progress.md on disk so work survives context loss and /clear. Use when asked to plan out, break down, or organize a multi-step project, research task, or any work requiring 5+ tool calls. Supports automatic session recovery after /clear.",
+    "description": "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/.pi/skills/planning-with-files",
-    "upstream_commit": "9e94390e5912b1ff296556505cd999ff84838160",
-    "content_hash": "sha256:6b54ac0028f6957886fc7b9fee3fbd93a9214caaa8c3cf2ddc840154f52ef327",
+    "upstream_commit": "9ad1f2653a36580e60640656b3e1b000f0f16925",
+    "content_hash": "sha256:0f12f5f60d23859d8fdb29ab26967609702eb92a297ff75dd4ad826eb302d89a",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "dev",
+    "category": "uncategorized",
     "version": null,
     "publisher": "othmanadi",
     "publisher_verified": false,
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26385,
+    "stars_github": 26574,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:23.004Z",
+    "fetched_at": "2026-09-02T07:32:01.535Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-22T13:03:16+02:00",
+    "upstream_commit_at": "2026-09-02T09:08:41+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -35,16 +35,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:23.004Z",
+    "generated_at": "2026-09-02T07:32:01.535Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 32092,
-        "chars": 32018,
-        "tokens": 7196
+        "bytes": 34123,
+        "chars": 34053,
+        "tokens": 7588
       },
       "activation_with_declared_refs": {
         "files": [
@@ -65,9 +65,9 @@
           "templates/task_plan.md"
         ],
         "text_files": 15,
-        "bytes": 156384,
-        "chars": 155072,
-        "tokens": 32433
+        "bytes": 158602,
+        "chars": 157320,
+        "tokens": 32528
       },
       "package_total_text": {
         "files": [
@@ -106,77 +106,78 @@
           "scripts/session-catchup.py",
           "scripts/set-active-plan.ps1",
           "scripts/set-active-plan.sh",
+          "scripts/verify-shell-line-endings.mjs",
           "templates/analytics_findings.md",
           "templates/analytics_task_plan.md",
           "templates/findings.md",
           "templates/progress.md",
           "templates/task_plan.md"
         ],
-        "text_files": 40,
-        "bytes": 324042,
-        "chars": 322660,
-        "tokens": 66204
+        "text_files": 41,
+        "bytes": 372680,
+        "chars": 371336,
+        "tokens": 73833
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "保存任务计划,让AI代理在会话中断后自动恢复工作",
+    "tagline": "把多步任务的计划和进度记到文件里,中断或重启也能续做。",
     "scene_tags": [
-      "多步项目规划",
-      "会话中断恢复",
-      "长任务管理"
+      "长任务执行",
+      "中断续做",
+      "深度调研"
     ],
-    "fit_line": "适合你,如果希望AI代理在长任务和多次对话后依然记得工作计划。",
-    "tagline_en": "Keep AI agents on track with persistent task files that survive session loss",
+    "fit_line": "适合你,如果你常让 AI 处理复杂多步任务,希望中断后还能继续。",
+    "tagline_en": "Save plans, findings, and progress to files so interrupted work can be resumed.",
     "scene_tags_en": [
-      "multi-step planning",
-      "session recovery",
-      "long task management"
+      "long multi-step tasks",
+      "resuming after interruption",
+      "deep research"
     ],
-    "fit_line_en": "For you if you want your AI coding agent to retain its plan across session clears.",
+    "fit_line_en": "For you if you run long, multi-step AI tasks and want progress kept across sessions.",
     "source": "llm",
-    "content_hash": "sha256:6b54ac0028f6957886fc7b9fee3fbd93a9214caaa8c3cf2ddc840154f52ef327",
+    "content_hash": "sha256:0f12f5f60d23859d8fdb29ab26967609702eb92a297ff75dd4ad826eb302d89a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:05:43.247Z",
+    "generated_at": "2026-09-02T07:37:22.801Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "它会在项目里创建并维护 task_plan.md、findings.md、progress.md 三个文件，分阶段记录计划、发现和进度；每次动手前先读取这些文件恢复上下文，还能在 /clear 后自动恢复上次会话。",
-    "when": "当用户要求规划、拆解或组织多步骤项目、研究任务，或任何需要多次工具调用（约5次以上）的工作时触发；简单任务不启用。",
+    "what": "面对需 5 次以上工具调用的任务,Claude 会先建 task_plan.md、findings.md、progress.md,把计划、发现、进度写在磁盘,并在决策前重读、阶段后更新;还能在 /clear 后自动恢复上下文。",
+    "when": "当你要求规划、拆解或组织多步骤项目、研究任务,或需要 5 次以上工具调用的工作时触发;也用于 /clear 后自动恢复上一次会话。",
     "say": [
       {
-        "text": "把这个项目拆成步骤，生成计划文件并逐步更新进度。",
-        "note": "会创建 task_plan.md 等文件并开始跟踪进度。"
+        "text": "帮我把这个项目拆成阶段,写一个 task_plan.md。",
+        "note": "会先建计划文件再按阶段执行。"
       },
       {
-        "text": "我 /clear 了，帮我恢复之前的计划。",
-        "note": "会读取已有规划文件恢复上下文。"
+        "text": "每查两页资料,就把新发现存进 findings.md。",
+        "note": "按两次操作规则落盘,避免丢失。"
       },
       {
-        "text": "把这条新发现记到 findings.md 里。",
-        "note": "写入文件避免丢失。"
+        "text": "继续上次没做完的任务,先从规划文件恢复进度。",
+        "note": "会读取三个规划文件再接着做。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:6b54ac0028f6957886fc7b9fee3fbd93a9214caaa8c3cf2ddc840154f52ef327",
+    "content_hash": "sha256:0f12f5f60d23859d8fdb29ab26967609702eb92a297ff75dd4ad826eb302d89a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:47:17.747Z",
+    "generated_at": "2026-09-02T08:06:15.783Z",
     "lint_pass": true,
-    "what_en": "It creates and maintains task_plan.md, findings.md, and progress.md in the project, recording plan, findings, and progress phase by phase. Before acting it reads these files to restore context, and can auto-recover the session after /clear.",
-    "when_en": "Triggered when the user asks to plan, break down, or organize a multi-step project, research task, or any work needing 5+ tool calls; skipped for simple questions, single-file edits, or quick lookups.",
+    "what_en": "Claude creates task_plan.md, findings.md, progress.md on disk, re-reads before decisions, updates each phase, and auto-recovers after /clear for multi-step tasks needing 5+ tool calls.",
+    "when_en": "It triggers when asked to plan, break down, or organize a multi-step project, research task, or work needing 5+ tool calls; also used for auto-recovery after /clear.",
     "say_en": [
       {
-        "text": "Break this project into steps, create a plan file, and update progress as you go.",
-        "note": "Creates task_plan.md and starts tracking."
+        "text": "Break this project into phases and create task_plan.md.",
+        "note": "Creates the plan file, then follows phases."
       },
       {
-        "text": "I just cleared the session; restore my previous plan.",
-        "note": "Reads existing planning files to recover context."
+        "text": "After every two pages of browsing, save findings to findings.md.",
+        "note": "Follows the two-action rule to avoid loss."
       },
       {
-        "text": "Log this new finding into findings.md.",
-        "note": "Persists the finding so it isn't lost."
+        "text": "Resume the last unfinished task from the planning files.",
+        "note": "Reads the three planning files first."
       }
     ]
   }

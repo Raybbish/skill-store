@@ -5,7 +5,7 @@
     "name": "add-signal",
     "description": "Add Signal channel integration via signal-cli device-link. Native adapter — no Chat SDK bridge.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-signal",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "5c3082a1c5d15d84a10f96f54f25459266e7037e",
     "content_hash": "sha256:67698dd402a630c1ba1911f910adf2fadbfb1d81760bb8da5b3596ee1f0c2e08",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30682,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-02T07:32:00.226Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-01T21:29:33+03:00",
+    "repo_skill_count": 61,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-02T07:32:00.226Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,26 +88,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "这个技能为 NanoClaw 添加 Signal 频道，通过原生适配器与 signal-cli 守护进程通信。安装后会把你现有的 Signal 号码链接为关联设备，助手即可用该号码收发消息，支持文本、Markdown 格式化、引用回复、私聊打字指示等。",
-    "when": "当用户或群成员向已链接的 Signal 号码发送私聊或群组消息时，技能会接管消息，自动创建会话，助手通过 Signal 回复；新 Signal 用户需先授予访问权限才能收到回复。",
+    "what": "装上后,Claude 会以你现有 Signal 号码的“辅助设备”身份收发消息:别人给该号码发私信、把该号码拉进群,或你通过 Note to Self 发消息,它都会收到并回复;无需新号码或 Bot API。",
+    "when": "完成安装、重启并接线后,当有人向已关联的 Signal 号码私信,或在该号码所在的群组里发消息时触发;新 Signal 用户未被授权前会先被丢弃。",
     "say": [
       {
-        "text": "帮我链接 Signal 账户",
-        "note": "执行设备链接，生成二维码供扫描。"
+        "text": "请用加粗和斜体回复:收到。",
+        "note": "用于验证 Signal 里的 Markdown 格式转换。"
       },
       {
-        "text": "查一下 Signal 频道最近的会话记录",
-        "note": "会查询 messaging_groups 表。"
+        "text": "这是一条 Note to Self 测试,收到请回复。",
+        "note": "机主同号收发;回复会进同一对话。"
       },
       {
-        "text": "给这个 Signal 用户授权访问",
-        "note": "需提供 signal:UUID，创建用户并授予角色。"
+        "text": "这是另一个 Signal 账号发来的私聊,请回复。",
+        "note": "消息会以 signal:{UUID} 标识该用户。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:67698dd402a630c1ba1911f910adf2fadbfb1d81760bb8da5b3596ee1f0c2e08",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:06:25.762Z",
-    "lint_pass": true
+    "generated_at": "2026-09-02T08:01:33.777Z",
+    "lint_pass": true,
+    "what_en": "After install, Claude joins your existing Signal number as a secondary device via signal-cli — no new number or bot API. It can then receive and reply to Signal DMs, group messages, and Note to Self messages sent to that number.",
+    "when_en": "After setup, restart, and channel wiring, it triggers on incoming DMs to the linked Signal number or messages in a group that includes that number. New Signal users are dropped until granted access.",
+    "say_en": [
+      {
+        "text": "Reply with bold and italic: Received.",
+        "note": "Checks Markdown-to-Signal style conversion."
+      },
+      {
+        "text": "This is a Note to Self test. Please reply.",
+        "note": "Verifies owner-account routing via your own number."
+      },
+      {
+        "text": "This is a DM from another Signal account. Please reply.",
+        "note": "The sender is identified as signal:{UUID}."
+      }
+    ]
   }
 }

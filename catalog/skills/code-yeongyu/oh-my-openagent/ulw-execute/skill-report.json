@@ -5,7 +5,7 @@
     "name": "ulw-execute",
     "description": "Execute a Prometheus work plan with Boulder state, evidence ledger updates, worktree discipline, parallel subagents, and Stop-hook continuation. Use after planning when the user says ulw-execute, execute plan, continue plan, resume plan, or asks to run a .omo/plans plan.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ulw-execute",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "3216a23fa975794628d4489b501acebfbed4dfb1",
     "content_hash": "sha256:594f552b2325dcc2529906108f0668b119ebee26696e411f57da16d6783e6344",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,13 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68598,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-02T07:31:49.405Z",
     "first_seen_at": "2026-08-27T13:37:06.727Z",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
-    "bulk_source": true
+    "upstream_commit_at": "2026-09-02T16:24:03+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -37,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-02T07:31:49.405Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会变成“总指挥”：它读取你选定的工作计划，把每个任务拆成小块，并派出多个“小助手”（子代理）并行干活。它自己不直接写代码，只负责分配任务、检查结果、记录进度，直到计划里的所有事项都完成。",
-    "when": "当你说“ulw-execute”、“execute plan”、“continue plan”等关键词，或要求运行 .omo/plans 下的计划时触发。",
+    "what": "装上此技能后，当你要求执行或继续工作计划时，Claude 会当编排者：选定 .omo/plans/ 下的计划，把复选框拆成小任务，并行派多个子代理实现和验证，直到全部完成；它自己不写代码，只记录状态、检查结果，若指定 PR 模式再以 PR/合并收尾。",
+    "when": "在规划后，当你提到 ulw-execute、execute plan、continue plan 等启动词，或要求运行 .omo/plans 下的某个计划时触发；若无现成计划却明确要求开工，会先引导生成计划再执行。",
     "say": [
       {
-        "text": "ulw-execute，执行 .omo/plans 下的工作计划。",
-        "note": "Claude 会挑选计划并开始委派子代理执行。"
+        "text": "执行 .omo/plans 文件里的 login-fix 计划",
+        "note": "选出该计划并把剩余复选任务拆给子代理并行做。"
       },
       {
-        "text": "continue plan，接着上次没做完的进度继续干。",
-        "note": "会从上次中断处继续推进计划。"
+        "text": "执行 ulw-execute login-fix --make-pr",
+        "note": "实现完会开出一个 PR 交给你审阅合并。"
       },
       {
-        "text": "execute plan --make-pr，跑完帮我开个 PR。",
-        "note": "会以工作树方式执行并提交合并请求。"
+        "text": "继续计划",
+        "note": "有未完成工作时接着做，直到全部复选框完成。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:594f552b2325dcc2529906108f0668b119ebee26696e411f57da16d6783e6344",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:59:24.731Z",
+    "generated_at": "2026-09-02T07:49:16.242Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude acts as an orchestrator: it reads the chosen work plan, breaks tasks into small pieces, and dispatches multiple subagents to work in parallel. It does not write code itself; it delegates, checks results, and updates progress until all plan items are complete.",
-    "when_en": "Triggered when the user says 'ulw-execute', 'execute plan', 'continue plan', or similar keywords, or asks to run a plan under .omo/plans.",
+    "what_en": "Claude orchestrates: it selects a .omo/plans plan, splits checkbox tasks, spawns parallel subagents to implement and verify until done. It never writes code itself; it tracks state, checks results, and optionally opens a PR or merges.",
+    "when_en": "When you say ulw-execute, execute plan or continue plan after planning, or ask to run a .omo/plans plan, it takes over. If no plan exists but start work is explicit, it creates one first.",
     "say_en": [
       {
-        "text": "ulw-execute, run the work plan under .omo/plans.",
-        "note": "Claude will pick the plan and delegate execution to subagents."
+        "text": "Run the login-fix plan under .omo/plans",
+        "note": "It chooses that plan and runs subagents in parallel."
       },
       {
-        "text": "continue plan, keep going from where we left off.",
-        "note": "Resumes the plan from the last checkpoint."
+        "text": "Run ulw-execute login-fix --make-pr",
+        "note": "After implementation it opens a PR for review."
       },
       {
-        "text": "execute plan --make-pr, open a PR when done.",
-        "note": "Runs in worktree mode and delivers as a pull request."
+        "text": "Continue the current plan",
+        "note": "It resumes remaining work until all checkboxes are done."
       }
     ]
   }
