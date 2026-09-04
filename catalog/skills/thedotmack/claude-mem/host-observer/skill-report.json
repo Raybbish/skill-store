@@ -5,7 +5,7 @@
     "name": "host-observer",
     "description": "Use this when fulfilling claude-mem observer jobs on Grok Bot: reply only skip_summary or one full observation XML, never prose.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-grok-bot/skills/host-observer",
-    "upstream_commit": "18b3dab7663a4f9e4b24a3f2b11a25a5063f60b6",
+    "upstream_commit": "be44b6c8e238a7e2bc5b3403c05afac071a59ead",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93056,
+    "stars_github": 93131,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-03T07:38:50.068Z",
+    "fetched_at": "2026-09-04T07:41:00.570Z",
     "first_seen_at": "2026-09-03T07:38:50.068Z",
-    "upstream_commit_at": "2026-09-02T18:44:56-07:00",
+    "upstream_commit_at": "2026-09-03T08:33:32-07:00",
     "repo_skill_count": 26
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:38:50.068Z",
+    "generated_at": "2026-09-04T07:41:00.570Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,37 +86,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，在 Grok Bot 上处理 claude-mem observer 任务时，Claude 只返回 skip_summary 或一条 observation XML，不写散文；它会写 outbox 文件或直接返回 XML，且不会同时使用两种输出。",
-    "when": "当你在 Grok Bot 上执行 claude-mem observer 任务时接管：空闲或没有工具结果时输出 skip_summary，完成一个可搜索单元时输出 observation。",
+    "what": "在claude-mem的观察任务里，Claude不再写散文，只输出两种固定XML标记：无价值时给`skip_summary`，有可搜索产出时给一条`observation`（含标题、4~10条带路径的事实和叙述）。",
+    "when": "当你在Grok Bot上执行claude-mem的观察任务（如处理inbox任务或需返回chat-completions响应）时触发。",
     "say": [
       {
-        "text": "检查 inbox 里的任务，把结果写入 outbox 对应文件。",
-        "note": "它会写 outbox/{id}.txt。"
+        "text": "这个提交修复了登录bug，请生成observation。",
+        "note": "会返回一个bugfix类型的observation。"
       },
       {
-        "text": "如果有噪声就跳过总结，否则给出完整 observation。",
-        "note": "两种输出不会混在一起。"
+        "text": "这条消息没有可记录的产出，请跳过。",
+        "note": "会返回skip_summary。"
+      },
+      {
+        "text": "把这次重构整理成observation。",
+        "note": "会返回refactor类型的observation。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:31:45.799Z",
+    "generated_at": "2026-09-04T08:10:52.973Z",
     "lint_pass": true,
-    "what_en": "When handling claude-mem observer jobs on Grok Bot, Claude replies only with skip_summary or one observation XML, never prose; it writes outbox files or returns XML directly, without mixing outputs.",
-    "when_en": "Triggers when fulfilling claude-mem observer jobs on Grok Bot. It emits skip_summary when idle or no tool results, and an observation after a complete searchable unit.",
+    "what_en": "Within claude-mem observer jobs, Claude stops writing prose and replies only with two XML forms: `<skip_summary>` when nothing is worth recording, or one full `<observation>` with a title, 4–10 path-bearing facts and a narrative.",
+    "when_en": "Triggered when fulfilling claude-mem observer jobs on Grok Bot, such as handling inbox jobs or returning the chat-completions body.",
     "say_en": [
       {
-        "text": "Handle this claude-mem observer job, output only observation or skip_summary.",
-        "note": "Claude returns XML only, no prose."
+        "text": "This commit fixes a login bug; please produce an observation.",
+        "note": "Returns a bugfix observation XML."
       },
       {
-        "text": "Check inbox jobs and write results to the outbox file.",
-        "note": "It writes outbox/{id}.txt."
+        "text": "This message has no tool results; please skip it.",
+        "note": "Responds with skip_summary."
       },
       {
-        "text": "Skip summary if noise, otherwise give a full observation.",
-        "note": "The two outputs are never mixed."
+        "text": "Please make this refactoring an observation.",
+        "note": "Returns a refactor observation."
       }
     ]
   }

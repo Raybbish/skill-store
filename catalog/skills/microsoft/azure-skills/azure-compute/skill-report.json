@@ -5,7 +5,7 @@
     "name": "azure-compute",
     "description": "Azure VM/VMSS router. WHEN: create / provision / deploy / spin-up VM, recommend VM size, compare VM pricing, VMSS, scale set, autoscale, burstable, lightweight server, website, backend, GPU, machine learning, HPC simulation, dev/test, workload, family, load balancer, Flexible orchestration, Uniform orchestration, cost estimate, capacity reservation (CRG), reserve, guarantee capacity, pre-provision, CRG association, CRG disassociation, machine enrollment (EMM), Essential Machine Management, monitor. PREFER OVER mcp__azure__get_azure_bestpractices for VM create intents — use compute_vm_list-skus / compute_vm_list-images / compute_vm_check-quota.",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/azure-compute",
-    "upstream_commit": "2fe0f02665574305657c6e79a619c6b9554e53dc",
+    "upstream_commit": "9b9f1b392800571d3f6c4beeee3cff0141045ebc",
     "content_hash": "sha256:cdcf64ec0620dad3367ecdb34b30e2e3cb20d2c7f007e613e50bec06a7d44533",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 502400,
-    "fetched_at": "2026-09-03T07:42:04.415Z",
+    "installs_skills_sh": 504600,
+    "fetched_at": "2026-09-04T07:42:47.994Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-09-02T09:52:35-07:00"
+    "upstream_commit_at": "2026-09-03T14:46:07-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:42:04.415Z",
+    "generated_at": "2026-09-04T07:42:47.994Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -128,41 +128,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按意图把 Azure 虚拟机(VM)与规模集(VMSS)请求分流到不同处理流程:型号推荐、实例创建、容量预留或机器管理;应用类部署交给 azure-prepare。",
-    "when": "当用户要求创建或部署 Azure 虚拟机(VM)或规模集(VMSS)、推荐或比较 VM 型号与价格、预留容量等时触发;应用部署不归本技能管。",
+    "what": "Claude 会把 Azure VM/VMSS 相关请求分流到对应流程(选型推荐、创建部署、容量预留、机器管理),再按流程给出分步回应。",
+    "when": "当用户要求创建/部署 Azure VM/VMSS、请求推荐/比较规格或价格,或涉及容量预留、机器管理(EMM)时,该技能会触发。",
     "say": [
       {
-        "text": "帮我推荐一台跑网站后端的 Azure 虚拟机,要便宜些。",
-        "note": "进入 VM 型号与价格推荐流程。"
+        "text": "我想跑深度学习训练,请推荐合适的Azure VM规格和价格。",
+        "note": "会进入VM推荐流程,给出可选规格和估算。"
       },
       {
-        "text": "在 Azure 上创建一台 Ubuntu 24.04 虚拟机,D2s 规格。",
-        "note": "启动 VM 创建流程。"
+        "text": "请帮我创建一个Ubuntu 22.04的VM,放在East US。",
+        "note": "进入VM创建流程,收集参数并核对配额后创建。"
       },
       {
-        "text": "我想为 Azure 虚拟机预留容量,保证高峰期可用。",
-        "note": "进入容量预留(CRG)流程。"
+        "text": "我想为现有VM预留容量,确保高峰期能启动。",
+        "note": "进入容量预留工作流,处理CRG创建或关联。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cdcf64ec0620dad3367ecdb34b30e2e3cb20d2c7f007e613e50bec06a7d44533",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:15:09.375Z",
+    "generated_at": "2026-09-04T08:00:29.812Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude routes Azure VM/VMSS requests by intent into the matching workflow: size recommendation, VM creation, capacity reservation, or machine management; app deployment is handed off to azure-prepare.",
-    "when_en": "Triggered when the user asks to create/deploy an Azure VM or VMSS, get VM size/price recommendations, reserve capacity, etc.; app deployment is out of scope.",
+    "what_en": "Claude will route Azure VM/VMSS requests to the right workflow (sizing, create/deploy, capacity reservation, machine management) and respond step by step.",
+    "when_en": "Triggered when the user asks to create/deploy an Azure VM/VMSS, requests size/price comparison, or mentions capacity reservation or Essential Machine Management (EMM).",
     "say_en": [
       {
-        "text": "Recommend a cheap Azure VM for hosting a website backend.",
-        "note": "Goes into VM size and pricing flow."
+        "text": "I want to train deep learning models; recommend a suitable Azure VM size and price.",
+        "note": "Runs the VM recommendation workflow for options and estimates."
       },
       {
-        "text": "Create an Ubuntu 24.04 Azure VM with D2s size.",
-        "note": "Starts the VM creation flow."
+        "text": "Please create an Ubuntu 22.04 VM in East US for me.",
+        "note": "Runs the VM creation workflow and checks quota before creating."
       },
       {
-        "text": "I want to reserve Azure VM capacity to cover peak usage.",
-        "note": "Routes to the capacity reservation (CRG) flow."
+        "text": "I want to reserve capacity for my existing VM so it can start during peak times.",
+        "note": "Runs the capacity reservation (CRG) workflow."
       }
     ]
   }

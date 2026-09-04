@@ -5,7 +5,7 @@
     "name": "add-opencode",
     "description": "Use OpenCode as an agent provider. OpenRouter, OpenAI, Google, DeepSeek, etc. via OpenCode config — not the Anthropic Agent SDK. Per group via `ncl groups config update --provider opencode`; host passes OPENCODE_* and XDG mount when spawning containers.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-opencode",
-    "upstream_commit": "0d9328d2fe9e0e935d00678f96584984d954ae0b",
+    "upstream_commit": "b76fcb3db0236b36a4d50bed02e89eff472d0e67",
     "content_hash": "sha256:47173fe8c138a8229844e5b13f5651a8e40fa7229583a87c2827ad4aaaca7c46",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30686,
+    "stars_github": 30694,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-03T07:39:11.329Z",
+    "fetched_at": "2026-09-04T07:41:15.057Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-03T02:42:40+02:00",
+    "upstream_commit_at": "2026-09-03T13:32:47+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:39:11.329Z",
+    "generated_at": "2026-09-04T07:41:15.057Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,33 +92,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给 NanoClaw 增加 OpenCode，把它作为各 agent 组的一个模型提供方，从而接 DeepSeek、OpenRouter 等模型。执行时会复制文件、装依赖、重建镜像并同步已有组。",
-    "when": "用户要求某个 agent 组改用 OpenCode 作为提供方，或要求接 DeepSeek、OpenRouter 等模型时进入；若所需文件都已存在，则跳过安装直接配置。",
+    "what": "装上后，NanoClaw 的 agent 会多出一个叫 OpenCode 的可选后端，能通过它接 OpenRouter、DeepSeek 等模型服务，不再只限默认的 Claude。技能会自动把相关文件复制进项目、装好依赖并重建镜像。",
+    "when": "当你想在 NanoClaw 中让 agent 改用 OpenCode 后端（比如接 OpenRouter、DeepSeek 等）时，技能会执行文件复制、依赖安装和镜像重建。",
     "say": [
       {
-        "text": "用 OpenCode 给 g1 组接 DeepSeek 模型",
-        "note": "会更新该组配置并重启。"
+        "text": "帮 NanoClaw 把 OpenCode 接成 agent 后端",
+        "note": "自动复制文件、装依赖并重建镜像。"
       },
       {
-        "text": "给 NanoClaw 加 OpenCode，让模型能走 OpenRouter",
-        "note": "会先补装文件，再配 OpenRouter 上游。"
+        "text": "把当前 agent 组的 provider 切换为 opencode"
+      },
+      {
+        "text": "用 DeepSeek 配置 OpenCode，并注册好密钥",
+        "note": "写入 OPENCODE_* 环境变量并做密钥授权。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:47173fe8c138a8229844e5b13f5651a8e40fa7229583a87c2827ad4aaaca7c46",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:21:13.517Z",
+    "generated_at": "2026-09-04T08:05:05.105Z",
     "lint_pass": true,
-    "what_en": "Adds OpenCode as a NanoClaw agent provider, letting groups use DeepSeek/OpenRouter models. Copies provider files into host/container, pins SDK+CLI, rebuilds the image, and updates existing per-group overlays.",
-    "when_en": "Triggered when the user asks to use OpenCode for an agent group, e.g. with DeepSeek/OpenRouter models. If all preflight files are present, installation is skipped and config continues.",
+    "what_en": "After install, NanoClaw agents gain OpenCode as an extra provider backend for models like OpenRouter or DeepSeek. The skill copies files, wires dependencies, and rebuilds the image.",
+    "when_en": "Triggered when you ask to use OpenCode as the agent provider in NanoClaw or connect model services such as DeepSeek or OpenRouter; it runs copy, dependency install, and rebuild steps.",
     "say_en": [
       {
-        "text": "Use OpenCode to give group g1 a DeepSeek model",
-        "note": "Updates the group config and restarts it."
+        "text": "Add OpenCode as NanoClaw's agent provider",
+        "note": "Copies files, installs deps, rebuilds the image."
       },
       {
-        "text": "Add OpenCode to NanoClaw and route models through OpenRouter",
-        "note": "Installs missing files, then configures the OpenRouter upstream."
+        "text": "Switch this agent group's provider to opencode",
+        "note": "Runs ncl groups config update then restarts."
+      },
+      {
+        "text": "Set up DeepSeek under OpenCode and register its key",
+        "note": "Writes OPENCODE_* env vars and assigns the secret."
       }
     ]
   }

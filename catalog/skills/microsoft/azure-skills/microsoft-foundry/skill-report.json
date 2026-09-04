@@ -5,7 +5,7 @@
     "name": "microsoft-foundry",
     "description": "Build, deploy, evaluate, optimize, fine-tune, and manage Microsoft Foundry agents, models, and resources end to end. USE FOR: azd ai agent, azd provision/deploy, hosted agent scaffold/develop/run/deploy/troubleshoot, prompt agent create, create agent, update agent, add tool to agent, invoke agent, agent.yaml, evaluate agent, batch eval, continuous eval, continuous monitoring, agent CI/CD, optimize prompt, improve prompt, prompt optimizer, optimize agent instructions, Agent Optimizer scaffold, dataset curation from traces, deploy model, model fine-tuning (SFT/DPO/RFT), Foundry project, RBAC, role assignment, permissions, quota, capacity, region, deployment failure, AI Services, create Foundry resource, knowledge index, customize deployment, onboard, availability, training-data, grader, distillation, large file upload. DO NOT USE FOR: Azure Functions, App Service, general Azure deploy (use azure-deploy), general Azure prep (use azure-prepare).",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/microsoft-foundry",
-    "upstream_commit": "2fe0f02665574305657c6e79a619c6b9554e53dc",
+    "upstream_commit": "9b9f1b392800571d3f6c4beeee3cff0141045ebc",
     "content_hash": "sha256:3e2f61bebecd58192d8037f57b90c255085e0623aceb95fbe521f895394093ca",
     "license": "MIT",
     "hosting": "indexed",
@@ -23,10 +23,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 568600,
-    "fetched_at": "2026-09-03T07:42:04.415Z",
+    "installs_skills_sh": 570900,
+    "fetched_at": "2026-09-04T07:42:47.994Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-09-02T09:52:35-07:00"
+    "upstream_commit_at": "2026-09-03T14:46:07-07:00"
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:42:04.415Z",
+    "generated_at": "2026-09-04T07:42:47.994Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -304,37 +304,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上这个技能后,Claude 会带着你在微软 Foundry 上干活:先检查环境依赖,根据你的需求读取相应子技能文档,再按流程创建/部署 AI 助手、用消息调用它、评估并优化提示词、微调模型、排查故障,并逐步说明结果。",
-    "when": "当你想在微软 Foundry 上创建/部署 AI 助手、评估优化它的表现,或排查运行问题等 Foundry/agent 任务时,技能会接管;提到“Foundry”等关键词也会触发。",
+    "what": "装好后,Claude 会先运行依赖检查脚本,再按对应子技能流程操作 Microsoft Foundry:创建、部署、调试、调用托管 AI 代理(agent),也负责模型部署/微调、提示词优化、评估,以及项目/配额/权限管理。",
+    "when": "当任务涉及 Microsoft Foundry 的代理开发(如创建、部署、调试)、模型部署或微调、评估与优化等时触发;普通 Azure 函数或应用服务部署不在其列。",
     "say": [
       {
-        "text": "从最近运行记录做一份评估数据集,再对比看看有没有退步。",
-        "note": "会从 traces 生成数据集并输出指标对比。"
+        "text": "帮我检查依赖,然后新建一个 Foundry 托管 agent 并部署。",
+        "note": "会先跑依赖检查,再进入创建与部署流程。"
       },
       {
-        "text": "我部署的 agent 总超时,帮我查日志定位原因。",
-        "note": "会按故障排查流程读日志、查遥测再定位。"
+        "text": "把这段对话轨迹做成评估数据集,跑一次批量评估。",
+        "note": "会调用轨迹与评估子技能生成数据集并评估。"
+      },
+      {
+        "text": "用我上传的数据对模型做 SFT 微调并部署到 Foundry。",
+        "note": "会进入微调子技能完成训练与部署。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3e2f61bebecd58192d8037f57b90c255085e0623aceb95fbe521f895394093ca",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:16:36.531Z",
+    "generated_at": "2026-09-04T08:01:18.433Z",
     "lint_pass": true,
-    "what_en": "With this skill, Claude works on Microsoft Foundry: checks dependencies, follows the relevant sub-skill, then creates/deploys agents, invokes them, evaluates and optimizes prompts, fine-tunes models, and troubleshoots failures.",
-    "when_en": "Triggers on Foundry/agent tasks such as creating/deploying, evaluating/optimizing performance, or troubleshooting issues; saying “Foundry” also activates it.",
+    "what_en": "After load, Claude runs dependency checks first, then follows Foundry-specific workflows to scaffold, deploy, run, and troubleshoot hosted agents; deploy or fine-tune models; optimize prompts; run evaluations; manage projects, quotas, and permissions.",
+    "when_en": "Triggered for Microsoft Foundry tasks such as creating/deploying/troubleshooting agents, model deployment or fine-tuning, evaluation/optimization, quota/RBAC; not for general Azure Functions or App Service deployments.",
     "say_en": [
       {
-        "text": "Create a project on Microsoft Foundry and deploy a minimal agent.",
-        "note": "Runs dependency check, then project → deploy → smoke test."
+        "text": "Check dependencies, then create and deploy a Foundry hosted agent.",
+        "note": "Runs setup first, then the create/deploy workflow."
       },
       {
-        "text": "Build an eval dataset from recent traces and check for regressions.",
-        "note": "Ingests traces and outputs metric comparisons."
+        "text": "Turn these conversation traces into a dataset and run a batch evaluation.",
+        "note": "Uses the trace and evaluation sub-skills."
       },
       {
-        "text": "My deployed agent keeps timing out — find the cause from logs.",
-        "note": "Reads logs and telemetry per the troubleshooting workflow."
+        "text": "Fine-tune a model on my uploaded data (SFT) and deploy it.",
+        "note": "Enters the fine-tuning workflow."
       }
     ]
   }

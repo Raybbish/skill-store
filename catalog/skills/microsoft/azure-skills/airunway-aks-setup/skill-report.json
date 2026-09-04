@@ -5,7 +5,7 @@
     "name": "airunway-aks-setup",
     "description": "Set up AI Runway on AKS — from bare cluster to running model. Covers cluster verification, controller install, GPU assessment, provider setup, and first deployment. WHEN: \"setup AI Runway\", \"onboard AKS cluster\", \"install AI Runway\", \"airunway setup\", \"deploy model to AKS\", \"GPU inference on AKS\", \"KAITO setup on AKS\", \"run LLM on AKS\", \"vLLM on AKS\", \"set up model serving on AKS\", \"AI Runway controller\".",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/airunway-aks-setup",
-    "upstream_commit": "2fe0f02665574305657c6e79a619c6b9554e53dc",
+    "upstream_commit": "9b9f1b392800571d3f6c4beeee3cff0141045ebc",
     "content_hash": "sha256:da401a2008105fd32ea84cc406a2b29e52ef41ff961ad774bb0d16021a2a7ada",
     "license": "MIT",
     "hosting": "indexed",
@@ -23,10 +23,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 307300,
-    "fetched_at": "2026-09-03T07:42:04.415Z",
+    "installs_skills_sh": 309500,
+    "fetched_at": "2026-09-04T07:42:47.994Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-02T09:52:35-07:00"
+    "upstream_commit_at": "2026-09-03T14:46:07-07:00"
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:42:04.415Z",
+    "generated_at": "2026-09-04T07:42:47.994Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -106,41 +106,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按步骤在已有 AKS 集群上完成 AI Runway 搭建:先核对集群和 GPU,再安装控制器与推理服务(如 KAITO),最后部署并验证第一个模型;每一步都会汇报进度,安装或部署前先征求同意。",
-    "when": "当你说“setup AI Runway”“install AI Runway”“deploy model to AKS”等短语,或要求给已有 AKS 集群搭建/续跑 AI Runway 时,就会触发。",
+    "what": "装好后,Claude 会按顺序:检查集群、安装 AI Runway 控制器、评估 GPU、安装推理供应商(KAITO 等)、部署并验证第一个模型,每步核对状态并征得确认。",
+    "when": "当你说出“setup AI Runway”“install AI Runway”等指令,或要求在这个 AKS 集群上部署模型、跑 LLM 推理时触发。",
     "say": [
       {
-        "text": "帮我在这个 AKS 集群上从头搭建 AI Runway。",
-        "note": "会从集群检查开始一步步执行。"
+        "text": "帮我在现有 AKS 集群上安装 AI Runway 并部署第一个模型。",
+        "note": "按第 1~5 步顺序执行并逐步确认。"
       },
       {
-        "text": "控制器已经装好了,从 GPU 评估那一步继续。",
-        "note": "会跳过前面已完成的步骤,从第 3 步开始。"
+        "text": "跳过前面的步骤,直接做 GPU 评估。",
+        "note": "对应 skip-to-step 3,会从该步接着处理。"
       },
       {
-        "text": "我想在 AKS 上跑 LLM,用 KAITO 部署第一个模型。",
-        "note": "会进入推理服务安装与首次部署流程。"
+        "text": "根据我的 GPU,推荐装 KAITO 还是 KubeRay?",
+        "note": "进入第 4 步,给出推荐并在确认后安装。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:da401a2008105fd32ea84cc406a2b29e52ef41ff961ad774bb0d16021a2a7ada",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:14:14.961Z",
+    "generated_at": "2026-09-04T08:00:02.941Z",
     "lint_pass": true,
-    "what_en": "After setup, Claude walks through AI Runway deployment on your AKS cluster: checks cluster/GPU, installs controller and inference provider (e.g. KAITO), deploys and verifies first model. Reports step status and asks before installing.",
-    "when_en": "Triggers when you say \"setup AI Runway\", \"install AI Runway\", \"deploy model to AKS\", or ask to set up/resume AI Runway on an existing AKS cluster.",
+    "what_en": "Once installed, Claude proceeds in order: cluster check, AI Runway controller + CRD install, GPU assessment, provider install (KAITO etc.), first deployment and verification — checking state and confirming each step.",
+    "when_en": "Triggered when the user says “setup AI Runway”, “install AI Runway”, “deploy model to AKS”, or similar, or asks to run LLM inference on an existing AKS cluster.",
     "say_en": [
       {
-        "text": "Set up AI Runway from scratch on this AKS cluster.",
-        "note": "Starts with cluster verification."
+        "text": "Set up AI Runway on my existing AKS cluster and deploy the first model.",
+        "note": "Runs steps 1–5 in order with confirmation."
       },
       {
-        "text": "Controller is installed; continue from the GPU assessment step.",
-        "note": "Jumps to step 3."
+        "text": "Skip the earlier steps and do the GPU assessment directly.",
+        "note": "Maps to skip-to-step 3 and resumes from that step."
       },
       {
-        "text": "I want to run an LLM on AKS; deploy the first model with KAITO.",
-        "note": "Installs provider, then deploys model."
+        "text": "Based on my GPUs, do you recommend KAITO or KubeRay?",
+        "note": "Goes to step 4, recommends a provider, then installs after confirmation."
       }
     ]
   }

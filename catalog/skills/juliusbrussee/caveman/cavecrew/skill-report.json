@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "When to delegate to `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit) or `cavecrew-reviewer` (diff review) instead of working inline or using `Explore`. Their output is compressed, so main context lasts longer.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "3b74643f4d910f496babd4e634b1ba7168816f14",
+    "upstream_commit": "367fdb7f0f8f8e7994b5aab632c7ce5014802b32",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 280300,
-    "fetched_at": "2026-09-03T07:42:08.984Z",
+    "installs_skills_sh": 282400,
+    "fetched_at": "2026-09-04T07:42:58.528Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-02T15:48:49+02:00"
+    "upstream_commit_at": "2026-09-04T02:31:12+02:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:42:08.984Z",
+    "generated_at": "2026-09-04T07:42:58.528Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上 cavecrew 后，Claude 会把三类活儿交给专门的子代理，结果都用短格式返回：找代码位置给出「文件:行号」清单；改 1~2 个文件并在改后回读核对；审代码改动按行号列问题。这让主对话的上下文占用更少。",
-    "when": "当任务是定位代码、对已知位置的 1~2 个文件做精确修改、或审查代码改动找问题，且不需要长篇解释、简短输出就够用时。",
+    "what": "装上后,Claude 在代码工作中会优先委派给三个子代理:定位代码、1-2 个文件的修改、检查代码差异。这些子代理返回的结果很短,Claude 的上下文占用更低,能处理更长任务。",
+    "when": "当用户要求定位代码、改动一两个文件或检查代码改动时,Claude 会派出对应子代理执行任务。",
     "say": [
       {
-        "text": "帮我找一下 validateInput 在哪定义、谁在调用它。",
-        "note": "Claude 派定位子代理，返回「文件:行号」清单和总数。"
+        "text": "帮我找一下 login 函数在哪些文件里被调用了",
+        "note": "Claude 会派定位专用子代理,返回简洁的行号列表。"
       },
       {
-        "text": "把 src/utils.ts 第 42 行的超时时间改成 3000 毫秒。",
-        "note": "Claude 交给单文件改动子代理，改后回读核对。"
+        "text": "把 config.js 第 51 行改成读取环境变量",
+        "note": "Claude 会派小修改子代理,改后回读验证结果。"
       },
       {
-        "text": "审查我这个分支代码改动，列出要修的地方。",
-        "note": "Claude 派审查子代理，按行号列出问题、严重度和修法。"
+        "text": "审查一下我刚才做的代码改动有没有 bug",
+        "note": "Claude 会派审查子代理,返回带严重度的代码问题列表。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:04:28.350Z",
+    "generated_at": "2026-09-04T07:59:12.905Z",
     "lint_pass": true,
-    "what_en": "After installing, Claude routes three kinds of jobs to terse subagents: finding code (file:line lists), editing 1–2 files (with re-read verification), and reviewing code changes (line-sorted issue lists), so each task consumes less main context.",
-    "when_en": "Use when the task is to locate code, make a precise edit to 1–2 already-known files, or review a code change for problems, and a short answer is enough.",
+    "what_en": "With this installed, Claude delegates code tasks to three subagents: locate code, edit 1-2 files, review diffs. Their compressed output lowers main-context cost per delegation, so sessions last longer.",
+    "when_en": "Triggered when the task is to locate code, edit one or two files, or review a code change.",
     "say_en": [
       {
-        "text": "Find where validateInput is defined and who calls it.",
-        "note": "Returns a file:line list with totals."
+        "text": "Find the definition of login and all files that call it.",
+        "note": "Claude dispatches the locate subagent and returns a compact file-line list."
       },
       {
-        "text": "Change the timeout at src/utils.ts:42 to 3000 ms.",
-        "note": "Single-file edit agent re-reads to verify."
+        "text": "Change config.js line 51 to read an environment variable.",
+        "note": "Claude runs the small-edit subagent and then verifies the result."
       },
       {
-        "text": "Review my branch code changes and list what needs fixing.",
-        "note": "Reviewer returns line-level issues and suggested fixes."
+        "text": "Review the code change I just made for potential bugs.",
+        "note": "Claude invokes the review subagent and lists findings by severity."
       }
     ]
   }

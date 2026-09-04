@@ -5,7 +5,7 @@
     "name": "add-ollama-tool",
     "description": "Add Ollama MCP server so the container agent can call local models and optionally manage the Ollama model library.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-tool",
-    "upstream_commit": "0d9328d2fe9e0e935d00678f96584984d954ae0b",
+    "upstream_commit": "b76fcb3db0236b36a4d50bed02e89eff472d0e67",
     "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30686,
+    "stars_github": 30694,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-03T07:39:11.329Z",
+    "fetched_at": "2026-09-04T07:41:15.057Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-03T02:42:40+02:00",
+    "upstream_commit_at": "2026-09-03T13:32:47+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:39:11.329Z",
+    "generated_at": "2026-09-04T07:41:15.057Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,38 +98,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装了本技能后，Claude 可以把一些任务交给电脑上的本地 Ollama 模型处理，比如列出已安装的模型、让指定模型生成回答；如果额外开启管理功能，还能下载、删除模型、查看模型详情。",
-    "when": "当用户明确要求使用本地 Ollama 模型回答问题时触发，例如要求列出、拉取或删除模型，或询问已加载的模型等。",
+    "what": "装好后,Claude 能调用本机 Ollama 模型:列出已装模型、让选定的模型生成文本。若开启模型管理开关,还能拉取或删除模型。安装时会在项目里复制并注册所需文件。",
+    "when": "当你说“把 Ollama 工具加进来”“让代理调用本机模型”这类要求时触发。Claude 会先检查该项目是否已接入:已接入就跳到配置;若没有,会检查 Ollama 守护进程是否可访问。",
     "say": [
       {
-        "text": "用 ollama 告诉我法国的首都。"
+        "text": "用 Ollama 告诉我法国的首都是哪里。",
+        "note": "Claude 会先列出可用模型,再用其中一个生成回答。"
       },
       {
-        "text": "拉取 gemma3:1b 模型。"
+        "text": "拉取 gemma3:1b 模型。",
+        "note": "需要已开启模型管理开关才会执行。"
       },
       {
-        "text": "哪些 ollama 模型当前加载在内存里？"
+        "text": "当前有哪些 Ollama 模型已加载到内存中?",
+        "note": "将查看当前内存中已加载的模型。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:19:02.040Z",
+    "generated_at": "2026-09-04T08:06:14.580Z",
     "lint_pass": true,
-    "what_en": "After installing this skill, Claude can delegate work to local Ollama models: list installed models, generate a response from a chosen model, and (if enabled) pull/delete models or inspect model details.",
-    "when_en": "Triggered when the user explicitly asks Claude to use local Ollama models, e.g. to answer a question, list/pull/delete models, or check which models are currently loaded.",
+    "what_en": "After setup Claude can use local Ollama models: list installed models, have a selected model generate text, and, if enabled, pull or delete models. Setup also copies and registers the needed files.",
+    "when_en": "Triggered when you ask to add Ollama integration or let the agent call local models. If already wired, it skips to configuration; otherwise it checks whether the Ollama daemon is reachable.",
     "say_en": [
       {
         "text": "Use Ollama to tell me the capital of France.",
-        "note": "Claude lists available models, then calls ollama_generate to answer."
+        "note": "Lists models first, then generates an answer."
       },
       {
         "text": "Pull the gemma3:1b model.",
-        "note": "Claude calls ollama_pull_model to download it."
+        "note": "Works only when management tools are enabled."
       },
       {
-        "text": "Which Ollama models are loaded in memory now?",
-        "note": "Claude calls ollama_list_running to check."
+        "text": "Which Ollama models are loaded in memory right now?",
+        "note": "Returns the models currently loaded in memory."
       }
     ]
   }

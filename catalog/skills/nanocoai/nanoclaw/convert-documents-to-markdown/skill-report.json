@@ -5,7 +5,7 @@
     "name": "convert-documents-to-markdown",
     "description": "Convert an attached Word document, presentation, spreadsheet, OpenDocument file, RTF, EPUB, CSV, or text-based PDF into local Markdown. Use when a message supplies a local attachment path that must be read without uploading it to an external parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc/container-skills/convert-documents-to-markdown",
-    "upstream_commit": "0d9328d2fe9e0e935d00678f96584984d954ae0b",
+    "upstream_commit": "b76fcb3db0236b36a4d50bed02e89eff472d0e67",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30686,
+    "stars_github": 30694,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-03T07:39:11.329Z",
+    "fetched_at": "2026-09-04T07:41:15.057Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-03T02:42:40+02:00",
+    "upstream_commit_at": "2026-09-03T13:32:47+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:39:11.329Z",
+    "generated_at": "2026-09-04T07:41:15.057Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,41 +86,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当消息里有附件时,Claude 会读取它在本地容器中的路径,通过 AnyDoc 工具转成本地 Markdown 文件,然后返回输出文件的路径;不会把文档上传到外部解析器。",
-    "when": "当消息给出本地附件的文件路径,需要将文档内容转为 Markdown 而不上传到外部解析器时,此技能会被触发。",
+    "what": "当你发来带本地路径的附件，Claude 会在自己的运行环境里把 Word、PPT、Excel、CSV、PDF 等转成 Markdown 文件，并告诉你文件位置；文件不上传外部服务，读取大文件时只读相关片段。",
+    "when": "当你在消息里给出本地附件路径，需要把附件读出来而不上传到外部解析服务时触发。",
     "say": [
       {
-        "text": "把这条消息的 Word 附件转成 markdown,不要上传外部。",
-        "note": "会在容器内本地转换并返回 .md 文件。"
+        "text": "把附件里的 Word 文档转成 Markdown，并告诉我输出路径。",
+        "note": "转换后返回一个 .md 文件路径。"
       },
       {
-        "text": "读取附带的 PDF 文件,转成 markdown 格式。",
-        "note": "PDF 需为文本型,扫描件不支持。"
+        "text": "如果这个 PDF 是扫描图片版，就直接说不能转。",
+        "note": "Claude 会明确报告图片型 PDF 不支持。"
       },
       {
-        "text": "把这个 CSV 附件转成 markdown 并列出内容。",
-        "note": "CSV 会按 stdin 方式显式指定格式转换。"
+        "text": "请把附件 data.csv 转成 Markdown 并读取它。",
+        "note": "CSV 会以显式格式转换并纳入上下文。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:20:55.618Z",
+    "generated_at": "2026-09-04T08:07:16.610Z",
     "lint_pass": true,
-    "what_en": "When an attachment is in the message, Claude reads its local container path, converts the document into a local Markdown file with the AnyDoc tool, and returns the output path; the document is not uploaded to an external parser.",
-    "when_en": "Triggered when the message supplies a local attachment path and the document must be converted to Markdown without uploading to an external parser.",
+    "what_en": "When you send an attachment with a local path, Claude runs a local tool to convert Word, PPT, Excel, CSV, PDF, etc. into a Markdown file and reports its location; files stay in the container, and large outputs are only partially read.",
+    "when_en": "Triggered when a message provides a local attachment path that must be read without uploading to an external parser.",
     "say_en": [
       {
-        "text": "Convert this Word attachment to markdown, don't upload it externally.",
-        "note": "Converted locally in the container and returns the .md file."
+        "text": "Convert the attached Word document to Markdown and tell me the output path.",
+        "note": "Returns a .md path after conversion."
       },
       {
-        "text": "Read the attached PDF and turn it into markdown.",
-        "note": "Must be text-based PDF; scanned images are not supported."
+        "text": "If this PDF is a scanned image, just tell me it can't be converted.",
+        "note": "Reports image-only PDFs as unsupported."
       },
       {
-        "text": "Convert this CSV attachment to markdown and list its content.",
-        "note": "CSV will be read from stdin with explicit format."
+        "text": "Convert the attached data.csv to Markdown and read it.",
+        "note": "CSV is parsed with an explicit format and read."
       }
     ]
   }

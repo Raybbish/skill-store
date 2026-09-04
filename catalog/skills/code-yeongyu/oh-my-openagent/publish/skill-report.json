@@ -5,7 +5,7 @@
     "name": "publish",
     "description": "Publish oh-my-opencode to npm by triggering the GitHub Actions publish workflow and verifying its artifacts. Ship-only: never runs pre-publish-review or re-reviews merged code unless the user explicitly asks. Argument: <patch|minor|major|explicit-semver>. Triggers: publish, release, deploy, npm publish.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/publish",
-    "upstream_commit": "65c55dc6b470e0b21f60ff3c16c8e9594d575cd8",
+    "upstream_commit": "2dc26ccf9fc2c83ed792c8ee14ac1a4fb6c5db61",
     "content_hash": "sha256:910eb9d75f5fd8fd6e1b4b6d17f49babfa0fb9a9c62bac5ed5f43dd65948b95e",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,12 +22,13 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68633,
+    "stars_github": 68671,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-03T07:38:56.546Z",
+    "fetched_at": "2026-09-04T07:41:04.908Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-03T16:29:55+09:00",
-    "repo_skill_count": 50
+    "upstream_commit_at": "2026-09-04T16:40:46+09:00",
+    "repo_skill_count": 52,
+    "bulk_source": true
   },
   "context_size": {
     "version": "1",
@@ -36,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:38:56.546Z",
+    "generated_at": "2026-09-04T07:41:04.908Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "收到发布请求后,Claude 会触发自动化发布流程,先确认或询问版本类型,再起草公告,最后核对 npm 与 GitHub 上的新版本并向 Discord 发公告。流程中不会审查或修改代码,除非你明确要求。",
-    "when": "当对话里出现 “publish”“release”“deploy” 等发布词,或你要求发布/部署项目时触发。它必须有版本类型(patch、minor、major 或具体版本号),没有就先问你。",
+    "what": "你提出发布并给出更新级别(补丁/新功能/大版本)后,Claude 会触发 GitHub 自动发布流水线并跟进到跑完,核对 npm 与 GitHub 上的发布结果,补写发布说明、发 Discord 公告;失败时只报告,不顺手改代码。",
+    "when": "当你说出 publish、release、deploy 等词时触发;它必须拿到补丁/新功能/大版本或具体版本号才会跑完整流程,否则会先问。",
     "say": [
       {
-        "text": "把 oh-my-opencode 以 patch 版本发布到 npm。",
-        "note": "触发完整发布流程并核对结果。"
+        "text": "帮我 publish 一个 patch 修复版本。",
+        "note": "以补丁级别触发发布,并跟进验证流程。"
       },
       {
-        "text": "用 minor 版本发布,并在 Discord 发公告。",
-        "note": "公告会在版本说明完成后发出。"
+        "text": "帮我执行一次 minor release。",
+        "note": "按新功能级别触发发布,并核验 npm 结果。"
       },
       {
-        "text": "请把 oh-my-opencode 发布成 5.0.0-beta.9。",
-        "note": "直接按指定版本号发布。"
+        "text": "帮我用 5.0.0-beta.9 执行 npm publish。",
+        "note": "按给定预发布版本号启动 npm 发布流程。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:910eb9d75f5fd8fd6e1b4b6d17f49babfa0fb9a9c62bac5ed5f43dd65948b95e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T07:58:48.583Z",
+    "generated_at": "2026-09-04T07:56:12.750Z",
     "lint_pass": true,
-    "what_en": "On publish requests, Claude runs the whole release: triggers the automation, drafts the notes, checks that the new package is live on npm and GitHub, then notifies Discord. It won't review or change code unless asked.",
-    "when_en": "Triggers when the user mentions publish, release, deploy, or similar and asks to ship the project. It stops and asks until a version selector (patch, minor, major, or explicit semver) is provided.",
+    "what_en": "When you request a publish with a release type, Claude runs the GitHub Actions release workflow to completion, verifies the npm/GitHub release artifacts, drafts release notes, attempts a Discord announcement, or reports a failure and stops.",
+    "when_en": "Activates when you say publish, release, deploy, or an equivalent release request; it runs the workflow only after you give patch/minor/major or an explicit version, otherwise it asks first.",
     "say_en": [
       {
-        "text": "Publish oh-my-opencode to npm as a patch release.",
-        "note": "Starts the full workflow and verifies the result."
+        "text": "Publish a patch fix release to npm.",
+        "note": "Triggers a patch-level release and tracks it."
       },
       {
-        "text": "Cut a minor release and announce it on Discord.",
-        "note": "Posts the announcement after release notes are finalized."
+        "text": "Run a minor release for the latest changes.",
+        "note": "Runs a minor release and verifies the result."
       },
       {
-        "text": "Publish version 5.0.0-beta.9 for me.",
-        "note": "Uses the explicit semver instead of a bump type."
+        "text": "Run npm publish with version 5.0.0-beta.9.",
+        "note": "Starts the release at the given prerelease version."
       }
     ]
   }
