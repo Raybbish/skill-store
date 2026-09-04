@@ -5,7 +5,7 @@
     "name": "lcx-report-bug",
     "description": "Create a high-signal bug issue or PR in the repo that owns the defect. Use this whenever the user asks to report, file, open, or triage a LazyCodex, lazycodex-ai, omo-codex, Codex plugin, or upstream Codex CLI bug, especially when they need source-backed root cause, reproduction steps, fix guidance, and GitHub routing.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/lcx/skills/lcx-report-bug",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "65c55dc6b470e0b21f60ff3c16c8e9594d575cd8",
     "content_hash": "sha256:5f02dc3ec1e14324fc62c0ab4dc117007ce56fcf281f6a14b2bfb63f5f1f0f07",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,13 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68633,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-03T07:38:56.546Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
-    "bulk_source": true
+    "upstream_commit_at": "2026-09-03T16:29:55+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -37,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-03T07:38:56.546Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,24 +91,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当用户要求上报或分类某个 bug 时,Claude 会先调查并同步相关源码,判断该 bug 属于 LazyCodex 还是上游 Codex 仓库,然后生成一份带复现步骤、根因、修复建议的 GitHub issue(仅在 openai/codex 且满足条件时才生成 PR),并打上 lazycodex-generated 标签。",
-    "when": "当用户要求 report、file、open 或 triage LazyCodex、lazycodex-ai、omo-codex、Codex 插件等相关的 bug,尤其是需要源头根因、复现步骤或 GitHub 路由时触发。",
+    "what": "它会把 LazyCodex/Codex 的 bug 转成英文 GitHub issue；若已有同类 issue，则以评论补充证据。它会先复现并查源码，确定由哪个仓库负责，并写明复现步骤与修复建议；只有目标是 openai/codex 且你要求时才提 PR。",
+    "when": "当用户要求报告、提交或分类处理 LazyCodex、Codex 插件或上游 Codex CLI 等缺陷时触发。",
     "say": [
       {
-        "text": "帮我给 LazyCodex 提个 issue,复现步骤和报错日志我贴在这里。"
+        "text": "给 LazyCodex 的安装报错开个 GitHub issue。",
+        "note": "它会调查并生成带证据的英文 issue。"
       },
       {
-        "text": "这个 Codex CLI 报错该路由到哪个仓库?帮我调查根因。",
-        "note": "Claude 会做证据调查并给出仓库归属判断。"
+        "text": "把这个 Codex CLI 的崩溃整理成 PR 提给 openai/codex。",
+        "note": "仅当缺陷确属 openai/codex 时才会建 PR。"
       },
       {
-        "text": "把这个问题以 PR 形式提交到 openai/codex。"
+        "text": "先查查有没有同样的 bug 已提过，没有就新建。",
+        "note": "它会先搜索现有工单，避免重复提交。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5f02dc3ec1e14324fc62c0ab4dc117007ce56fcf281f6a14b2bfb63f5f1f0f07",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:57:04.265Z",
-    "lint_pass": false
+    "generated_at": "2026-09-03T07:57:37.833Z",
+    "lint_pass": true,
+    "what_en": "Turns a LazyCodex/Codex bug report into an English GitHub issue, or comments on an existing one, after checking source to choose the owning repo, with repro and fix guidance. A PR is only created for openai/codex when asked.",
+    "when_en": "When the user asks to report, file, open, or triage a LazyCodex, Codex plugin, or upstream Codex CLI bug.",
+    "say_en": [
+      {
+        "text": "Create a GitHub issue for this LazyCodex installation error.",
+        "note": "It investigates and creates an evidence-backed English issue."
+      },
+      {
+        "text": "Turn this Codex CLI crash into a PR against openai/codex.",
+        "note": "Only creates a PR if the defect is confirmed in openai/codex."
+      },
+      {
+        "text": "Check whether this bug was already reported before filing.",
+        "note": "It searches existing issues first to avoid duplicates."
+      }
+    ]
   }
 }

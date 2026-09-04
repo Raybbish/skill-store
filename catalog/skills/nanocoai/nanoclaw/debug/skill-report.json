@@ -5,7 +5,7 @@
     "name": "debug",
     "description": "Debug container agent issues. Use when things aren't working, container fails, authentication problems, or to understand how the container system works. Covers logs, session DBs, mounts, and common issues.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/debug",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "0d9328d2fe9e0e935d00678f96584984d954ae0b",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30686,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-03T07:39:11.329Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-03T02:42:40+02:00",
+    "repo_skill_count": 61,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-03T07:39:11.329Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上此技能后，当容器代理出问题时，Claude会按照调试指南逐步排查：先查看主机错误日志，再检查会话的进出数据库以判断消息是否到达容器、回复是否生成，并处理重复实例、认证失败、挂载异常等常见故障。",
-    "when": "当容器不工作、启动失败或认证出错时触发；也可用于了解容器系统工作原理。",
+    "what": "Claude 会排查容器代理故障:查看日志定位错误、查询会话数据库确认消息是否到达并产生回复、检查挂载与认证配置,并按常见问题给出修复方案(如停掉重复实例、重建容器镜像)。",
+    "when": "当容器出问题(如启动失败、认证报错、消息无回复)或你想弄清容器系统如何运作时触发。",
     "say": [
       {
-        "text": "容器代理不回复，帮我查错误日志和会话数据库。",
-        "note": "Claude会先查日志和数据库。"
+        "text": "容器没回消息,帮我查日志和会话数据库。",
+        "note": "会查会话记录,定位消息卡在哪一步。"
       },
       {
-        "text": "检查是不是有重复的nanoclaw服务在运行？",
-        "note": "处理消息被静默丢失的问题。"
+        "text": "日志报 'No adapter for channel type',怎么办?",
+        "note": "会检查是否重复运行了服务实例,并停掉旧的。"
       },
       {
-        "text": "帮我重启这个会话的容器。",
-        "note": "执行容器重启命令。"
+        "text": "给我讲讲主机和容器之间是怎么传消息的。",
+        "note": "会以两个会话数据库为核心解释消息流。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:07:41.078Z",
+    "generated_at": "2026-09-03T08:22:54.021Z",
     "lint_pass": true,
-    "what_en": "When container agent issues arise, Claude follows the debugging guide: checks host error logs, inspects session inbound/outbound DBs to see if messages reached the container and replies were produced, and addresses common issues like duplicate instances, auth failures, and mount problems.",
-    "when_en": "Triggered when a container is not working, fails to start, or has authentication errors; also used to understand how the container system works.",
+    "what_en": "Claude can debug container agents by checking logs, querying session DBs to confirm message flow, inspecting mounts/auth, and walking through fixes for common issues.",
+    "when_en": "It applies when things aren't working, a container fails, authentication problems occur, or you want to understand how the container system works.",
     "say_en": [
       {
-        "text": "The container agent isn't replying; check the error logs and session DBs.",
-        "note": "Claude checks logs and DBs per the debug steps."
+        "text": "The container never replies. Check the logs and session DBs.",
+        "note": "Checks inbound/outbound DBs to see where it stalled."
       },
       {
-        "text": "Check if there are duplicate nanoclaw service instances running.",
-        "note": "Addresses the silent message loss issue."
+        "text": "The log says 'No adapter for channel type'. What should I do?",
+        "note": "Checks for duplicate instances and disables the stale one."
       },
       {
-        "text": "Restart the container for this session.",
-        "note": "Runs ncl groups restart."
+        "text": "Explain how the host and container exchange messages.",
+        "note": "Walks through the message flow using the two session DBs."
       }
     ]
   }

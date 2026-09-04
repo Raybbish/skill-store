@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Intelligent refactor command. Triggers: refactor, refactoring, cleanup, restructure, extract, simplify, modernize.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "65c55dc6b470e0b21f60ff3c16c8e9594d575cd8",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,13 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68633,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-03T07:38:56.546Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
-    "bulk_source": true
+    "upstream_commit_at": "2026-09-03T16:29:55+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -36,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-03T07:38:56.546Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给你做代码整理和重构时,它会先弄清你的目标和代码结构,再制定计划,分小步修改;每改一步就自动检查有没有出错,改完还会跑全部测试和检查,确保结果没搞坏原有功能。",
-    "when": "当你提到 “refactor”、“cleanup”、“restructure” 等关键词,或使用 /refactor 命令时触发;若目标不明确,它会先问你想要什么结果。",
+    "what": "收到重构类请求后，Claude 不会直接改代码，而是先弄清目标、受影响的文件和测试情况，再制定分步计划；每改一步就运行测试，最后做回归检查并汇报改动清单。",
+    "when": "当你输入 /refactor 命令，或要求重构、清理、简化代码时接管；指令含糊时（如只说“改进”）会先追问目标和范围。",
     "say": [
       {
-        "text": "/refactor handler.ts --strategy=safe",
-        "note": "它会用保守方式重构,每步跑测试。"
+        "text": "清理 src/services 里重复代码，保持对外行为完全一致",
+        "note": "“清理”属开放式指令，它会先确认具体要做什么。"
       },
       {
-        "text": "/refactor 把验证逻辑提取成单独模块",
-        "note": "它会先分析依赖再做拆分。"
-      },
-      {
-        "text": "/refactor auth --strategy=aggressive",
-        "note": "允许更大改动,仍会测试兜底。"
+        "text": "重构所有调用旧版 API 的地方，改用新的 auth 模块写法",
+        "note": "它会先查找全部引用，再统一替换并逐步验证。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e166e456e432a2e8aa78cc7264956784ecaf536f7069353493293be3cd5ca88a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:58:23.314Z",
+    "generated_at": "2026-09-03T07:58:13.016Z",
     "lint_pass": true,
-    "what_en": "When asked to refactor, Claude analyzes the code, plans, then applies small changes with tests after each step, and runs full regression checks.",
-    "when_en": "Triggers on keywords like 'refactor', 'cleanup', 'restructure', or the /refactor command. If the goal is unclear, it asks for clarification first.",
+    "what_en": "Claude will not edit code right away. It first confirms intent, maps affected files and dependencies, checks test coverage, and creates a plan. Each step runs tests; it finishes with a full regression check and a change summary.",
+    "when_en": "Activates when you run /refactor or ask to refactor, clean up, or simplify code; if the request is vague (e.g., just \"improve this\"), it asks clarifying questions first.",
     "say_en": [
       {
-        "text": "/refactor handler.ts --strategy=safe",
-        "note": "Refactors conservatively and tests after each step."
+        "text": "Refactor src/auth/handler.ts: extract validation logic into its own module.",
+        "note": "It checks scope and tests, then refactors incrementally."
       },
       {
-        "text": "/refactor extract validation into a separate module",
-        "note": "It analyzes dependencies first, then splits."
+        "text": "Clean up duplicated code in src/services while keeping behavior unchanged.",
+        "note": "Cleanup is vague, so Claude confirms the goal first."
       },
       {
-        "text": "/refactor auth --strategy=aggressive",
-        "note": "Broader changes allowed, still test-verified."
+        "text": "Refactor all callers of the old API to use the new auth module style.",
+        "note": "It finds all references first, replaces them step by step."
       }
     ]
   }

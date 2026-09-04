@@ -5,7 +5,7 @@
     "name": "embedded-captions",
     "description": "Add captions or subtitles to an existing single-subject talking-head video without editing the footage. Use for plain verbatim captions, cinematic captions embedded behind the subject, VFX captions, “炸/特效/酷炫字幕,” or a named identity from the 35-style catalog. Route by visual identity, not by backend engine. The quiet `anchor` rail is the default; embed every word only when the user explicitly wants a fully cinematic treatment. The workflow runs locally end to end, including transcription and subject matting; split multi-shot footage before applying it.\n",
     "upstream": "https://github.com/heygen-com/hyperframes/tree/main/skills/embedded-captions",
-    "upstream_commit": "af1cb1c10da33bade100db8233435c7591b7c0bc",
+    "upstream_commit": "05b57f9204a963104f1f79ef88ffc24cd174fd68",
     "content_hash": "sha256:541b9892765e7b92fbc18d0aec84b2e2dafe8780414aabad5e9ca5faca3643f2",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -20,10 +20,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 181600,
-    "fetched_at": "2026-08-28T14:50:43.110Z",
+    "installs_skills_sh": 189400,
+    "fetched_at": "2026-09-03T07:42:25.515Z",
     "first_seen_at": "2026-07-14T05:27:20.908Z",
-    "upstream_commit_at": "2026-08-28T01:40:41-04:00"
+    "upstream_commit_at": "2026-09-03T05:39:21Z"
   },
   "context_size": {
     "version": "1",
@@ -32,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:50:43.110Z",
+    "generated_at": "2026-09-03T07:42:25.515Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -197,26 +197,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给现有单人说话视频加字幕,不改动原始画面。默认生成干净的下方逐字字幕条,并在高潮处把关键词嵌入到人物背后;也可按 35 种风格目录定制(如“炸”“酷炫字幕”)。转写和抠像全程在本地完成。",
-    "when": "当用户要求给现有单人说话视频添加逐字字幕、电影感嵌入字幕或“炸/特效”字幕时触发;前提是视频为单人、有语音、无烧录字幕。默认走安静风格,只有明确要求才全片嵌入。",
+    "what": "给已有单人说话视频加字幕而不改动原画面:它会先转写语音并识别人像,再按选定的文字风格(普通下栏字幕、人像背后嵌入的特效大字,或“炸/特效”等成套主题)把说话内容做成字幕合成到画面上,最后输出带字幕的新视频。",
+    "when": "用于给已有的单人头像讲话视频加字幕;当你说“加字幕/特效字幕/炸字幕”等要求时触发。若视频是多说话人、带硬切换或已烧录字幕等情况,会先拒绝处理。",
     "say": [
       {
-        "text": "给这个访谈视频加逐字字幕。",
-        "note": "会生成默认的下方字幕条,并在高潮处嵌入一个词。"
+        "text": "给这段单人讲话视频加上下栏逐字字幕。",
+        "note": "会按默认 Standard 模式处理。"
       },
       {
-        "text": "用“炸”风格给我的视频加特效字幕。",
-        "note": "会从 35 种风格目录中挑选匹配的特效身份。"
+        "text": "把那个最有力的词做成嵌在人像背后的特效大字。",
+        "note": "会走 Cinematic 模式并先预览效果。"
       },
       {
-        "text": "这是单人讲解,帮我加电影感字幕,每句都嵌入。",
-        "note": "会进入纯嵌入模式,所有字幕都放在人物背后。"
+        "text": "用 ordnance 主题做一个炸裂字幕效果。",
+        "note": "需要先通过视频画面检查。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:541b9892765e7b92fbc18d0aec84b2e2dafe8780414aabad5e9ca5faca3643f2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:00:30.040Z",
-    "lint_pass": true
+    "generated_at": "2026-09-03T08:00:49.777Z",
+    "lint_pass": true,
+    "what_en": "Adds captions to a single-person talking-head clip without touching the source. It transcribes speech, detects the subject, and renders text as a lower-third rail, a hero word behind the person, or a themed effect. Only captions get added.",
+    "when_en": "Triggers when someone asks to add plain, cinematic, or VFX captions to a single-subject talking-head video. It refuses clips with multiple speakers, hard cuts, or burned-in captions.",
+    "say_en": [
+      {
+        "text": "Add lower-third verbatim captions to this single-person clip.",
+        "note": "Runs in default Standard mode."
+      },
+      {
+        "text": "Make the strongest word a big embedded type behind the speaker.",
+        "note": "Uses Cinematic mode with a preview first."
+      },
+      {
+        "text": "Use the ordnance theme for an explosive caption effect.",
+        "note": "Checks the footage before continuing."
+      }
+    ]
   }
 }
