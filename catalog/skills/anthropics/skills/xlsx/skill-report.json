@@ -5,7 +5,7 @@
     "name": "xlsx",
     "description": "Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .xltx, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \"the xlsx in my downloads\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.",
     "upstream": "https://github.com/anthropics/skills/tree/main/skills/xlsx",
-    "upstream_commit": "3b3fad96af16a10759d930941b4520ba0c40edae",
+    "upstream_commit": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
     "content_hash": "sha256:be6351ec9114816a2e07d34fbb41ff0a7e0f7f389d3e0380d96eceeaa2fe4d26",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,9 +21,9 @@
   "signals": {
     "stars_github": null,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:36:17.261Z",
+    "fetched_at": "2026-09-04T07:40:35.216Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-08-21T10:10:53-07:00",
+    "upstream_commit_at": "2026-09-03T09:37:13-07:00",
     "appear_count": 1,
     "list_count": 1
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:36:17.261Z",
+    "generated_at": "2026-09-04T07:40:35.216Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -103,26 +103,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会直接读写 .xlsx、.csv 等表格文件,按你的要求新建、编辑或修复表格:加列、写公式、设格式、做图表、清理杂乱数据,并把最终结果保存为表格文件。",
-    "when": "当你提到某个表格文件(例如“我下载里的 xlsx”),想对它做修改、读取、创建或格式转换;也用于把乱糟糟的表格数据整理成规范表格。",
+    "what": "收到电子表格相关请求时,Claude 会读写 .xlsx、.csv 等表格文件,能新建、增删列、写公式、设格式、做图表、清洗数据、转换格式;含公式时交付前会重算,并修掉报出的错误,最终产出表格文件。",
+    "when": "当任务围绕电子表格文件展开时触发:用户点名要处理某个 .xlsx/.csv 文件(新建、读取或编辑),或要把零散表格数据整理规范。若要交付的是 Word/HTML 报告等,则不触发。",
     "say": [
       {
-        "text": "把这份 xlsx 的 B 列改成百分比格式,再加一列合计。",
-        "note": "它读取文件并按要求修改,结果仍是表格文件。"
+        "text": "把这份销售表按月份汇总,用 SUMIF 公式写在右侧。",
+        "note": "会写入公式并重算,确认没有错误。"
       },
       {
-        "text": "把这个 csv 里空行和错位的标题清理掉,整理成规范表格。",
-        "note": "它清洗数据并输出整理后的表格文件。"
+        "text": "读我上传的 xlsx,把 B5 的公式和算好的值都告诉我。",
+        "note": "会读取公式及当前缓存值。"
       },
       {
-        "text": "新建一个 xlsx,按年月汇总这些销售数据,并加柱状图。",
-        "note": "它创建新工作表,写入公式并生成图表。"
+        "text": "把这份乱行、错表头的 csv 整理成规范表格,存成 xlsx。",
+        "note": "会清洗数据并交付新表格文件。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:be6351ec9114816a2e07d34fbb41ff0a7e0f7f389d3e0380d96eceeaa2fe4d26",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:20:36.007Z",
-    "lint_pass": true
+    "generated_at": "2026-09-04T07:51:49.357Z",
+    "lint_pass": true,
+    "what_en": "On spreadsheet tasks, Claude reads/writes .xlsx/.csv etc.: it can create files, add/remove columns, write formulas, style cells, chart, clean data, and convert formats. It recalculates all formulas before delivery and fixes reported errors.",
+    "when_en": "Triggers when a spreadsheet file is the main input or deliverable: user names a .xlsx/.csv to read, create, or edit, or asks to clean messy data into a table. Won't trigger if the primary deliverable is a Word/HTML report.",
+    "say_en": [
+      {
+        "text": "Sum this sales sheet by month, with a SUMIF formula on the right.",
+        "note": "It writes the formula, recalculates, and reports any errors."
+      },
+      {
+        "text": "Read my xlsx and tell me both the formula and cached value in B5.",
+        "note": "Loads the file twice to get both."
+      },
+      {
+        "text": "Clean this messy csv (bad rows/headers) into a proper table and save as xlsx.",
+        "note": "Cleans the data and creates a fresh spreadsheet."
+      }
+    ]
   }
 }

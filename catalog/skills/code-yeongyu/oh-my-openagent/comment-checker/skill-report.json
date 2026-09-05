@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "3bd08b366c6b6f819ae265f3311fb42a611eccf1",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68706,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-05T07:18:57.157Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-05T16:09:17+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-05T07:18:57.157Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，代码编辑会触发注释检查。若有警告，Claude 会停下，要求修复或解释被标记的注释，然后才继续。非编辑操作忽略，检查器缺失则无输出。",
-    "when": "在 Claude 成功完成 apply_patch、write、edit 等编辑操作后自动触发。非编辑操作不触发。",
+    "what": "模型每次成功执行编辑类操作(如打补丁、写文件)后,comment-checker 会自动检查改动中的注释;发现被警告的注释时,会阻止流程,要求模型先修复或解释该注释。",
+    "when": "当模型成功完成 apply_patch、write 等编辑类工具调用,且 comment-checker 对改动中的注释发出警告时触发。",
     "say": [
       {
-        "text": "修复被标记的注释。",
-        "note": "Claude 会修改该注释以通过检查。"
+        "text": "刚才的编辑触发 comment-checker 警告,请修复有问题的注释。",
+        "note": "模型会先处理被点名的注释再继续。"
       },
       {
-        "text": "解释为何这条注释被警告。",
-        "note": "Claude 会分析并说明原因。"
+        "text": "警告似乎不对,请说明保留这条注释的理由。",
+        "note": "模型会给出解释来回应检查。"
       },
       {
-        "text": "修复后继续下一步。",
-        "note": "Claude 修复后恢复执行。"
+        "text": "有哪些注释被 comment-checker 点名了?",
+        "note": "模型会列出待处理的警告。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:56:58.187Z",
+    "generated_at": "2026-09-05T07:27:17.053Z",
     "lint_pass": true,
-    "what_en": "After successful edit-like actions, Claude runs a comment check. Warnings block progress until Claude fixes or explains the flagged comment. Non-edit tools are ignored; missing checker binaries cause no output.",
-    "when_en": "Triggered after successful edit calls such as apply_patch, write, edit, etc. Non-edit tools are ignored.",
+    "what_en": "After each successful edit operation (apply_patch, write, etc.), comment-checker automatically checks the changed comments. If it flags a problematic comment, it blocks progress and requires the model to fix or explain that comment before continuing.",
+    "when_en": "Triggered after a successful apply_patch, write, edit, multi_edit, or multiedit call when comment-checker emits a warning about a comment in the modified code.",
     "say_en": [
       {
-        "text": "Fix the flagged comment.",
-        "note": "Claude updates the comment to satisfy the checker."
+        "text": "The edit triggered a comment-checker warning; please fix the flagged comment.",
+        "note": "The model will address that comment before continuing."
       },
       {
-        "text": "Explain why this comment is flagged.",
-        "note": "Claude analyzes and gives the reason."
+        "text": "The warning may be wrong; explain why keeping this comment is valid.",
+        "note": "The model will respond with a justification."
       },
       {
-        "text": "Fix it and continue.",
-        "note": "Claude then resumes the workflow."
+        "text": "Which comments did comment-checker flag?",
+        "note": "The model will list the warnings to handle."
       }
     ]
   }

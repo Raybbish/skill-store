@@ -5,7 +5,7 @@
     "name": "block-no-verify-hook",
     "description": "Configure a PreToolUse hook to prevent AI agents from skipping git pre-commit hooks with --no-verify and other bypass flags. Use when setting up Claude Code projects that enforce commit quality gates.",
     "upstream": "https://github.com/wshobson/agents/tree/main/plugins/block-no-verify/skills/block-no-verify-hook",
-    "upstream_commit": "38e19c20d2b154510b0e624a2e3e186b19b5c527",
+    "upstream_commit": "a30778f8c4e6b0a87567941b7cca4f534bf642b6",
     "content_hash": "sha256:d45dd8e372af339ba6af71adac43258873c521db32e3230dd614303f070e8a50",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 39184,
+    "stars_github": 39340,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:08.572Z",
+    "fetched_at": "2026-09-02T07:31:58.484Z",
     "first_seen_at": "2026-08-27T13:37:08.572Z",
-    "upstream_commit_at": "2026-08-26T08:14:08-04:00",
-    "repo_skill_count": 181,
+    "upstream_commit_at": "2026-09-01T18:36:23-04:00",
+    "repo_skill_count": 183,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:08.572Z",
+    "generated_at": "2026-09-02T07:31:58.484Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,40 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装后,Claude 执行 git 操作时,如果命令里带有 --no-verify 或 --no-gpg-sign 等跳过检查的选项,会被直接拒绝,并提示改用正常命令,确保代码检查与签名校验不会绕过。",
-    "when": "当 Claude 通过 Bash 工具执行含 git 的命令,并且命令里带 --no-verify 或 --no-gpg-sign 时触发拦截。",
+    "what": "装上后,Claude 运行 git 命令时会先被检查;若命令含 --no-verify 或 --no-gpg-sign,Claude 会拒绝执行并提示不允许,pre-commit 等检查不会被跳过。",
+    "when": "当 Claude 准备运行的 git 命令带有 --no-verify 或 --no-gpg-sign 时,会被拦截;只作用于 Bash 工具调用。",
     "say": [
       {
-        "text": "帮我提交这些更改"
+        "text": "请正常提交代码,不要跳过 pre-commit 检查。",
+        "note": "若 Claude 试图加 --no-verify 会被拦下。"
       },
       {
-        "text": "用 --no-verify 提交",
-        "note": "该命令会被拒绝,提示不允许跳过检查"
+        "text": "试试运行 git commit --no-verify。",
+        "note": "这条命令会被拦截并提示。"
       },
       {
-        "text": "为什么 --no-verify 不能用了?",
-        "note": "Claude 会说明这是 hook 的拦截规则"
+        "text": "请用 --no-gpg-sign 提交。",
+        "note": "该参数也会被拒绝。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d45dd8e372af339ba6af71adac43258873c521db32e3230dd614303f070e8a50",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:52:41.315Z",
+    "generated_at": "2026-09-02T08:12:23.159Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude's git commands containing bypass flags like --no-verify or --no-gpg-sign are blocked before execution, forcing pre-commit hooks and signing checks to run.",
-    "when_en": "The hook triggers when Claude runs a Bash tool call that includes a git command with --no-verify or --no-gpg-sign flags, either directly or after &&, ;, or |.",
+    "what_en": "After installation, Claude's git commands are inspected before execution. If a command contains --no-verify or --no-gpg-sign, Claude rejects it with a notice, so pre-commit checks are not skipped.",
+    "when_en": "When Claude is about to run a git command that includes --no-verify or --no-gpg-sign through the Bash tool, the hook blocks it.",
     "say_en": [
       {
-        "text": "Commit these changes for me",
-        "note": "If Claude tries --no-verify, the hook blocks it."
+        "text": "Please commit normally and do not skip pre-commit checks.",
+        "note": "If Claude tries --no-verify, it will be blocked."
       },
       {
-        "text": "Commit with --no-verify",
-        "note": "The command is rejected and explained."
+        "text": "Try running git commit --no-verify.",
+        "note": "This command will be blocked."
       },
       {
-        "text": "Why is --no-verify blocked?",
-        "note": "Claude explains the hook rule."
+        "text": "Please commit with --no-gpg-sign.",
+        "note": "This flag will be rejected too."
       }
     ]
   }
