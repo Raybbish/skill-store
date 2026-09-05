@@ -5,7 +5,7 @@
     "name": "pre-publish-review",
     "description": "Nuclear-grade 12-agent pre-publish release gate. Runs /get-unpublished-changes to detect all changes since last npm release, spawns up to 10 ultrabrain agents for deep per-change analysis, invokes /review-work (orchestrator manual QA plus one gate reviewer) for holistic review, and 1 oracle for overall release synthesis. Runs ONLY when the user explicitly asks for a pre-publish review — a plain publish/release request MUST NOT trigger this; /publish ships directly. Triggers: 'pre-publish review', 'review before publish', 'release review', 'pre-release review', 'ready to publish?', 'can I publish?', 'pre-publish', 'safe to publish', 'publishing review', 'pre-publish check'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/pre-publish-review",
-    "upstream_commit": "2dc26ccf9fc2c83ed792c8ee14ac1a4fb6c5db61",
+    "upstream_commit": "3bd08b366c6b6f819ae265f3311fb42a611eccf1",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68671,
+    "stars_github": 68706,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:04.908Z",
+    "fetched_at": "2026-09-05T07:18:57.157Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-04T16:40:46+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-05T16:09:17+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:04.908Z",
+    "generated_at": "2026-09-05T07:18:57.157Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你要做发布前检查时，Claude 会先找出从上次发布以来所有未发布的改动，按功能分组，再同时开展三组检查：每组改动的代码深查、整体质量与安全检查、最终发布综合判断，最后给出能否发布、版本怎么升级及风险提示。",
-    "when": "仅当你明确要求做发布前检查时触发；若只说“发布”，不会触发而直接发布。典型说法：“pre-publish review”“release review”“can I publish?”等。",
+    "what": "要求发布前审查时,Claude 先运行 /get-unpublished-changes 找出上次发布以来的全部改动,再启动最多10个后台代理分别做深度分析,然后调用 /review-work 做整体审查,最后由 oracle 代理给出发布就绪结论、版本号建议和风险。",
+    "when": "仅当用户明确要求做发布前审查时触发,例如说“pre-publish review”“release review”等;普通的发布请求不会触发,会直接发布。",
     "say": [
       {
-        "text": "请对当前待发布内容做一次发布前审查。",
-        "note": "启动多层发布前检查，给出完整结论。"
+        "text": "请帮我做一次 pre-publish review,看看当前改动能否发布。",
+        "note": "Claude 会启动多层代理审查并给出结论。"
       },
       {
-        "text": "我要发 npm 包了，先帮我确认现在能否安全发布。",
-        "note": "会逐层检查未发布改动并给出版本号建议。"
+        "text": "发布前先跑 release review,检查有没有破坏性变更。",
+        "note": "会先检测未发布改动,再逐项深度分析。"
       },
       {
-        "text": "发布前先看看这轮改动有没有问题，再决定怎么升版本。",
-        "note": "触发全套发布前审查流程。"
+        "text": "运行 pre-publish check,告诉我建议的版本号。",
+        "note": "审查后返回版本号建议和发布风险。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T07:54:43.951Z",
+    "generated_at": "2026-09-05T07:31:15.824Z",
     "lint_pass": true,
-    "what_en": "On a pre-publish review request, Claude locates and groups all unreleased changes since the last npm release, then runs parallel layers: per-group deep code review, whole-change QA/security review, and an overall release synthesis. Output: release readiness, version bump suggestion, risks.",
-    "when_en": "Only fires on an explicit pre-publish review request; a normal publish/release request does not trigger it. Example triggers: 'pre-publish review', 'release review', 'can I publish?'.",
+    "what_en": "On request, Claude detects all changes since the last npm release via /get-unpublished-changes, spawns up to 10 agents for per-change analysis, runs /review-work for holistic QA, and uses one oracle to give the final release verdict, version bump, and risk.",
+    "when_en": "Only when the user explicitly asks for a pre-publish review, e.g. with phrases like 'pre-publish review' or 'release review'. A plain publish/release request must not trigger it; /publish ships directly.",
     "say_en": [
       {
-        "text": "Run a pre-publish review of this project; can I release it?",
-        "note": "Starts the full review and returns a readiness verdict."
+        "text": "Please run a pre-publish review to see if the current changes are ready.",
+        "note": "Claude starts the multi-agent release gate."
       },
       {
-        "text": "I want to publish this npm package; do a pre-publish check first.",
-        "note": "Runs the unpublished-changes scan and the layered gate."
+        "text": "Run a release review and check for breaking changes.",
+        "note": "It detects unpublished changes and analyzes them first."
       },
       {
-        "text": "Before we ship, review all unreleased changes for release.",
-        "note": "Spawns per-group deep review and a holistic review."
+        "text": "Run a pre-publish check and recommend a version bump.",
+        "note": "Returns a version suggestion and risk assessment."
       }
     ]
   }

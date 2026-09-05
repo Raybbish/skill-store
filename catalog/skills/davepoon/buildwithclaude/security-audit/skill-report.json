@@ -5,7 +5,7 @@
     "name": "security-audit",
     "description": "Deep security audit covering OWASP Top 10, authentication, authorization, data protection, dependency vulnerabilities, and secrets scanning. Delegates to the Centinela (QA) agent.",
     "upstream": "https://github.com/davepoon/buildwithclaude/tree/main/plugins/agent-triforce/skills/security-audit",
-    "upstream_commit": "426b6b4aa26f5c9352080a4cbf3df9522661a85e",
+    "upstream_commit": "f4362e9c2aa1b16f19018bd11ba4682ab0bd3682",
     "content_hash": "sha256:af1315d34ff070412f6dd7e8077ab79dfb9726b6b0c787f1bef9b8daca99ecfe",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 3412,
+    "stars_github": 3416,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:54.521Z",
+    "fetched_at": "2026-09-05T07:19:56.180Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-03T20:37:19+10:00",
-    "repo_skill_count": 371,
+    "upstream_commit_at": "2026-09-04T23:03:19+10:00",
+    "repo_skill_count": 372,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:54.521Z",
+    "generated_at": "2026-09-05T07:19:56.180Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,36 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会调用 Centinela 代理审计代码:逐项检查 OWASP Top 10、扫描硬编码密钥、依赖漏洞,有 Solidity 时查智能合约;最后给出通过/需修改的结论并写报告。",
-    "when": "输入 /security-audit(可附带路径)时触发;不带路径时默认审计 src/ 整个目录。",
+    "what": "装上后,Claude 会调用 Centinela(QA)助手做代码安全审计:检查登录/权限,扫描硬编码密钥和依赖漏洞,并对照 OWASP Top 10 排查;含 Solidity 合约也审查。最后把“通过/需修改”结论写入 docs/reviews 报告,交给开发助手。",
+    "when": "当你输入 /security-audit(可带目录)时触发;典型场景有发版前、改动登录/权限代码后、引入新依赖等。未指定范围时审计整个 src/。",
     "say": [
       {
-        "text": "对 src/payments/ 做一次安全审计",
-        "note": "以此目录为范围生成审计报告。"
+        "text": "发版前,我想跑一次 /security-audit,检查整个项目。",
+        "note": "未给路径时,默认审计整个 src/ 目录。"
       },
       {
-        "text": "审计整个代码库,按 OWASP 列风险",
-        "note": "不指定范围会覆盖整个 src/。"
-      },
-      {
-        "text": "查一下依赖有没有已知 CVE 漏洞",
-        "note": "会做依赖漏洞扫描并列入报告。"
+        "text": "我刚加了新依赖,请执行一次 security-audit,看有没有已知漏洞。",
+        "note": "会检查依赖漏洞,并给“通过/需修改”结论。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:af1315d34ff070412f6dd7e8077ab79dfb9726b6b0c787f1bef9b8daca99ecfe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T07:58:37.945Z",
+    "generated_at": "2026-09-05T07:35:49.688Z",
     "lint_pass": true,
-    "what_en": "Claude delegates to the Centinela agent to audit code: checks OWASP Top 10, hardcoded secrets, dependency vulnerabilities, and smart contracts if Solidity is present; then gives an APPROVED or CHANGES REQUIRED verdict and writes a report.",
-    "when_en": "Triggered when the user enters /security-audit (optionally with paths); with no explicit path, the entire src/ directory is audited.",
+    "what_en": "Claude calls Centinela to audit auth/permissions, secrets, and dependencies; reviews OWASP Top 10; checks Solidity contracts if present. Writes APPROVED/CHANGES REQUIRED report to docs/reviews and hands findings to Dev agent.",
+    "when_en": "Triggered by /security-audit (optionally with a path). Typical cases: pre-release, after auth/permission changes, or after adding dependencies. With no path, it audits the whole src/ directory.",
     "say_en": [
       {
-        "text": "Run a security audit on src/payments/",
-        "note": "Audits only that folder and returns a report."
+        "text": "Please use security-audit to check the src/auth/ directory.",
+        "note": "The audit focuses on that directory and produces a report."
       },
       {
-        "text": "Audit the whole codebase and list OWASP risks",
-        "note": "No scope means the full src/ is covered."
+        "text": "Before release, run a security audit over the whole project.",
+        "note": "With no path, it will audit the entire src/ directory."
       },
       {
-        "text": "Check my dependencies for known CVEs",
-        "note": "Runs a dependency vulnerability scan."
+        "text": "I just added new dependencies; run security-audit for known issues."
       }
     ]
   }

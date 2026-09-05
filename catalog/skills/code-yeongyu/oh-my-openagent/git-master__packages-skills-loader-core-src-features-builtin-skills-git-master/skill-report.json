@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "MUST USE for ANY git operations. Atomic commits, rebase/squash, history search (blame, bisect, log -S). STRONGLY RECOMMENDED: Use with task(category='quick', load_skills=['git-master'], ...) to save context. Triggers: 'commit', 'rebase', 'squash', 'who wrote', 'when was X added', 'find the commit that'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/skills-loader-core/src/features/builtin-skills/git-master",
-    "upstream_commit": "2dc26ccf9fc2c83ed792c8ee14ac1a4fb6c5db61",
+    "upstream_commit": "3bd08b366c6b6f819ae265f3311fb42a611eccf1",
     "content_hash": "sha256:5708df42d424a3c25a536a2643cb55f219228fa0fe307d5e484e2bda83622389",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68671,
+    "stars_github": 68706,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:04.908Z",
+    "fetched_at": "2026-09-05T07:18:57.157Z",
     "first_seen_at": "2026-09-01T08:13:03.103Z",
-    "upstream_commit_at": "2026-09-04T16:40:46+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-05T16:09:17+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:04.908Z",
+    "generated_at": "2026-09-05T07:18:57.157Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后处理 git 请求时，它会先检查变更和分支，再把不同模块/用途的改动拆成多次小提交，测试跟实现放在同一提交，并按仓库风格写提交说明；需要时也会改写历史或查改动来历。",
-    "when": "当你说出 commit、rebase、squash 等 git 指令，或询问某段代码是谁写的、何时加的时接管。",
+    "what": "装上后,Claude 会先判断你的 Git 请求属于“提交、rebase/squash、查历史”哪一类,再走对应流程。默认会把多个文件按目录和逻辑拆成多个原子提交,并沿用仓库现有提交风格,而不是一个大提交。",
+    "when": "当你说到 “commit”“rebase/squash” 等词,或问某段代码是谁写的、某个改动是什么时候加的时候,会触发。",
     "say": [
       {
-        "text": "把这几个文件的改动拆成独立的小 commit，按模块分组提交。",
-        "note": "会先输出提交计划，再分组执行提交。"
+        "text": "帮我按业务逻辑把这 8 个改动拆成多个提交。",
+        "note": "它会先输出提交计划,再分别提交。"
       },
       {
-        "text": "把最近三个 commit 压缩成一个，提交信息沿用仓库现有的风格。",
-        "note": "进入 rebase/历史重写，会先检查是否已推送并提醒。"
+        "text": "我想把最近几个提交 squash 成一个。",
+        "note": "进入 rebase 模式,帮你合并提交。"
       },
       {
-        "text": "帮我查这段代码是在哪个 commit、被谁加的，什么时候加的。",
-        "note": "触发历史搜索，输出相关提交信息。"
+        "text": "这个文件里的函数是什么时候加的?",
+        "note": "会查 log -S,给出引入该改动的提交。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5708df42d424a3c25a536a2643cb55f219228fa0fe307d5e484e2bda83622389",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T07:52:58.433Z",
+    "generated_at": "2026-09-05T07:28:33.296Z",
     "lint_pass": true,
-    "what_en": "On git requests, it inspects current state/history, splits files into several focused commits (tests stay with code), mimics repo message style, rewrites history, and traces when/who introduced a change.",
-    "when_en": "It is triggered by git-related requests such as saying 'commit', 'rebase', 'squash', or asking who/when a piece of code was added.",
+    "what_en": "After loading, Claude detects a git request as commit, rebase/squash, or history search and follows that workflow. It splits multi-file changes into atomic commits by directory/logic, matching the repo's commit style, instead of one big commit.",
+    "when_en": "It triggers when you mention keywords like 'commit', 'rebase/squash', ask who wrote a piece of code, when something was added, or to find the commit that introduced something.",
     "say_en": [
       {
-        "text": "Split these changed files into separate small commits by logical module.",
-        "note": "Enters commit mode, prints the plan, then commits per group."
+        "text": "Please split these 8 changes into several commits by business logic.",
+        "note": "It prints a commit plan first, then commits separately."
       },
       {
-        "text": "Squash the last three commits into one, matching the repo's message style.",
-        "note": "Runs history rewrite; warns if already pushed."
+        "text": "I'd like to squash my last few commits into one.",
+        "note": "It enters rebase mode and merges them."
       },
       {
-        "text": "Trace which commit introduced this code, by whom, and when.",
-        "note": "History search returns the matching commits."
+        "text": "When was the function in this file added?",
+        "note": "It searches log -S and shows the introducing commit."
       }
     ]
   }

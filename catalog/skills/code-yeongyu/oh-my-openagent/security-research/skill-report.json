@@ -5,7 +5,7 @@
     "name": "security-research",
     "description": "Team Mode security research skill. Orchestrates 3 vulnerability hunters and 2 PoC engineers to audit a codebase in parallel, prove exploitability, classify root causes, and calibrate severity by actual exploitability. Use for security review, vulnerability research, exploitability audit, pre-release security check, threat model validation, and `/security-research`. Triggers: 'security-research', 'security research', 'security review', 'vulnerability audit', 'exploitability audit', '보안 리뷰', '취약점 감사'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/security-research",
-    "upstream_commit": "2dc26ccf9fc2c83ed792c8ee14ac1a4fb6c5db61",
+    "upstream_commit": "3bd08b366c6b6f819ae265f3311fb42a611eccf1",
     "content_hash": "sha256:c4d006d309db6170594aa2b436d3cf6a0f7273b495939aa9c28308d51a9572c5",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68671,
+    "stars_github": 68706,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:04.908Z",
+    "fetched_at": "2026-09-05T07:18:57.157Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-04T16:40:46+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-05T16:09:17+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:04.908Z",
+    "generated_at": "2026-09-05T07:18:57.157Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,42 +90,25 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，做安全审计时 Claude 会组建 3 名漏洞猎人 + 2 名验证工程师的团队：猎人找可疑问题，工程师证明哪些真的能利用；按可利用性定严重性，出 PASS / PASS WITH FINDINGS / BLOCK 报告。",
-    "when": "当你说出 “security-research” 等触发词、要求做安全审查或漏洞审计，或使用 /security-research 时触发；需团队模式开启并在主会话中。",
+    "what": "Claude 会以 5 人并行小组审计代码:3 名“漏洞猎人”找攻击入口、认证授权、文件依赖等疑似漏洞;2 名“PoC 工程师”写小型复现,证实、证伪或降级候选。最后按真实可利用性评级,报告含攻击路径、修复建议与上线判定。",
+    "when": "当用户说 “security research”“security review”“vulnerability audit” 等触发词,要求做安全审查、发布前校验、威胁模型验证,或调用 /security-research 时进入。它需要已开启 team-mode 并在主会话;未给具体目标时默认审计当前仓库与当前分支的改动。",
     "say": [
       {
-        "text": "用 security-research 审计这个仓库。",
-        "note": "会组建 5 人团队并行审计并出报告。"
+        "text": "对当前仓库做一次安全审计,找出可以实际利用的漏洞。",
+        "note": "先定范围,再走猎人排查与 PoC 验证,最后输出报告。"
       },
       {
-        "text": "security review 这个 PR，证明漏洞能否实际利用。",
-        "note": "会验证每个发现并给修复建议。"
+        "text": "Security review 这个 PR 的改动,重点看注入和越权。",
+        "note": "猎人对指定改动并行排查,之后由 PoC 工程师验证。"
       },
       {
-        "text": "vulnerability audit 一下这个目录，给 PoC。",
-        "note": "会生成含攻击路径、PoC 和最小修复的报告。"
+        "text": "发布前安全复查:审计当前分支相对 main 的改动,给能否上线的结论。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c4d006d309db6170594aa2b436d3cf6a0f7273b495939aa9c28308d51a9572c5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T07:57:52.186Z",
-    "lint_pass": true,
-    "what_en": "Claude forms a 5-person team (3 vulnerability hunters, 2 PoC engineers) that audits code, proves which findings are truly exploitable, ranks severity by exploitability, and outputs a report headed PASS, PASS WITH FINDINGS, or BLOCK.",
-    "when_en": "Triggers on 'security-research' or on a request for a security review / vulnerability audit, or when /security-research is used. Requires team mode enabled and the main session.",
-    "say_en": [
-      {
-        "text": "Run a security-research audit on this repository.",
-        "note": "A 5-member team audits in parallel and reports."
-      },
-      {
-        "text": "Security review this PR and prove which flaws are actually exploitable.",
-        "note": "Engineers verify each candidate and suggest fixes."
-      },
-      {
-        "text": "Vulnerability audit this directory and give me a PoC.",
-        "note": "Report includes attack path, PoC, and minimal fix."
-      }
-    ]
+    "generated_at": "2026-09-05T07:34:06.856Z",
+    "lint_pass": false
   }
 }

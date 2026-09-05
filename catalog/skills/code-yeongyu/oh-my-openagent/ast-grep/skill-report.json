@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Searches and rewrites code by AST shape across 25 languages. Use when the target is a syntax pattern (every call/class/import shaped like X, a codemod, a YAML rule) rather than literal text; for plain strings, comments, or filenames, use rg.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "2dc26ccf9fc2c83ed792c8ee14ac1a4fb6c5db61",
+    "upstream_commit": "3bd08b366c6b6f819ae265f3311fb42a611eccf1",
     "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68671,
+    "stars_github": 68706,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:04.908Z",
+    "fetched_at": "2026-09-05T07:18:57.157Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-04T16:40:46+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-05T16:09:17+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:04.908Z",
+    "generated_at": "2026-09-05T07:18:57.157Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -113,37 +113,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会按代码的语法结构（而不是纯文本）搜索和改写代码：能找出形状相同的函数、调用、类等写法，把一种代码形式批量改成另一种，支持约 25 种语言。",
-    "when": "当你提出的需求取决于代码形状而不只是文本内容时触发，例如按形状找函数/调用/类、做批量改写、运行 YAML 规则；找字符串、注释或文件名应改用 rg。",
+    "what": "装上后,Claude 会用 ast-grep 按代码语法结构而非纯文字来搜索和改写代码,支持 25 种语言。它能找出形状相同的函数/调用/导入,批量替换(如把 console.log 改为 logger.info),也能执行 YAML 规则扫描。",
+    "when": "当你要求做结构化的代码查找或改写,例如“找所有接收 Request 的函数”、“把 console.log 换成 logger.info”、“去掉 as any 类型断言”等;若目标是纯文本(字符串内容、注释、文件名)则用 rg,不触发本技能。",
     "say": [
       {
-        "text": "找出所有带 Request 参数类型的函数。",
-        "note": "按代码结构搜索，结果会列出文件与位置。"
+        "text": "把仓库里所有 console.log 改成 logger.info",
+        "note": "会先预览再实际改,并报告涉及文件数"
       },
       {
-        "text": "运行我们的 YAML 规则，列出违规点。",
-        "note": "调用 scan 子命令，输出规则报告。"
+        "text": "查找所有参数为 Request 的函数",
+        "note": "按 AST 形状搜索,返回文件与行号"
+      },
+      {
+        "text": "按 no-console 规则扫描 src 目录",
+        "note": "运行 sg scan 并输出违规位置和自动修复选项"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T07:51:04.838Z",
+    "generated_at": "2026-09-05T07:27:05.120Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude searches and rewrites code by syntax structure (AST) instead of raw text. It can find every function/call/class/import with a given shape and apply batch rewrites across about 25 languages.",
-    "when_en": "Triggers when the task depends on code structure, not text bytes—e.g. finding structurally identical functions/calls/classes, running codemods or rewrites, or applying YAML rules. Use rg for plain strings, comments, or filenames.",
+    "what_en": "It equips Claude with ast-grep to search and rewrite code by syntax-tree shape rather than literal text across 25 languages. It can find similar functions/calls/imports, apply bulk rewrites (e.g., console.log to logger.info), and run YAML rule scans with file counts.",
+    "when_en": "When the user asks for structural code lookup or codemods (e.g., find all functions taking Request, rewrite console.log to logger.info, strip as any). For plain text targets such as strings, comments, filenames, use rg instead.",
     "say_en": [
       {
-        "text": "Find every function that takes a Request parameter.",
-        "note": "Runs an AST search and lists matches."
+        "text": "Rewrite all console.log calls in the repo to logger.info",
+        "note": "Previews first, then applies and reports files changed."
       },
       {
-        "text": "Rewrite console.log(x) to logger.info(x) across the repo.",
-        "note": "Shows a dry-run preview; applies only after confirmation."
+        "text": "Find every function whose parameter is Request",
+        "note": "Searches by AST shape and lists file/line locations."
       },
       {
-        "text": "Run our YAML rules and report violations.",
-        "note": "Invokes the scan subcommand."
+        "text": "Scan the src directory with the no-console rule",
+        "note": "Runs sg scan and reports violations with auto-fix options."
       }
     ]
   }

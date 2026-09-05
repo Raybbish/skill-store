@@ -5,7 +5,7 @@
     "name": "review-work",
     "description": "Post-implementation gate review: run manual QA on the real surface yourself, then launch ONE gate reviewer (never a panel) to audit goal, constraints, code quality, security, missed context, and QA evidence. Use before a PR handoff or when the user explicitly asks to review completed work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/review-work",
-    "upstream_commit": "2dc26ccf9fc2c83ed792c8ee14ac1a4fb6c5db61",
+    "upstream_commit": "3bd08b366c6b6f819ae265f3311fb42a611eccf1",
     "content_hash": "sha256:da09aef90807fbbbf08b9645efccb295f2a1eab9dfc0ad581a0ec9c428aeb1b2",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68671,
+    "stars_github": 68706,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:04.908Z",
+    "fetched_at": "2026-09-05T07:18:57.157Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-04T16:40:46+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-05T16:09:17+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:04.908Z",
+    "generated_at": "2026-09-05T07:18:57.157Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "审查已完成改动的把关流程：主代理先在真实界面上亲手做手动 QA，逐项记为通过/失败矩阵；无失败行时，只派一个门控审查子代理，对照目标、约束、质量、安全等做总检查，通过才放行。",
-    "when": "完成实现后、把改动作为 PR 交接前，或用户明确要求审查已完成工作时触发。",
+    "what": "Claude 会先在真实界面上亲手做手动 QA(主路径、最险边界、相邻回归),制成测试矩阵;再启动唯一一个 gate 审查代理,核对目标、约束、代码质量、安全与 QA 证据,给出批准或否决。矩阵无失败行且代理批准才判通过。",
+    "when": "用户明确要求评审已完成的工作,或准备 PR 交付并提出评审时触发。评审对象只针对已完成实现。",
     "say": [
       {
-        "text": "请门控审查这轮改动：先在真实界面上跑手动 QA，再启动一位门控审查官。",
-        "note": "会先生成 QA 矩阵；只要有失败行就判失败并跳过子代理。"
+        "text": "我刚写完这次改动,帮我做完工评审。",
+        "note": "Claude 会先手动实测,再造唯一一个审查代理下结论。"
       },
       {
-        "text": "我刚完成这个新功能，请做一次门控审查再交接。",
-        "note": "会收集目标、约束与改动上下文，交给唯一的门控审查子代理。"
+        "text": "PR 要交付了,先按流程把这次完成的代码评审一遍。",
+        "note": "会跑手动 QA,再让唯一一个 gate 审查代理给结论。"
       },
       {
-        "text": "请对这个分支的改动做门控审查，重点看有没有漏掉的上下文。",
-        "note": "门控审查还会检查代码质量、安全性与需求符合度。"
+        "text": "这个分支的活干完了,帮我查一遍有没有漏掉上下文和风险。",
+        "note": "若存在失败的 QA 行会直接判失败。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:da09aef90807fbbbf08b9645efccb295f2a1eab9dfc0ad581a0ec9c428aeb1b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T07:56:39.857Z",
+    "generated_at": "2026-09-05T07:33:02.160Z",
     "lint_pass": true,
-    "what_en": "Reviewing finished work = main agent does manual QA on the real surface and logs pass/fail rows; if no row fails, one gate-reviewer subagent checks goal, constraints, quality, security, missed context, QA evidence; clear only if both pass.",
-    "when_en": "Triggers after implementation, before handing off a PR, or when the user explicitly asks to review completed work.",
+    "what_en": "Claude first does hands-on QA on the real surface, then sends one gate-review subagent to audit goal, constraints, code, security, missing context and QA evidence. It approves only if all QA rows pass and the reviewer says APPROVE.",
+    "when_en": "Triggered when the user explicitly asks to review completed work, or before a PR handoff when a review of finished implementation is requested.",
     "say_en": [
       {
-        "text": "Please gate-review this batch: real-surface manual QA first, then one gate reviewer.",
-        "note": "QA failure rows abort the review and skip the gate reviewer."
+        "text": "I just finished this change—please run a completion review on it.",
+        "note": "Claude runs manual QA first, then one reviewing agent."
       },
       {
-        "text": "I just finished this new feature; run a gate review before handoff.",
-        "note": "Goal, constraints, QA evidence go to that single gate reviewer."
+        "text": "This PR is about to ship. Do the gate review per your process.",
+        "note": "Expect manual QA plus one gate reviewer verdict."
       },
       {
-        "text": "Gate-review this branch's changes, focusing on missed context.",
-        "note": "It also checks code quality, security, and goal fit."
+        "text": "This branch's work is done—check for missed context and risks before handoff.",
+        "note": "Any failing QA row makes the review fail immediately."
       }
     ]
   }

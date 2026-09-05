@@ -5,7 +5,7 @@
     "name": "programming",
     "description": "Applies strict, modern language practice (typed errors, exhaustive match, TDD) for Python, Rust, TypeScript, and Go. Use for work on .py, .rs, .ts, or .go files.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/programming",
-    "upstream_commit": "2dc26ccf9fc2c83ed792c8ee14ac1a4fb6c5db61",
+    "upstream_commit": "3bd08b366c6b6f819ae265f3311fb42a611eccf1",
     "content_hash": "sha256:4e0e2d7ec9df24c4b73b01a94ef149c07257520652048d984ad213dc42614bb2",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68671,
+    "stars_github": 68706,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:04.908Z",
+    "fetched_at": "2026-09-05T07:18:57.157Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-04T16:40:46+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-05T16:09:17+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:04.908Z",
+    "generated_at": "2026-09-05T07:18:57.157Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -215,41 +215,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "对 Python、Rust、TypeScript、Go 代码任务，Claude 会先加载该语言规则文档再动手，并要求按“测试先行”流程：先写失败测试、再用最小代码通过、最后重构；类型须严格，分支须穷尽。",
-    "when": "当你要求处理 .py、.rs、.ts 等代码文件，或提到 Python、Rust、TypeScript 等编程语言时，自动触发。",
+    "what": "处理 Python、Rust、TypeScript 等代码时,Claude 会先读语言规范再动笔;少写或复用代码;强调类型严格、穷尽匹配、边界校验;先写失败测试再写最小实现,尽量少用 mock。",
+    "when": "当用户让它新增或修改技能所覆盖的源码(如 Python、Rust、TypeScript 等)时触发;若是 Rust 且涉及 unsafe/FFI,会再加载额外安全规范。",
     "say": [
       {
-        "text": "先给这个 Python 函数写一个失败测试。",
-        "note": "按红绿重构循环进行。"
+        "text": "用 Go 修这个接口的 bug:先写一条会失败的测试,再做最小改动。",
+        "note": "会走红→绿流程并加载对应语言规范。"
       },
       {
-        "text": "用 Rust 重写这段代码，match 必须穷尽。",
-        "note": "所有分支都会被覆盖。"
-      },
-      {
-        "text": "给这个 Go 接口加一个集成测试。",
-        "note": "使用真实环境，不用 mock。"
+        "text": "这段 Rust 里有 unsafe,改之前先按技能的安全规范核对一遍。",
+        "note": "会额外加载 unsafe/UB 参考再动手。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4e0e2d7ec9df24c4b73b01a94ef149c07257520652048d984ad213dc42614bb2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T07:55:43.052Z",
+    "generated_at": "2026-09-05T07:32:50.103Z",
     "lint_pass": true,
-    "what_en": "For Python, Rust, TypeScript, or Go tasks, Claude first loads that language's rule doc before writing code, then follows test-first: failing test -> minimal implementation -> refactor, with strict types and exhaustive matching.",
-    "when_en": "Triggered when the user works on .py, .rs, .ts, or .go files, or mentions Python, Rust, TypeScript, or Go.",
+    "what_en": "Loads the matching language reference before editing code in supported languages; pushes less/reused code, strict typing, exhaustive matching, boundary checks; writes failing tests before minimal fixes; limits mocks.",
+    "when_en": "Triggered when the user asks to create/edit supported language source; for Rust changes touching unsafe or FFI, it also loads the extra UB/unsafety reference.",
     "say_en": [
       {
-        "text": "Write a failing test for this Python function first.",
-        "note": "Applies the red-green-refactor loop."
+        "text": "Fix this Go bug: first write a failing test, then make the smallest change.",
+        "note": "Runs red to green; loads the Go reference."
       },
       {
-        "text": "Rewrite this snippet in Rust so all match arms are exhaustive.",
-        "note": "Ensures all branches covered."
+        "text": "This Rust code has unsafe; review it against the skill's safety list before editing.",
+        "note": "Loads the extra unsafe/UB reference before edits."
       },
       {
-        "text": "Add an integration test for this Go interface.",
-        "note": "Uses real environment, not mocks."
+        "text": "Add unit tests for this Python function, structured as Given/When/Then.",
+        "note": "That structure is mandatory."
       }
     ]
   }

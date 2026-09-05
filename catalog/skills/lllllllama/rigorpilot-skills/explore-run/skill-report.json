@@ -5,7 +5,7 @@
     "name": "explore-run",
     "description": "Rigor Improve / Rigor Explore run leaf skill for bounded exploratory evidence in deep learning research repositories. Use when the researcher explicitly authorizes exploratory runs such as small-subset validation, short-cycle guess-and-check, batch sweeps, idle-GPU search, or quick transfer-learning trials, with fair-comparison caveats and no-overclaim summaries in `explore_outputs/`. Do not use for end-to-end exploration orchestration on top of `current_research`, trusted baseline execution, conservative training verification, default routing, verified SOTA claims, or implicit experimentation.",
     "upstream": "https://github.com/lllllllama/rigorpilot-skills/tree/main/skills/explore-run",
-    "upstream_commit": "3ab505258a8b16f95f5d1bee4101adbbf3a469ea",
+    "upstream_commit": "0edf6cb1c75bb225611ad330c671f759941f689a",
     "content_hash": "sha256:1f19252b434100c98ab156ab6846c0a181249d52f6531c222f3d925e1c5b1ea2",
     "license": "MIT",
     "hosting": "indexed",
@@ -23,9 +23,9 @@
   "signals": {
     "stars_github": null,
     "installs_skills_sh": 310400,
-    "fetched_at": "2026-08-29T09:41:15.122Z",
+    "fetched_at": "2026-09-05T07:21:32.244Z",
     "first_seen_at": "2026-08-29T09:41:15.122Z",
-    "upstream_commit_at": "2026-07-26T18:41:00Z"
+    "upstream_commit_at": "2026-09-05T02:22:25+08:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-29T09:41:15.122Z",
+    "generated_at": "2026-09-05T07:21:32.244Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -95,40 +95,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在深度学习仓库中规划有边界的探索性实验:先做小规模、短周期的候选运行,排序候选方案,标记结果为有限证据并说明比较是否公平,输出到 explore_outputs/ 的五个文件中。",
-    "when": "当研究人员明确授权探索性运行,或任务属于小规模子集验证、短周期训练探针、批量扫描等需要给候选方案排序的场景时触发。",
+    "what": "如果你授权探索性运行,Claude 会规划小样本验证、短周期试错等候选实验,按成本、成功率、预期收益排序,优先小规模检查,并把含公平性限制、不夸大的摘要写入 explore_outputs/;它只做规划与总结,实际跑命令可交给其他技能。",
+    "when": "当研究者明确授权做探索性运行,或任务是做小样本验证、短周期探测、批量扫描等有界探索型试验时触发。没有明确授权、或需要正式训练验证时不会唤醒。",
     "say": [
       {
-        "text": "规划小规模子集验证,给候选方案排序。"
+        "text": "我授权做小样本验证:用1%数据跑几步,报告训练是否健康。",
+        "note": "会规划该试验,并把方案写入探索输出目录。"
       },
       {
-        "text": "做一次短周期训练探针,对比两个变体。",
-        "note": "会把手动执行交给其他技能,并标注结果有限。"
+        "text": "我授权对这些候选做批量扫描,按成本、成功率、预期收益排序。",
+        "note": "会依据这三个因素筛选并排序候选变体。"
       },
       {
-        "text": "在空闲 GPU 上做批量扫描,输出可比较性报告。",
-        "note": "除非明确给权重,否则按保守默认排序。"
+        "text": "我授权用闲置GPU跑一次短周期迁移学习试验,并注明公平性限制。",
+        "note": "会注明对比是否公平,并避免夸大结论。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1f19252b434100c98ab156ab6846c0a181249d52f6531c222f3d925e1c5b1ea2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-29T09:55:09.781Z",
+    "generated_at": "2026-09-05T07:41:46.399Z",
     "lint_pass": true,
-    "what_en": "Plans bounded exploratory runs in deep learning repos: prefers small-subset/short-cycle checks, ranks candidates, labels results as limited evidence, flags unfair comparisons, and writes reports to explore_outputs/.",
-    "when_en": "Triggered when exploratory runs are explicitly authorized, or the task is small-subset validation, short-cycle probes, or batch sweeps that need candidate ranking. Not for trusted baselines or repo setup.",
+    "what_en": "When authorized, Claude plans bounded exploratory runs, ranks them by cost/success/expected gain, prefers small or short checks, writes caveated no-overclaim summaries to explore_outputs/, and only plans/summarizes; execution may be delegated to run skills.",
+    "when_en": "Triggers when the researcher explicitly authorizes exploratory runs, e.g. small-subset validation, short probes, or batch sweeps. Not used without such authorization or for trusted baseline verification.",
     "say_en": [
       {
-        "text": "Plan a small-subset validation and rank the candidate options.",
-        "note": "Writes plan and ranking files under explore_outputs/."
+        "text": "I authorize an exploratory small-subset run; note fairness limits.",
+        "note": "It plans the run and writes outputs to explore_outputs/."
       },
       {
-        "text": "Run a short-cycle training probe comparing two variants.",
-        "note": "Hands off execution to other skills and marks results as limited."
+        "text": "I authorize a batch sweep over these variants; rank by cost, success, gain.",
+        "note": "It selects and orders candidates using those three factors."
       },
       {
-        "text": "Do a batch sweep on idle GPUs and output a comparability report.",
-        "note": "Uses conservative default weights unless you give explicit ones."
+        "text": "I authorize a short transfer-learning run on idle GPU; flag caveats.",
+        "note": "It will mark fair-comparison limits and avoid overclaiming."
       }
     ]
   }

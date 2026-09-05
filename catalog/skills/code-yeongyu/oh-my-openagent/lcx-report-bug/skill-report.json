@@ -5,7 +5,7 @@
     "name": "lcx-report-bug",
     "description": "Create a high-signal bug issue or PR in the repo that owns the defect. Use this whenever the user asks to report, file, open, or triage a LazyCodex, lazycodex-ai, omo-codex, Codex plugin, or upstream Codex CLI bug, especially when they need source-backed root cause, reproduction steps, fix guidance, and GitHub routing.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/lcx/skills/lcx-report-bug",
-    "upstream_commit": "2dc26ccf9fc2c83ed792c8ee14ac1a4fb6c5db61",
+    "upstream_commit": "3bd08b366c6b6f819ae265f3311fb42a611eccf1",
     "content_hash": "sha256:5f02dc3ec1e14324fc62c0ab4dc117007ce56fcf281f6a14b2bfb63f5f1f0f07",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68671,
+    "stars_github": 68706,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:04.908Z",
+    "fetched_at": "2026-09-05T07:18:57.157Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-04T16:40:46+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-05T16:09:17+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:04.908Z",
+    "generated_at": "2026-09-05T07:18:57.157Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,37 +92,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,你描述一个 bug 或报错,Claude 会查代码并试着让问题重现,判断该归 LazyCodex 还是上游 Codex,再在对应仓库查重;最后生成一份 GitHub 问题单(issue),包含重现步骤、根因和修复建议(只有上游仓库且你要求时才做成代码修改请求 PR),并打上专用标签。",
-    "when": "当用户要求报告、提交或分类某个 LazyCodex、Codex 插件或上游 Codex CLI 的 bug 时触发;这类诉求常伴随查根因、写复现步骤和明确提交到哪个仓库。",
+    "what": "当你要报告 LazyCodex 或 Codex 相关 bug 时，它会先拉取最新源码并调查问题根源，判断该交给哪个 GitHub 仓库，然后生成一份英文 issue（或对 openai/codex 生成 PR），包含复现步骤、环境、根因、修复建议、验证计划及固定标签。",
+    "when": "当你要求报告、提交或处理 LazyCodex、omo-codex、Codex 插件等 bug 时触发，尤其是需要查根源、复现步骤和确定提交到哪个仓库时。",
     "say": [
       {
-        "text": "这个 Codex CLI 在什么情况下崩溃?该报给哪个仓库?",
-        "note": "它会定位归属,并说明原因和下一步。"
+        "text": "帮我给 LazyCodex 报 bug：安装后命令找不到，附上复现步骤和根因。",
+        "note": "会先同步源码，调查后生成 issue 草稿。"
       },
       {
-        "text": "我在 openai/codex 的分支上修好了此 bug,请帮我准备 PR。",
-        "note": "它会核对分支与验证结果,按规则创建并打标签。"
+        "text": "调查这个 Codex 插件报错，确定发到哪个仓库，再起草 issue。",
+        "note": "会对照两份最新源码给出归属结论。"
+      },
+      {
+        "text": "如果在干净上游 Codex 能复现，就提交修复 PR。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5f02dc3ec1e14324fc62c0ab4dc117007ce56fcf281f6a14b2bfb63f5f1f0f07",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T07:55:15.519Z",
+    "generated_at": "2026-09-05T07:30:07.796Z",
     "lint_pass": true,
-    "what_en": "Claude investigates code, reproduces the bug, decides which repo owns it (LazyCodex vs upstream Codex), de-dupes, files an issue containing root cause, repro, and fix; only upstream Codex can get a PR if you ask. Adds a label.",
-    "when_en": "Triggers when you ask to report, file, or triage a LazyCodex, Codex plugin, or upstream Codex CLI bug, often with requests for a root cause, repro steps, or target repo.",
+    "what_en": "When asked to file a LazyCodex/Codex bug, it syncs latest source, investigates root cause, picks the owning GitHub repo, and drafts an English issue (or PR for openai/codex) with repro, environment, root cause, fix, and verification.",
+    "when_en": "Triggered when the user asks to report, file, open, or triage a bug in LazyCodex, omo-codex, or Codex plugins, etc., especially when root-cause analysis and repo routing are needed.",
     "say_en": [
       {
-        "text": "Turn this LazyCodex bug into an issue: investigate cause and pick the repo.",
-        "note": "Claude gathers evidence, de-dupes, and writes the issue."
+        "text": "File LazyCodex bug: command missing after install; include repro and root cause.",
+        "note": "It syncs sources, investigates, then drafts an issue."
       },
       {
-        "text": "Where does this Codex CLI crash, and which repo should I report it to?",
-        "note": "It identifies the owner repo and explains next steps."
+        "text": "This Codex plugin error should go to which repo? Draft the issue.",
+        "note": "Compares both source checkouts before routing."
       },
       {
-        "text": "I fixed this bug on an openai/codex branch; please prepare a PR.",
-        "note": "Checks the branch and files a labeled PR for openai/codex."
+        "text": "If it reproduces in clean upstream Codex, submit a fix PR there.",
+        "note": "PRs only for openai/codex; LazyCodex repo gets issue."
       }
     ]
   }

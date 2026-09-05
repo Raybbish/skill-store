@@ -5,7 +5,7 @@
     "name": "host-observer",
     "description": "Use this when fulfilling claude-mem observer jobs on Grok Bot: reply only skip_summary or one full observation XML, never prose.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-grok-bot/skills/host-observer",
-    "upstream_commit": "be44b6c8e238a7e2bc5b3403c05afac071a59ead",
+    "upstream_commit": "b6e05382e2be35e29f22335f04a6890a4c0ba976",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93131,
+    "stars_github": 93234,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:00.570Z",
+    "fetched_at": "2026-09-05T07:18:51.677Z",
     "first_seen_at": "2026-09-03T07:38:50.068Z",
-    "upstream_commit_at": "2026-09-03T08:33:32-07:00",
+    "upstream_commit_at": "2026-09-05T05:22:53Z",
     "repo_skill_count": 26
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:00.570Z",
+    "generated_at": "2026-09-05T07:18:51.677Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,41 +86,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在claude-mem的观察任务里，Claude不再写散文，只输出两种固定XML标记：无价值时给`skip_summary`，有可搜索产出时给一条`observation`（含标题、4~10条带路径的事实和叙述）。",
-    "when": "当你在Grok Bot上执行claude-mem的观察任务（如处理inbox任务或需返回chat-completions响应）时触发。",
+    "what": "装上后,Claude 在 claude-mem 的 observer 任务中不再写散文,只输出两种结果之一:无内容时返回 skip_summary 标记;完成任务时返回一条带真实标题、4–10 条带路径事实的 observation XML。",
+    "when": "当你在 Grok Bot 上收到 claude-mem 的 observer 任务(如有 inbox 待办作业)时触发。",
     "say": [
       {
-        "text": "这个提交修复了登录bug，请生成observation。",
-        "note": "会返回一个bugfix类型的observation。"
+        "text": "这次 bug 修复请整理成一条 observation XML。",
+        "note": "输出带标题与路径事实的观察记录。"
       },
       {
-        "text": "这条消息没有可记录的产出，请跳过。",
-        "note": "会返回skip_summary。"
+        "text": "这个任务没有可搜索内容,直接跳过。",
+        "note": "返回 skip_summary 噪声标记。"
       },
       {
-        "text": "把这次重构整理成observation。",
-        "note": "会返回refactor类型的observation。"
+        "text": "请只写 outbox 文件,不要发散文。",
+        "note": "只适用于 inbox 任务。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T08:10:52.973Z",
+    "generated_at": "2026-09-05T07:44:29.637Z",
     "lint_pass": true,
-    "what_en": "Within claude-mem observer jobs, Claude stops writing prose and replies only with two XML forms: `<skip_summary>` when nothing is worth recording, or one full `<observation>` with a title, 4–10 path-bearing facts and a narrative.",
-    "when_en": "Triggered when fulfilling claude-mem observer jobs on Grok Bot, such as handling inbox jobs or returning the chat-completions body.",
+    "what_en": "In observer jobs, Claude gives no prose: it returns only <skip_summary reason=\"noise\" /> when idle, or one <observation> XML with a real title, 4–10 path-backed facts, and narrative per completed searchable unit.",
+    "when_en": "Triggered when Claude is fulfilling claude-mem observer jobs on Grok Bot, such as processing an inbox job.",
     "say_en": [
       {
-        "text": "This commit fixes a login bug; please produce an observation.",
-        "note": "Returns a bugfix observation XML."
+        "text": "Please turn this bug fix into an observation XML.",
+        "note": "Outputs an observation with facts and paths."
       },
       {
-        "text": "This message has no tool results; please skip it.",
-        "note": "Responds with skip_summary."
+        "text": "Nothing searchable here, just skip.",
+        "note": "Returns the noise skip_summary."
       },
       {
-        "text": "Please make this refactoring an observation.",
-        "note": "Returns a refactor observation."
+        "text": "Write the outbox file only, no prose.",
+        "note": "For inbox jobs only."
       }
     ]
   }
