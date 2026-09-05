@@ -5,7 +5,7 @@
     "name": "lcx-report-bug",
     "description": "Create a high-signal bug issue or PR in the repo that owns the defect. Use this whenever the user asks to report, file, open, or triage a LazyCodex, lazycodex-ai, omo-codex, Codex plugin, or upstream Codex CLI bug, especially when they need source-backed root cause, reproduction steps, fix guidance, and GitHub routing.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/lcx/skills/lcx-report-bug",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "2dc26ccf9fc2c83ed792c8ee14ac1a4fb6c5db61",
     "content_hash": "sha256:5f02dc3ec1e14324fc62c0ab4dc117007ce56fcf281f6a14b2bfb63f5f1f0f07",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68671,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-04T07:41:04.908Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
+    "upstream_commit_at": "2026-09-04T16:40:46+09:00",
     "repo_skill_count": 52,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-04T07:41:04.908Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,24 +92,38 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当用户要求上报或分类某个 bug 时,Claude 会先调查并同步相关源码,判断该 bug 属于 LazyCodex 还是上游 Codex 仓库,然后生成一份带复现步骤、根因、修复建议的 GitHub issue(仅在 openai/codex 且满足条件时才生成 PR),并打上 lazycodex-generated 标签。",
-    "when": "当用户要求 report、file、open 或 triage LazyCodex、lazycodex-ai、omo-codex、Codex 插件等相关的 bug,尤其是需要源头根因、复现步骤或 GitHub 路由时触发。",
+    "what": "装上后,你描述一个 bug 或报错,Claude 会查代码并试着让问题重现,判断该归 LazyCodex 还是上游 Codex,再在对应仓库查重;最后生成一份 GitHub 问题单(issue),包含重现步骤、根因和修复建议(只有上游仓库且你要求时才做成代码修改请求 PR),并打上专用标签。",
+    "when": "当用户要求报告、提交或分类某个 LazyCodex、Codex 插件或上游 Codex CLI 的 bug 时触发;这类诉求常伴随查根因、写复现步骤和明确提交到哪个仓库。",
     "say": [
       {
-        "text": "帮我给 LazyCodex 提个 issue,复现步骤和报错日志我贴在这里。"
+        "text": "这个 Codex CLI 在什么情况下崩溃?该报给哪个仓库?",
+        "note": "它会定位归属,并说明原因和下一步。"
       },
       {
-        "text": "这个 Codex CLI 报错该路由到哪个仓库?帮我调查根因。",
-        "note": "Claude 会做证据调查并给出仓库归属判断。"
-      },
-      {
-        "text": "把这个问题以 PR 形式提交到 openai/codex。"
+        "text": "我在 openai/codex 的分支上修好了此 bug,请帮我准备 PR。",
+        "note": "它会核对分支与验证结果,按规则创建并打标签。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5f02dc3ec1e14324fc62c0ab4dc117007ce56fcf281f6a14b2bfb63f5f1f0f07",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:57:04.265Z",
-    "lint_pass": false
+    "generated_at": "2026-09-04T07:55:15.519Z",
+    "lint_pass": true,
+    "what_en": "Claude investigates code, reproduces the bug, decides which repo owns it (LazyCodex vs upstream Codex), de-dupes, files an issue containing root cause, repro, and fix; only upstream Codex can get a PR if you ask. Adds a label.",
+    "when_en": "Triggers when you ask to report, file, or triage a LazyCodex, Codex plugin, or upstream Codex CLI bug, often with requests for a root cause, repro steps, or target repo.",
+    "say_en": [
+      {
+        "text": "Turn this LazyCodex bug into an issue: investigate cause and pick the repo.",
+        "note": "Claude gathers evidence, de-dupes, and writes the issue."
+      },
+      {
+        "text": "Where does this Codex CLI crash, and which repo should I report it to?",
+        "note": "It identifies the owner repo and explains next steps."
+      },
+      {
+        "text": "I fixed this bug on an openai/codex branch; please prepare a PR.",
+        "note": "Checks the branch and files a labeled PR for openai/codex."
+      }
+    ]
   }
 }
