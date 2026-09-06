@@ -5,7 +5,7 @@
     "name": "host-observer",
     "description": "Use this when fulfilling claude-mem observer jobs on Grok Bot: reply only skip_summary or one full observation XML, never prose.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-grok-bot/skills/host-observer",
-    "upstream_commit": "b6e05382e2be35e29f22335f04a6890a4c0ba976",
+    "upstream_commit": "3939fbb2debe73e74a295553636e776e110df90a",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93234,
+    "stars_github": 93309,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-05T07:18:51.677Z",
+    "fetched_at": "2026-09-06T07:31:17.981Z",
     "first_seen_at": "2026-09-03T07:38:50.068Z",
-    "upstream_commit_at": "2026-09-05T05:22:53Z",
+    "upstream_commit_at": "2026-09-05T19:40:00-07:00",
     "repo_skill_count": 26
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-05T07:18:51.677Z",
+    "generated_at": "2026-09-06T07:31:17.981Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,41 +86,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 在 claude-mem 的 observer 任务中不再写散文,只输出两种结果之一:无内容时返回 skip_summary 标记;完成任务时返回一条带真实标题、4–10 条带路径事实的 observation XML。",
-    "when": "当你在 Grok Bot 上收到 claude-mem 的 observer 任务(如有 inbox 待办作业)时触发。",
+    "what": "在 claude-mem 的观察任务中，Claude 只输出简短的跳过标记或一条结构化观察 XML，不写散文，也不主动保存记忆。观察结果会写入指定文件或直接作为响应返回。",
+    "when": "当你在 Grok Bot 上需要执行 claude-mem 的 observer 任务、处理 inbox 任务时；空闲或没有工具结果时也会触发。",
     "say": [
       {
-        "text": "这次 bug 修复请整理成一条 observation XML。",
-        "note": "输出带标题与路径事实的观察记录。"
+        "text": "处理 inbox 里的任务，把观察结果写入 outbox。"
       },
       {
-        "text": "这个任务没有可搜索内容,直接跳过。",
-        "note": "返回 skip_summary 噪声标记。"
+        "text": "针对这次 bugfix 生成一条观察记录。",
+        "note": "输出带事实和路径的 observation。"
       },
       {
-        "text": "请只写 outbox 文件,不要发散文。",
-        "note": "只适用于 inbox 任务。"
+        "text": "没有可汇报内容就跳过并说明原因。",
+        "note": "返回 skip_summary，原因为 noise。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-05T07:44:29.637Z",
+    "generated_at": "2026-09-06T07:56:02.612Z",
     "lint_pass": true,
-    "what_en": "In observer jobs, Claude gives no prose: it returns only <skip_summary reason=\"noise\" /> when idle, or one <observation> XML with a real title, 4–10 path-backed facts, and narrative per completed searchable unit.",
-    "when_en": "Triggered when Claude is fulfilling claude-mem observer jobs on Grok Bot, such as processing an inbox job.",
+    "what_en": "While fulfilling claude-mem observer jobs, Claude replies only with <skip_summary> or a single observation XML, never prose. Results are written to outbox files or returned directly, without saving to memory.",
+    "when_en": "Triggered when fulfilling claude-mem observer jobs on Grok Bot, such as processing inbox jobs; also when idle or no tool results are available.",
     "say_en": [
       {
-        "text": "Please turn this bug fix into an observation XML.",
-        "note": "Outputs an observation with facts and paths."
+        "text": "Process inbox jobs and write observations to outbox.",
+        "note": "Outputs observation XML or skip_summary."
       },
       {
-        "text": "Nothing searchable here, just skip.",
-        "note": "Returns the noise skip_summary."
+        "text": "Report this bugfix as an observation.",
+        "note": "Returns an observation with facts and paths."
       },
       {
-        "text": "Write the outbox file only, no prose.",
-        "note": "For inbox jobs only."
+        "text": "Skip if there is nothing to report.",
+        "note": "Returns skip_summary with reason noise."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Guides a refactor, cleanup, or restructure with the right decomposition. Use when the user asks to refactor, simplify, extract, or modernize code.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "3bd08b366c6b6f819ae265f3311fb42a611eccf1",
+    "upstream_commit": "579c1759d21536b630eac1b27177f61a8a33aef4",
     "content_hash": "sha256:aafdcf2a500af7c0eb1fa3000b299f205e76db0665829c605b563ea723eeeb31",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68706,
+    "stars_github": 68738,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-05T07:18:57.157Z",
+    "fetched_at": "2026-09-06T07:31:22.942Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-05T16:09:17+09:00",
+    "upstream_commit_at": "2026-09-06T03:50:55+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-05T07:18:57.157Z",
+    "generated_at": "2026-09-06T07:31:22.942Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "用户要求重构时,Claude 会先弄清楚目标和范围(不清楚就提问),再检查受影响的代码和测试情况,列出计划后一步步改,每步跑测试,最后确认没弄坏功能并汇报改动。",
-    "when": "当用户要求重构、简化或抽取代码等,或使用 /refactor 命令时。",
+    "what": "它会先确认你想改哪里、怎么改，不清楚就问清楚；再扫描相关代码、依赖与测试，把重构拆成小步骤逐步执行，每步都跑测试检查是否出错；完成后运行全部测试并给出改动摘要。",
+    "when": "当你要求重构、简化或现代化代码（如用 /refactor 命令指定文件或范围）时触发。",
     "say": [
       {
-        "text": "重构 src/auth/handler.ts,并按模块拆分。",
-        "note": "它会分析该文件的依赖与测试覆盖后再动手。"
+        "text": "把 AuthService 里重复的校验逻辑提取成公共方法",
+        "note": "会先分析依赖再安全执行。"
       },
       {
-        "text": "把 AuthService 类改小,先出计划再执行。",
-        "note": "它会先展示计划,确认后再改。"
-      },
-      {
-        "text": "将整个项目里所有过期 API 调用迁移到新版本。",
-        "note": "测试不足时它会停下,让你选择是否先补测试。"
+        "text": "清理 src/utils 下所有用旧 API 的代码",
+        "note": "开放型请求，会先问你想怎么改。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:aafdcf2a500af7c0eb1fa3000b299f205e76db0665829c605b563ea723eeeb31",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-05T07:32:43.420Z",
+    "generated_at": "2026-09-06T07:45:25.252Z",
     "lint_pass": true,
-    "what_en": "When asked to refactor, Claude confirms goal and scope, asking if unclear; maps dependencies and test coverage; drafts a plan; applies stepwise changes with tests after each step; checks nothing is broken; lists changes.",
-    "when_en": "Triggered when the user asks to refactor, simplify, or extract code (etc.), or uses the /refactor command.",
+    "what_en": "It first confirms the refactoring target and scope, asking for details if unclear; scans the related code, dependencies, and tests, then breaks the refactor into small steps, running tests after each; at the end it runs the full test suite and summarizes changes.",
+    "when_en": "Triggers when the user asks to refactor, simplify, or modernize code (or uses the /refactor command with a file or scope).",
     "say_en": [
       {
-        "text": "Refactor src/auth/handler.ts, splitting it by modules.",
-        "note": "It analyzes the file's dependencies and test coverage before editing."
+        "text": "/refactor src/auth/handler.ts --scope=file",
+        "note": "Starts the refactoring workflow for that file."
       },
       {
-        "text": "Make the AuthService class smaller—plan first, then execute.",
-        "note": "It presents a plan and waits for your confirmation."
+        "text": "Extract the duplicated validation logic in AuthService into a shared method",
+        "note": "Analyzes dependencies and executes the refactor safely."
       },
       {
-        "text": "Migrate all deprecated API calls across the whole project to the new version.",
-        "note": "If coverage is low, it stops and asks whether to add tests first."
+        "text": "Clean up all code under src/utils that uses the deprecated API",
+        "note": "Open-ended; it will ask what you want changed first."
       }
     ]
   }

@@ -132,6 +132,7 @@ Common operations:
 
 | Goal | Command |
 |---|---|
+| Check compute usage | `notebooklm usage --json`; `notebooklm usage --categories` for category availability and estimated costs |
 | List or create notebooks | `notebooklm list --json`; `notebooklm create "Title" --json` |
 | Add and wait for a source | `notebooklm source add <input> -n <nb> --json`; `notebooklm source wait <src> -n <nb>` |
 | Chat | `notebooklm ask "question" -n <nb> --json` |
@@ -220,9 +221,7 @@ async def main(url: str) -> None:
             source_ids=[source.id],
             instructions="Focus on the key arguments",
         )
-        final = await client.artifacts.wait_for_completion(
-            notebook.id, task.task_id, timeout=1200
-        )
+        final = await client.artifacts.wait_for_completion(notebook.id, task.task_id, timeout=1200)
         if not final.is_complete:
             raise RuntimeError(f"Generation ended with {final.status}: {final.error}")
         await client.artifacts.download_audio(

@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "When to delegate to `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit) or `cavecrew-reviewer` (diff review) instead of working inline or using `Explore`. Their output is compressed, so main context lasts longer.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "367fdb7f0f8f8e7994b5aab632c7ce5014802b32",
+    "upstream_commit": "5184b3d11ac6a1acb7d44b9bfaa31698157cff97",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 282400,
-    "fetched_at": "2026-09-04T07:42:58.528Z",
+    "installs_skills_sh": 285400,
+    "fetched_at": "2026-09-06T07:33:48.260Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-04T02:31:12+02:00"
+    "upstream_commit_at": "2026-09-05T09:27:13Z"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:42:58.528Z",
+    "generated_at": "2026-09-06T07:33:48.260Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 在代码工作中会优先委派给三个子代理:定位代码、1-2 个文件的修改、检查代码差异。这些子代理返回的结果很短,Claude 的上下文占用更低,能处理更长任务。",
-    "when": "当用户要求定位代码、改动一两个文件或检查代码改动时,Claude 会派出对应子代理执行任务。",
+    "what": "装上后,它会把“找代码位置”“一两个文件内的小改动”“审查改动”分别交给 investigator、builder、reviewer 三个子代理。它们返回压缩后的精简结果(通常带文件路径和行号),比普通做法更省主对话空间。",
+    "when": "当你要定位某段代码(查定义/调用/用法)、改动不超过两个文件、或审查 diff/分支/文件里的 bug,并且想要精简输出而非长篇叙述时,会派给对应子代理。",
     "say": [
       {
-        "text": "帮我找一下 login 函数在哪些文件里被调用了",
-        "note": "Claude 会派定位专用子代理,返回简洁的行号列表。"
+        "text": "帮我查一下 calculate_price 在哪定义,谁在调用它?",
+        "note": "会派找代码的子代理,回报路径和行号。"
       },
       {
-        "text": "把 config.js 第 51 行改成读取环境变量",
-        "note": "Claude 会派小修改子代理,改后回读验证结果。"
+        "text": "把 src/utils.ts 第 88 行的错误提示改准确,只动这一个文件。",
+        "note": "会派改代码的子代理,完成后回报验证结果。"
       },
       {
-        "text": "审查一下我刚才做的代码改动有没有 bug",
-        "note": "Claude 会派审查子代理,返回带严重度的代码问题列表。"
+        "text": "帮我看下当前分支的改动,指出可疑的 bug。",
+        "note": "会派审查子代理,按行号列出问题与修复建议。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T07:59:12.905Z",
+    "generated_at": "2026-09-06T07:52:52.887Z",
     "lint_pass": true,
-    "what_en": "With this installed, Claude delegates code tasks to three subagents: locate code, edit 1-2 files, review diffs. Their compressed output lowers main-context cost per delegation, so sessions last longer.",
-    "when_en": "Triggered when the task is to locate code, edit one or two files, or review a code change.",
+    "what_en": "With this enabled Claude gives locate-code, 1-2-file edits, and diff reviews to compressed-output subagents (investigator/builder/reviewer) instead of working inline or using Explore. Their terse path/line reports save main-context space.",
+    "when_en": "Triggered when Claude would locate code (definition/callers/uses), make a surgical 1-2-file edit, or review a diff/branch/file for bugs, and compressed output is preferred over prose.",
     "say_en": [
       {
-        "text": "Find the definition of login and all files that call it.",
-        "note": "Claude dispatches the locate subagent and returns a compact file-line list."
+        "text": "Where is calculate_price defined, and who calls it?",
+        "note": "Sends investigator; returns path:line hits."
       },
       {
-        "text": "Change config.js line 51 to read an environment variable.",
-        "note": "Claude runs the small-edit subagent and then verifies the result."
+        "text": "Fix the error message at line 88 of src/utils.ts; only touch that file.",
+        "note": "Directs to builder; verifies the change after edit."
       },
       {
-        "text": "Review the code change I just made for potential bugs.",
-        "note": "Claude invokes the review subagent and lists findings by severity."
+        "text": "Review my current branch's diff and list likely bugs.",
+        "note": "Sends reviewer; reports findings sorted by line."
       }
     ]
   }

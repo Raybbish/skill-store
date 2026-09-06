@@ -5,7 +5,7 @@
     "name": "ulw-execute",
     "description": "Executes a written Prometheus work plan with Boulder state, evidence ledger, worktree discipline, and parallel subagents. Use when the user says ulw-execute or asks to run a .omo/plans plan.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ulw-execute",
-    "upstream_commit": "3bd08b366c6b6f819ae265f3311fb42a611eccf1",
+    "upstream_commit": "579c1759d21536b630eac1b27177f61a8a33aef4",
     "content_hash": "sha256:06cf012f12cdb7680fac6e19b7c65493e7b0176a89ed37907c9718f5ba15a1fd",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68706,
+    "stars_github": 68738,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-05T07:18:57.157Z",
+    "fetched_at": "2026-09-06T07:31:22.942Z",
     "first_seen_at": "2026-08-27T13:37:06.727Z",
-    "upstream_commit_at": "2026-09-05T16:09:17+09:00",
+    "upstream_commit_at": "2026-09-06T03:50:55+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-05T07:18:57.157Z",
+    "generated_at": "2026-09-06T07:31:22.942Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,37 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 不会亲手写代码或改文件。它读取一份书面计划，拆成小任务，把实现和检查分派给多个后台助手并行执行，自己只负责核对完成情况和记录结果；改动都在独立的工作副本里完成。",
-    "when": "当你说“ulw-execute”或“start work”，或要求执行 .omo/plans 下的某个计划时触发。如果没有可执行计划，它会先用 ulw-plan 引导生成计划，再开始执行。",
+    "what": "执行书面计划时,Claude 成为总指挥:它把任务拆分并并行派发给多个子代理去写码和测试,自己不直接实施,同时维护进度状态和证据记录。",
+    "when": "当用户说出“ulw-execute”,或要求运行 .omo/plans 目录下的计划时触发。若此时没有可选的计划,会先通过 ulw-plan 生成新计划,再继续执行。",
     "say": [
       {
-        "text": "用 ulw-execute 开始跑 .omo/plans 下的计划。",
-        "note": "它会把任务拆给后台助手，自己只验收和记录。"
+        "text": "运行 ulw-execute,开始执行当前工作计划",
+        "note": "进入计划执行与任务分派流程"
       },
       {
-        "text": "还没有可执行计划，用 ulw-execute 帮我引导生成一份。",
-        "note": "它会先请 ulw-plan 技能产出计划，再照计划执行。"
+        "text": "执行 auth 计划并加上 --make-pr",
+        "note": "每完成一个阶段会生成一个 Pull Request"
+      },
+      {
+        "text": "没有现成计划,直接用 ulw-execute 帮我建计划",
+        "note": "先启动无计划引导,自动生成计划"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:06cf012f12cdb7680fac6e19b7c65493e7b0176a89ed37907c9718f5ba15a1fd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-05T07:34:55.252Z",
+    "generated_at": "2026-09-06T07:47:29.238Z",
     "lint_pass": true,
-    "what_en": "Claude never writes or edits code; it orchestrates. It reads a written plan, splits work into parallel subagent tasks, and tracks verification and evidence. Work happens in task-owned worktrees.",
-    "when_en": "Triggers when you say \"ulw-execute\" or \"start work\", or ask Claude to run a plan from .omo/plans. If no executable plan exists, it bootstraps one via ulw-plan before executing.",
+    "what_en": "While executing a written plan, Claude acts as the orchestrator: it splits tasks and spawns multiple parallel subagents to code and test, never implementing itself; it keeps track of progress state and evidence records.",
+    "when_en": "Triggers when the user says 'ulw-execute' or asks to run a plan from .omo/plans. If no plan is available, it bootstraps a new plan via ulw-plan before proceeding.",
     "say_en": [
       {
-        "text": "Run ulw-execute to execute a plan under .omo/plans.",
-        "note": "It delegates sub-tasks and only verifies and records."
+        "text": "Run ulw-execute and start the current work plan.",
+        "note": "Enters plan execution and task dispatch."
       },
       {
-        "text": "Run ulw-execute --make-pr so each phase becomes a pull request.",
-        "note": "Each phase opens a separate PR; merge only if you approve."
+        "text": "Execute the auth plan with --make-pr.",
+        "note": "Opens a pull request after each completed phase."
       },
       {
-        "text": "No executable plan yet; use ulw-execute to bootstrap one.",
-        "note": "It asks ulw-plan to draft a plan, then executes from it."
+        "text": "No plan yet — run ulw-execute to create one.",
+        "note": "Bootstraps a plan via ulw-plan first."
       }
     ]
   }
