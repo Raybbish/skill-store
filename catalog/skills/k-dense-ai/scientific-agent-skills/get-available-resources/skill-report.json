@@ -5,27 +5,25 @@
     "name": "get-available-resources",
     "description": "Detect host inventory and effective CPU, memory, disk, scheduler, container, and accelerator limits when a user asks for resource-aware planning or before a clearly resource-sensitive local workload. Produces a redacted JSON snapshot and conservative planning helpers without stress tests or assuming visible host hardware is usable.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/get-available-resources",
-    "upstream_commit": "36d8f13a1e754618794bf42f417884940077b4ae",
-    "content_hash": "sha256:555ed7d7b44931c68ba98234ba31b49b322a454463fad29212d887be4b87df28",
+    "upstream_commit": "1e5eeffbdad3749125afe7ab48a39694e27f181c",
+    "content_hash": "sha256:4f60507ade65f0a63abec5ad038948bb1b08f8f9e90ff127e217a47874b6fa38",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "cloud",
+    "category": "utility",
     "version": null,
     "publisher": "k-dense-ai",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": [
-      "cli"
-    ]
+    "tags": []
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 35043,
+    "stars_github": 42195,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:16.869Z",
+    "fetched_at": "2026-09-03T07:39:05.048Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-24T09:22:54Z",
+    "upstream_commit_at": "2026-09-02T09:25:16-07:00",
     "repo_skill_count": 163,
     "bulk_source": true
   },
@@ -36,16 +34,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:16.869Z",
+    "generated_at": "2026-09-03T07:39:05.048Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 9401,
-        "chars": 9379,
-        "tokens": 1831
+        "bytes": 10359,
+        "chars": 10337,
+        "tokens": 2067
       },
       "activation_with_declared_refs": {
         "files": [
@@ -59,9 +57,9 @@
           "scripts/snapshot_tools.py"
         ],
         "text_files": 8,
-        "bytes": 123700,
-        "chars": 123610,
-        "tokens": 20246
+        "bytes": 124658,
+        "chars": 124568,
+        "tokens": 20482
       },
       "package_total_text": {
         "files": [
@@ -76,68 +74,70 @@
           "scripts/snapshot_tools.py"
         ],
         "text_files": 9,
-        "bytes": 129770,
-        "chars": 129680,
-        "tokens": 21342
+        "bytes": 130728,
+        "chars": 130638,
+        "tokens": 21579
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "检测主机资源限制并输出JSON快照",
+    "tagline": "获取主机可用资源快照，辅助运行前判断",
     "scene_tags": [
-      "部署前检查",
-      "资源规划"
+      "运行大任务前",
+      "资源规划",
+      "性能预检"
     ],
-    "fit_line": "适合你，如果你需要了解本地机器资源限制后再运行任务",
-    "tagline_en": "Detect host resource limits and output JSON snapshot",
+    "fit_line": "适合你，如果 你常跑吃资源的大任务，想知道本机是否扛得住。",
+    "tagline_en": "Get a snapshot of your machine's available resources before launching a task.",
     "scene_tags_en": [
-      "pre-deployment check",
-      "resource planning"
+      "before heavy tasks",
+      "resource planning",
+      "pre-run check"
     ],
-    "fit_line_en": "For you if you need to know your local machine's resource limits before running tasks",
+    "fit_line_en": "For you if you often run resource-heavy tasks and want to know whether your machine can handle them.",
     "source": "llm",
-    "content_hash": "sha256:555ed7d7b44931c68ba98234ba31b49b322a454463fad29212d887be4b87df28",
+    "content_hash": "sha256:4f60507ade65f0a63abec5ad038948bb1b08f8f9e90ff127e217a47874b6fa38",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-27T06:28:41.496Z",
+    "generated_at": "2026-09-03T07:49:16.364Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 在开始计算密集型任务前会先检测电脑的 CPU、GPU、内存、磁盘和系统信息,生成一份脱敏的 .claude_resources.json 快照,并给出并行处理、内存策略、GPU 加速等建议。",
-    "when": "当用户提出资源感知规划或即将执行对资源敏感的本地任务(如大数据分析、模型训练、并行处理)时,会先检测资源。",
+    "what": "装上后，进行数据分析、模型训练或并行处理等计算密集任务前，它会先探测 CPU、GPU、内存、磁盘等资源，生成含资源数据和并行、内存、GPU 加速建议的 .claude_resources.json。只做静态检测，不做压力测试。",
+    "when": "用户要求做资源感知的规划，或任务属于数据分析、模型训练、并行处理等资源敏感场景时，会先做资源检测。",
     "say": [
       {
-        "text": "帮我检测一下当前电脑的资源情况。",
-        "note": "生成资源快照和策略建议。"
+        "text": "帮我分析 50GB 的基因数据，先看看内存够不够？",
+        "note": "检测后会告诉你要不要用 Dask/Zarr 等外存工具。"
       },
       {
-        "text": "我要处理 50GB 的基因组数据,内存够吗?",
-        "note": "会检测内存,必要时推荐 Dask/Zarr。"
+        "text": "我要训练一个神经网络，检查一下 GPU 支持哪种后端？",
+        "note": "会探测可用的 GPU 后端并推荐对应库。"
       },
       {
-        "text": "训练神经网络前,看看有没有可用的 GPU。",
-        "note": "检测 NVIDIA/AMD/Apple GPU 及后端。"
+        "text": "并行处理 10,000 个文件，推荐一个合适的并发数？",
+        "note": "会根据核数等给出建议并行度。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:555ed7d7b44931c68ba98234ba31b49b322a454463fad29212d887be4b87df28",
+    "content_hash": "sha256:4f60507ade65f0a63abec5ad038948bb1b08f8f9e90ff127e217a47874b6fa38",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:34:47.632Z",
+    "generated_at": "2026-09-03T08:13:03.948Z",
     "lint_pass": true,
-    "what_en": "After install, before compute-heavy tasks, Claude detects CPU/GPU/memory/disk/OS, saves a redacted .claude_resources.json, and suggests parallel, memory, and GPU strategies.",
-    "when_en": "Triggered when the user asks for resource-aware planning or is about to run a resource-sensitive local task, such as large-data analysis, model training, or parallel processing.",
+    "what_en": "When compute-intensive work is requested (analysis, training, batch processing), it probes CPU/GPU/memory/disk and writes .claude_resources.json with resource facts and parallel/memory/GPU recommendations. Static only; no stress tests.",
+    "when_en": "When the user asks for resource-aware planning, or the task falls into resource-sensitive scenarios like data analysis, model training, or parallel processing, it performs resource detection first.",
     "say_en": [
       {
-        "text": "Check the current resource usage of this machine.",
-        "note": "Creates a resource snapshot with recommendations."
+        "text": "Help me analyze a 50GB genomics dataset. First check if memory is enough.",
+        "note": "It will advise whether out-of-core tools like Dask/Zarr are needed."
       },
       {
-        "text": "I need to process 50GB of genomics data. Is there enough memory?",
-        "note": "Checks memory and suggests Dask/Zarr if needed."
+        "text": "I want to train a neural network. Check which GPU backend is available.",
+        "note": "It detects available GPU backends and suggests matching libraries."
       },
       {
-        "text": "Before training a neural network, check for available GPUs.",
-        "note": "Detects NVIDIA/AMD/Apple GPUs and backends."
+        "text": "I need to process 10,000 files in parallel. Suggest a suitable concurrency level.",
+        "note": "It recommends a worker count based on CPU cores."
       }
     ]
   }
