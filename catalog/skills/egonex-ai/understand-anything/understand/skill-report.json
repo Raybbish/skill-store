@@ -5,8 +5,8 @@
     "name": "understand",
     "description": "Analyze a codebase to produce an interactive knowledge graph for understanding architecture, components, and relationships",
     "upstream": "https://github.com/Egonex-AI/Understand-Anything/tree/main/understand-anything-plugin/skills/understand",
-    "upstream_commit": "ba450c43425f3de6d43daf76526950ad8ca93536",
-    "content_hash": "sha256:ec5a32af6d25eda0da4dbdd3b99b102b49fc69fede68f24a998fb8ac470210c3",
+    "upstream_commit": "787da45adbf18aab5c3e3e531b0374dd576f263c",
+    "content_hash": "sha256:de945823f0ac110a4b9d503961f7b362ebe92e46727c56b5113f9f35b02cf12d",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -15,17 +15,17 @@
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "documentation"
+      "web"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 80705,
+    "stars_github": 81516,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:02.458Z",
+    "fetched_at": "2026-09-05T07:18:53.274Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-26T02:38:15-04:00",
+    "upstream_commit_at": "2026-09-04T09:57:49-04:00",
     "repo_skill_count": 9
   },
   "context_size": {
@@ -35,22 +35,23 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:02.458Z",
+    "generated_at": "2026-09-05T07:18:53.274Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 46663,
-        "chars": 46509,
-        "tokens": 10141
+        "bytes": 51847,
+        "chars": 51695,
+        "tokens": 11127
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md",
           "compute-batches.mjs",
           "extract-structure.mjs",
+          "finalize-incremental.mjs",
           "frameworks/django.md",
           "languages/dockerfile.md",
           "languages/python.md",
@@ -58,12 +59,13 @@
           "locales/ko.md",
           "locales/zh.md",
           "merge-batch-graphs.py",
+          "prepare-incremental.mjs",
           "scan-project.mjs"
         ],
-        "text_files": 11,
-        "bytes": 179774,
-        "chars": 174575,
-        "tokens": 36556
+        "text_files": 13,
+        "bytes": 229093,
+        "chars": 223894,
+        "tokens": 45440
       },
       "package_total_text": {
         "files": [
@@ -73,6 +75,7 @@
           "extract-import-map.mjs",
           "extract-structure-result.mjs",
           "extract-structure.mjs",
+          "finalize-incremental.mjs",
           "frameworks/django.md",
           "frameworks/express.md",
           "frameworks/fastapi.md",
@@ -116,72 +119,74 @@
           "locales/zh.md",
           "merge-batch-graphs.py",
           "merge-subdomain-graphs.py",
+          "prepare-incremental.mjs",
           "scan-project.mjs"
         ],
-        "text_files": 50,
-        "bytes": 386245,
-        "chars": 377818,
-        "tokens": 78441
+        "text_files": 52,
+        "bytes": 442017,
+        "chars": 433584,
+        "tokens": 88521
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "分析代码库并生成交互式知识图谱，理清架构与组件关系",
+    "tagline": "生成可交互的代码架构全景图",
     "scene_tags": [
-      "代码评审",
-      "项目交接",
-      "架构梳理"
+      "接手旧项目",
+      "架构梳理",
+      "代码库导航"
     ],
-    "fit_line": "适合你，如果接手旧项目或想快速理解代码库整体结构",
+    "fit_line": "适合你，如果你需要快速看懂一个陌生项目的代码结构。",
+    "tagline_en": "Generate an interactive map of a codebase's architecture",
     "scene_tags_en": [
-      "code review",
-      "project handover",
-      "architecture exploration"
+      "taking over a legacy project",
+      "architecture exploration",
+      "codebase navigation"
     ],
-    "fit_line_en": "For you if you're onboarding a legacy project or need to quickly grasp codebase structure",
+    "fit_line_en": "For you if you need to understand an unfamiliar project's structure fast.",
     "source": "llm",
-    "content_hash": "sha256:ec5a32af6d25eda0da4dbdd3b99b102b49fc69fede68f24a998fb8ac470210c3",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-19T05:50:30.146Z",
+    "content_hash": "sha256:de945823f0ac110a4b9d503961f7b362ebe92e46727c56b5113f9f35b02cf12d",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-05T07:23:07.464Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,它会分析代码库,生成知识图谱文件存入项目的 .understand-anything 目录,供交互式仪表盘展示架构、组件与关系。分析时按阶段报告进度,并支持指定目录、语言、全量重建等选项。",
-    "when": "当用户要求分析代码库、理解项目架构或生成交互式知识图谱时触发(通常以 /understand 命令发起,可附带目录路径和 --full、--language 等选项)。",
+    "what": "分析代码库,生成 knowledge-graph.json 至 .understand-anything/,记录架构、组件与关系,供交互式仪表盘浏览;期间分阶段汇报进度。",
+    "when": "当用户要求分析代码库、理解架构或组件关系,或要求生成知识图谱时触发。",
     "say": [
       {
-        "text": "/understand 分析当前项目",
-        "note": "开始生成知识图谱并报告进度。"
+        "text": "分析当前代码库,生成知识图谱。",
+        "note": "开始分析并产出 knowledge-graph.json。"
       },
       {
-        "text": "/understand --full 强制重建",
-        "note": "忽略已有图,从头全量分析。"
+        "text": "把图谱内容用中文生成。",
+        "note": "输出语言将设为 zh。"
       },
       {
-        "text": "/understand --language zh 用中文生成",
-        "note": "摘要、描述、标签等全部用中文输出。"
+        "text": "强制重建这个项目的知识图谱。",
+        "note": "忽略已有图谱,从头完整分析。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:ec5a32af6d25eda0da4dbdd3b99b102b49fc69fede68f24a998fb8ac470210c3",
+    "content_hash": "sha256:de945823f0ac110a4b9d503961f7b362ebe92e46727c56b5113f9f35b02cf12d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:26:14.514Z",
+    "generated_at": "2026-09-05T07:35:09.875Z",
     "lint_pass": true,
-    "what_en": "Analyzes a codebase and produces knowledge-graph.json in .understand-anything/, which powers an interactive architecture dashboard. Reports progress per phase; supports target directory, language, and full-rebuild options.",
-    "when_en": "Triggered when the user asks to analyze a codebase or generate a knowledge graph, typically via /understand with an optional directory path and flags such as --full, --language, --review.",
+    "what_en": "Claude analyzes the current or specified codebase and produces a knowledge-graph.json file in .understand-anything/, capturing architecture, components, and relationships for an interactive dashboard; progress is reported in phases.",
+    "when_en": "Triggered when the user asks to analyze a codebase, understand architecture or component relationships, or request a knowledge graph.",
     "say_en": [
       {
-        "text": "/understand analyze the current project",
-        "note": "Begins graph generation and reports progress."
+        "text": "Analyze the current codebase and generate a knowledge graph.",
+        "note": "Produces knowledge-graph.json."
       },
       {
-        "text": "/understand --full rebuild everything",
-        "note": "Ignores the existing graph and re-analyzes from scratch."
+        "text": "Generate the graph content in Chinese.",
+        "note": "Sets the output language to zh."
       },
       {
-        "text": "/understand --language zh use Chinese",
-        "note": "All summaries, descriptions, tags, etc. are in Chinese."
+        "text": "Force a full rebuild of the graph for this project.",
+        "note": "Ignores any existing graph."
       }
     ]
   }

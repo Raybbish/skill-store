@@ -3,10 +3,10 @@
   "meta": {
     "id": "code-yeongyu/oh-my-openagent/review-work",
     "name": "review-work",
-    "description": "Post-implementation review orchestrator. Launches 5 parallel background sub-agents: Oracle (goal/constraint verification), Oracle (code quality), Oracle (security), unspecified-high (hands-on QA execution), unspecified-high (context mining from GitHub/git/Slack/Notion). All must pass for review to pass. MUST USE before a PR handoff or when the user explicitly asks to review completed work. Triggers: 'review work', 'review my work', 'review changes', 'QA my work', 'verify implementation', 'check my work', 'validate changes', 'post-implementation review'.",
+    "description": "Post-implementation gate review: run manual QA on the real surface yourself, then launch ONE gate reviewer (never a panel) to audit goal, constraints, code quality, security, missed context, and QA evidence. Use before a PR handoff or when the user explicitly asks to review completed work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/review-work",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
-    "content_hash": "sha256:b1eb017e788d8fd7fb70bafa1e5874c9947d2ce7f5a23c6fac8fba975c326ad4",
+    "upstream_commit": "579c1759d21536b630eac1b27177f61a8a33aef4",
+    "content_hash": "sha256:da09aef90807fbbbf08b9645efccb295f2a1eab9dfc0ad581a0ec9c428aeb1b2",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
     "category": "dev",
@@ -15,19 +15,18 @@
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "code-review",
-      "agent-ops"
+      "code-review"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68738,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-06T07:31:22.942Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-06T03:50:55+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -37,95 +36,94 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-06T07:31:22.942Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 29316,
-        "chars": 29304,
-        "tokens": 6067
+        "bytes": 20345,
+        "chars": 20333,
+        "tokens": 4372
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 29316,
-        "chars": 29304,
-        "tokens": 6067
+        "bytes": 20345,
+        "chars": 20333,
+        "tokens": 4372
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 29316,
-        "chars": 29304,
-        "tokens": 6067
+        "bytes": 20345,
+        "chars": 20333,
+        "tokens": 4372
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "并行发起多路审查，把关已完成工作质量",
+    "tagline": "自查并单审已完成工作，核验目标、质量与安全",
     "scene_tags": [
       "pr交接前",
-      "代码复查",
-      "质量验证"
+      "代码评审",
+      "交付验收"
     ],
-    "fit_line": "适合你，如果在交接已完工作前需要多路审查把关。",
-    "tagline_en": "Launch parallel review agents to validate completed work before handoff.",
+    "fit_line": "适合你,如果 你刚完成功能开发，想在提交PR前做一次独立的把关审查。",
+    "tagline_en": "Gate-check completed work with a single reviewer before handoff.",
     "scene_tags_en": [
-      "before PR handoff",
+      "PR handoff",
       "code review",
-      "quality verification"
+      "delivery acceptance"
     ],
-    "fit_line_en": "For you if you need parallel review agents to check your completed work before handoff.",
+    "fit_line_en": "For you if you've just finished coding and want an independent check before a PR handoff.",
     "source": "llm",
-    "content_hash": "sha256:b1eb017e788d8fd7fb70bafa1e5874c9947d2ce7f5a23c6fac8fba975c326ad4",
+    "content_hash": "sha256:da09aef90807fbbbf08b9645efccb295f2a1eab9dfc0ad581a0ec9c428aeb1b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T13:49:08.436Z",
+    "generated_at": "2026-09-04T07:45:49.884Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude会启动5个并行后台子代理，分别检查目标达成、代码质量、安全性、实际运行、上下文遗漏。5个全通过，审查才算通过。",
-    "when": "当用户明确要求审查已完成的工作（如说“review work”、“check my work”等），或准备提交PR前，Claude会启动审查。",
+    "what": "请它审查已完成工作时,它不只读代码,而会先自己在真实运行环境跑功能测试(正常、边界、回归),有失败立刻报“审查失败”;通过后才派一个评审子代理,对照原始目标、约束、代码质量、安全性、漏掉的上下文和测试证据核对,双关都过才给“通过”。",
+    "when": "准备把 PR 交接出去之前,或你明确要求“审查已完成的工作”时触发;通常由一次 review 请求开启。",
     "say": [
       {
-        "text": "审查我刚完成的工作。",
-        "note": "触发5路并行审查。"
+        "text": "我刚写完这次改动,请你帮我 review 一下。",
+        "note": "Claude 会先自己跑功能测试,再派一个评审代理把关。"
       },
       {
-        "text": "检查我最近的改动是否达标。",
-        "note": "会对照目标与约束逐项核对。"
+        "text": "新功能准备提 PR 了,先帮我做一次门禁审查。",
+        "note": "应用无法启动或测试有失败时会当场报失败。"
       },
       {
-        "text": "帮我验证这次实现有没有问题。",
-        "note": "所有子代理都通过才算过。"
+        "text": "审查这次改动:对照目标、约束和安全要求查漏。",
+        "note": "只有测试矩阵无失败行且评审代理批复才认定为通过。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:b1eb017e788d8fd7fb70bafa1e5874c9947d2ce7f5a23c6fac8fba975c326ad4",
+    "content_hash": "sha256:da09aef90807fbbbf08b9645efccb295f2a1eab9dfc0ad581a0ec9c428aeb1b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:58:47.013Z",
+    "generated_at": "2026-09-06T07:46:37.837Z",
     "lint_pass": true,
-    "what_en": "Claude starts 5 parallel background sub-agents for goal/constraint check, code quality, security, hands-on QA, and context mining from GitHub/git/Slack/Notion. All must pass for review to pass.",
-    "when_en": "Triggers when the user explicitly asks to review completed work (e.g., says 'review work' or 'check my work'), or right before a PR handoff.",
+    "what_en": "Claude runs real functional checks itself; a failing row aborts with REVIEW FAILED. If green, one gate-reviewer subagent audits goal, constraints, code, security, missing context, and QA evidence, and returns a single PASS/FAIL verdict.",
+    "when_en": "Triggers when you ask to review already-completed work, or right before handing a PR over. Typically started by a review request after implementation finishes.",
     "say_en": [
       {
-        "text": "Review the work I just finished.",
-        "note": "Triggers the 5-lane parallel review."
+        "text": "Please review the work I just finished — run your QA first, then a gate review."
       },
       {
-        "text": "Check whether my recent changes meet the goals.",
-        "note": "Cross-checks against goals and constraints."
+        "text": "I'm about to hand this PR over — run the gate review before I do.",
+        "note": "If the app can't start, it reports failure immediately and skips further review."
       },
       {
-        "text": "Help me verify this implementation for issues.",
-        "note": "Passes only if all sub-agents pass."
+        "text": "Audit these changes against the stated goal, constraints, and security concerns.",
+        "note": "It passes only when every QA row is green and the gate reviewer approves."
       }
     ]
   }

@@ -3,10 +3,10 @@
   "meta": {
     "id": "juliusbrussee/caveman/cavecrew",
     "name": "cavecrew",
-    "description": "Decision guide for delegating to caveman-style subagents. Tells the main thread WHEN to spawn `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit), or `cavecrew-reviewer` (diff review) instead of doing the work inline or using vanilla `Explore`. Subagent output is caveman-compressed so the tool-result injected back into main context is ~60% smaller — main context lasts longer across long sessions. Trigger: \"delegate to subagent\", \"use cavecrew\", \"spawn investigator/builder/reviewer\", \"save context\", \"compressed agent output\".\n",
+    "description": "When to delegate to `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit) or `cavecrew-reviewer` (diff review) instead of working inline or using `Explore`. Their output is compressed, so main context lasts longer.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "17f9f2ec2377b0bfe16b52ee03a462e7f0a02bc8",
-    "content_hash": "sha256:5b9553c80fdab25088c5851d1f8f2c306f5c787214ca33f03654ebc16dafe2a3",
+    "upstream_commit": "5184b3d11ac6a1acb7d44b9bfaa31698157cff97",
+    "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 272000,
-    "fetched_at": "2026-08-28T14:50:35.090Z",
+    "installs_skills_sh": 285400,
+    "fetched_at": "2026-09-06T07:33:48.260Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-08-25T18:17:28+02:00"
+    "upstream_commit_at": "2026-09-05T09:27:13Z"
   },
   "context_size": {
     "version": "1",
@@ -34,25 +34,25 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:50:35.090Z",
+    "generated_at": "2026-09-06T07:33:48.260Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 3936,
-        "chars": 3904,
-        "tokens": 816
+        "bytes": 3606,
+        "chars": 3576,
+        "tokens": 753
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 3936,
-        "chars": 3904,
-        "tokens": 816
+        "bytes": 3606,
+        "chars": 3576,
+        "tokens": 753
       },
       "package_total_text": {
         "files": [
@@ -60,66 +60,70 @@
           "SKILL.md"
         ],
         "text_files": 2,
-        "bytes": 6811,
-        "chars": 6773,
-        "tokens": 1409
+        "bytes": 6481,
+        "chars": 6445,
+        "tokens": 1346
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "分派编码任务给专门子代理,让长会话更持久",
+    "tagline": "按需分派子代理处理代码定位、修改与审查",
     "scene_tags": [
-      "长会话编码",
-      "委派子任务",
-      "上下文紧张"
+      "代码定位",
+      "代码修改",
+      "上下文优化"
     ],
-    "fit_line": "适合你,如果 你在长AI对话中写代码,希望把子任务交出去以省上下文。",
-    "tagline_en": "Delegate coding tasks to specialized subagents to make long sessions last",
+    "fit_line": "适合你,如果你常用 AI 写代码,想通过子代理分工节省上下文。",
+    "tagline_en": "Delegate to sub-agents for code search, edits, and reviews to save context.",
     "scene_tags_en": [
-      "long coding sessions",
-      "subtask delegation",
-      "limited context"
+      "code search",
+      "code edits",
+      "context save"
     ],
-    "fit_line_en": "For you if you code in long AI conversations and need to delegate subtasks to free up context.",
+    "fit_line_en": "For you if you code with AI and want to manage context by delegating tasks to sub-agents.",
     "source": "llm",
-    "content_hash": "sha256:5b9553c80fdab25088c5851d1f8f2c306f5c787214ca33f03654ebc16dafe2a3",
+    "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-17T03:49:41.050Z",
+    "generated_at": "2026-08-30T08:55:04.676Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按指南判断何时把任务交给三个专用子代理:找代码、改一两个文件、审查改动。它们用极简压缩格式汇报,占用的上下文更小,长会话能持续更久。",
-    "when": "当你说出 'delegate to subagent'、'use cavecrew'、'save context' 等触发词时,Claude 就会按此指南决定是否派子代理以及派哪个。",
+    "what": "装上后,它会把“找代码位置”“一两个文件内的小改动”“审查改动”分别交给 investigator、builder、reviewer 三个子代理。它们返回压缩后的精简结果(通常带文件路径和行号),比普通做法更省主对话空间。",
+    "when": "当你要定位某段代码(查定义/调用/用法)、改动不超过两个文件、或审查 diff/分支/文件里的 bug,并且想要精简输出而非长篇叙述时,会派给对应子代理。",
     "say": [
       {
-        "text": "用 cavecrew 找一下 `foo` 在哪个文件定义",
-        "note": "会派 investigator 返回路径和行号。"
+        "text": "帮我查一下 calculate_price 在哪定义,谁在调用它?",
+        "note": "会派找代码的子代理,回报路径和行号。"
       },
       {
-        "text": "用 cavecrew-reviewer 检查这个 diff",
-        "note": "会派 reviewer 审差异,按路径列问题。"
+        "text": "把 src/utils.ts 第 88 行的错误提示改准确,只动这一个文件。",
+        "note": "会派改代码的子代理,完成后回报验证结果。"
+      },
+      {
+        "text": "帮我看下当前分支的改动,指出可疑的 bug。",
+        "note": "会派审查子代理,按行号列出问题与修复建议。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:5b9553c80fdab25088c5851d1f8f2c306f5c787214ca33f03654ebc16dafe2a3",
+    "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:04:00.351Z",
+    "generated_at": "2026-09-06T07:52:52.887Z",
     "lint_pass": true,
-    "what_en": "After install, Claude consults the guide to decide when to hand tasks to three subagents: locate code, edit 1-2 files, review changes. They report in terse compressed form, using less context, so long sessions last longer.",
-    "when_en": "It triggers when you say 'delegate to subagent', 'use cavecrew', 'save context', etc.; Claude then consults the guide to decide whether and which subagent to spawn.",
+    "what_en": "With this enabled Claude gives locate-code, 1-2-file edits, and diff reviews to compressed-output subagents (investigator/builder/reviewer) instead of working inline or using Explore. Their terse path/line reports save main-context space.",
+    "when_en": "Triggered when Claude would locate code (definition/callers/uses), make a surgical 1-2-file edit, or review a diff/branch/file for bugs, and compressed output is preferred over prose.",
     "say_en": [
       {
-        "text": "Use cavecrew to find where `foo` is defined",
-        "note": "Spawns investigator to return path and line."
+        "text": "Where is calculate_price defined, and who calls it?",
+        "note": "Sends investigator; returns path:line hits."
       },
       {
-        "text": "Use cavecrew-builder to change line 20 of `app.js` to `bar`",
-        "note": "Spawns builder for a small single-file edit."
+        "text": "Fix the error message at line 88 of src/utils.ts; only touch that file.",
+        "note": "Directs to builder; verifies the change after edit."
       },
       {
-        "text": "Use cavecrew-reviewer to check this diff",
-        "note": "Spawns reviewer to audit the diff and list issues."
+        "text": "Review my current branch's diff and list likely bugs.",
+        "note": "Sends reviewer; reports findings sorted by line."
       }
     ]
   }

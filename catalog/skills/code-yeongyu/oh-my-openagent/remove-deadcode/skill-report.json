@@ -5,7 +5,7 @@
     "name": "remove-deadcode",
     "description": "Remove unused code from this project with ultrawork mode, LSP-verified safety, atomic commits. Triggers: remove dead code, dead code, cleanup, remove unused.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/remove-deadcode",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "579c1759d21536b630eac1b27177f61a8a33aef4",
     "content_hash": "sha256:5e87c2118e567b4a1ddcb9d423ec86110488347fce8b2acaa7d1d0a3bd47ebf1",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -23,12 +23,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68738,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-06T07:31:22.942Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-06T03:50:55+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-06T07:31:22.942Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,26 +92,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你说要清理死代码时,Claude 会扫描项目,找出未被任何地方引用的变量、函数、导入和文件;用 LSP 交叉验证避免误删后,把删除任务分给多个并行智能体分头执行,每个改动单独提交;最后运行类型检查、测试和构建验证结果。",
-    "when": "当你说“移除死代码”“死代码”“清理”等关键词,或要求去掉未使用的代码时触发。",
+    "what": "Claude 会扫描项目，用类型检查与 LSP 找出未使用的代码并核实，再派多个代理并行删除（跳过入口文件、测试等），每个批次单独提交，最后跑类型检查、测试、构建并汇报清单。",
+    "when": "当你提到 “remove dead code”“dead code”“cleanup” 等清理关键词，或要求清除无用代码时触发；若指定文件/目录/符号，则只在那部分范围扫描。",
     "say": [
       {
-        "text": "请移除这个项目的死代码。",
-        "note": "Claude 会扫描全项目并并行删除。"
+        "text": "请清理整个项目的死代码。",
+        "note": "Claude 将全项目扫描并分批并行移除，最后汇报。"
       },
       {
-        "text": "清理 src/hooks 目录里未使用的代码。",
-        "note": "只处理该目录, 其余不动。"
+        "text": "只移除 src/hooks 目录里的死代码。",
+        "note": "扫描范围会限制在该目录内的代码。"
       },
       {
-        "text": "找出并删除未被引用的导出变量。",
-        "note": "Claude 验证后会删除并自动提交。"
+        "text": "清除 src/tools 下未被引用的导出符号。",
+        "note": "会先用 LSP 验证引用，确认后才删除。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5e87c2118e567b4a1ddcb9d423ec86110488347fce8b2acaa7d1d0a3bd47ebf1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:58:09.507Z",
-    "lint_pass": true
+    "generated_at": "2026-09-06T07:45:57.284Z",
+    "lint_pass": true,
+    "what_en": "Scans the project, uses typecheck + LSP to confirm dead code, dispatches parallel agents to remove it by batches (excluding entry points/tests/public APIs), runs typecheck/tests/build and reports. Commits atomically.",
+    "when_en": "Triggers when the user says 'remove dead code', 'dead code', 'cleanup' or similar, or asks to remove unused code. A supplied file/dir/symbol narrows the scan.",
+    "say_en": [
+      {
+        "text": "Clean up all dead code in the project.",
+        "note": "Scans the whole project, removes it in batches, and reports."
+      },
+      {
+        "text": "Remove dead code only in the src/hooks directory.",
+        "note": "Scope is narrowed to that directory."
+      },
+      {
+        "text": "Delete unreferenced exported symbols under src/tools.",
+        "note": "References are verified with LSP first."
+      }
+    ]
   }
 }
