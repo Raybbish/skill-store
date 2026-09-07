@@ -5,7 +5,7 @@
     "name": "add-rtk",
     "description": "Install rtk token-compression proxy into agent containers. Routes Bash tool calls through rtk for 60–90% token savings on dev commands (git, cargo, pytest, docker, kubectl, etc.).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-rtk",
-    "upstream_commit": "b76fcb3db0236b36a4d50bed02e89eff472d0e67",
+    "upstream_commit": "75f20168f699b70c821cb0c6a3d63433f2a81176",
     "content_hash": "sha256:2d794ab4db2bf9ef8982e33e03b2fadb8ef70ea63e033599111fc938314accc6",
     "license": "MIT",
     "hosting": "mirrored",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30694,
+    "stars_github": 30712,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:15.057Z",
+    "fetched_at": "2026-09-07T07:48:36.083Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-03T13:32:47+02:00",
+    "upstream_commit_at": "2026-09-06T17:10:09+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -39,7 +39,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:15.057Z",
+    "generated_at": "2026-09-07T07:48:36.083Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -95,41 +95,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "让 Claude 在 agent 容器里执行 Bash 命令时，先经过 rtk 压缩代理再运行，git、cargo 等开发命令的 token 消耗可降 60–90%，无需额外说明。",
-    "when": "安装并重启后，容器内每次 Bash 工具调用都会被 rtk 截获；典型如你让 Claude 跑 git status、docker ps 等命令时自动生效。",
+    "what": "装上后,Claude 每次执行 Bash 终端命令都会先交给 rtk 代理处理,然后才真正执行;git、cargo、pytest 等常见开发命令的 token 消耗会被压缩 60–90%。",
+    "when": "按步骤装好并重启目标容器后,每次 Claude 调用 Bash 工具执行命令都会触发,例如你对它说“运行 git status”这类开发命令时。",
     "say": [
       {
-        "text": "帮我给当前 agent 组装上 rtk",
-        "note": "执行安装、挂载和钩子配置"
+        "text": "运行 git status,看看仓库状态。",
+        "note": "这条命令会经 rtk 转发,输出被压缩。"
       },
       {
-        "text": "跑一下 git status，看 rtk 有没有在省 token",
-        "note": "触发一次 Bash 命令并验证拦截效果"
+        "text": "跑一下 cargo test,只汇报失败的用例。",
+        "note": "会触发 Bash,rtk 对输出做压缩。"
       },
       {
-        "text": "查一下 rtk 省了多少 token",
-        "note": "显示 rtk gain 的统计信息"
+        "text": "执行 docker ps,列出正在运行的容器。",
+        "note": "docker 命令受支持,会走 rtk 代理。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2d794ab4db2bf9ef8982e33e03b2fadb8ef70ea63e033599111fc938314accc6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T08:05:12.516Z",
+    "generated_at": "2026-09-07T08:13:31.532Z",
     "lint_pass": true,
-    "what_en": "Routes every Bash tool call in the agent container through the rtk proxy after installation, compressing tokens 60–90% for dev commands like git, cargo, pytest, docker, and kubectl.",
-    "when_en": "After installation and restart, every Bash tool call inside a container triggers rtk; typical cases include running git status, docker ps, or other dev commands.",
+    "what_en": "Once installed, every Bash tool call Claude makes is passed through rtk before execution. Common dev commands such as git, cargo, and pytest use 60–90% fewer tokens.",
+    "when_en": "After installing and restarting the container, every Bash tool call Claude makes triggers rtk, for example when you ask Claude to run git status or any other supported dev command.",
     "say_en": [
       {
-        "text": "Install rtk in my current agent group.",
-        "note": "Runs install, mount, and hook setup."
+        "text": "Run git status and show me the repository state.",
+        "note": "The Bash call is passed through rtk."
       },
       {
-        "text": "Run git status to check if rtk is active.",
-        "note": "Issues a Bash command and confirms interception."
+        "text": "Run cargo test and report only the failed cases.",
+        "note": "The Bash call triggers rtk and its output is compressed."
       },
       {
-        "text": "Show how many tokens rtk has saved.",
-        "note": "Displays stats via rtk gain."
+        "text": "Run docker ps and list the running containers.",
+        "note": "Docker is among the dev commands rtk supports."
       }
     ]
   }

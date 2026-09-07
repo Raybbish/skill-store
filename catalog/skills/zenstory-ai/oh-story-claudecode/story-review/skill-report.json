@@ -5,11 +5,11 @@
     "name": "story-review",
     "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/story-review、/审查、「审查一下」「帮我审一下」。",
     "upstream": "https://github.com/zenstory-ai/oh-story-claudecode/tree/main/skills/story-review",
-    "upstream_commit": "5de060f9a47e7c4781c81edb320436b772e2955e",
-    "content_hash": "sha256:e9d3198d2e87b29dbbee1617b8997697f8d53a79645513677a7405a13330a36a",
+    "upstream_commit": "3f2a890a0ef33e402bb8fb4c908d43407615b296",
+    "content_hash": "sha256:947e20fa0cd1bba38605547980ff1f20f74523db2194cb5223d73a34575e9ae2",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "writing",
+    "category": "product",
     "version": "1.1.1",
     "publisher": "zenstory-ai",
     "publisher_verified": false,
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6269,
+    "stars_github": 6593,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-31T09:14:18.492Z",
+    "fetched_at": "2026-09-07T07:49:14.114Z",
     "first_seen_at": "2026-08-27T13:37:59.445Z",
-    "upstream_commit_at": "2026-08-30T08:05:21-07:00",
+    "upstream_commit_at": "2026-09-07T00:47:23-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-31T09:14:18.492Z",
+    "generated_at": "2026-09-07T07:49:14.114Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -57,9 +57,9 @@
           "scripts/tracking_commit.py"
         ],
         "text_files": 9,
-        "bytes": 275278,
-        "chars": 212207,
-        "tokens": 66903
+        "bytes": 275995,
+        "chars": 212800,
+        "tokens": 67072
       },
       "package_total_text": {
         "files": [
@@ -84,69 +84,70 @@
           "scripts/wordcount_core.py"
         ],
         "text_files": 19,
-        "bytes": 381691,
-        "chars": 263688,
-        "tokens": 101049
+        "bytes": 382408,
+        "chars": 264281,
+        "tokens": 101218
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "审阅故事草稿,获得多视角对抗式反馈",
+    "tagline": "检查你的需求描述,多角度找出遗漏和矛盾。",
     "scene_tags": [
-      "故事创作",
-      "打磨初稿",
-      "投稿前审校"
+      "需求评审",
+      "需求细化",
+      "功能规划前"
     ],
-    "fit_line": "适合你,如果写完故事后你希望多双眼睛帮你挑毛病",
-    "tagline_en": "Review your story draft and get multi-perspective critical feedback",
+    "fit_line": "适合你,如果在写需求或功能说明时,想获得多角度的检查意见。",
+    "tagline_en": "Review your requirement description from multiple angles for gaps and conflicts.",
     "scene_tags_en": [
-      "story drafting",
-      "polishing drafts",
-      "pre-submission review"
+      "requirement review",
+      "requirement detailing",
+      "feature planning"
     ],
-    "fit_line_en": "For you if you write stories and want critique from multiple viewpoints before anyone reads them",
+    "fit_line_en": "For you if you write requirement or feature specs and want multiple perspectives before finalizing.",
     "source": "llm",
-    "content_hash": "sha256:e9d3198d2e87b29dbbee1617b8997697f8d53a79645513677a7405a13330a36a",
+    "content_hash": "sha256:947e20fa0cd1bba38605547980ff1f20f74523db2194cb5223d73a34575e9ae2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-31T09:20:59.841Z",
+    "generated_at": "2026-09-07T07:55:33.621Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会以“找问题”的对抗式审查方式检查小说,从结构、角色、文字、设定等角度指出问题,按 S1~S4 严重度给出修改建议并输出报告;它不修改正文,可选 full/lean/solo 模式。",
-    "when": "当你说出“/story-review”“/审查”“审查一下”等触发词时触发;未指定模式时默认 full。",
+    "what": "它会把小说从结构、角色、文字、设定等角度挑毛病，按 S1~S4 标严重度并给出可执行修改建议；只出报告，不改正文。可用 full/lean 并行多视角审，失败自动降级 solo，并按番茄/起点/知乎等平台标准核对。",
+    "when": "当用户输入 /story-review(可加 full/lean/solo)、/审查，或说「帮我审一下」等触发词时；未指定模式默认 full。",
     "say": [
       {
-        "text": "帮我审一下这一章,用 full 模式。",
-        "note": "会并行调用 4 个审查 Agent。"
+        "text": "/story-review 审第三章，看结构、节奏和钩子问题。",
+        "note": "full 模式会并行多个审查视角，异常时降级 solo。"
       },
       {
-        "text": "用 lean 模式审查最近改过的章节。"
+        "text": "用 lean 帮我审第 1、2 章，只要结构和连贯性问题。",
+        "note": "lean 只做故事架构与一致性两个视角。"
       },
       {
-        "text": "solo 模式审查,不 spawn 子代理。",
-        "note": "由当前会话直接执行基础审查。"
+        "text": "帮我审一下第 8 章，角色对话和人物动机怪不怪。",
+        "note": "按 S1~S4 标严重度，并给行号和替换方向。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:e9d3198d2e87b29dbbee1617b8997697f8d53a79645513677a7405a13330a36a",
+    "content_hash": "sha256:947e20fa0cd1bba38605547980ff1f20f74523db2194cb5223d73a34575e9ae2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-31T09:31:17.273Z",
+    "generated_at": "2026-09-07T08:23:44.993Z",
     "lint_pass": true,
-    "what_en": "Claude inspects novel text adversarially for issues in structure, characters, prose, and setting, then outputs a report with severity S1–S4 and actionable fixes. It does not edit the text. Modes: full, lean, solo.",
-    "when_en": "Triggers when you say '/story-review', '/审查', '审查一下', etc. Defaults to full mode when not specified.",
+    "what_en": "Claude reviews given fiction adversarially: spots structure/character/prose/setting problems, rates S1-S4, lists fixes. Report only. full/lean spawn reviewer agents in parallel, fall back to solo; rubrics: Fanqie/Qidian/Zhihu etc.",
+    "when_en": "Triggered by /story-review (optionally with full/lean/solo), /审查, or a phrase like 帮我审一下; defaults to full when no mode is set.",
     "say_en": [
       {
-        "text": "Review this chapter for me in full mode.",
-        "note": "Spawns all 4 review agents in parallel."
+        "text": "/story-review Review chapter 3 — structure, pacing, and hooks.",
+        "note": "Full mode: multiple perspectives; falls back to solo."
       },
       {
-        "text": "Run a lean review on the recently edited chapters.",
-        "note": "Uses story-architect and consistency-checker agents."
+        "text": "Run a lean review of chapters 1-2, only structure and consistency.",
+        "note": "Lean covers architecture and consistency only."
       },
       {
-        "text": "Do a solo review without spawning sub-agents.",
-        "note": "Current session performs the basic review directly."
+        "text": "Review chapter 8 — do dialogue and character motivation feel off?",
+        "note": "Issues are rated S1-S4 with line references."
       }
     ]
   }

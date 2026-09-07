@@ -5,7 +5,7 @@
     "name": "pre-publish-review",
     "description": "Nuclear-grade 12-agent pre-publish release gate. Runs /get-unpublished-changes to detect all changes since last npm release, spawns up to 10 ultrabrain agents for deep per-change analysis, invokes /review-work (orchestrator manual QA plus one gate reviewer) for holistic review, and 1 oracle for overall release synthesis. Runs ONLY when the user explicitly asks for a pre-publish review — a plain publish/release request MUST NOT trigger this; /publish ships directly. Triggers: 'pre-publish review', 'review before publish', 'release review', 'pre-release review', 'ready to publish?', 'can I publish?', 'pre-publish', 'safe to publish', 'publishing review', 'pre-publish check'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/pre-publish-review",
-    "upstream_commit": "579c1759d21536b630eac1b27177f61a8a33aef4",
+    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68738,
+    "stars_github": 68777,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-06T07:31:22.942Z",
+    "fetched_at": "2026-09-07T07:48:21.941Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-06T03:50:55+09:00",
+    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-06T07:31:22.942Z",
+    "generated_at": "2026-09-07T07:48:21.941Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,42 +90,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "你要求发布前审查时，Claude会先找出上次发布以来的所有代码改动，将其分成最多十组并行逐组分析，再做整体审查和风险评估，最后给出各组结论、整体可否发布和版本号建议。",
-    "when": "仅当你明确要求做预发布审查时触发，例如说“pre-publish review”、“review before publish”、“release review”等；普通的发布或上线请求不会触发。",
+    "what": "装上后，在用户要求发布前审查时，Claude会运行一套多代理审查流程：先查出上次发布以来的全部改动，划分成组；然后并行派出最多10个代理逐组深度检查，另有一个整体审查和一个总评估代理；最后汇总各层结论，给出是否可以发布、建议版本号以及破坏性变更清单。",
+    "when": "当用户明确表示要做发布前审查时触发，例如提到“pre-publish review”、“review before publish”、“release review”等关键词。普通的发布请求不会触发这套流程，会直接走正常发布。",
     "say": [
       {
-        "text": "帮我做一次发布前审查",
-        "note": "会启动完整的多层审查流程"
+        "text": "帮我把这次改动跑一遍pre-publish review。",
+        "note": "Claude会开始多代理发布前审查流程。"
       },
       {
-        "text": "今天这些改动可以发布吗？",
-        "note": "会先运行发布前检查再给结论"
+        "text": "发布前审查一下，看看要不要升版本。",
+        "note": "会检测未发布改动并给出版本号建议。"
       },
       {
-        "text": "请执行 pre-publish review",
-        "note": "触发技能，开始逐组审查改动"
+        "text": "检查这次发布有没有破坏性变更。",
+        "note": "整体审查后会列出破坏性变更和迁移说明。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:45:38.237Z",
-    "lint_pass": true,
-    "what_en": "When you request a pre-publish review, Claude detects all changes since the last npm release, groups them, runs up to 10 parallel per-group analyses and a holistic review, then returns verdicts, release readiness and version-bump advice.",
-    "when_en": "Triggers only when you explicitly ask for a pre-publish review, e.g., 'pre-publish review', 'review before publish', 'release review', etc. Plain publish/release requests do not trigger it.",
-    "say_en": [
-      {
-        "text": "Run a pre-publish review for me",
-        "note": "Starts the full multi-layer review"
-      },
-      {
-        "text": "Are these changes ready to publish?",
-        "note": "Runs the publish-readiness check first"
-      },
-      {
-        "text": "Please run pre-publish review",
-        "note": "Triggers the per-group review process"
-      }
-    ]
+    "generated_at": "2026-09-07T07:59:12.500Z",
+    "lint_pass": true
   }
 }

@@ -5,7 +5,7 @@
     "name": "add-dial-tool",
     "description": "Give chosen NanoClaw agents a real phone number as a container tool — the `dial` CLI baked into the agent image plus OneCLI credential injection for api.getdial.ai, scoped per agent, so the agents you pick can send SMS, place AI voice calls, and receive verification codes from inside the sandbox. Independent of the Dial channel; idempotent; re-run to change which agents may use it. Use when the user wants agents to text, call, or run `dial …` from a chat, without wiring Dial as a messaging channel.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-dial-tool",
-    "upstream_commit": "b76fcb3db0236b36a4d50bed02e89eff472d0e67",
+    "upstream_commit": "75f20168f699b70c821cb0c6a3d63433f2a81176",
     "content_hash": "sha256:c30bce35e47f03cd1f21e1035c25b376a59b83a0725b8b8decd4e461ec28defd",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30694,
+    "stars_github": 30712,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:15.057Z",
+    "fetched_at": "2026-09-07T07:48:36.083Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-03T13:32:47+02:00",
+    "upstream_commit_at": "2026-09-06T17:10:09+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:15.057Z",
+    "generated_at": "2026-09-07T07:48:36.083Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -96,26 +96,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "为选中的 NanoClaw 代理装上真电话号码工具：代理镜像里带 `dial` 命令行和操作技能，并经 OneCLI 注入凭据，使选中代理可在沙箱内发短信、打 AI 语音电话、接收验证码；未选中的代理会被网关拦截并返回 403 blocked_by_policy。可重复运行来更换可用代理。",
-    "when": "当你想让选中的代理发短信、打 AI 电话，或让它在对话里执行 `dial ...` 命令，且不想把 Dial 配置成消息通道时触发；需在 NanoClaw 仓库的主机上运行，可重复运行更改授权代理。",
+    "what": "你选定的 NanoClaw agents 会配上一个真实电话号码，能在沙箱内发短信、打 AI 语音电话、收验证码；没被选中的会被拦截并看到 403 blocked_by_policy。",
+    "when": "当你想让 NanoClaw agents 在对话里发短信、打电话或运行 dial 命令，但不想把 Dial 接成聊天频道时。触发前需在 NanoClaw 主机仓库中运行，而不是直接对 agent 说。",
     "say": [
       {
-        "text": "给我所有代理装上拨号工具，能用真号码发短信和打电话。",
-        "note": "会让你提供邮箱并输入验证码完成 Dial 登录。"
+        "text": "请给 555-0134 发一条短信，内容是“明天下午见”。",
+        "note": "agent 会调用 dial 发送这条短信。"
       },
       {
-        "text": "只给客服组（ag-cs）开通拨号权限，其他组保持禁用。",
-        "note": "未选中的代理会被网关拦截。"
+        "text": "用当前号码给 555-0178 拨一个 AI 语音电话。",
+        "note": "agent 会发起语音通话。"
       },
       {
-        "text": "重跑一次，把拨号权限从销售组换成客服组。",
-        "note": "技能幂等，重跑即可更换授权范围。"
+        "text": "这个号码有没有收到新验证码？帮我读出来。",
+        "note": "agent 会检查收到的验证码。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c30bce35e47f03cd1f21e1035c25b376a59b83a0725b8b8decd4e461ec28defd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-05T07:43:13.001Z",
-    "lint_pass": true
+    "generated_at": "2026-09-07T08:10:46.994Z",
+    "lint_pass": true,
+    "what_en": "Chosen NanoClaw agents get a real phone number and can send SMS, place AI voice calls, and receive verification codes inside the sandbox; unselected agents get blocked and see 403 blocked_by_policy.",
+    "when_en": "Use this when you want NanoClaw agents to text, call, or run `dial` from a chat without wiring Dial as a messaging channel. Run it from the NanoClaw repo on the host, not from a chat with an agent.",
+    "say_en": [
+      {
+        "text": "Please send a text to 555-0134 saying 'See you tomorrow afternoon'.",
+        "note": "agent sends the SMS via dial."
+      },
+      {
+        "text": "Place an AI voice call to 555-0178 using this number.",
+        "note": "agent initiates the call."
+      },
+      {
+        "text": "Have we received any new verification code on this number? Read it out.",
+        "note": "agent checks for codes."
+      }
+    ]
   }
 }

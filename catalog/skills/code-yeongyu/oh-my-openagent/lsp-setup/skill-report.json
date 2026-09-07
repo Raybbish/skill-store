@@ -5,7 +5,7 @@
     "name": "lsp-setup",
     "description": "Configures a language server so editor/agent tooling (diagnostics, go-to-definition, references, rename) works. Use when a project needs an LSP installed or wired, or a 'no LSP server configured' error appears.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/lsp-setup",
-    "upstream_commit": "579c1759d21536b630eac1b27177f61a8a33aef4",
+    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
     "content_hash": "sha256:7adc089e342fabb946780a9bce01edc1b4541df80b3be5cea2f75099c03cc764",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68738,
+    "stars_github": 68777,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-06T07:31:22.942Z",
+    "fetched_at": "2026-09-07T07:48:21.941Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-06T03:50:55+09:00",
+    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-06T07:31:22.942Z",
+    "generated_at": "2026-09-07T07:48:21.941Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -135,41 +135,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会先按文件扩展名判断项目语言，再读取对应语言的参考文档；检测所需语言服务器是否安装，缺了就安装，必要时写入配置（如 .codex/lsp-client.json），并用真实文件验证一次诊断往返、返回 OK/FAIL，让诊断、跳转定义等功能可用。",
-    "when": "当项目需要安装或接通语言服务器，或出现“no LSP server configured”报错时触发；会先按文件扩展名判断语言，再执行后续安装与配置。",
+    "what": "Claude 会扫描项目识别所用编程语言，安装并配置对应的语言服务器（LSP），再实际跑一次诊断来确认配置成功，让编辑器的诊断、跳转定义等功能可用。",
+    "when": "当用户要求为项目安装或接通 LSP，或出现“未配置语言服务器”的报错时触发。Claude 会根据文件扩展名识别语言并执行配置流程。",
     "say": [
       {
-        "text": "帮我把这个项目的 Python 语言服务器装好并配置上。",
-        "note": "检测语言后安装服务器；仅在需要时写入配置。"
+        "text": "为这个 Python 项目配置语言服务器并验证诊断正常。",
+        "note": "Claude 会按 Python 流程检测、安装并运行验证。"
       },
       {
-        "text": "检测一下当前目录，看看哪些语言服务器装了、哪些还没装。",
-        "note": "运行检测脚本，返回各语言的安装与配置状态。"
+        "text": "帮我设置 Rust 项目的 rust-analyzer，让跳转定义可用。",
+        "note": "会安装 rust-analyzer 并写入配置。"
       },
       {
-        "text": "跑一下 verify-lsp，检查 app.ts 的诊断能不能正常返回。",
-        "note": "会启动服务器请求一次诊断，返回 OK/FAIL。"
+        "text": "我收到“LSP 服务器未配置”错误，帮我处理这个 Go 文件。",
+        "note": "Claude 会检测文件类型并配置对应服务器。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:7adc089e342fabb946780a9bce01edc1b4541df80b3be5cea2f75099c03cc764",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:44:29.136Z",
+    "generated_at": "2026-09-07T07:58:48.903Z",
     "lint_pass": true,
-    "what_en": "Claude detects language by file extension, reads the matching reference, installs/configures the language server (writing e.g. .codex/lsp-client.json), then runs a real diagnostics roundtrip and reports OK/FAIL.",
-    "when_en": "Triggered when a project needs an LSP installed or wired up, or when a 'no LSP server configured' error appears. It first identifies the language by file extension, then installs and configures as needed.",
+    "what_en": "Claude scans the project to identify languages, installs and configures the matching language server, then runs a real diagnostics roundtrip to confirm the setup, enabling editor features like diagnostics and go-to-definition.",
+    "when_en": "Triggered when the user wants to install or wire an LSP for a project, or when a 'no LSP server configured' error appears. Claude detects the language by file extension and runs the setup workflow.",
     "say_en": [
       {
-        "text": "Set up the Python language server for this project.",
-        "note": "Detects the language, installs the server, and writes config only if needed."
+        "text": "Set up the language server for this Python project and verify diagnostics.",
+        "note": "It will detect, install, and run verification."
       },
       {
-        "text": "Scan this folder and tell me which language servers are missing.",
-        "note": "Runs the detection script and reports install/config status."
+        "text": "Set up rust-analyzer for my Rust project so go-to-definition works.",
+        "note": "It will install the server and write config."
       },
       {
-        "text": "Verify diagnostics for app.ts with verify-lsp.",
-        "note": "Starts the server, requests diagnostics, returns OK/FAIL."
+        "text": "I got a 'no LSP server configured' error, please fix it for this Go file.",
+        "note": "It will detect the language and configure the server."
       }
     ]
   }

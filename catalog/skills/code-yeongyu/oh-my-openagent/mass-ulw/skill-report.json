@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "579c1759d21536b630eac1b27177f61a8a33aef4",
+    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
     "content_hash": "sha256:4fa67eafdbdf3087e175b9fb7aebd9201e8bcc9e95b5ace753be57ba1efd5cb4",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68738,
+    "stars_github": 68777,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-06T07:31:22.942Z",
+    "fetched_at": "2026-09-07T07:48:21.941Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-06T03:50:55+09:00",
+    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-06T07:31:22.942Z",
+    "generated_at": "2026-09-07T07:48:21.941Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会用工作流工具按依赖顺序分阶段运行子任务：先定义节点和依赖，再逐阶段执行；每阶段都需对照证据验证成功标准，完成后保留缓存；对失败节点可单独重试、修改指令或补发消息恢复。",
-    "when": "当用户要求 mass-ulw、任务 DAG，或需要某些任务先于其他任务完成的扇出式多智能体作业时触发。硬性门槛：定义图前必须先完整阅读 references/planning.md。",
+    "what": "装上后，Claude 会把有依赖的多步任务拆成节点，用工作流工具按依赖顺序执行并产出结果；某节点失败可单独重试、改指令或发消息，已完成节点不重跑。",
+    "when": "当你说出「mass-ulw」、布置任务 DAG，或要求做“部分任务须等其它任务完成”的并行工作时，该技能会接管；若任务彼此独立则不触发。",
     "say": [
       {
-        "text": "用 mass-ulw 编排一个 DAG：先审计文档，再重写，最后验证。",
-        "note": "会按依赖顺序分阶段运行。"
+        "text": "请用 mass-ulw 把这几个有依赖关系的任务按顺序跑完。",
+        "note": "按依赖关系分批执行这些任务。"
       },
       {
-        "text": "对刚才的运行，用 retry 重试失败的 lint 节点。",
-        "note": "只重试指定节点，已完成节点复用缓存。"
+        "text": "布置一个 DAG 任务：先做 A，等 A 完成后再并行做 B 和 C。",
+        "note": "A 完成后才会启动 B 和 C。"
       },
       {
-        "text": "用 amend 修改定义，重跑变更过的节点及其依赖。",
-        "note": "需提供编辑后的定义。"
+        "text": "这些子任务部分要等前置完成，帮我用扇出方式并行处理。",
+        "note": "先执行无依赖节点，再执行后续节点。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4fa67eafdbdf3087e175b9fb7aebd9201e8bcc9e95b5ace753be57ba1efd5cb4",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:44:24.447Z",
+    "generated_at": "2026-09-07T07:59:49.798Z",
     "lint_pass": true,
-    "what_en": "With the skill installed, Claude drives dependency-ordered child work through the native workflow tool: it defines nodes with dependencies, runs one phase at a time, verifies results against evidence, and can retry/amend/send to recover failed nodes.",
-    "when_en": "Triggered when the user asks for mass-ulw, a task DAG, or fan-out work where some tasks depend on others. Reading references/planning.md in full is mandatory before any graph definition.",
+    "what_en": "Claude turns dependent multi-step work into nodes, executes them in order with the workflow tool, then returns the result. A failed node can be retried, amended or sent a message; completed nodes are reused.",
+    "when_en": "Triggered when you mention mass-ulw, ask for a task DAG, or request fan-out work where some tasks must wait on earlier ones. Independent tasks don't trigger it.",
     "say_en": [
       {
-        "text": "Use mass-ulw to run a DAG: audit docs first, then rewrite, then verify.",
-        "note": "It runs in dependency-ordered phases."
+        "text": "Use mass-ulw to run these dependent tasks in order.",
+        "note": "Executes them in dependency order."
       },
       {
-        "text": "For the last run, retry the failed lint node.",
-        "note": "Only that node retries; completed nodes reuse cached results."
+        "text": "Set up a DAG: first do A, then run B and C in parallel after A.",
+        "note": "B and C start only after A is done."
       },
       {
-        "text": "Amend the definition to re-run only changed nodes and their dependents.",
-        "note": "Provide the edited definition."
+        "text": "Some subtasks require earlier ones; run them as fan-out work.",
+        "note": "Independent nodes run first, then downstream stages."
       }
     ]
   }

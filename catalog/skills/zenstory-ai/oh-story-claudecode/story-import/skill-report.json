@@ -5,7 +5,7 @@
     "name": "story-import",
     "description": "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容 story-long-write / story-short-write 后续写作流程；内部复用 story-long-analyze / story-short-analyze 的拆解管道，按篇幅自动分流。触发方式：/story-import、「导入小说」「反向解析」「导入」「把我的书导进来」。",
     "upstream": "https://github.com/zenstory-ai/oh-story-claudecode/tree/main/skills/story-import",
-    "upstream_commit": "5de060f9a47e7c4781c81edb320436b772e2955e",
+    "upstream_commit": "3f2a890a0ef33e402bb8fb4c908d43407615b296",
     "content_hash": "sha256:f0b66d0689a95341421f23d98b8a50a900667ca025cabc732de1456c40a60e8b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6269,
+    "stars_github": 6593,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-31T09:14:18.492Z",
+    "fetched_at": "2026-09-07T07:49:14.114Z",
     "first_seen_at": "2026-08-27T13:37:59.445Z",
-    "upstream_commit_at": "2026-08-30T08:05:21-07:00",
+    "upstream_commit_at": "2026-09-07T00:47:23-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-31T09:14:18.492Z",
+    "generated_at": "2026-09-07T07:49:14.114Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -103,42 +103,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会把用户已有的小说（半成品或完本）拆解成一套标准项目结构，包括设定、大纲、正文、追踪等文件夹，并生成拆解分析文档，让用户可以直接接着写。长篇走长篇拆解，短篇走短篇拆解。",
-    "when": "当用户输入 /story-import 或说出「导入小说」「反向解析」等指令，要求导入已有小说时触发。",
+    "what": "该技能会把用户已写好的小说（半成品或完本）先按篇幅判定长篇或短篇，再用对应拆解管道解析，最后迁移成含设定、大纲、正文、追踪的标准写作项目，让用户能直接续写；旧版追踪项目则只重建追踪部分，不重拆全文。",
+    "when": "用户使用命令或说“导入”“反向解析”“把我的书导进来”等，或询问“已有小说怎么续写”这类导流程问题时触发。它会先确认导入源、篇幅与最后一章状态，再按步骤处理。",
     "say": [
       {
-        "text": "/story-import，导入我写了一半的小说。",
-        "note": "Claude 开始按流程拆解并建工程"
+        "text": "把我写到第 20 章的稿子导入成可续写的工程。",
+        "note": "会确认源文件与篇幅，再拆解并重建项目结构。"
       },
       {
-        "text": "帮我反向解析这部小说，做成能续写的项目。",
-        "note": "Claude 创建项目结构并生成大纲等"
+        "text": "我只要拆文库分析，不用建工程。",
+        "note": "会改用拆解管道，做到拆文库为止。"
       },
       {
-        "text": "把我的书导进来，按短篇走。",
-        "note": "Claude 按短篇管道拆解并迁移"
+        "text": "这是 v0.7.2 的旧项目，只重建追踪别重拆。",
+        "note": "会迁移旧追踪结构，不重跑全文拆解。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f0b66d0689a95341421f23d98b8a50a900667ca025cabc732de1456c40a60e8b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-31T09:30:49.264Z",
-    "lint_pass": true,
-    "what_en": "Claude parses an existing story (partial or complete) into a standard project structure (settings, outline, text, tracking) plus analysis docs, enabling continued writing. Routes long vs. short stories automatically.",
-    "when_en": "Triggered when the user inputs /story-import or says phrases like 'import novel' or 'reverse-parse' to import an existing story.",
-    "say_en": [
-      {
-        "text": "/story-import, import my half-written novel.",
-        "note": "Claude starts parsing and building the project."
-      },
-      {
-        "text": "Please reverse-parse this novel into a continuable project.",
-        "note": "Claude creates project structure and outline."
-      },
-      {
-        "text": "Import my book and treat it as a short story.",
-        "note": "Claude runs the short-story pipeline."
-      }
-    ]
+    "generated_at": "2026-09-07T08:21:42.103Z",
+    "lint_pass": true
   }
 }

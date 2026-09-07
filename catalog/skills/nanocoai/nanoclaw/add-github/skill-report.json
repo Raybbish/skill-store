@@ -5,7 +5,7 @@
     "name": "add-github",
     "description": "Add GitHub channel integration via Chat SDK. PR and issue comment threads as conversations.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-github",
-    "upstream_commit": "b76fcb3db0236b36a4d50bed02e89eff472d0e67",
+    "upstream_commit": "75f20168f699b70c821cb0c6a3d63433f2a81176",
     "content_hash": "sha256:536532a08d2dd637e092c62c3b9296b9ff309d5e50266f444807a6543ba2e793",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30694,
+    "stars_github": 30712,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-04T07:41:15.057Z",
+    "fetched_at": "2026-09-07T07:48:36.083Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-03T13:32:47+02:00",
+    "upstream_commit_at": "2026-09-06T17:10:09+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-04T07:41:15.057Z",
+    "generated_at": "2026-09-07T07:48:36.083Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,40 +91,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会通过 GitHub 机器人账号参与仓库讨论：当有人在 Pull Request 或 Issue 评论中 @ 该账号，它便回复，并持续回应之后同一讨论串的新评论。",
-    "when": "当被监听仓库的 Pull Request 或 Issue 评论中出现对机器人账号的 @提及时触发；首次 @ 后，该讨论串会被订阅，后续所有评论都会得到回应。",
+    "what": "装上后,它会注册 GitHub 渠道,让机器人能接收 PR 和 Issue 评论事件。评论里精确 @ 机器人时,它回帖,并把同一 PR/Issue 线程当作独立对话继续跟进。",
+    "when": "配好独立机器人账号、仓库 webhook 和环境变量后,当 GitHub 发来 Issue comments 或 Pull request review comments,且评论精确 @ 机器人用户名时触发;随后该线程的后续评论也会被处理。",
     "say": [
       {
-        "text": "帮我把 GitHub 接进来，让机器人参与 PR 和 Issue 的评论。",
-        "note": "会复制适配器、注册通道，并引导填写凭据。"
+        "text": "帮我把 GitHub 接进来,让机器人能被 @ 并回复 PR/Issue 评论"
       },
       {
-        "text": "我的仓库是私有的，请帮我配置 GitHub 通道。"
+        "text": "私有仓库用 public 策略接 GitHub,把通道连到我的 agent 组"
       },
       {
-        "text": "请跑一遍 GitHub 通道测试，确认适配器就绪。",
-        "note": "会执行构建和注册测试，并汇报结果。"
+        "text": "GitHub 评论没触发回复,帮我检查 webhook 和机器人用户名",
+        "note": "先跑注册测试,再核对凭据、事件和用户名。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:536532a08d2dd637e092c62c3b9296b9ff309d5e50266f444807a6543ba2e793",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T08:04:06.986Z",
+    "generated_at": "2026-09-07T08:12:26.080Z",
     "lint_pass": true,
-    "what_en": "After installation, your agent participates in GitHub PR/issue comment threads through a bot account. When @-mentioned, it replies; the thread is then subscribed and all follow-up comments get responses.",
-    "when_en": "Triggered when someone @mentions the bot's exact username in a Pull Request or Issue comment on a monitored repo. After the first @-mention, the thread is subscribed and every subsequent comment triggers a response.",
+    "what_en": "Adds a GitHub channel via the Chat SDK: the adapter is copied and registered so the agent joins PR and issue comment threads. It replies when exactly @-mentioned and keeps that thread as one ongoing conversation.",
+    "when_en": "Fires on GitHub issue-comment/PR-review-comment events that @-mention the exact bot username (bot, webhooks, and env vars preconfigured). Follow-up comments are handled too.",
     "say_en": [
       {
-        "text": "Add GitHub integration so the bot can reply in PR and issue threads.",
-        "note": "Copies the adapter, registers it, and prompts for credentials."
+        "text": "Connect GitHub so the bot can be @-mentioned and reply in PR/issue comments",
+        "note": "Walks through adapter setup and configuration."
       },
       {
-        "text": "My repo is private — set up the GitHub channel.",
-        "note": "Uses 'public' sender policy; asks for the bot token and secret."
+        "text": "Wire GitHub for a private repo using the public policy to my agent group",
+        "note": "Creates the messaging group and wiring."
       },
       {
-        "text": "Run the GitHub channel tests to verify the adapter.",
-        "note": "Runs the build and registration test, then reports the result."
+        "text": "GitHub comments aren't triggering. Check webhook events and exact bot username",
+        "note": "Checks the test, credentials, events, and mention."
       }
     ]
   }

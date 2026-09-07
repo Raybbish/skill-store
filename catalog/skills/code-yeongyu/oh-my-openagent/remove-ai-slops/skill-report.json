@@ -5,7 +5,7 @@
     "name": "remove-ai-slops",
     "description": "Removes AI-generated code smells from branch changes or an explicit file list behind regression tests. Use when the user asks to clean up, deslop, or remove AI-slop patterns from recent changes.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/remove-ai-slops",
-    "upstream_commit": "579c1759d21536b630eac1b27177f61a8a33aef4",
+    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
     "content_hash": "sha256:5c22666a3ad35993eb2f7bdd2d6d0792ae090d975d0772e250e3494f33342239",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68738,
+    "stars_github": 68777,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-06T07:31:22.942Z",
+    "fetched_at": "2026-09-07T07:48:21.941Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-06T03:50:55+09:00",
+    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-06T07:31:22.942Z",
+    "generated_at": "2026-09-07T07:48:21.941Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,42 +90,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "该技能会先给分支改动或指定文件中未覆盖的行为补回归测试以锁住现状,再分类清理 AI 生成的代码异味(如多余注释、防御性代码、死代码等),最后跑质量门检查确认没改坏。",
-    "when": "当你说“清理”“deslop”或“移除 AI slop”等要求,并指向最近改动时触发,默认处理整个分支 diff,也可传入文件列表。",
+    "what": "装上后,Claude 会先检查你改动的代码,对未覆盖的行为补上回归测试,锁定行为后才开始清理。它分多轮删除重复、多余、死代码等九类问题,执行性能等价优化,每次最多并行处理5个文件,最后用测试、lint、类型检查等质量门把关;不通过就回退或直接改。",
+    "when": "当你说“清理(clean up)”“去味(deslop)”或“移除最近改动里的 AI 生成套路(remove AI-slop patterns)”等时触发。默认处理当前分支相对 main 的改动;也可指定文件列表。",
     "say": [
       {
-        "text": "把这次分支改动里的 AI slop 清理一下",
-        "note": "先补测试再删,行为不变。"
+        "text": "帮我把这个分支里 AI 生成的垃圾代码清理一下。",
+        "note": "依默认分支改动范围执行清理。"
       },
       {
-        "text": "清理这几个文件的死代码和多余注释",
-        "note": "只处理你列出的文件。"
+        "text": "只清理这两个文件里的多余防御代码。",
+        "note": "以显式文件列表为作用域。"
       },
       {
-        "text": "清理这两个文件的过度防御代码,别改行为",
-        "note": "会先加回归测试锁住现状。"
+        "text": "清理完先跑一遍回归测试和 lint 再报告。",
+        "note": "质量门不绿不会结束。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5c22666a3ad35993eb2f7bdd2d6d0792ae090d975d0772e250e3494f33342239",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:45:45.049Z",
-    "lint_pass": true,
-    "what_en": "It adds regression tests to lock behavior, removes AI-generated slop from branch changes or a file list category by category, then runs quality gates.",
-    "when_en": "Triggered when the user asks to clean up, deslop, or remove AI-slop patterns from recent changes; scope is the branch diff or an explicit file list.",
-    "say_en": [
-      {
-        "text": "Clean up the AI slop in this branch's changes.",
-        "note": "Tests are added first."
-      },
-      {
-        "text": "Remove dead code and obvious comments from these files.",
-        "note": "Only the given files."
-      },
-      {
-        "text": "Clean over-defensive code in these two files, preserve behavior.",
-        "note": "Behavior is locked first."
-      }
-    ]
+    "generated_at": "2026-09-07T07:59:44.748Z",
+    "lint_pass": true
   }
 }

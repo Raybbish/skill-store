@@ -5,7 +5,7 @@
     "name": "standup",
     "description": "Facilitate a read-only standup across git worktrees, branches, or PRs to compare changes and produce one consolidation plan.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/standup",
-    "upstream_commit": "3939fbb2debe73e74a295553636e776e110df90a",
+    "upstream_commit": "fd0ecf023336ce631c8a5cd7b70cdeca8f0e82e0",
     "content_hash": "sha256:9f930921b4da027db63add61887ce9a0559d7e92134ae8edfb9b056f669c9ae9",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93309,
+    "stars_github": 93369,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-06T07:31:17.981Z",
+    "fetched_at": "2026-09-07T07:48:15.816Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-05T19:40:00-07:00",
+    "upstream_commit_at": "2026-09-06T18:25:26-07:00",
     "repo_skill_count": 26
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-06T07:31:17.981Z",
+    "generated_at": "2026-09-07T07:48:15.816Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,41 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 作为主持人,将各个 Git 工作区/分支/PR 当作参会者,在共享聊天文件里轮流发言、讨论冲突,最后亲自产出整合计划(目标工作区、合并顺序、冲突解法)。全程只读,不实际合并。",
-    "when": "当用户要求对比并整合多个 Git 工作区、分支或 PR 的改动时,技能就会启动;例如直接说“开个站会”或“整理合并方案”。",
+    "what": "Claude 会让多个 git 分支/工作树/PR 在共享聊天中轮流发言，比较改动与冲突，最后给出合并方案（以谁为基础、合并顺序、需你决定的事）和通俗总结。全程只读，不直接改动代码。",
+    "when": "当你想跨多个 git 分支、工作树或 PR 比较改动，并想要一个统一的合并方案时。它会先列出候选名单（最近活跃的工作树/分支/PR）让你确认，至少两个候选才会开会。",
     "say": [
       {
-        "text": "帮我把这几个分支开个站会,输出一份整合计划。",
-        "note": "创建一个共享聊天室,让各分支轮流发言。"
+        "text": "帮我对这几个分支和 PR 做一次只读 standup，给出一份整合计划。",
+        "note": "各分支先在共享聊天中发言，最后产出合并计划。"
       },
       {
-        "text": "对比我所有工作区、分支和打开的 PR,给出合并顺序。",
-        "note": "会先列出候选清单供你确认。"
+        "text": "按最近24小时活跃的工作树召集 standup，我看看要怎么合并。",
+        "note": "自动筛选候选名单，确认后开始召集。"
       },
       {
-        "text": "让这两个分支的改动做一次只读协商,别真合并。",
-        "note": "只产出计划,真正的合并交给 /do。"
+        "text": "只比较 worktree A、分支 B 和 PR #12，讨论冲突并给结论。",
+        "note": "手动指定参会者；少于两个就停下。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f930921b4da027db63add61887ce9a0559d7e92134ae8edfb9b056f669c9ae9",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:57:17.719Z",
+    "generated_at": "2026-09-07T08:20:53.442Z",
     "lint_pass": true,
-    "what_en": "Claude acts as facilitator: worktrees/branches/PRs are participants in a shared chat file; they introduce changes, resolve conflicts through rounds, and Claude writes a final consolidation plan (target, order, resolutions). Read-only, no merging.",
-    "when_en": "Triggered when the user asks to compare and consolidate changes across multiple git worktrees, branches, or PRs (e.g., 'run a standup' or 'plan a merge').",
+    "what_en": "Claude convenes your branches/worktrees/PRs in one shared chat; they compare changes and conflicts, then it outputs a single merge plan (target, order, decisions) plus a readable summary. Read-only throughout.",
+    "when_en": "Triggered when you want one merge plan across git worktrees/branches/PRs. It lists candidates (active worktrees/branches/PRs) and needs at least two to run; otherwise asks to broaden.",
     "say_en": [
       {
-        "text": "Run a standup over these branches and give me one merge plan.",
-        "note": "Creates a shared chat where branch agents speak."
+        "text": "Hold a read-only standup for these branches and PRs; give me one merge plan.",
+        "note": "It opens the facilitator chat and returns one plan."
       },
       {
-        "text": "Compare all my worktrees, branches, and open PRs, then propose an order.",
-        "note": "Lists candidates for confirmation first."
+        "text": "Gather worktrees active in the last 24h; I want a consolidation plan.",
+        "note": "It filters candidates, confirms with you, then starts."
       },
       {
-        "text": "Let these two branches negotiate read-only; don't actually merge.",
-        "note": "Outputs a SUMMATION; real merges go through /do."
+        "text": "Compare only worktree A, branch B, and PR #12; discuss and conclude.",
+        "note": "Manual roster; fewer than two stops."
       }
     ]
   }

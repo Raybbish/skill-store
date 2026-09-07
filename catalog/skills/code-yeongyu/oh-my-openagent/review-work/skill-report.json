@@ -5,7 +5,7 @@
     "name": "review-work",
     "description": "Post-implementation gate review: run manual QA on the real surface yourself, then launch ONE gate reviewer (never a panel) to audit goal, constraints, code quality, security, missed context, and QA evidence. Use before a PR handoff or when the user explicitly asks to review completed work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/review-work",
-    "upstream_commit": "579c1759d21536b630eac1b27177f61a8a33aef4",
+    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
     "content_hash": "sha256:da09aef90807fbbbf08b9645efccb295f2a1eab9dfc0ad581a0ec9c428aeb1b2",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68738,
+    "stars_github": 68777,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-06T07:31:22.942Z",
+    "fetched_at": "2026-09-07T07:48:21.941Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-06T03:50:55+09:00",
+    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-06T07:31:22.942Z",
+    "generated_at": "2026-09-07T07:48:21.941Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,40 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "请它审查已完成工作时,它不只读代码,而会先自己在真实运行环境跑功能测试(正常、边界、回归),有失败立刻报“审查失败”;通过后才派一个评审子代理,对照原始目标、约束、代码质量、安全性、漏掉的上下文和测试证据核对,双关都过才给“通过”。",
-    "when": "准备把 PR 交接出去之前,或你明确要求“审查已完成的工作”时触发;通常由一次 review 请求开启。",
+    "what": "装好后,当你请它审阅已完成的工作时,它会先在真实运行环境亲手做手工测试并逐条记录结果,再单独派一个评审子代理核对目标、约束与代码质量等;任何一条测试失败就直接报失败,测试全过且评审批准才算合格。",
+    "when": "当你明确要求审阅已完成的工作时,或在准备提交 PR 之前,它会接管审查。",
     "say": [
       {
-        "text": "我刚写完这次改动,请你帮我 review 一下。",
-        "note": "Claude 会先自己跑功能测试,再派一个评审代理把关。"
+        "text": "请审阅我刚完成的功能改动。",
+        "note": "会先在真实环境亲手测试,再派评审子代理核查。"
       },
       {
-        "text": "新功能准备提 PR 了,先帮我做一次门禁审查。",
-        "note": "应用无法启动或测试有失败时会当场报失败。"
+        "text": "我准备提 PR 了,先帮我审查这次改动。",
+        "note": "先收集目标、约束与改动清单,再执行测试与评审。"
       },
       {
-        "text": "审查这次改动:对照目标、约束和安全要求查漏。",
-        "note": "只有测试矩阵无失败行且评审代理批复才认定为通过。"
+        "text": "检查这次改动有没有漏掉背景,或影响原本正常的相邻功能。",
+        "note": "会覆盖最易错场景,并做相邻功能的回归测试。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:da09aef90807fbbbf08b9645efccb295f2a1eab9dfc0ad581a0ec9c428aeb1b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:46:37.837Z",
+    "generated_at": "2026-09-07T08:02:00.800Z",
     "lint_pass": true,
-    "what_en": "Claude runs real functional checks itself; a failing row aborts with REVIEW FAILED. If green, one gate-reviewer subagent audits goal, constraints, code, security, missing context, and QA evidence, and returns a single PASS/FAIL verdict.",
-    "when_en": "Triggers when you ask to review already-completed work, or right before handing a PR over. Typically started by a review request after implementation finishes.",
+    "what_en": "Claude reviews finished work by running hands-on QA on the real app, then spawning one gate reviewer to audit goal, constraints, code quality, and evidence. Passes only when no QA row fails and the reviewer approves; otherwise it fails.",
+    "when_en": "Triggers when the user explicitly asks to review completed work, or right before handing off a pull request. It works as a post-implementation gate.",
     "say_en": [
       {
-        "text": "Please review the work I just finished — run your QA first, then a gate review."
+        "text": "Please review the feature I just finished.",
+        "note": "Runs hands-on QA first, then a gate reviewer checks it."
       },
       {
-        "text": "I'm about to hand this PR over — run the gate review before I do.",
-        "note": "If the app can't start, it reports failure immediately and skips further review."
+        "text": "I am about to submit a PR — review this change first.",
+        "note": "Gathers the goal, constraints, and diff, then runs QA."
       },
       {
-        "text": "Audit these changes against the stated goal, constraints, and security concerns.",
-        "note": "It passes only when every QA row is green and the gate reviewer approves."
+        "text": "Check this change for missed context or harm to adjacent features.",
+        "note": "Covers risky edge cases and regression on neighboring behavior."
       }
     ]
   }

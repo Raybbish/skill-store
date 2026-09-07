@@ -5,7 +5,7 @@
     "name": "understand-diff",
     "description": "Use when you need to analyze git diffs or pull requests to understand what changed, affected components, and risks",
     "upstream": "https://github.com/Egonex-AI/Understand-Anything/tree/main/understand-anything-plugin/skills/understand-diff",
-    "upstream_commit": "787da45adbf18aab5c3e3e531b0374dd576f263c",
+    "upstream_commit": "07edf82a04371b6f69779b067bdc8a1a8753a9db",
     "content_hash": "sha256:39c5eb7c5d20066a51c3cf1827bafd2d3662f281114d7f32323ba61fd2a0a4c9",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 81516,
+    "stars_github": 81701,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-05T07:18:53.274Z",
+    "fetched_at": "2026-09-07T07:48:17.701Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-04T09:57:49-04:00",
+    "upstream_commit_at": "2026-09-06T23:45:58+08:00",
     "repo_skill_count": 9
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-05T07:18:53.274Z",
+    "generated_at": "2026-09-07T07:48:17.701Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "分析代码改动时，Claude 会读取知识图谱(缺文件先让用户运行 /understand)，用 git 列出变更文件，在图谱中找对应节点与其关联边，输出改动与受影响组件、架构层及风险，并生成 diff-overlay.json 供可视化看板使用。",
-    "when": "当用户需要分析 git 差异或 PR，以了解改动内容、受影响组件和风险时触发。",
+    "what": "Claude 在分析代码改动或 PR 时，会先确认项目有知识图谱并用 git 列出改动文件，再在图谱中查出对应节点、相连组件、受影响的架构层，最后输出改动范围、影响与风险评估，并生成 diff-overlay.json 供仪表盘使用。",
+    "when": "当需要分析 git diff 或 pull request，以弄清改动内容、受影响组件和风险时触发；若项目缺少知识图谱文件，会先提示运行 /understand。",
     "say": [
       {
-        "text": "分析当前未提交的改动，说说哪些组件会受影响",
-        "note": "会运行完整分析流程并输出结构化结果。"
+        "text": "分析一下当前未提交的改动会造成什么影响",
+        "note": "会检查未提交改动并输出影响分析。"
       },
       {
-        "text": "对比 main 分支，评估这次改动的风险",
-        "note": "会列出改动、关联组件并给出风险评级。"
+        "text": "看看这个 PR 改了什么，会波及哪些模块",
+        "note": "最好带上 PR 号，会取该 PR 改动并分析波及组件。"
       },
       {
-        "text": "查看 PR #12 的改动会触及哪些架构层",
-        "note": "会获取该 PR 的差异并匹配架构层。"
+        "text": "评估这次代码变更的风险和重点检查处",
+        "note": "会结合复杂度与影响范围给出风险评估。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:39c5eb7c5d20066a51c3cf1827bafd2d3662f281114d7f32323ba61fd2a0a4c9",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-05T07:35:53.383Z",
+    "generated_at": "2026-09-07T08:03:29.216Z",
     "lint_pass": true,
-    "what_en": "When analyzing a diff, Claude reads the knowledge graph (or tells the user to run /understand if it's missing), lists changed files via git, finds matching nodes and connected edges, then reports changed & affected components, layers, risks, and writes diff-overlay.json for the dashboard.",
-    "when_en": "When the user asks to analyze a git diff or pull request to understand what changed, which components are affected, and what risks exist.",
+    "what_en": "Claude checks the knowledge graph, gets changed files via git, finds matching graph nodes, follows edges to affected components and layers, then provides a structured analysis of changes, impact, risk, and writes diff-overlay.json.",
+    "when_en": "Triggered when asked to analyze a git diff or PR to understand changes, impact, and risks; requires the project knowledge graph, otherwise Claude tells the user to run /understand first.",
     "say_en": [
       {
-        "text": "Analyze my current uncommitted changes and tell which components are affected",
-        "note": "Uses git diff and knowledge graph to produce analysis."
+        "text": "Analyze the impact of my current uncommitted changes.",
+        "note": "Runs impact analysis for uncommitted changes."
       },
       {
-        "text": "Compare the changes on this branch against main and assess the risk",
-        "note": "Runs the diff analysis against the base branch."
+        "text": "What did this PR change and which modules might be affected?",
+        "note": "Provide the PR number so it can fetch that PR's diff."
       },
       {
-        "text": "List which architecture layers PR #12 touches",
-        "note": "Fetches the PR diff and maps it to layers via the graph."
+        "text": "Assess the risk of this code change.",
+        "note": "Gives a risk assessment based on complexity and reach."
       }
     ]
   }

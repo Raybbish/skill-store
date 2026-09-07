@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Searches and rewrites code by AST shape across 25 languages. Use when the target is a syntax pattern (every call/class/import shaped like X, a codemod, a YAML rule) rather than literal text; for plain strings, comments, or filenames, use rg.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "579c1759d21536b630eac1b27177f61a8a33aef4",
+    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
     "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68738,
+    "stars_github": 68777,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-06T07:31:22.942Z",
+    "fetched_at": "2026-09-07T07:48:21.941Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-06T03:50:55+09:00",
+    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-06T07:31:22.942Z",
+    "generated_at": "2026-09-07T07:48:21.941Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -113,41 +113,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后，Claude 可以按代码语法结构（而非文本）搜索和改写代码：支持精确匹配函数/调用/类的形状、批量替换写法、按 YAML 规则扫描。操作前会先验证模式并预览改动。",
-    "when": "当任务是要按语法结构搜索代码、做批量改写，或用 YAML 规则扫描时触发；纯文本内容则走 rg/grep。",
+    "what": "安装后，Claude 会调用 ast-grep 按代码语法形状（而非文本）进行搜索与重写，支持 25 种语言；可查找特定结构、批量改写代码、运行 YAML 规则，并在改动前先预览。",
+    "when": "当用户的问题涉及代码结构，如查找某类函数/调用/类、批量改写某种写法、运行 YAML 规则时触发；若只是字符串、注释、文件名等文本内容，则改用 rg/grep。",
     "say": [
       {
         "text": "找出所有接收 Request 参数的函数",
-        "note": "按结构搜索，返回匹配文件和位置。"
+        "note": "按 AST 匹配函数定义结构。"
       },
       {
-        "text": "把代码里所有 console.log 改成 logger.info",
-        "note": "先 dry-run 预览，默认不直接改文件。"
-      },
-      {
-        "text": "扫描项目里的 YAML 规则，列出违规项",
-        "note": "运行扫描，报告违规项。"
+        "text": "运行项目里 rules/no-console.yml 规则并显示违规",
+        "note": "使用 scan 扫描代码并输出违规位置。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:41:59.641Z",
+    "generated_at": "2026-09-07T07:56:25.681Z",
     "lint_pass": true,
-    "what_en": "Claude uses ast-grep to search and rewrite code by syntax structure rather than plain text: structural matching, batch rewrites, and YAML rule scans. It validates patterns and shows a dry-run preview before any change.",
-    "when_en": "Triggers when the task is to search code by syntax structure, batch-rewrite, or scan with YAML rules; for plain-text content, use rg/grep.",
+    "what_en": "Once installed, Claude uses ast-grep to search and rewrite code by AST shape, not text, across 25 languages: find structurally similar code, batch rewrite patterns, run YAML rules, preview before applying.",
+    "when_en": "Triggered when the request targets code shape, not text: structural search, batch rewrites, YAML rule scans. For strings/comments/filenames, use rg/grep.",
     "say_en": [
       {
-        "text": "Find every function that takes a Request parameter.",
-        "note": "Searches by structure, returns files and positions."
+        "text": "Rewrite every console.log($MSG) to logger.info($MSG) in the project",
+        "note": "Shows a dry-run preview before any file changes."
       },
       {
-        "text": "Rewrite every console.log(x) to logger.info(x) across the repo.",
-        "note": "Dry-runs first; does not modify files by default."
+        "text": "Find all functions that take a Request parameter",
+        "note": "Matches by AST shape, not regex."
       },
       {
-        "text": "Run our YAML rules and list violations.",
-        "note": "Runs the scan and reports violations."
+        "text": "Run the no-console.yml rule from rules dir and show violations",
+        "note": "Scans the project and prints violation locations."
       }
     ]
   }
