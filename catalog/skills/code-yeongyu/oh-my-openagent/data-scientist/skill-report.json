@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Processes and analyzes data with resident-kernel engines (DuckDB, Polars) and one-shot tools. Use for CSV/parquet/JSON analysis, group-by/join/aggregation, time series, distributions, cleaning, or plotting a dataset.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
+    "upstream_commit": "6595aa6b6cc43b2458759a6a403626f8e4f2a4c4",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68777,
+    "stars_github": 68803,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:21.941Z",
+    "fetched_at": "2026-09-08T07:43:07.234Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
+    "upstream_commit_at": "2026-09-08T16:41:13+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:21.941Z",
+    "generated_at": "2026-09-08T07:43:07.234Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -106,41 +106,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会用 DuckDB、Polars 等引擎分析数据文件(CSV、Parquet、JSON 等),做分组、连接、聚合等处理,也能清洗和绘图。它会先探查文件与内存,再决定载入内存还是流式处理;回答后只报告行数与耗时,不额外发挥。",
-    "when": "当你要分析数据文件(如 CSV、Parquet 等),做分组、连接或绘图等操作时。",
+    "what": "处理CSV/Parquet/JSON等数据前先探测规模，自动选用DuckDB、Polars等引擎做查询、分组、聚合、时间序列和绘图，并报告行数与耗时；数据超出内存时走流式，不用pandas，Excel需先转换。",
+    "when": "当要求分析CSV、Parquet、JSON数据文件，或执行分组聚合、时间序列、绘图等数据任务时触发。",
     "say": [
       {
-        "text": "帮我把这个 CSV 按月分组,统计每月销售额总和。",
-        "note": "Claude 会用数据引擎直接查文件。"
+        "text": "读入data.csv，按日期分组求每天销售额，并画时间序列图。",
+        "note": "它会用DuckDB读文件，汇总后出图并报告行数。"
       },
       {
-        "text": "分析这份 parquet,对比不同地区的平均订单金额。",
-        "note": "会先探测文件大小,再选执行方式。"
-      },
-      {
-        "text": "画一下这份数据里价格的分布直方图。",
-        "note": "会按附带的绘图规范出图并做视觉检查。"
+        "text": "检查dataset.parquet的大小和内存占用，若超过内存就流式处理。",
+        "note": "先探测后决定加载还是流式。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T07:56:09.325Z",
+    "generated_at": "2026-09-08T07:52:02.217Z",
     "lint_pass": true,
-    "what_en": "After install, Claude analyzes data files (CSV/Parquet/JSON) with DuckDB/Polars: group-by, join, aggregate, clean, plot. It probes memory and file first, picks in-memory or streaming, and reports row counts and timing only.",
-    "when_en": "Triggered when you ask to analyze data files like CSV/Parquet, or to group, join, or plot data.",
+    "what_en": "Processes data files (CSV/Parquet/JSON) after probing size; picks DuckDB, Polars, etc. to run queries, group/join/aggregation, time series, plots, and reports row counts/timing. Streams when data exceeds RAM; never uses pandas; Excel must be converted.",
+    "when_en": "Triggered when asked to analyze CSV/Parquet/JSON files, or perform group/aggregate, time-series, distribution, cleaning, or plotting tasks.",
     "say_en": [
       {
-        "text": "Group this CSV by month and sum sales per month.",
-        "note": "Claude queries the file with a data engine."
+        "text": "Read data.csv, group by date, and plot daily sales as a time series.",
+        "note": "Uses DuckDB and reports row count."
       },
       {
-        "text": "Analyze this parquet and compare average order amount by region.",
-        "note": "It probes the file size first, then chooses how to run."
+        "text": "Join orders.parquet with customers.parquet and count orders per city.",
+        "note": "Automatically selects an engine for join/aggregate."
       },
       {
-        "text": "Plot a histogram of prices in this dataset.",
-        "note": "It follows the bundled plotting spec and does a visual check."
+        "text": "Check dataset.parquet size and memory; stream if too big to load.",
+        "note": "Probes before deciding load or stream."
       }
     ]
   }

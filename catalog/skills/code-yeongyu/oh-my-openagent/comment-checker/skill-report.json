@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
+    "upstream_commit": "6595aa6b6cc43b2458759a6a403626f8e4f2a4c4",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68777,
+    "stars_github": 68803,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:21.941Z",
+    "fetched_at": "2026-09-08T07:43:07.234Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
+    "upstream_commit_at": "2026-09-08T16:41:13+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:21.941Z",
+    "generated_at": "2026-09-08T07:43:07.234Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,33 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,每当“改代码”这个动作成功完成,如果注释检查器报告了警告,助手必须先修复或解释被标记的注释,之后才能继续做别的。",
-    "when": "在 apply_patch、write、edit 等编辑类工具执行成功后,若注释检查器发出警告才触发;非编辑操作或缺少检查器程序时不会阻断。",
+    "what": "装上后,每当代码编辑结束且注释检查器发出警告时,它会停下处理:先修正或解释被标记的注释,再继续后续工作。",
+    "when": "在 apply_patch、write、edit 等编辑类工具调用成功后,注释检查器报告警告时触发。",
     "say": [
       {
-        "text": "修复刚才被注释检查器标出来的注释。",
-        "note": "助手会先处理这条注释再继续任务。"
+        "text": "修一下刚才被标记的那条注释。",
+        "note": "它会先修正该注释再继续。"
       },
       {
-        "text": "解释下这条警告里注释的问题在哪里。",
-        "note": "助手会先讲明原因,再继续下一步。"
+        "text": "解释一下这条注释为什么存在。",
+        "note": "它会说明理由后再继续。"
+      },
+      {
+        "text": "把这段代码里不规范的注释整理一下。",
+        "note": "请按检查器的反馈处理。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T07:56:08.061Z",
+    "generated_at": "2026-09-08T07:51:33.798Z",
     "lint_pass": true,
-    "what_en": "After installation, whenever an edit action succeeds and comment-checker emits a warning, the assistant is blocked until it fixes or explains the flagged comment before continuing.",
-    "when_en": "Only triggered after successful edit tools such as apply_patch, write, or edit when the comment checker reports warning; non-edit operations are ignored, and missing checker binaries do not block work.",
+    "what_en": "After install, whenever an edit finishes and the comment checker flags a comment, it pauses to handle the warning: it first fixes or explains the flagged comment, then continues.",
+    "when_en": "Triggers after a successful edit-type tool call (apply_patch, write, edit, etc.) when the comment-checker emits a warning.",
     "say_en": [
       {
-        "text": "Fix the comment the checker just flagged.",
-        "note": "The assistant will address it before continuing."
+        "text": "Fix the comment that was just flagged.",
+        "note": "It will fix it and continue."
       },
       {
-        "text": "Explain what is wrong with this flagged comment.",
-        "note": "The assistant will explain before moving on."
+        "text": "Explain why this comment exists.",
+        "note": "It will explain and keep going."
+      },
+      {
+        "text": "Clean up the irregular comments in this code.",
+        "note": "Based on the checker feedback."
       }
     ]
   }

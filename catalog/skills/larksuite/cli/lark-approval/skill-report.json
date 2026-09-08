@@ -5,7 +5,7 @@
     "name": "lark-approval",
     "description": "飞书审批：查询和处理审批待办/已办/实例，搜索可发起审批定义、查看定义详情并发起原生审批实例。当用户要处理审批任务、查看审批实例、搜索或发起审批时使用。审批待办不是飞书任务；非审批类待办走 lark-task。不负责创建审批定义；三方审批定义不走原生提单。",
     "upstream": "https://github.com/larksuite/cli/tree/main/skills/lark-approval",
-    "upstream_commit": "3e8b6c6659e9e757b54f306da0631ff99dae7e61",
+    "upstream_commit": "1e91c5628897940081e02aafd9c92588733fc212",
     "content_hash": "sha256:31f5544e6d6567da8f74cc4ec5293a02f153af01cff2bba48ba0aff073254da6",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,9 +21,9 @@
   "signals": {
     "stars_github": null,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:47:39.736Z",
+    "fetched_at": "2026-09-08T07:42:40.704Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-09-07T15:18:23+08:00"
+    "upstream_commit_at": "2026-09-08T15:39:53+08:00"
   },
   "context_size": {
     "version": "1",
@@ -32,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:47:39.736Z",
+    "generated_at": "2026-09-08T07:42:40.704Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -116,41 +116,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "让 Claude 可查询、处理飞书审批待办/已办/实例，搜索并查看审批定义、发起原生审批，也能对审批做同意、拒绝、转交等操作。执行前先读取 lark-shared 完成认证。",
-    "when": "当用户要求处理审批待办/单据/实例，或要求搜索、查看、发起审批时触发。非审批类任务/待办不归它管，走 lark-task。",
+    "what": "装上后，Claude 能查询和处理飞书审批待办、已办、实例；可搜索审批定义、查看详情并发起原生审批实例。所有操作默认以你的身份执行，写操作失败时最多重试一次并按错误说明处理。",
+    "when": "当用户提到审批待办、审批单据、审批实例等，或要执行同意、拒绝、转交等审批操作时触发；搜索或发起审批也用此技能。",
     "say": [
       {
-        "text": "查一下我的审批待办",
-        "note": "会查询待办列表并展示"
+        "text": "查一下我有哪些待审批的单据",
+        "note": "调用 tasks query 查询待办列表。"
       },
       {
-        "text": "搜索一下能发起的请假审批定义",
-        "note": "会搜索可发起审批定义"
+        "text": "把单号 A-123 的审批转交给王五",
+        "note": "执行转交操作，需携带单据号和任务号。"
       },
       {
-        "text": "把我刚发起的出差审批撤回",
-        "note": "会撤回指定审批实例"
+        "text": "撤回我刚才发起的请假审批",
+        "note": "调用 instances cancel 撤回已发起实例。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:31f5544e6d6567da8f74cc4ec5293a02f153af01cff2bba48ba0aff073254da6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T08:08:32.676Z",
+    "generated_at": "2026-09-08T08:09:29.594Z",
     "lint_pass": true,
-    "what_en": "Adds Lark approval capabilities: query pending/done/instances, search & inspect definitions, initiate approvals, and act on them (approve, reject, transfer, etc.). Reads lark-shared for auth first.",
-    "when_en": "Triggered when the user asks to handle approval todos/documents/instances, or to search, view, or initiate approvals. Non-approval todos go to lark-task instead.",
+    "what_en": "Claude can query/process Feishu approval todos, done items, and instances; search approval definitions, view details, and start native instances. Operations run as the user. Failed write ops are retried at most once, guided by the error code.",
+    "when_en": "Triggered when the user refers to approval todos, approval documents, approval instances, etc., or asks to approve, reject, transfer, withdraw, search, or initiate an approval.",
     "say_en": [
       {
-        "text": "Check my pending approval todos.",
-        "note": "Calls tasks query to list them."
+        "text": "List my pending approval requests.",
+        "note": "Runs tasks query to fetch the todo list."
       },
       {
-        "text": "Search approval definitions I can start for leave.",
-        "note": "Calls approvals search."
+        "text": "Transfer approval A-123 to Wang Wu.",
+        "note": "Executes transfer with instance_code and task_id."
       },
       {
-        "text": "Withdraw the business trip approval I just submitted.",
-        "note": "Calls instances cancel."
+        "text": "Withdraw the leave approval I just initiated.",
+        "note": "Calls instances cancel to withdraw the instance."
       }
     ]
   }

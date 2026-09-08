@@ -5,7 +5,7 @@
     "name": "github-triage",
     "description": "Read-only GitHub triage for issues AND PRs. 1 item = 1 background task (category: quick). Analyzes all open items and writes evidence-backed reports to /tmp/{datetime}/. Every claim requires a GitHub permalink as proof. NEVER takes any action on GitHub - no comments, no merges, no closes, no labels. Reports only. Triggers: 'triage', 'triage issues', 'triage PRs', 'github triage'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/github-triage",
-    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
+    "upstream_commit": "6595aa6b6cc43b2458759a6a403626f8e4f2a4c4",
     "content_hash": "sha256:b69e1e1f42bb6f7f13095faef3b797c47d9089de8af8ed8f794d94aaca4c2f0b",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68777,
+    "stars_github": 68803,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:21.941Z",
+    "fetched_at": "2026-09-08T07:43:07.234Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
+    "upstream_commit_at": "2026-09-08T16:41:13+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:21.941Z",
+    "generated_at": "2026-09-08T07:43:07.234Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,当你说出触发词,Claude 会只读分析当前仓库所有打开的 issue 和 PR,并为每个项目生成带 GitHub 证据链接的报告,存到 /tmp 下按时间命名的文件夹。它在 GitHub 上不会做任何评论、合并、关闭或加标签等操作。",
-    "when": "当你说出 “triage”“triage issues”“triage PRs” 等指令,或要求对仓库的 issue/PR 做分析时触发。",
+    "what": "只读拉取当前仓库所有未关闭的 issue 与 PR，一项一个后台子代理分析，把逐条报告写到 /tmp/{datetime}/ 下，每条结论都以 GitHub permalink 为证据；全程不会在 GitHub 上做任何写改动。",
+    "when": "当用户说出 “triage”、“triage issues”、“github triage” 等词，或要求做仓库 triage 时接管。会先抓取全部未关闭 issue 与 PR，再逐项分析。",
     "say": [
       {
-        "text": "帮我对这个仓库做一次 triage",
-        "note": "会分析所有打开的 issue 和 PR 并生成报告。"
+        "text": "对本仓库跑一次 triage，把未关闭 issue 和 PR 逐条写成分析报告。",
+        "note": "每一条会单独生成一个 md 文件。"
       },
       {
-        "text": "triage issues,只读分析",
-        "note": "会逐个 issue 写分析报告。"
+        "text": "执行 triage issues，查清每个 bug 的原因并给出代码出处。",
+        "note": "报告会写进 /tmp 下带时间戳的文件夹。"
       },
       {
-        "text": "triage PRs,别改动任何东西",
-        "note": "会生成 PR 审查报告,不修改 GitHub。"
+        "text": "跑一遍 github triage，只分析，别改动 GitHub 上的任何东西。",
+        "note": "技能本来就是只读，不会发评论、合并或关闭。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:b69e1e1f42bb6f7f13095faef3b797c47d9089de8af8ed8f794d94aaca4c2f0b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T07:57:20.202Z",
+    "generated_at": "2026-09-08T07:53:07.731Z",
     "lint_pass": true,
-    "what_en": "When triggered, Claude read-only analyzes all open issues and PRs, writes an evidence-backed report for each to /tmp/{datetime}/, and never takes any GitHub action (no comments/merges/closes/labels).",
-    "when_en": "Triggers when you say \"triage\", \"triage issues\", \"triage PRs\", or ask to analyze repository issues/PRs.",
+    "what_en": "Fetches all open issues and PRs of the current repo, analyzes each in a separate background subagent, and writes per-item reports to /tmp/{datetime}/. Every claim must carry a GitHub permalink. It never mutates GitHub: no comments, merges, closes, or labels.",
+    "when_en": "Triggered when the user says 'triage', 'triage issues', 'triage PRs', 'github triage', or asks for a triage of the repo. It then lists all open issues and PRs and analyzes each one.",
     "say_en": [
       {
-        "text": "Do a triage on this repository",
-        "note": "It will analyze all open issues and PRs and write reports."
+        "text": "Run triage on this repo and report on every open issue and PR.",
+        "note": "Each item gets its own markdown report file."
       },
       {
-        "text": "triage issues, read-only",
-        "note": "It will analyze each open issue and write a report."
+        "text": "Run triage issues and pinpoint each bug with evidence links.",
+        "note": "Reports go to a timestamped folder in /tmp."
       },
       {
-        "text": "triage PRs, don't change anything",
-        "note": "It will write PR review reports without modifying GitHub."
+        "text": "Run github triage — read only; don't change anything on GitHub.",
+        "note": "No comments, merges or closes will be made."
       }
     ]
   }

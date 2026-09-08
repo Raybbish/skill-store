@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "Handles git work: atomic commits, rebase, squash, blame, bisect, reflog, and history questions. Use whenever a task needs a commit or a git-history investigation; skip for ordinary code edits.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
+    "upstream_commit": "6595aa6b6cc43b2458759a6a403626f8e4f2a4c4",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68777,
+    "stars_github": 68803,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:21.941Z",
+    "fetched_at": "2026-09-08T07:43:07.234Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
+    "upstream_commit_at": "2026-09-08T16:41:13+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:21.941Z",
+    "generated_at": "2026-09-08T07:43:07.234Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 处理 Git 时会先判断请求属于提交、改写历史、查历史还是看状态,不擅自提交、推送或改写历史;提交时按逻辑拆分,沿用仓库习惯的提交说明,最后汇报提交编号、说明与剩余未提交文件。",
-    "when": "当任务需要做一次 Git 提交,或调查 Git 历史(如某行是谁改的、哪些提交动了某个文件)时触发;普通代码编辑不会触发。",
+    "what": "面对 git 任务时,Claude 先查看仓库现状并判断任务属于提交、整理提交历史、查询历史还是查看状态;提交时会把改动按意义分批提交并沿用仓库的提交信息习惯,查询历史时给出对应命令和证据,改写历史前先做安全检查。",
+    "when": "当你要求提交改动、压缩或整理提交、询问某次改动的来源/原因等 git 历史问题时触发;仅普通代码编辑不触发。",
     "say": [
       {
-        "text": "把我改动的文件分别提交,每个功能一个提交。",
-        "note": "会按逻辑拆分,并沿用仓库近期的提交消息风格。"
+        "text": "帮我把改动分成几个有意义的小提交,提交信息沿用仓库里的写法。",
+        "note": "它只暂存你指定的部分,其余未提交改动不受影响。"
       },
       {
-        "text": "这个文件第 10 行是谁改的?",
-        "note": "会用 git blame 找出作者及提交编号。"
+        "text": "把最近三个提交压成一个,保留主要信息。",
+        "note": "会用自动整理的方式完成压缩,不碰你没提过的分支。"
       },
       {
-        "text": "把最近三个提交压缩成一个。",
-        "note": "会用交互式变基重写历史,并展示新的提交记录。"
+        "text": "查一下 report.md 第21行是谁在哪个提交里改的。",
+        "note": "运行 git blame,给出提交哈希和改动上下文。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T07:58:08.446Z",
+    "generated_at": "2026-09-08T07:53:16.013Z",
     "lint_pass": true,
-    "what_en": "Claude classifies Git requests (commit/rewrite history/inspect history/status), never mutates without an explicit ask, splits changes into logical commits, follows the repo's commit style, and reports hashes, messages, and remaining uncommitted files.",
-    "when_en": "Used when the task needs a Git commit or a Git-history investigation; ordinary code edits do not trigger it.",
+    "what_en": "Claude inspects git state, classifies requests as commit, rewrite, history, or status, makes atomic commits in the repo's message style, answers history questions with command evidence, and checks safety before rewriting.",
+    "when_en": "Triggers when you ask Claude to make a commit, squash/reorder/rewrite commits, or investigate a git-history question. Not used for ordinary code edits.",
     "say_en": [
       {
-        "text": "Commit my changed files separately, one feature per commit.",
-        "note": "Splits logically and follows the repo's commit style"
+        "text": "Split working changes into atomic commits; mirror the repo's commit-message style.",
+        "note": "Only requested parts are staged; other dirty files stay untouched."
       },
       {
-        "text": "Who changed line 10 of this file?",
-        "note": "Uses git blame to show author and commit hash"
+        "text": "Squash the last three commits into one, keeping the main message.",
+        "note": "Uses autosquash; does not touch unnamed branches."
       },
       {
-        "text": "Squash the last three commits into one.",
-        "note": "Rewrites with interactive rebase, then shows the new log"
+        "text": "Find which commit changed line 21 of report.md and show the evidence.",
+        "note": "Runs git blame with commit hash and context."
       }
     ]
   }

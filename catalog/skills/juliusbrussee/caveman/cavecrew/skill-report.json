@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "When to delegate to `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit) or `cavecrew-reviewer` (diff review) instead of working inline or using `Explore`. Their output is compressed, so main context lasts longer.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "0dd7ad6866949c6d69f04d7546c62a4f35c32a73",
+    "upstream_commit": "15581d14007fd01fb3f132016741962f34936ca2",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 286900,
-    "fetched_at": "2026-09-07T07:51:41.428Z",
+    "installs_skills_sh": 288800,
+    "fetched_at": "2026-09-08T07:45:06.467Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-06T23:54:51Z"
+    "upstream_commit_at": "2026-09-07T08:19:43Z"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:51:41.428Z",
+    "generated_at": "2026-09-08T07:45:06.467Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,33 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 在定位代码、1-2 文件小改或审查 diff 时会改派 cavecrew-investigator/builder/reviewer 子代理,拿回压缩的结构化结果,而不是自己直接搜改,省主上下文。",
-    "when": "当任务是定位某段代码、在已知文件做 1-2 处小修,或审查 diff/分支找 bug,且希望输出精简时触发。",
+    "what": "安装后，Claude 会把三类任务转交给专门的子代理：查找代码定义/调用、做 1~2 个文件的局部修改、审查 diff 以找出问题。这些子代理返回的是压缩且带文件行号的简要结果，比普通回复占用的对话记忆更少。",
+    "when": "当用户询问某个符号在哪定义或被谁调用，或要求小范围修改某个文件，或要检查最近改动里的错误时，Claude 就可能调用该技能对应的子代理。",
     "say": [
       {
-        "text": "用 cavecrew-reviewer 检查这个分支的 diff 有没有问题",
-        "note": "返回按文件和行号排序的问题及严重程度。"
+        "text": "函数 `foo` 定义在哪个文件？哪些地方调用了它？",
+        "note": "会触发 investigator 去定位并返回带行号的清单。"
+      },
+      {
+        "text": "帮我审查刚才的 diff，有没有潜在 bug？",
+        "note": "会触发 reviewer 给出按严重级别的发现列表。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T08:07:33.824Z",
+    "generated_at": "2026-09-08T08:03:26.738Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude delegates code-location, small 1-2 file edits, or diff review to cavecrew-investigator/builder/reviewer subagents and returns their compressed structured results instead of exploring or editing inline, saving main context.",
-    "when_en": "Triggered when the task is locating code, small edits to 1-2 known files, or reviewing a diff/branch for bugs, and you want terse output.",
+    "what_en": "Installing this adds three subagent presets: locate code, edit 1-2 files, review diffs. They return compressed, path/line-anchored findings, using less main-context than vanilla tools.",
+    "when_en": "Fires when you ask to locate code (defs/callers), make a small 1-2 file edit, or check a diff for bugs; Claude delegates to the matching subagent.",
     "say_en": [
       {
-        "text": "Use cavecrew-investigator to find where getUsers is defined",
-        "note": "Returns a compressed list with path:line and symbols."
+        "text": "Where is `foo` defined and who calls it?",
+        "note": "Sends to investigator for path:line results."
       },
       {
-        "text": "Have cavecrew-builder edit lines 3 and 8 in src/util.ts",
-        "note": "Out-of-scope edits return too-big or ambiguous."
+        "text": "In src/util.ts line 20, change default from true to false. Only that file.",
+        "note": "Builder performs the edit and returns verification."
       },
       {
-        "text": "Use cavecrew-reviewer to check this branch's diff for bugs",
-        "note": "Returns findings sorted by file and line with severity."
+        "text": "Check my last diff for bugs.",
+        "note": "Reviewer returns findings by severity."
       }
     ]
   }

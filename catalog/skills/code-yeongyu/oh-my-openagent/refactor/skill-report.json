@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Guides a refactor, cleanup, or restructure with the right decomposition. Use when the user asks to refactor, simplify, extract, or modernize code.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
+    "upstream_commit": "6595aa6b6cc43b2458759a6a403626f8e4f2a4c4",
     "content_hash": "sha256:aafdcf2a500af7c0eb1fa3000b299f205e76db0665829c605b563ea723eeeb31",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68777,
+    "stars_github": 68803,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:21.941Z",
+    "fetched_at": "2026-09-08T07:43:07.234Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
+    "upstream_commit_at": "2026-09-08T16:41:13+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:21.941Z",
+    "generated_at": "2026-09-08T07:43:07.234Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当用户要求重构代码时，Claude 会先确认目标和范围，再分析整个代码库，找出所有受影响的文件和测试。随后制定分步计划，每改一步就运行测试验证没弄坏，最后跑完整测试并总结改动。",
-    "when": "当用户提出重构、简化、提取等代码整理请求时触发；若目标模糊（如只说“改进代码”），Claude 会先追问具体要改善什么。",
+    "what": "装上它，Claude 处理代码改动时会按固定流程：先确认意图，再分析相关代码与依赖、检查测试覆盖，然后制定计划，逐步修改代码并在每步后运行测试与类型检查，最后跑完整测试和构建来确认没有破坏。",
+    "when": "当用户要求重构、简化或提取代码等代码改造时触发；请求笼统（如“改进”“清理”）时，它会先反问具体目标。",
     "say": [
       {
-        "text": "把 AuthService 类拆成更小的几个类，重构一下",
-        "note": "Claude 先确认范围再分析调用关系"
+        "text": "把 auth/handler.ts 里的 AuthService 拆成小类。",
+        "note": "它会先分析依赖，再逐步重构并测试。"
       },
       {
-        "text": "简化 src/utils.ts，只改这一个文件，保守策略",
-        "note": "按 safe 模式单文件重构并逐步验证"
+        "text": "把这个文件里的校验逻辑提取成独立模块。",
+        "note": "它会先查看相关代码和测试情况再动手。"
       },
       {
-        "text": "把这段重复逻辑提取成公共函数，并更新所有调用处",
-        "note": "会先找引用和测试再开始"
+        "text": "把所有用到已废弃 API 的代码统一整理一下。",
+        "note": "这属于开放请求，它会先确认你的具体目标。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:aafdcf2a500af7c0eb1fa3000b299f205e76db0665829c605b563ea723eeeb31",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T08:00:08.900Z",
+    "generated_at": "2026-09-08T07:55:55.907Z",
     "lint_pass": true,
-    "what_en": "When asked to refactor code, Claude confirms the goal, maps the codebase, finds affected files/tests, makes a plan, changes code step by step, runs tests after each step, then runs the full suite and summarizes.",
-    "when_en": "Triggers when the user asks to refactor, clean up, or restructure code; if the goal is vague, Claude asks for specifics first.",
+    "what_en": "Claude refactors code by: clarifying intent, mapping code and dependencies, checking test coverage, planning, then changing code stepwise with tests after each step, and finally running full tests and build.",
+    "when_en": "Triggers when the user wants to refactor, simplify, or extract code (or similar cleanup/modernization requests). Vague asks like 'improve' or 'clean up' make it ask for the specific goal first.",
     "say_en": [
       {
-        "text": "Refactor AuthService by splitting it into smaller classes",
-        "note": "It confirms the scope and maps dependencies first"
+        "text": "Refactor the AuthService in auth/handler.ts into smaller classes.",
+        "note": "It maps dependencies first; then refactors and tests."
       },
       {
-        "text": "Simplify src/utils.ts — only this file, conservative strategy",
-        "note": "Runs step-by-step verification with minimal risk"
+        "text": "Extract the validation logic from this file into a separate module.",
+        "note": "It checks related code and tests before editing."
       },
       {
-        "text": "Extract this duplicated logic into a shared function and update all call sites",
-        "note": "Finds references and tests before starting"
+        "text": "Clean up all code using the deprecated API.",
+        "note": "Open-ended; it will clarify your exact goal first."
       }
     ]
   }

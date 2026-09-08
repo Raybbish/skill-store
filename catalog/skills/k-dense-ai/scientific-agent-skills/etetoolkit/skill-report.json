@@ -5,7 +5,7 @@
     "name": "etetoolkit",
     "description": "Analyze, manipulate, compare, annotate, and visualize phylogenetic or other hierarchical trees with ETE 4. Use for Newick/Nexus tree I/O, topology edits and pattern matching, Robinson-Foulds comparisons, gene-tree evolutionary events and reconciliation, NCBI/GTDB taxonomy, SmartView exploration, and publication rendering. Do not use it to infer trees from raw sequences; align sequences and infer a tree first.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/etetoolkit",
-    "upstream_commit": "1e5eeffbdad3749125afe7ab48a39694e27f181c",
+    "upstream_commit": "9cf7d9aea7d84754db4c167ab04b299d33c444bc",
     "content_hash": "sha256:4c46219b7e7eb87d3affa9f445c869feeabc6ccde6de242a9af68f335a1123b2",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 42195,
+    "stars_github": 43697,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-03T07:39:05.048Z",
+    "fetched_at": "2026-09-08T07:43:14.646Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-02T09:25:16-07:00",
+    "upstream_commit_at": "2026-09-07T09:35:26Z",
     "repo_skill_count": 163,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:39:05.048Z",
+    "generated_at": "2026-09-08T07:43:14.646Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -102,40 +102,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能读写 Newick、NHX 等格式的进化树文件,做修剪、改根、格式转换;能检测基因树的复制/分化事件、查询 NCBI 分类信息,并把树渲染成 PDF/SVG/PNG 图。",
-    "when": "当用户要求处理现成的进化树(Newick/Nexus 格式),如做拓扑修改、基因树事件分析或可视化出图时触发;不用于从原始序列直接推断进化树。",
+    "what": "装上后，Claude 能用 ETE 4 读写/转换 Newick、NHX 等树文件，执行剪枝、重根、树间比较等操作，也可做基因树进化事件检测、NCBI 分类注释，并输出 PDF/SVG 图。",
+    "when": "当用户要求对系统发育树做常规处理（如读取、编辑、比较），检测基因树的复制/分化事件，或基于 NCBI 分类进行注释时触发。该技能不用于从原始序列直接推断树。",
     "say": [
       {
-        "text": "请读取 tree.nw,统计叶子数和总节点数,再做中点定根。",
-        "note": "会打印统计结果,并保存按中点重定根的树文件。"
+        "text": "读取这个 Newick 文件，按我给出的物种列表做剪枝",
+        "note": "Claude 会加载树并剪枝，输出所需子集。"
       },
       {
-        "text": "请对比这两棵基因树的 Robinson-Foulds 距离,并列出共有叶子。",
-        "note": "会返回 RF 距离、共有叶子,以及两棵树各自独有的树分割。"
+        "text": "比较这两棵树的 RF 距离，列出有差异的分支",
+        "note": "Claude 会计算 RF 距离并指出拓扑差异。"
       },
       {
-        "text": "请用 NCBI 分类库给这棵树的叶子加物种信息,再导出 PDF。"
+        "text": "用 NCBI 分类库给这棵树的叶子加上谱系信息",
+        "note": "Claude 会给叶子附上物种谱系与分类标注。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4c46219b7e7eb87d3affa9f445c869feeabc6ccde6de242a9af68f335a1123b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:11:14.720Z",
+    "generated_at": "2026-09-08T08:08:17.419Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can read/write Newick/NHX/PhyloXML/NeXML tree files, edit topology, reroot, convert formats, detect duplication/speciation events, query NCBI taxonomy, and render figures as PDF/SVG/PNG.",
-    "when_en": "Triggered when the user provides a Newick/Nexus tree and asks to edit topology, analyze gene-tree events, or render a figure; not for inferring trees directly from raw sequences.",
+    "what_en": "Installed skill lets Claude work with phylogenetic or hierarchical trees via ETE 4: tree I/O and conversion, editing/comparison, evolutionary event detection, NCBI taxonomy annotation, and PDF/SVG visualization.",
+    "when_en": "Triggered when the user works with phylogenetic trees (reading/editing/comparing), detects gene-tree evolutionary events, or annotates via NCBI taxonomy. Not for inferring trees from raw sequences.",
     "say_en": [
       {
-        "text": "Please read tree.nw, count the leaves and nodes, and midpoint-root the tree.",
-        "note": "Shows leaf and total node counts, saves rerooted tree."
+        "text": "Read this Newick file and prune it to the species I list.",
+        "note": "ETE loads the tree and prunes it."
       },
       {
-        "text": "Compare these two gene trees with RF distance and list shared leaves.",
-        "note": "Returns RF distance, shared leaves, and unique partitions."
+        "text": "Compare these two trees; list branches that differ.",
+        "note": "Computes RF distance and divergent topologies."
       },
       {
-        "text": "Annotate this tree's leaves with NCBI species names and export a PDF.",
-        "note": "First run downloads the NCBI taxonomy, then renders."
+        "text": "Annotate each leaf of this tree with its NCBI lineage.",
+        "note": "Adds NCBI taxid and lineage names to leaves."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "add-ollama-provider",
     "description": "Route a NanoClaw agent group to a local Ollama model instead of the Anthropic API. Ollama speaks the Anthropic API natively (v1/messages), so no provider code changes are needed — just env var overrides and a model setting. Use when the user wants to run their agent locally, cut API costs, or experiment with open-weight models. See docs/ollama.md for background.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-provider",
-    "upstream_commit": "75f20168f699b70c821cb0c6a3d63433f2a81176",
+    "upstream_commit": "6656b326a900dcfba4be8ca76412d954cfc915b5",
     "content_hash": "sha256:19581bc8bfc3bb3dfa5b96d11f0f3e151dd048df81207c7f6ac6ed7af40741fb",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30712,
+    "stars_github": 30720,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:36.083Z",
+    "fetched_at": "2026-09-08T07:43:19.104Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-06T17:10:09+03:00",
+    "upstream_commit_at": "2026-09-07T18:31:02+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:36.083Z",
+    "generated_at": "2026-09-08T07:43:19.104Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,40 +90,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，这个技能会把 NanoClaw 智能体组的请求改发到本地的 Ollama 模型（如 qwen3-coder），不再走 Anthropic 的云端 API。它会自动调整容器环境变量、屏蔽 Anthropic 域名，并设定模型名称，让智能体用本地开源模型回复。",
-    "when": "当你想让智能体在本地运行、节省 API 开销，或试用开放权重模型时，说出切换意图即可触发。技能会先询问你选用哪个 agent 组和哪个 Ollama 模型，然后执行配置。",
+    "what": "装上后,你让 Claude 把某个 NanoClaw 智能体组切到本地 Ollama 时,它会调整配置并重启服务,让该组改用本地模型,不再依赖 Anthropic 的在线接口。",
+    "when": "当你想让智能体在本地电脑运行、省下 API 费用,或试用开放权重模型时触发。执行中会确认用哪个智能体组、哪个本地模型,以及是否禁止访问 Anthropic 在线接口。",
     "say": [
       {
-        "text": "把 my-agent 组切换到本地 Ollama 模型 qwen3-coder",
-        "note": "配置后该组的消息会发给本地 Ollama。"
+        "text": "把这个智能体组接到本地 Ollama 模型上",
+        "note": "技能会确认用哪个组、哪个模型。"
       },
       {
-        "text": "帮我屏蔽 Anthropic API，让这个 agent 组完全走本地模型"
-      },
-      {
-        "text": "改用 Ollama 的 gemma4 模型，并重启服务",
-        "note": "构建并重启后，可验证模型是否激活。"
+        "text": "把这个智能体组切回 Anthropic 在线接口",
+        "note": "会移除相应的本地配置,无需重新构建。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:19581bc8bfc3bb3dfa5b96d11f0f3e151dd048df81207c7f6ac6ed7af40741fb",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T08:12:14.481Z",
+    "generated_at": "2026-09-08T08:13:38.077Z",
     "lint_pass": true,
-    "what_en": "This skill routes a NanoClaw agent group to a local Ollama model (e.g. qwen3-coder) instead of the Anthropic API. It adjusts container environment variables, blocks the Anthropic domain, and sets the model name so the agent replies with a local open-weights model.",
-    "when_en": "Trigger when the user wants to run agents locally, cut API costs, or experiment with open-weights models. The skill will ask which agent group and which Ollama model to use, then applies the configuration.",
+    "what_en": "After installation, you can ask Claude to route a NanoClaw agent group to a local Ollama model. Claude updates the configuration and restarts the service so the group uses the local model instead of relying on Anthropic's online API.",
+    "when_en": "It is used when you want an agent to run locally, save API costs, or try open-weight models. During setup it asks which agent group, which local model, and whether to block the Anthropic online API.",
     "say_en": [
       {
-        "text": "Switch my-agent group to local Ollama model qwen3-coder",
-        "note": "After setup, messages go to local Ollama."
+        "text": "Point this agent group at a local Ollama model",
+        "note": "It first asks which group and model to use."
       },
       {
-        "text": "Block the Anthropic API and make this agent group fully local",
-        "note": "Resolves api.anthropic.com to 0.0.0.0 in the container."
+        "text": "Point the demo group at qwen3-coder and block the Anthropic API",
+        "note": "It updates container config and settings, then restarts."
       },
       {
-        "text": "Use Ollama model gemma4 and restart the service",
-        "note": "After rebuild and restart, you can verify the model is active."
+        "text": "Switch this agent group back to the Anthropic API",
+        "note": "It removes the local overrides and model setting; no rebuild needed."
       }
     ]
   }

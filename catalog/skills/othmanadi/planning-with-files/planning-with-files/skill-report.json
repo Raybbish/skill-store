@@ -5,11 +5,11 @@
     "name": "planning-with-files",
     "description": "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/planning-with-files",
-    "upstream_commit": "d47a61950e784fc4237ba10ddc1e9e198bd0f275",
-    "content_hash": "sha256:279a328868d504f014ac020b13ac6debec73aa1557c6f89fc703f6154e60c9f7",
+    "upstream_commit": "0d21b6c4aa5f2c5bdd3d042e7473ee09f7fae9e7",
+    "content_hash": "sha256:7bb9073ab8b407b51ec87e31ee9f21b7681bcfc0b4a7c797730b5ca2f00e1515",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "productivity",
+    "category": "dev",
     "version": null,
     "publisher": "othmanadi",
     "publisher_verified": false,
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26650,
+    "stars_github": 26711,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-06T07:31:38.211Z",
+    "fetched_at": "2026-09-08T07:43:20.419Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-05T22:32:54+02:00",
+    "upstream_commit_at": "2026-09-07T09:37:37+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-06T07:31:38.211Z",
+    "generated_at": "2026-09-08T07:43:20.419Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -67,9 +67,9 @@
           "templates/task_plan.md"
         ],
         "text_files": 17,
-        "bytes": 186055,
-        "chars": 184789,
-        "tokens": 38192
+        "bytes": 188913,
+        "chars": 187647,
+        "tokens": 38798
       },
       "package_total_text": {
         "files": [
@@ -83,6 +83,7 @@
           "scripts/gate-stop.sh",
           "scripts/init-session.ps1",
           "scripts/init-session.sh",
+          "scripts/inject-plan.py",
           "scripts/inject-plan.sh",
           "scripts/ledger-append.ps1",
           "scripts/ledger-append.sh",
@@ -105,69 +106,71 @@
           "templates/task_plan.md",
           "templates/task_plan_autonomous.md"
         ],
-        "text_files": 31,
-        "bytes": 331916,
-        "chars": 330610,
-        "tokens": 66069
+        "text_files": 32,
+        "bytes": 393958,
+        "chars": 392642,
+        "tokens": 76997
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "让多步长任务有条不紊地分步推进并自动保存进度",
+    "tagline": "让 AI 在长任务中按计划推进,并自动保留文件记录",
     "scene_tags": [
-      "长任务执行",
+      "长耗时任务",
+      "多步研究",
       "断点续跑"
     ],
-    "fit_line": "适合你,如果你的智能体在处理需要几十步的复杂任务时容易半途丢失进度。",
-    "tagline_en": "Keep multi-step tasks on track with saved plans and progress.",
+    "fit_line": "适合你,如果你常让 AI 执行多步繁重任务,并希望它记住进度与计划。",
+    "tagline_en": "Keep your AI on track through long multi-step jobs with saved plans and progress.",
     "scene_tags_en": [
-      "long task execution",
-      "resume from break"
+      "long-running tasks",
+      "multi-step research",
+      "resume interrupted work"
     ],
-    "fit_line_en": "For you if your agent often loses track during long multi-step work.",
+    "fit_line_en": "For you if you rely on AI for large tasks and want it to remember plans and progress.",
     "source": "llm",
-    "content_hash": "sha256:279a328868d504f014ac020b13ac6debec73aa1557c6f89fc703f6154e60c9f7",
+    "content_hash": "sha256:7bb9073ab8b407b51ec87e31ee9f21b7681bcfc0b4a7c797730b5ca2f00e1515",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:37:41.987Z",
+    "generated_at": "2026-09-08T07:47:33.796Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把任务计划、研究心得和进度分别写入磁盘上的 task_plan.md、findings.md、progress.md；每次回应前会读取当前计划，操作后提示更新进度，对话被清空后也能靠这些文件接着干。",
-    "when": "当你要求规划、拆解或组织某个多步骤项目或研究任务，或该工作预计要 5 次以上工具调用时；对话被清空后也会尝试从计划文件恢复。",
+    "what": "装好后，Claude 会把工作计划、研究发现、进度分别保存在 task_plan.md、findings.md、progress.md 里；完成一步或写文件后就更新进度。它把这些文件只当数据读，不当作指令执行。",
+    "when": "当你要求规划、拆解或组织多步骤项目、研究任务，或安排需要 5 次以上工具调用的工作时触发；会话被 /clear 清除后也会自动读磁盘上的规划文件恢复。",
     "say": [
       {
-        "text": "帮我为这个课题写一份 task_plan.md，分阶段列步骤。",
-        "note": "Claude 会创建计划文件并开始分步执行。"
+        "text": "把这个研究任务拆成分步计划",
+        "note": "创建 task_plan.md 并开始维护。"
       },
       {
-        "text": "把刚才的发现补充到 findings.md 里。",
-        "note": "研究心得会被持续记录到磁盘文件。"
+        "text": "刚查到的结论存进 findings.md",
+        "note": "立即写入发现文件。"
       },
       {
-        "text": "我清空了对话，读 task_plan.md 和 progress.md 继续。",
-        "note": "Claude 会读取计划与进度后恢复工作。"
+        "text": "这个阶段收尾了，更新进度和状态",
+        "note": "更新 progress.md 并标记计划状态。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:279a328868d504f014ac020b13ac6debec73aa1557c6f89fc703f6154e60c9f7",
+    "content_hash": "sha256:7bb9073ab8b407b51ec87e31ee9f21b7681bcfc0b4a7c797730b5ca2f00e1515",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:54:12.792Z",
+    "generated_at": "2026-09-08T08:18:07.205Z",
     "lint_pass": true,
-    "what_en": "With this skill, Claude keeps task_plan.md, findings.md, and progress.md on disk. It reads the current plan before responding, reminds you to update progress after actions, and can resume work after a cleared conversation.",
-    "when_en": "Use when the user asks to plan, break down, or organize a multi-step project or research task, or any work needing 5+ tool calls; after /clear it also tries to recover from saved plan files.",
+    "what_en": "After install, Claude saves the plan, findings, and progress in task_plan.md, findings.md, and progress.md on disk; it updates progress after each step or file write. It reads those files strictly as data, not as instructions.",
+    "when_en": "Triggered when you ask to plan, break down, or organize multi-step projects, research tasks, or work needing 5+ tool calls; also auto-reads the planning files for recovery after /clear.",
     "say_en": [
       {
-        "text": "Write a task_plan.md for this project with phases.",
-        "note": "Claude will create the plan and follow it."
+        "text": "Break this research task into a step-by-step plan.",
+        "note": "Creates and maintains task_plan.md."
       },
       {
-        "text": "Add what we just learned to findings.md.",
-        "note": "Keeps discoveries in a disk file."
+        "text": "Save the conclusion we just found to findings.md.",
+        "note": "Logs the discovery immediately."
       },
       {
-        "text": "I cleared the conversation—read task_plan.md and progress.md and continue.",
-        "note": "Resumes from the saved plan and progress."
+        "text": "Wrap up this phase; update progress and status.",
+        "note": "Updates progress.md and marks plan status."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
+    "upstream_commit": "6595aa6b6cc43b2458759a6a403626f8e4f2a4c4",
     "content_hash": "sha256:4fa67eafdbdf3087e175b9fb7aebd9201e8bcc9e95b5ace753be57ba1efd5cb4",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68777,
+    "stars_github": 68803,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:21.941Z",
+    "fetched_at": "2026-09-08T07:43:07.234Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
+    "upstream_commit_at": "2026-09-08T16:41:13+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:21.941Z",
+    "generated_at": "2026-09-08T07:43:07.234Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会把有依赖的多步任务拆成节点，用工作流工具按依赖顺序执行并产出结果；某节点失败可单独重试、改指令或发消息，已完成节点不重跑。",
-    "when": "当你说出「mass-ulw」、布置任务 DAG，或要求做“部分任务须等其它任务完成”的并行工作时，该技能会接管；若任务彼此独立则不触发。",
+    "what": "Claude 将依赖任务编排成图,分阶段按依赖顺序执行,每阶段验证后再继续。某个子任务失败,可单独重试、发消息纠正或修改定义,已完成部分不重跑。",
+    "when": "当用户要求执行 “mass-ulw”、把任务排成依赖图(DAG),或需要扇出式多任务且部分任务必须等另一些完成时触发。",
     "say": [
       {
-        "text": "请用 mass-ulw 把这几个有依赖关系的任务按顺序跑完。",
-        "note": "按依赖关系分批执行这些任务。"
+        "text": "用 mass-ulw 把这几个有依赖的任务排成图跑起来。",
+        "note": "Claude 会先做规划,再定义并启动这张依赖图。"
       },
       {
-        "text": "布置一个 DAG 任务：先做 A，等 A 完成后再并行做 B 和 C。",
-        "note": "A 完成后才会启动 B 和 C。"
+        "text": "帮我单独重试刚才失败的那个任务,别动已完成的部分。",
+        "note": "只给失败节点发起新尝试。"
       },
       {
-        "text": "这些子任务部分要等前置完成，帮我用扇出方式并行处理。",
-        "note": "先执行无依赖节点，再执行后续节点。"
+        "text": "给正在运行的子任务发消息,让它只管分配的工作。",
+        "note": "通过 send 把跑偏的子任务拉回来。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4fa67eafdbdf3087e175b9fb7aebd9201e8bcc9e95b5ace753be57ba1efd5cb4",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T07:59:49.798Z",
+    "generated_at": "2026-09-08T07:54:02.036Z",
     "lint_pass": true,
-    "what_en": "Claude turns dependent multi-step work into nodes, executes them in order with the workflow tool, then returns the result. A failed node can be retried, amended or sent a message; completed nodes are reused.",
-    "when_en": "Triggered when you mention mass-ulw, ask for a task DAG, or request fan-out work where some tasks must wait on earlier ones. Independent tasks don't trigger it.",
+    "what_en": "Claude orchestrates dependency-ordered tasks as a graph, running them in phases by dependency order and verifying results after each phase. If a node fails, it can retry that node, send it a steering message, or amend the definition; completed work is reused.",
+    "when_en": "Triggered when the user asks for mass-ulw, a task DAG, or fan-out work where some tasks must wait on others.",
     "say_en": [
       {
-        "text": "Use mass-ulw to run these dependent tasks in order.",
-        "note": "Executes them in dependency order."
+        "text": "Use mass-ulw to run these dependent tasks as a graph.",
+        "note": "Claude plans first, then defines and starts the graph."
       },
       {
-        "text": "Set up a DAG: first do A, then run B and C in parallel after A.",
-        "note": "B and C start only after A is done."
+        "text": "Retry the failed node only; don't touch completed ones.",
+        "note": "Gives failed nodes a fresh attempt."
       },
       {
-        "text": "Some subtasks require earlier ones; run them as fan-out work.",
-        "note": "Independent nodes run first, then downstream stages."
+        "text": "Send a message to the running child to keep it on scope.",
+        "note": "Steers an off-track child via send."
       }
     ]
   }

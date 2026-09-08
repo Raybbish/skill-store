@@ -5,7 +5,7 @@
     "name": "migrate-from-v1",
     "description": "Finish migrating a NanoClaw v1 install into v2. Run after `bash migrate-v2.sh` completes. Seeds the owner, migrates legacy memory, reconciles container configs, and helps port custom v1 code. Triggers on \"migrate from v1\", \"finish migration\", \"v1 migration\".",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-from-v1",
-    "upstream_commit": "75f20168f699b70c821cb0c6a3d63433f2a81176",
+    "upstream_commit": "6656b326a900dcfba4be8ca76412d954cfc915b5",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30712,
+    "stars_github": 30720,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:36.083Z",
+    "fetched_at": "2026-09-08T07:43:19.104Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-06T17:10:09+03:00",
+    "upstream_commit_at": "2026-09-07T18:31:02+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:36.083Z",
+    "generated_at": "2026-09-08T07:43:19.104Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "该技能负责 NanoClaw v1→v2 迁移的收尾:检查迁移报告,修复阻碍机器人收发消息的失败项,确认并设置拥有者,迁移群组历史记忆,核对容器配置,并帮你决定旧版自定义代码的处理方式;最后运行健康检查确认新版正常。",
-    "when": "当你说出“migrate from v1”“finish migration”“v1 migration”时触发;它专用于在 `bash migrate-v2.sh` 完成之后接手,如果该脚本还没运行,它会先停下让你运行。",
+    "what": "它接手v1→v2迁移收尾:先确认migrate-v2.sh已运行,否则提示你先运行它。之后做消息收发测试、补owner权限、迁移v1记忆、核对容器配置、处理自定义代码,最后运行verify并重启v2服务。",
+    "when": "当用户提到“migrate from v1”“finish migration”“v1 migration”时触发;前提是migrate-v2.sh已运行并生成handoff.json,否则它会先请你运行该脚本。",
     "say": [
       {
-        "text": "帮我把 NanoClaw 从 v1 迁到 v2。",
-        "note": "技能会先检查迁移脚本是否已运行,再继续收尾。"
+        "text": "从v1迁移,接着收尾",
+        "note": "会先检查迁移脚本是否已运行,再接手。"
       },
       {
-        "text": "迁移完了,帮我看看还需要处理什么。",
-        "note": "它会读取 handoff 文件,推进后续迁移步骤。"
+        "text": "完成迁移,先确认v2能收到消息",
+        "note": "先做冒烟测试,通过才继续下去。"
       },
       {
-        "text": "v1 里我改过的代码怎么处理?",
-        "note": "它会列出分支,让你选择复制、逐条审查或仅存档。"
+        "text": "v1迁移,我想保留自己的自定义改动",
+        "note": "它会把改动列出来,让你选择处理方式。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T08:16:19.136Z",
+    "generated_at": "2026-09-08T08:18:28.917Z",
     "lint_pass": true,
-    "what_en": "Completes v1→v2 migration after the migrate script: reads the report, fixes blockers, seeds the owner, migrates memory, checks container configs, handles custom code, then verifies.",
-    "when_en": "Triggers on 'migrate from v1', 'finish migration', or 'v1 migration'. Intended to run after `bash migrate-v2.sh`; if the script hasn't been run, it stops and asks you to run it first.",
+    "what_en": "Verifies migrate-v2.sh ran (if not, asks user to run it). Then reads handoff and completes: smoke test, owner role, memory migration, container config reconciliation, v1 fork-code handling. Ends with verify step and v2 restart.",
+    "when_en": "Triggers on “migrate from v1”, “finish migration”, “v1 migration”. Proceeds only if migrate-v2.sh already ran and handoff.json exists; otherwise tells the user to run that script first.",
     "say_en": [
       {
-        "text": "Help me migrate NanoClaw from v1 to v2.",
-        "note": "It first checks whether the migration script has run, then continues."
+        "text": "Migrate from v1 and continue the cleanup.",
+        "note": "Checks whether the migration script ran, then takes over."
       },
       {
-        "text": "The migration is done — what should I handle next?",
-        "note": "It reads the handoff file and moves through the remaining steps."
+        "text": "Finish migration; first confirm v2 can receive messages.",
+        "note": "Runs the smoke test before going deeper."
       },
       {
-        "text": "How should I handle the code I changed in v1?",
-        "note": "It lists the commits and lets you copy, review, or archive them."
+        "text": "v1 migration — I want to keep my custom changes.",
+        "note": "Lists the fork commits and asks how you want to handle them."
       }
     ]
   }

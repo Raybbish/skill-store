@@ -5,7 +5,7 @@
     "name": "dask",
     "description": "Distributed computing for larger-than-RAM pandas/NumPy workflows. Use when you need to scale existing pandas/NumPy code beyond memory or across clusters. Best for parallel file processing, distributed ML, integration with existing pandas code. For out-of-core analytics on single machine use vaex; for in-memory speed use polars.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/dask",
-    "upstream_commit": "1e5eeffbdad3749125afe7ab48a39694e27f181c",
+    "upstream_commit": "9cf7d9aea7d84754db4c167ab04b299d33c444bc",
     "content_hash": "sha256:52fe1cebf229d78b43f40c31faf2ccfab34b5ba2f3dac888884f17874d9e56b4",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 42195,
+    "stars_github": 43697,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-03T07:39:05.048Z",
+    "fetched_at": "2026-09-08T07:43:14.646Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-02T09:25:16-07:00",
+    "upstream_commit_at": "2026-09-07T09:35:26Z",
     "repo_skill_count": 163,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:39:05.048Z",
+    "generated_at": "2026-09-08T07:43:14.646Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,33 +100,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "遇到内存装不下的表格/数组或多份文件任务,Claude 会改用 Dask 给出 Python 方案:分块读取、并行计算。Dask 不立即算结果,而是先排好计算步骤,等 .compute() 调用后再返回数值,也能扩展到多台机器。",
-    "when": "当用户想把现有 pandas/NumPy 代码扩展到内存以上或集群、需要并行处理多份数据文件,或直接提到 dask/分布式时触发。",
+    "what": "Claude 会改用 Dask 库：把放不进内存的 pandas/NumPy 运算拆成小块，并行跑在多个核心或多台电脑上，并在表格、数组、文本、自定义任务等组件中选合适的。",
+    "when": "当数据量超出内存、需要并行处理多个文件、或想把 pandas/NumPy 代码扩展到多核或集群时触发。",
     "say": [
       {
-        "text": "我有 10 份 CSV 在 S3 上,用 Dask 读取合成一张表算总数。",
-        "note": "会提醒先装 s3fs 才能访问 s3:// 路径。"
+        "text": "我的 100GB CSV 内存装不下，请用 Dask 帮我按类统计。",
+        "note": "Claude 会写出分块读取并统计的 Dask 代码。"
+      },
+      {
+        "text": "把这套 pandas 代码改成 Dask，并在 4 台机器上运行。",
+        "note": "Claude 会让这些计算在多台机器上并行完成。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:52fe1cebf229d78b43f40c31faf2ccfab34b5ba2f3dac888884f17874d9e56b4",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:09:30.928Z",
+    "generated_at": "2026-09-08T08:06:51.755Z",
     "lint_pass": true,
-    "what_en": "Claude handles table/array tasks that exceed RAM by switching to Dask: it reads multiple files in chunks, parallelizes computation, defers actual results until .compute() is called, and can scale across machines.",
-    "when_en": "Triggers when users want to scale existing pandas/NumPy code beyond memory or across clusters, process multiple data files in parallel, or mention Dask/distributed tasks.",
+    "what_en": "Claude will write Python code using Dask: it splits pandas/NumPy operations that exceed memory into chunks and runs them in parallel across cores or machines, choosing from DataFrame, Array, Bag, or Futures as appropriate.",
+    "when_en": "Triggers when data exceeds RAM, multiple files need parallel processing, or existing pandas/NumPy code should scale to multiple cores or a cluster.",
     "say_en": [
       {
-        "text": "These CSVs are 30G and blow pandas memory. How should I read them with Dask?",
-        "note": "Claude returns a dd.read_csv + compute() example."
+        "text": "My 100GB CSV won't fit in RAM; use Dask to summarize it by category.",
+        "note": "Claude will produce Dask code that reads in chunks and aggregates."
       },
       {
-        "text": "The pandas groupby is slow. Convert it to Dask DataFrame and run in parallel.",
-        "note": "Claude shows lazy code and reminds you to call compute()."
+        "text": "Turn this pandas code into Dask and run it on 4 machines.",
+        "note": "Claude will run the computation in parallel across machines."
       },
       {
-        "text": "I have 10 CSVs on S3. Use Dask to load them all and calculate the total.",
-        "note": "It may mention installing s3fs for s3:// paths."
+        "text": "Use Dask to process these JSON logs in parallel and keep status=error records.",
+        "note": "Claude will parse the JSON and keep only error entries."
       }
     ]
   }

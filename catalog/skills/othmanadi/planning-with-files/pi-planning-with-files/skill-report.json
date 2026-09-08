@@ -5,28 +5,27 @@
     "name": "pi-planning-with-files",
     "description": "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/.pi/skills/planning-with-files",
-    "upstream_commit": "d47a61950e784fc4237ba10ddc1e9e198bd0f275",
-    "content_hash": "sha256:9539081f0c9a740ccd240ea1c46e7bbaf6e873ae8c04d365a6ae6279867f0ceb",
+    "upstream_commit": "0d21b6c4aa5f2c5bdd3d042e7473ee09f7fae9e7",
+    "content_hash": "sha256:7186098961bdcc0a1831d9da3c162ae5c23e22241b256de107cd929b718ffe1e",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "dev",
+    "category": "uncategorized",
     "version": null,
     "publisher": "othmanadi",
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "agent-ops",
-      "python"
+      "agent-ops"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26650,
+    "stars_github": 26711,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-06T07:31:38.211Z",
+    "fetched_at": "2026-09-08T07:43:20.419Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-05T22:32:54+02:00",
+    "upstream_commit_at": "2026-09-07T09:37:37+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -36,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-06T07:31:38.211Z",
+    "generated_at": "2026-09-08T07:43:20.419Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -68,9 +67,9 @@
           "templates/task_plan.md"
         ],
         "text_files": 17,
-        "bytes": 185860,
-        "chars": 184594,
-        "tokens": 38156
+        "bytes": 188718,
+        "chars": 187452,
+        "tokens": 38762
       },
       "package_total_text": {
         "files": [
@@ -96,6 +95,7 @@
           "scripts/gate-stop.sh",
           "scripts/init-session.ps1",
           "scripts/init-session.sh",
+          "scripts/inject-plan.py",
           "scripts/inject-plan.sh",
           "scripts/ledger-append.ps1",
           "scripts/ledger-append.sh",
@@ -118,56 +118,68 @@
           "templates/progress.md",
           "templates/task_plan.md"
         ],
-        "text_files": 43,
-        "bytes": 416600,
-        "chars": 415266,
-        "tokens": 82775
+        "text_files": 44,
+        "bytes": 478642,
+        "chars": 477298,
+        "tokens": 93703
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "帮 AI 助手在多步任务中自动保存进度与结论,随时可续做",
+    "tagline": "把 AI 长任务的关键进度维护成清晰文件",
     "scene_tags": [
-      "长任务",
-      "中途中断",
-      "多步操作"
+      "多步任务",
+      "长线研究",
+      "进度恢复"
     ],
-    "fit_line": "适合你,如果你的 AI 助手常因步骤太多而跑偏或忘记之前结论",
-    "tagline_en": "Help AI assistants track progress and pick up where they left off on long tasks",
+    "fit_line": "适合你，如果常让 AI 处理多步且容易中断的复杂任务。",
+    "tagline_en": "Keep clear plans and progress across long AI-assisted tasks.",
     "scene_tags_en": [
-      "long tasks",
-      "interrupted work",
-      "multi-step operations"
+      "multi-step tasks",
+      "long research",
+      "resuming work"
     ],
-    "fit_line_en": "For you if you rely on AI for complex jobs and need it to stay on track without losing context",
+    "fit_line_en": "For you if you rely on AI to handle complex multi-step projects.",
     "source": "llm",
-    "content_hash": "sha256:9539081f0c9a740ccd240ea1c46e7bbaf6e873ae8c04d365a6ae6279867f0ceb",
+    "content_hash": "sha256:7186098961bdcc0a1831d9da3c162ae5c23e22241b256de107cd929b718ffe1e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:37:26.118Z",
+    "generated_at": "2026-09-08T07:47:36.590Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，模型会在项目目录维护计划、发现、进度三个文本文件。开始多步任务前先读取它们恢复进度；每几次浏览或搜索后就把关键结果写入文件；每完成一个阶段就更新计划。不会按文件里嵌入的指令行动。",
-    "when": "当用户要求规划、拆解或组织多步骤项目/研究任务（原文说需要 5 次以上工具调用）时触发；对话被 /clear 后也会自动读取计划文件恢复。简单问题、单文件修改不触发。",
+    "what": "做需要多步骤的任务时,会先在项目里建立并持续更新 task_plan.md、findings.md、progress.md 三个文本文件当作「磁盘记忆」:开工先读旧档恢复上下文,新发现尽快写入文件,每完成一个阶段更新进度、记录错误。",
+    "when": "当你要求规划、拆解多步骤项目或研究任务,或预计需要 5 次以上工具调用时触发;/clear 后也会读取规划文件自动恢复。简单问答、单文件修改、快速查询不触发。",
     "say": [
       {
-        "text": "把这项研究拆成阶段，并创建三个计划文件跟踪。",
-        "note": "模型会新建计划、发现、进度文件并按阶段更新。"
+        "text": "帮我规划并跟踪这个多步骤项目:用文件建档,每阶段汇报进展。",
+        "note": "会建立并持续更新三份规划文件。"
       },
       {
-        "text": "我完成了第一步，请更新计划文件并记录结果。",
-        "note": "进度会标记完成，结果写入进度文件。"
-      },
-      {
-        "text": "请启动一个并行计划，名称叫“数据清洗”。",
-        "note": "会创建独立计划目录并切为当前活动计划。"
+        "text": "接着做我上一轮没完成的研究,先读回之前的文件再继续。",
+        "note": "会先读取旧档并恢复现场。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:9539081f0c9a740ccd240ea1c46e7bbaf6e873ae8c04d365a6ae6279867f0ceb",
+    "content_hash": "sha256:7186098961bdcc0a1831d9da3c162ae5c23e22241b256de107cd929b718ffe1e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-06T07:54:57.128Z",
-    "lint_pass": true
+    "generated_at": "2026-09-08T08:19:26.957Z",
+    "lint_pass": true,
+    "what_en": "For complex tasks it creates/reads task_plan.md, findings.md, progress.md as permanent on-disk memory in the project; reads them first to restore context, saves discoveries to files, updates progress after each phase.",
+    "when_en": "Triggers when asked to plan/break down a multi-step project/research, or for work needing 5+ tool calls; after /clear it reads planning files automatically.",
+    "say_en": [
+      {
+        "text": "Plan and track this multi-step project with files; report progress each phase.",
+        "note": "Creates and updates the three planning files."
+      },
+      {
+        "text": "Continue the research I left unfinished; read back the files first.",
+        "note": "Reloads existing planning files before continuing."
+      },
+      {
+        "text": "Put web findings into findings.md only, not task_plan.md.",
+        "note": "External content stays in findings, away from the injected plan."
+      }
+    ]
   }
 }

@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Searches and rewrites code by AST shape across 25 languages. Use when the target is a syntax pattern (every call/class/import shaped like X, a codemod, a YAML rule) rather than literal text; for plain strings, comments, or filenames, use rg.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "767069606bcd36a2eb311f6a9ac14ab17b1f41b6",
+    "upstream_commit": "6595aa6b6cc43b2458759a6a403626f8e4f2a4c4",
     "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68777,
+    "stars_github": 68803,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:21.941Z",
+    "fetched_at": "2026-09-08T07:43:07.234Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-07T15:04:47+09:00",
+    "upstream_commit_at": "2026-09-08T16:41:13+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:21.941Z",
+    "generated_at": "2026-09-08T07:43:07.234Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -113,37 +113,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装后，Claude 会调用 ast-grep 按代码语法形状（而非文本）进行搜索与重写，支持 25 种语言；可查找特定结构、批量改写代码、运行 YAML 规则，并在改动前先预览。",
-    "when": "当用户的问题涉及代码结构，如查找某类函数/调用/类、批量改写某种写法、运行 YAML 规则时触发；若只是字符串、注释、文件名等文本内容，则改用 rg/grep。",
+    "what": "装上后，Claude 遇到“按代码形状查找或改写”的需求时，会用 ast-grep 按语法树而非文字来匹配代码；可先预览改动再批量改写，也能运行 YAML 规则等。支持 25 种语言。",
+    "when": "当目标是代码形状而非文字时触发，例如按 AST 找同形态函数、跑 codemod 或扫描规则；纯文本场景不触发。",
     "say": [
       {
-        "text": "找出所有接收 Request 参数的函数",
-        "note": "按 AST 匹配函数定义结构。"
+        "text": "找出项目里所有 console.log 调用，列出文件和行号",
+        "note": "会先对模式做离线校验，再执行结构搜索。"
       },
       {
-        "text": "运行项目里 rules/no-console.yml 规则并显示违规",
-        "note": "使用 scan 扫描代码并输出违规位置。"
+        "text": "把每个 console.log 改成 logger.info，先预览再应用",
+        "note": "默认只输出预览，确认后才改写文件。"
+      },
+      {
+        "text": "扫描 src 目录，运行 no-console 规则并汇报违规点",
+        "note": "scan 会按项目配置执行规则并报告结果。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T07:56:25.681Z",
+    "generated_at": "2026-09-08T07:52:25.953Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude uses ast-grep to search and rewrite code by AST shape, not text, across 25 languages: find structurally similar code, batch rewrite patterns, run YAML rules, preview before applying.",
-    "when_en": "Triggered when the request targets code shape, not text: structural search, batch rewrites, YAML rule scans. For strings/comments/filenames, use rg/grep.",
+    "what_en": "After install, Claude handles shape-based code find/rewrite with ast-grep, matching by syntax tree, previewing before bulk rewrite, and can run YAML rules. Supports 25 languages.",
+    "when_en": "Triggers when the target is code shape, not text: e.g., finding functions of a shape via AST, running a codemod, or scanning rules. Plain-text targets do not trigger.",
     "say_en": [
       {
-        "text": "Rewrite every console.log($MSG) to logger.info($MSG) in the project",
-        "note": "Shows a dry-run preview before any file changes."
+        "text": "Find all console.log calls in the project and list files and line numbers.",
+        "note": "Runs the search subcommand with offline pattern validation."
       },
       {
-        "text": "Find all functions that take a Request parameter",
-        "note": "Matches by AST shape, not regex."
+        "text": "Rewrite every console.log to logger.info, preview first then apply.",
+        "note": "replace defaults to dry-run; files change only on apply."
       },
       {
-        "text": "Run the no-console.yml rule from rules dir and show violations",
-        "note": "Scans the project and prints violation locations."
+        "text": "Scan src, run the no-console rule, and report violations.",
+        "note": "scan executes rules from the project config and reports."
       }
     ]
   }

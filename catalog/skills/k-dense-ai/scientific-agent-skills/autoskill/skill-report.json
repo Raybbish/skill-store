@@ -5,7 +5,7 @@
     "name": "autoskill",
     "description": "Observe the user's screen via screenpipe, detect repeated research workflows, match them against existing scientific-agent-skills, and draft new skills (or composition recipes that chain existing ones) for the patterns not yet covered. Use when the user asks to analyze their recent work and propose skills based on what they actually do. Requires the screenpipe daemon (https://github.com/screenpipe/screenpipe) running locally on port 3030 — the skill has no other data source and will refuse to run if screenpipe is unreachable. All detection runs locally; only redacted cluster summaries reach the LLM.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/autoskill",
-    "upstream_commit": "1e5eeffbdad3749125afe7ab48a39694e27f181c",
+    "upstream_commit": "9cf7d9aea7d84754db4c167ab04b299d33c444bc",
     "content_hash": "sha256:7d018d21906ee00e56cc1aab2dfb5c969b46a4c938ee981513c5b1f288435f85",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 42195,
+    "stars_github": 43697,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-03T07:39:05.048Z",
+    "fetched_at": "2026-09-08T07:43:14.646Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-02T09:25:16-07:00",
+    "upstream_commit_at": "2026-09-07T09:35:26Z",
     "repo_skill_count": 163,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-03T07:39:05.048Z",
+    "generated_at": "2026-09-08T07:43:14.646Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -113,41 +113,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "这个技能会读取本机的 screenpipe 屏幕使用记录,分析你在一段时间里的重复科研操作,与仓库里已有的技能比对;对没覆盖到的操作,它起草新技能或能把已有技能串联起来的配方,连同报告存进草稿文件夹,由你审阅后再决定是否收纳。",
-    "when": "当你明确提出分析近期工作并提出技能建议的要求时才触发,如“分析我最近一天/一周并提出技能建议”;它要求本机 screenpipe 守护进程已运行,否则拒绝执行,也不回应实时查屏等随口请求。",
+    "what": "该技能赋予 Claude 一项能力：从本地 screenpipe 获取近期屏幕活动，将重复操作聚成工作模式，与仓库中已有技能比对；对未覆盖的模式会生成新 SKILL.md 或组合配方，存入 ~/.autoskill/proposed 供审阅。",
+    "when": "仅当用户明确要求基于近期屏幕活动分析工作并提出新技能或组合配方时触发；技能不会自行启动，也不响应实时屏幕查询。",
     "say": [
       {
-        "text": "分析我最近 4 小时的工作,提议新技能。",
-        "note": "它会抓取这 4 小时的屏幕记录,聚类后产出待审阅提案。"
+        "text": "分析我最近一天的工作，提议可自动化的新技能。",
+        "note": "将生成新技能草案供你审查。"
       },
       {
-        "text": "看看我这些天的重复操作里,哪些还没有对应技能。",
-        "note": "它会把重复模式与仓库现有技能比对,指出缺口。"
+        "text": "查看我这周重复的操作，哪些还没有技能覆盖？",
+        "note": "会与现有技能比对并列出差距。"
       },
       {
-        "text": "把我常用的文献检索流程,起草成串联已有技能的配方。",
-        "note": "确认能由现有技能覆盖时,它会产生一份组合配方草稿。"
+        "text": "根据我最近的科研工作流，帮我起草一个组合配方。",
+        "note": "会输出可用的 SKILL.md 草稿。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:7d018d21906ee00e56cc1aab2dfb5c969b46a4c938ee981513c5b1f288435f85",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-03T08:07:34.221Z",
+    "generated_at": "2026-09-08T08:05:36.128Z",
     "lint_pass": true,
-    "what_en": "Pulls recent screen activity from local screenpipe, groups repeated research workflows, and compares them to existing skills in this repo. Uncovered workflows get drafted as new skills or as recipes chaining existing skills, saved to a proposal folder for review.",
-    "when_en": "Triggered by an explicit request to analyze recent work and propose skills (e.g. 'analyze my last week and propose skills'). Requires the local screenpipe daemon on port 3030.",
+    "what_en": "When called, it retrieves the screen timeline from local screenpipe, clusters repeated actions, matches them to existing skills, and writes draft SKILL.md files or composition recipes (for patterns not yet covered) into ~/.autoskill/proposed for user review.",
+    "when_en": "Triggered only when the user explicitly asks to analyze their recent screen activity and propose new skills or composition recipes, e.g. 'analyze my last day of work'.",
     "say_en": [
       {
-        "text": "Analyze my last 4 hours of work and propose new skills.",
-        "note": "It clusters that window and drafts proposals for review."
+        "text": "Analyze my last day of work and propose a skill that can automate it.",
+        "note": "Will write a new skill draft to the proposed folder."
       },
       {
-        "text": "Look at what I've done this week and tell me what isn't covered yet.",
-        "note": "It compares patterns to existing skills and lists gaps."
+        "text": "Check my repeated operations this week and tell me what isn't covered.",
+        "note": "Compares activity clusters with existing skills."
       },
       {
-        "text": "Draft a composition recipe chaining existing skills for literature workflows.",
-        "note": "Writes a recipe draft chaining skills for that workflow."
+        "text": "Draft a composition recipe from my recent research workflow.",
+        "note": "Creates a SKILL.md draft for your review."
       }
     ]
   }
