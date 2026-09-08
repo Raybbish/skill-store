@@ -5,7 +5,7 @@
     "name": "security-audit",
     "description": "Deep security audit covering OWASP Top 10, authentication, authorization, data protection, dependency vulnerabilities, and secrets scanning. Delegates to the Centinela (QA) agent.",
     "upstream": "https://github.com/davepoon/buildwithclaude/tree/main/plugins/agent-triforce/skills/security-audit",
-    "upstream_commit": "85bb670301533007b37655619c6b5a3c9dc26098",
+    "upstream_commit": "ac92f1d62bcc41f0ecbffc392be017110f005912",
     "content_hash": "sha256:af1315d34ff070412f6dd7e8077ab79dfb9726b6b0c787f1bef9b8daca99ecfe",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 3373,
+    "stars_github": 3422,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:38:20.079Z",
+    "fetched_at": "2026-09-07T07:49:35.594Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T21:21:55+10:00",
-    "repo_skill_count": 367,
+    "upstream_commit_at": "2026-09-07T09:41:28+10:00",
+    "repo_skill_count": 372,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:38:20.079Z",
+    "generated_at": "2026-09-07T07:49:35.594Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "执行安全审计:检查 OWASP Top 10、认证授权、数据保护等;如含 Solidity 则检查智能合约。最终给出通过/需修改结论,生成报告到 docs/reviews/security-audit-日期.md,并交给 Dev 代理。只记录问题,不修复。",
-    "when": "在发布前、涉及认证/授权/数据处理的重大改动后、定期安全审查等场景使用;也可通过 /security-audit 命令启动,可指定路径。",
+    "what": "装上后，进行安全审计时 Claude 会调用 Centinela 代理，检查 OWASP Top 10、认证授权、数据保护、硬编码密钥与依赖漏洞；有 Solidity 还查智能合约，最后写报告并给出通过/需修改结论。",
+    "when": "用户通过 /security-audit 命令发起审计时才触发；典型用在发布前、涉及认证/授权/数据处理的大改动后，或新增依赖时。",
     "say": [
       {
-        "text": "请对我的项目执行一次安全审计",
-        "note": "Claude 会运行完整检查并生成报告"
+        "text": "对 src/payments/ 文件夹做一次安全审计。",
+        "note": "会生成针对该目录的审计报告。"
       },
       {
-        "text": "扫描代码里的密钥和依赖漏洞",
-        "note": "会检查硬编码密钥和已知 CVE"
+        "text": "扫描项目里的硬编码密钥和已知漏洞依赖。",
+        "note": "执行密钥扫描和依赖 CVE 检查。"
+      },
+      {
+        "text": "发布前检查一下代码安全状态。",
+        "note": "触发 OWASP、认证授权等安全检查。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:af1315d34ff070412f6dd7e8077ab79dfb9726b6b0c787f1bef9b8daca99ecfe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:26:21.269Z",
+    "generated_at": "2026-09-07T08:02:58.624Z",
     "lint_pass": true,
-    "what_en": "Performs a security audit: checks OWASP Top 10, auth, authorization, data protection, etc.; checks smart contracts if Solidity is present. Issues verdict, writes a report, hands off findings to Dev agent. Only documents, never fixes.",
-    "when_en": "Use before a release, after significant code changes touching auth/authorization/data handling, for periodic security review, etc.; can also be launched via /security-audit, optionally scoped to paths.",
+    "what_en": "Claude uses the Centinela agent for security audits: OWASP Top 10, auth, authorization, data protection, secret scanning, dependency CVEs; smart contracts if Solidity; writes a report with verdict.",
+    "when_en": "Triggered by the /security-audit command (optionally scoped); recommended before releases, after significant auth/authz/data changes, or when adding dependencies.",
     "say_en": [
       {
-        "text": "Please run a full security audit on my project.",
-        "note": "Claude will run complete checks and generate a report."
+        "text": "Run a security audit on the src/payments/ folder.",
+        "note": "Produces a scoped audit report."
       },
       {
-        "text": "Use /security-audit to check only src/auth/ and src/api/.",
-        "note": "Only those two directories are audited."
+        "text": "Scan the project for hardcoded secrets and known vulnerable dependencies.",
+        "note": "Runs secret scan and dependency CVE check."
       },
       {
-        "text": "Scan the code for secrets and dependency vulnerabilities.",
-        "note": "Checks for hardcoded keys and known CVEs."
+        "text": "Check code security status before release.",
+        "note": "Runs OWASP, auth, and other security checks."
       }
     ]
   }
