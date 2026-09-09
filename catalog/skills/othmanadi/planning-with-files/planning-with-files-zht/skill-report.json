@@ -3,27 +3,29 @@
   "meta": {
     "id": "othmanadi/planning-with-files/planning-with-files-zht",
     "name": "planning-with-files-zht",
-    "description": "基於 Manus 風格的檔案規劃系統，用於組織和追蹤複雜任務的進度。建立 task_plan.md、findings.md 和 progress.md 三個檔案。當使用者要求規劃、拆解或組織多步驟專案、研究任務或需要超過5次工具呼叫的工作時使用。支援 /clear 後的自動會話恢復。觸發詞：任務規劃、專案計畫、制定計畫、分解任務、多步驟規劃、進度追蹤、檔案規劃、幫我規劃、拆解專案",
+    "description": "用於多步驟 AI 代理工作的持久化檔案規劃。將 task_plan.md、findings.md 與 progress.md 保存在磁碟上，生命週期鉤子會注入選定的專案規劃內容。自動恢復只讀取專案規劃檔案；只有明確執行 session-catchup.py --metadata 才會檢查本機同一專案的代理工作階段中繼資料，--replay 則會輸出有界且以 nonce 框定的摘錄。選用的閘門模式只會在主機支援時要求繼續，而且絕不執行 Markdown 中宣告的命令。此技能沒有網路上傳路徑。適用於研究或需要超過 5 次工具呼叫的工作。觸發詞：任務規劃、專案計畫、制定計畫、分解任務、多步驟規劃、進度追蹤、檔案規劃、幫我規劃、拆解專案",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-zht",
-    "upstream_commit": "9e94390e5912b1ff296556505cd999ff84838160",
-    "content_hash": "sha256:aa8dbe409c5203f269c0591669555918e6a08b11aa6338daa1fed8a5df8150f5",
+    "upstream_commit": "0d21b6c4aa5f2c5bdd3d042e7473ee09f7fae9e7",
+    "content_hash": "sha256:c5548bd0314b688aea571a1cb436080f56a15a27a5707c7060981235d76d3dbe",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "productivity",
+    "category": "uncategorized",
     "version": null,
     "publisher": "othmanadi",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": []
+    "tags": [
+      "agent-ops"
+    ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26385,
+    "stars_github": 26711,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:23.004Z",
+    "fetched_at": "2026-09-08T07:43:20.419Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-22T13:03:16+02:00",
+    "upstream_commit_at": "2026-09-07T09:37:37+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -33,31 +35,32 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:23.004Z",
+    "generated_at": "2026-09-08T07:43:20.419Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 11651,
-        "chars": 8301,
-        "tokens": 3262
+        "bytes": 12594,
+        "chars": 8218,
+        "tokens": 3663
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md",
           "scripts/check-complete.sh",
           "scripts/init-session.sh",
+          "scripts/resolve-plan-dir.sh",
           "scripts/session-catchup.py",
           "templates/findings.md",
           "templates/progress.md",
           "templates/task_plan.md"
         ],
-        "text_files": 7,
-        "bytes": 40802,
-        "chars": 34944,
-        "tokens": 9216
+        "text_files": 8,
+        "bytes": 61813,
+        "chars": 52915,
+        "tokens": 14171
       },
       "package_total_text": {
         "files": [
@@ -69,6 +72,7 @@
           "scripts/gate-stop.sh",
           "scripts/init-session.ps1",
           "scripts/init-session.sh",
+          "scripts/inject-plan.py",
           "scripts/inject-plan.sh",
           "scripts/ledger-append.ps1",
           "scripts/ledger-append.sh",
@@ -82,60 +86,77 @@
           "scripts/session-catchup.py",
           "scripts/set-active-plan.ps1",
           "scripts/set-active-plan.sh",
+          "scripts/skill-hook.sh",
           "templates/findings.md",
           "templates/progress.md",
           "templates/task_plan.md"
         ],
-        "text_files": 24,
-        "bytes": 157612,
-        "chars": 150516,
-        "tokens": 34163
+        "text_files": 26,
+        "bytes": 305216,
+        "chars": 294386,
+        "tokens": 61204
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "把复杂任务拆成可追踪的规划文件",
+    "tagline": "把大任务拆成分步文件计划,中断后能自动接着推进",
     "scene_tags": [
-      "项目规划",
-      "任务拆解",
-      "进度追踪"
+      "复杂任务",
+      "研究过程",
+      "长流程执行"
     ],
-    "fit_line": "适合你,如果 你经常需要把多步骤工作组织成清晰文件",
-    "tagline_en": "Plan and track multi-step projects with structured files",
+    "fit_line": "适合你,如果你常让 AI 处理需多步推理的复杂任务,并希望它记住进度。",
+    "tagline_en": "Break large jobs into step-based file plans and auto-resume after interruptions",
     "scene_tags_en": [
-      "project planning",
-      "task breakdown",
-      "progress tracking"
+      "complex task",
+      "research process",
+      "long-running workflow"
     ],
-    "fit_line_en": "For you if you often need to break down and track complex multi-step projects.",
+    "fit_line_en": "For you if you often ask AI for multi-step tasks and want it to remember progress.",
     "source": "llm",
-    "content_hash": "sha256:aa8dbe409c5203f269c0591669555918e6a08b11aa6338daa1fed8a5df8150f5",
+    "content_hash": "sha256:c5548bd0314b688aea571a1cb436080f56a15a27a5707c7060981235d76d3dbe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:06:25.595Z",
+    "generated_at": "2026-09-08T07:48:17.207Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude会把复杂任务拆成计划,并在项目目录里维护 task_plan.md、findings.md、progress.md 三个文件作为长期记忆;阶段完成后更新进度,决策前重读计划,出错就记录,并避免重复同样的失败操作。",
-    "when": "当你要求规划、拆解或组织多步骤项目(如任务规划、分解任务、进度追踪等),或任务需要超过5次工具调用时;也支持 /clear 后自动恢复会话。",
+    "what": "装上后，Claude 会把复杂任务写成 task_plan.md、findings.md、progress.md 三个文件，存在项目目录里；做任务时自动读取和更新这些文件，用磁盘记录进度、发现与错误，中断后也能恢复上下文。",
+    "when": "当你要求规划、拆解多步骤项目或研究任务，或任务需要超过 5 次工具调用时触发；提到“任务规划”“制定计划”等关键词也会启动。",
     "say": [
       {
-        "text": "帮我把这个项目拆成步骤,建好 task_plan.md",
-        "note": "会建立计划文件,开始按阶段推进"
+        "text": "帮我把这个项目拆成几个阶段，建一个任务计划。",
+        "note": "会生成 task_plan.md 等规划文件并跟踪进度。"
       },
       {
-        "text": "把刚才查到的资料写进 findings.md",
-        "note": "研究内容会被保存,供后续读取"
+        "text": "规划一项需要多次工具调用的研究任务。",
+        "note": "会建立计划文件，持续记录发现与进度。"
       },
       {
-        "text": "更新 progress.md,标记当前阶段完成",
-        "note": "进度文件会记录最新状态"
+        "text": "按现有计划继续推进，先读取项目进度。",
+        "note": "会读取磁盘上的规划文件恢复任务上下文。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:aa8dbe409c5203f269c0591669555918e6a08b11aa6338daa1fed8a5df8150f5",
+    "content_hash": "sha256:c5548bd0314b688aea571a1cb436080f56a15a27a5707c7060981235d76d3dbe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:47:51.248Z",
-    "lint_pass": true
+    "generated_at": "2026-09-08T08:19:15.797Z",
+    "lint_pass": true,
+    "what_en": "Claude will store a complex task as task_plan.md, findings.md, and progress.md in the project folder, reading and updating them as it works so progress and findings persist on disk and context can be recovered after interruptions.",
+    "when_en": "Activates when you ask to plan or break down multi-step projects, research tasks, or work needing more than 5 tool calls; keywords like 'task planning' also start it.",
+    "say_en": [
+      {
+        "text": "Break this project into phases and make a task plan.",
+        "note": "Creates planning files and starts tracking."
+      },
+      {
+        "text": "Plan a research task that needs many tool calls.",
+        "note": "Writes the plan, records findings and progress."
+      },
+      {
+        "text": "Resume my last plan and read the saved progress first.",
+        "note": "Reads plan files on disk and restores context."
+      }
+    ]
   }
 }

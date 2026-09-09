@@ -3,27 +3,30 @@
   "meta": {
     "id": "othmanadi/planning-with-files/planning-with-files-zh",
     "name": "planning-with-files-zh",
-    "description": "基于 Manus 风格的文件规划系统，用于组织和跟踪复杂任务的进度。创建 task_plan.md、findings.md 和 progress.md 三个文件。当用户要求规划、拆解或组织多步骤项目、研究任务或需要超过5次工具调用的工作时使用。支持 /clear 后的自动会话恢复。触发词：任务规划、项目计划、制定计划、分解任务、多步骤规划、进度跟踪、文件规划、帮我规划、拆解项目",
+    "description": "用于多步骤 AI 代理工作的持久化文件规划系统。将 task_plan.md、findings.md 和 progress.md 保存在磁盘上，生命周期钩子会注入选定的项目规划上下文。自动恢复只读取项目规划文件。只有显式运行 session-catchup.py --metadata 才会检查本机同项目的会话元数据；--replay 可输出有长度限制且由 nonce 框定的同项目摘录。可选门禁仅在宿主支持时请求继续，绝不执行 Markdown 中声明的命令。本技能没有网络上传路径。适用于研究或需要 5 次以上工具调用的工作。触发词：任务规划、项目计划、制定计划、分解任务、多步骤规划、进度跟踪、文件规划、帮我规划、拆解项目",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-zh",
-    "upstream_commit": "9e94390e5912b1ff296556505cd999ff84838160",
-    "content_hash": "sha256:2901b28a670d1c7e50bdd36abe3a30f3504fe5a312f6fda1caba88a42ccaa44b",
+    "upstream_commit": "0d21b6c4aa5f2c5bdd3d042e7473ee09f7fae9e7",
+    "content_hash": "sha256:de752cee2a061aaff2839e306bde81bfecb6e9ebda8b20ca6e0f1d858e4824f8",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "productivity",
+    "category": "dev",
     "version": null,
     "publisher": "othmanadi",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": []
+    "tags": [
+      "python",
+      "agent-ops"
+    ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26385,
+    "stars_github": 26711,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:23.004Z",
+    "fetched_at": "2026-09-08T07:43:20.419Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-22T13:03:16+02:00",
+    "upstream_commit_at": "2026-09-07T09:37:37+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -33,31 +36,32 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:23.004Z",
+    "generated_at": "2026-09-08T07:43:20.419Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 11612,
-        "chars": 8282,
-        "tokens": 3251
+        "bytes": 12543,
+        "chars": 8187,
+        "tokens": 3648
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md",
           "scripts/check-complete.sh",
           "scripts/init-session.sh",
+          "scripts/resolve-plan-dir.sh",
           "scripts/session-catchup.py",
           "templates/findings.md",
           "templates/progress.md",
           "templates/task_plan.md"
         ],
-        "text_files": 7,
-        "bytes": 40777,
-        "chars": 34931,
-        "tokens": 9208
+        "text_files": 8,
+        "bytes": 70448,
+        "chars": 61452,
+        "tokens": 15756
       },
       "package_total_text": {
         "files": [
@@ -69,6 +73,7 @@
           "scripts/gate-stop.sh",
           "scripts/init-session.ps1",
           "scripts/init-session.sh",
+          "scripts/inject-plan.py",
           "scripts/inject-plan.sh",
           "scripts/ledger-append.ps1",
           "scripts/ledger-append.sh",
@@ -82,75 +87,76 @@
           "scripts/session-catchup.py",
           "scripts/set-active-plan.ps1",
           "scripts/set-active-plan.sh",
+          "scripts/skill-hook.sh",
           "templates/findings.md",
           "templates/progress.md",
           "templates/task_plan.md"
         ],
-        "text_files": 24,
-        "bytes": 157655,
-        "chars": 150543,
-        "tokens": 34176
+        "text_files": 26,
+        "bytes": 313737,
+        "chars": 302877,
+        "tokens": 62754
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "用文件清单拆解复杂任务、跟踪每步进度",
+    "tagline": "把长任务拆成文件计划，自动保存并恢复进度",
     "scene_tags": [
-      "项目规划",
-      "任务拆解",
-      "进度跟踪"
+      "多步任务",
+      "进度追踪",
+      "任务拆解"
     ],
-    "fit_line": "适合你,如果经常处理多步骤任务,需要清晰记录和跟踪进度",
-    "tagline_en": "Break down multi-step tasks into files and track progress step by step",
+    "fit_line": "适合你,如果常让 AI 代理执行多步骤研究，需要它记住计划与进度。",
+    "tagline_en": "Turn multi-step tasks into saved plans with automatic progress recovery",
     "scene_tags_en": [
-      "project planning",
-      "task breakdown",
-      "progress tracking"
+      "multi-step tasks",
+      "progress tracking",
+      "task breakdown"
     ],
-    "fit_line_en": "For you if you often juggle multi-step projects and need a clear plan",
+    "fit_line_en": "For you if you need AI agents to maintain clear plans and progress on long tasks.",
     "source": "llm",
-    "content_hash": "sha256:2901b28a670d1c7e50bdd36abe3a30f3504fe5a312f6fda1caba88a42ccaa44b",
+    "content_hash": "sha256:de752cee2a061aaff2839e306bde81bfecb6e9ebda8b20ca6e0f1d858e4824f8",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:06:04.696Z",
+    "generated_at": "2026-09-08T07:48:03.599Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后，Claude 会先读取并维护 task_plan.md、findings.md、progress.md 三个文件，把计划、发现、进度写入磁盘；每次行动后更新，遇到 /clear 或上下文压缩前先保存进度，随后自动恢复。",
-    "when": "当用户要求规划或拆解多步骤项目、开展研究，或工作需要超过5次工具调用时触发。也支持 /clear 后的自动会话恢复。",
+    "what": "Claude 会把复杂任务写成书面的分阶段计划,在你的项目文件夹里保存三个文件:task_plan.md、findings.md、progress.md,分别记录计划、发现和进展。每次对话开始它会先读取这些文件恢复记忆;中途也会把计划内容调出来提醒自己,做完一步就更新进度文件。",
+    "when": "当你说“任务规划”“项目计划”“拆解项目”等关键词,或请求规划研究/多步骤任务,或任务需要 5 次以上工具调用时,它会启动;在 /clear 后也会自动恢复。简单问题不触发。",
     "say": [
       {
-        "text": "帮我规划这个多步骤项目，创建计划文件",
-        "note": "会生成 task_plan.md 并开始跟踪。"
+        "text": "帮我规划一个多步骤的研究项目",
+        "note": "会创建并维护规划文件,跟踪进度。"
       },
       {
-        "text": "把刚才的研究发现记录到 findings.md",
-        "note": "保存研究结论，防止丢失。"
+        "text": "把任务拆成阶段,写进计划文件里",
+        "note": "先建 task_plan.md,再按阶段执行。"
       },
       {
-        "text": "这个阶段完成了，更新一下进度文件",
-        "note": "会更新 progress.md 和任务状态。"
+        "text": "继续之前中断的任务,恢复进度",
+        "note": "读取现有规划文件,回到工作状态。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:2901b28a670d1c7e50bdd36abe3a30f3504fe5a312f6fda1caba88a42ccaa44b",
+    "content_hash": "sha256:de752cee2a061aaff2839e306bde81bfecb6e9ebda8b20ca6e0f1d858e4824f8",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:47:55.562Z",
+    "generated_at": "2026-09-08T08:19:24.863Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude reads and maintains task_plan.md, findings.md and progress.md, writing plans, discoveries and progress to disk; it updates them after each action, and before /clear or context compaction it saves progress, then auto-recovers.",
-    "when_en": "Triggers when the user asks to plan or break down a multi-step project, research task, or work requiring more than 5 tool calls. Also supports automatic session recovery after /clear.",
+    "what_en": "Claude stores complex-task phases in task_plan.md, findings in findings.md, and logs in progress.md. At session start it reads these files to restore context, reinjects the plan during work, and prompts progress updates after edits.",
+    "when_en": "Triggered by planning keywords (task planning, project plan, break down), requests to plan research/multi-step tasks, or tasks needing 5+ tool calls. Auto-recovers after /clear; simple queries skipped.",
     "say_en": [
       {
-        "text": "Help me plan this multi-step project and create plan files.",
-        "note": "Creates task_plan.md and starts tracking."
+        "text": "Help me plan a multi-step research project",
+        "note": "Creates and maintains planning files, tracks progress."
       },
       {
-        "text": "Log the research findings to findings.md.",
-        "note": "Saves conclusions to avoid loss."
+        "text": "Break the task into phases and write them into the plan file",
+        "note": "Creates task_plan.md first, then executes phase by phase."
       },
       {
-        "text": "This phase is done; update the progress files.",
-        "note": "Updates progress.md and task status."
+        "text": "Resume the interrupted task and update progress",
+        "note": "Reads existing plan files and restores the working state."
       }
     ]
   }

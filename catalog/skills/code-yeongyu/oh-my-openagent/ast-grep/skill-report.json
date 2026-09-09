@@ -3,10 +3,10 @@
   "meta": {
     "id": "code-yeongyu/oh-my-openagent/ast-grep",
     "name": "ast-grep",
-    "description": "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches.",
+    "description": "Searches and rewrites code by AST shape across 25 languages. Use when the target is a syntax pattern (every call/class/import shaped like X, a codemod, a YAML rule) rather than literal text; for plain strings, comments, or filenames, use rg.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
-    "content_hash": "sha256:f754e5eddeb322e559a7e2dd80061eb75d7f0e80fa7df4fbcf54e3e6c06fc5b7",
+    "upstream_commit": "6595aa6b6cc43b2458759a6a403626f8e4f2a4c4",
+    "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68803,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-08T07:43:07.234Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-08T16:41:13+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -37,16 +37,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-08T07:43:07.234Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 12517,
-        "chars": 12422,
-        "tokens": 2984
+        "bytes": 12261,
+        "chars": 12166,
+        "tokens": 2929
       },
       "activation_with_declared_refs": {
         "files": [
@@ -63,9 +63,9 @@
           "scripts/ast_grep_helper.py"
         ],
         "text_files": 11,
-        "bytes": 107243,
-        "chars": 106774,
-        "tokens": 23783
+        "bytes": 106987,
+        "chars": 106518,
+        "tokens": 23728
       },
       "package_total_text": {
         "files": [
@@ -86,70 +86,68 @@
           "tests/smoke.sh"
         ],
         "text_files": 15,
-        "bytes": 131555,
-        "chars": 130864,
-        "tokens": 29178
+        "bytes": 131299,
+        "chars": 130608,
+        "tokens": 29123
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "按代码结构查找并批量改写代码",
+    "tagline": "按语法结构定位并批量改写代码",
     "scene_tags": [
       "代码重构",
-      "批量替换",
-      "版本迁移"
+      "批量改写"
     ],
-    "fit_line": "适合你,如果 你常常要成批改动代码或统一代码风格。",
-    "tagline_en": "Find code by syntax shape and rewrite it in bulk.",
+    "fit_line": "适合你,如果需要按语法结构跨文件搜索和改写代码,而非靠纯文本匹配。",
+    "tagline_en": "Locate and batch-rewrite code by its syntax shape.",
     "scene_tags_en": [
-      "code refactoring",
-      "bulk replacement",
-      "version migration"
+      "large-scale refactoring",
+      "bulk code changes"
     ],
-    "fit_line_en": "For you if you routinely refactor code patterns across many files.",
+    "fit_line_en": "For you if you need to find and transform code structures across many files, not just exact string matches.",
     "source": "llm",
-    "content_hash": "sha256:f754e5eddeb322e559a7e2dd80061eb75d7f0e80fa7df4fbcf54e3e6c06fc5b7",
+    "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T13:48:11.290Z",
+    "generated_at": "2026-09-04T07:43:55.067Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按代码结构(而非文本)查找或改写代码:先校验查找/替换模式,展示改动预览,确认后才批量修改文件,支持 25 种语言。",
-    "when": "当问题依赖代码结构而非文本时触发,如按形状找出某类语法节点(函数、调用等)、批量改写某种写法(例:console.log 改成 logger.info),或应用 YAML 规则。纯文本、注释、文件名等场景交给 rg/grep。",
+    "what": "装上后，Claude 遇到“按代码形状查找或改写”的需求时，会用 ast-grep 按语法树而非文字来匹配代码；可先预览改动再批量改写，也能运行 YAML 规则等。支持 25 种语言。",
+    "when": "当目标是代码形状而非文字时触发，例如按 AST 找同形态函数、跑 codemod 或扫描规则；纯文本场景不触发。",
     "say": [
       {
-        "text": "找出所有接收 Request 参数的函数。",
-        "note": "用 ast-grep 按代码结构搜,不靠文本匹配。"
+        "text": "找出项目里所有 console.log 调用，列出文件和行号",
+        "note": "会先对模式做离线校验，再执行结构搜索。"
       },
       {
-        "text": "把整个项目里 console.log(x) 改成 logger.info(x)。",
-        "note": "先预览改动,确认后才批量应用。"
+        "text": "把每个 console.log 改成 logger.info，先预览再应用",
+        "note": "默认只输出预览，确认后才改写文件。"
       },
       {
-        "text": "去掉所有 as any 强转。",
-        "note": "同样会先 dry-run 再改写。"
+        "text": "扫描 src 目录，运行 no-console 规则并汇报违规点",
+        "note": "scan 会按项目配置执行规则并报告结果。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:f754e5eddeb322e559a7e2dd80061eb75d7f0e80fa7df4fbcf54e3e6c06fc5b7",
+    "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:55:57.927Z",
+    "generated_at": "2026-09-08T07:52:25.953Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude uses ast-grep to find or rewrite code by structure rather than text: it validates the search/replace pattern, previews changes, and applies them only after confirmation. Works in 25 languages.",
-    "when_en": "Triggered when the problem depends on code shape, not text: find functions/calls by shape, batch-rewrite patterns, apply YAML rules. Text/comment/filename searches stay with rg/grep.",
+    "what_en": "After install, Claude handles shape-based code find/rewrite with ast-grep, matching by syntax tree, previewing before bulk rewrite, and can run YAML rules. Supports 25 languages.",
+    "when_en": "Triggers when the target is code shape, not text: e.g., finding functions of a shape via AST, running a codemod, or scanning rules. Plain-text targets do not trigger.",
     "say_en": [
       {
-        "text": "Find every function that takes a Request parameter.",
-        "note": "Searches by code structure, not text."
+        "text": "Find all console.log calls in the project and list files and line numbers.",
+        "note": "Runs the search subcommand with offline pattern validation."
       },
       {
-        "text": "Rewrite every console.log(x) to logger.info(x) across the repo.",
-        "note": "Previews changes before applying them."
+        "text": "Rewrite every console.log to logger.info, preview first then apply.",
+        "note": "replace defaults to dry-run; files change only on apply."
       },
       {
-        "text": "Remove every 'as any' cast.",
-        "note": "Runs through the same dry-run-then-apply flow."
+        "text": "Scan src, run the no-console rule, and report violations.",
+        "note": "scan executes rules from the project config and reports."
       }
     ]
   }
