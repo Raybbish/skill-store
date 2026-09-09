@@ -5,7 +5,7 @@
     "name": "embedded-captions",
     "description": "Add captions or subtitles to an existing single-subject talking-head video without editing the footage. Use for plain verbatim captions, cinematic captions embedded behind the subject, VFX captions, “炸/特效/酷炫字幕,” or a named identity from the 35-style catalog. Route by visual identity, not by backend engine. The quiet `anchor` rail is the default; embed every word only when the user explicitly wants a fully cinematic treatment. The workflow runs locally end to end, including transcription and subject matting; split multi-shot footage before applying it.\n",
     "upstream": "https://github.com/heygen-com/hyperframes/tree/main/skills/embedded-captions",
-    "upstream_commit": "e5d89f770fbe01d8c243999dac59f3c39a62d66d",
+    "upstream_commit": "41ba820d657b1c6e421dc8bf79beb16706419670",
     "content_hash": "sha256:13453f7ac43aca38d0e3686fea933d99b7f93432a6df441f3eec327073fb6745",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -20,10 +20,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 199700,
-    "fetched_at": "2026-09-08T07:45:05.217Z",
+    "installs_skills_sh": 201900,
+    "fetched_at": "2026-09-09T07:48:15.457Z",
     "first_seen_at": "2026-07-14T05:27:20.908Z",
-    "upstream_commit_at": "2026-09-08T01:22:48Z"
+    "upstream_commit_at": "2026-09-09T00:47:05-07:00"
   },
   "context_size": {
     "version": "1",
@@ -32,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-08T07:45:05.217Z",
+    "generated_at": "2026-09-09T07:48:15.457Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -199,26 +199,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给已有的单人说话视频加字幕,不改动原始画面。默认在画面下方生成逐字字幕,并把最突出的词嵌入合成到人物身后;也可选纯嵌入版或主题化特效字幕(如 terminal、ordnance)。转写、抠像、渲染全程在本地完成,最后产出一个带字幕的新视频。",
-    "when": "当用户给已有视频提出“加字幕/说明文字”的要求,尤其是单人讲解、访谈或旁白类;或点名要“炸/特效/酷炫字幕”等视觉字幕时。开始前会检查视频是否适用(单一说话人、无硬切、无已烧录字幕等)。",
+    "what": "装上后,Claude 能对一段单个人说话的现有视频添加字幕:转录语音、识别主体、合成字幕,不改动原画面。样式可选默认横排小字、嵌在人物身后的电影感大字,或带特效的主题字幕。",
+    "when": "当你说要给某个“单人讲话”的现成视频加字幕——包括逐字字幕、电影感嵌入字幕、特效字幕(如“炸”“特效”)或点名目录中的样式时,该技能会接管。它只处理单镜头/单主体视频,没有清晰语音或画面时会拒绝。",
     "say": [
       {
-        "text": "帮我给这段单人讲解视频加字幕,最想强调的词放到人后面显示",
-        "note": "默认先生成下方字幕条,高潮处再嵌一个词。"
+        "text": "用默认的 anchor 样式给这段视频加下方逐字字幕。",
+        "note": "Claude 会先检查片段并和你确认样式,再开始生成。"
       },
       {
-        "text": "不要下方字幕条,所有字都做人身后的嵌入效果",
-        "note": "对应纯嵌入模式,没有普通字幕条。"
+        "text": "把这条视频做成电影感字幕,全部词都嵌在人物身后,不用下方字幕。",
+        "note": "采用 Cinematic 模式,所有字幕都会合成在人物之后。"
       },
       {
-        "text": "给这个片段做 terminal 主题的特效字幕",
-        "note": "会走主题流程,产出 final_fx.mp4。"
+        "text": "用 ordnance 主题给这段视频做“炸”字特效字幕。",
+        "note": "按 Theme 模式渲染,交付带特效字幕的成片。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:13453f7ac43aca38d0e3686fea933d99b7f93432a6df441f3eec327073fb6745",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-08T07:59:55.205Z",
-    "lint_pass": true
+    "generated_at": "2026-09-09T08:04:30.049Z",
+    "lint_pass": true,
+    "what_en": "With this skill, Claude can caption an existing video of one person talking: it transcribes locally, finds the subject, and composites captions without altering the footage. Options: quiet lower-third rail, cinematic embeds behind the person, themed VFX captions.",
+    "when_en": "Triggered when the user requests captions for an existing single-speaker video — verbatim, cinematic, VFX, or catalog style. Single-shot only; clips without clear speech/face or with burned-in captions are refused.",
+    "say_en": [
+      {
+        "text": "Add lower-third verbatim captions to this video using the default anchor style.",
+        "note": "Claude confirms the clip and identity first, then renders."
+      },
+      {
+        "text": "Make this fully cinematic — embed every caption behind the speaker, no lower-third.",
+        "note": "Routes to Cinematic mode; every word composites behind the person."
+      },
+      {
+        "text": "Use the ordnance theme for a 'boom' VFX caption on this clip.",
+        "note": "Theme mode renders and outputs final_fx.mp4."
+      }
+    ]
   }
 }

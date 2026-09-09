@@ -5,7 +5,7 @@
     "name": "remove-ai-slops",
     "description": "Removes AI-generated code smells from branch changes or an explicit file list behind regression tests. Use when the user asks to clean up, deslop, or remove AI-slop patterns from recent changes.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/remove-ai-slops",
-    "upstream_commit": "6595aa6b6cc43b2458759a6a403626f8e4f2a4c4",
+    "upstream_commit": "18666db8ff1949a76e4c631e5208a214fc4a4dc2",
     "content_hash": "sha256:5c22666a3ad35993eb2f7bdd2d6d0792ae090d975d0772e250e3494f33342239",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68803,
+    "stars_github": 68836,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-08T07:43:07.234Z",
+    "fetched_at": "2026-09-09T07:46:24.878Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-08T16:41:13+09:00",
+    "upstream_commit_at": "2026-09-09T16:31:49+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-08T07:43:07.234Z",
+    "generated_at": "2026-09-09T07:46:24.878Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会清掉代码改动里“AI 味”的坏味道:动手前先写回归测试把现有行为锁住,再分类删掉多余注释、死代码、过度防御等,之后用测试与静态检查验收,不过就回滚。默认只处理当前分支相对 main 的改动,也可给文件清单。",
-    "when": "当你说要“清理最近改动”“给改动去 AI 味”或“去掉 AI 生成的坏味道”时触发;也可以把具体文件清单交给它作为处理范围。",
+    "what": "它先检查这次要动的代码，把行为用回归测试锁住，然后清理分支或指定文件里AI生成风格的垃圾：多余注释、无用死代码、过度防御等，最后跑测试和检查确认行为不变。",
+    "when": "当你说要“清理”“去AI味儿”“deslop”等，或要求移除最近改动中的AI痕迹时触发。",
     "say": [
       {
-        "text": "帮我清理当前分支改动里的 AI 代码味。",
-        "note": "会先为这些改动补回归测试,通过后才开始删。"
+        "text": "把这次分支改动里的AI痕迹清理掉。",
+        "note": "它会先跑回归测试再开删，避免弄坏功能。"
       },
       {
-        "text": "把最近这批改动的 AI 坏味道去掉。",
-        "note": "会按注释、死代码等分类清理,再跑测试验证。"
+        "text": "针对 src/foo.py，去掉多余的注释和死代码。",
+        "note": "技能会只处理这个文件并做行为锁定。"
       },
       {
-        "text": "请清理这几个文件的 AI 味。",
-        "note": "把文件路径附在后面,就只清理这些文件。"
+        "text": "看看哪些地方过度防御，能删就删，测试要保持绿。",
+        "note": "只有证明冗余才会删，没把握会保留。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5c22666a3ad35993eb2f7bdd2d6d0792ae090d975d0772e250e3494f33342239",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-08T07:57:10.025Z",
+    "generated_at": "2026-09-09T08:00:45.556Z",
     "lint_pass": true,
-    "what_en": "Locks behavior with regression tests, then removes redundant comments, dead code, over-defensive checks, etc.; validates with tests/lint; reverts on failure. Scope: branch diff or explicit file list.",
-    "when_en": "Activates when the user asks to clean up, 'deslop', or remove AI-slop patterns from recent changes; also when an explicit file list is passed.",
+    "what_en": "Analyzes the code changed in a branch or passed file list, pins its behavior with regression tests first, then removes AI-style slop such as redundant comments, dead code, and over-defensive code, and verifies tests and checks still pass.",
+    "when_en": "When the user asks to clean up, deslop, or remove AI-slop patterns from recent changes.",
     "say_en": [
       {
-        "text": "Please clean up the AI code smell in my current branch changes.",
-        "note": "It will write regression tests to lock behavior before cleanup."
+        "text": "Clean up the AI-slop in this branch's changes.",
+        "note": "It locks behavior with tests before deleting anything."
       },
       {
-        "text": "Remove AI-generated slop from these recent changes.",
-        "note": "Cleaned by category, then verified."
+        "text": "For src/foo.py, remove redundant comments and dead code.",
+        "note": "It will limit its pass to that file."
       },
       {
-        "text": "Please deslop these files.",
-        "note": "You can list file paths to narrow the scope."
+        "text": "Find over-defensive spots and remove them if provably safe; keep tests green.",
+        "note": "Guards at trust boundaries are kept unless proven redundant."
       }
     ]
   }

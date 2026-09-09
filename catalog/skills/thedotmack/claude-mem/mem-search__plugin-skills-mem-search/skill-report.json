@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Search claude-mem's persistent cross-session memory database. Use when user asks \"did we already solve this?\", \"how did we do X last time?\", or needs work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/mem-search",
-    "upstream_commit": "fd0ecf023336ce631c8a5cd7b70cdeca8f0e82e0",
+    "upstream_commit": "8bc631a71a487424b866756e43a6efa4574cc66b",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93369,
+    "stars_github": 93540,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:15.816Z",
+    "fetched_at": "2026-09-09T07:46:20.369Z",
     "first_seen_at": "2026-08-28T14:48:34.339Z",
-    "upstream_commit_at": "2026-09-06T18:25:26-07:00",
-    "repo_skill_count": 26
+    "upstream_commit_at": "2026-09-08T23:11:26-07:00",
+    "repo_skill_count": 27
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:15.816Z",
+    "generated_at": "2026-09-09T07:46:20.369Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 能在历史记忆库中搜索之前的会话内容，先返回匹配记录的编号、时间和标题，再按选中的编号获取完整详情。",
-    "when": "当用户问到之前其他会话里的内容（而非当前对话），比如“以前修过这个问题吗”“上次是怎么做某件事的”，或需要回顾上周情况时触发。",
+    "what": "用户问起以前会话里做过的事时,Claude 会先搜索跨会话记忆库,给出带编号的结果列表和时间线,再筛选,只对被选中的记录读取全文;只有需要精确原始输出时才调取原始工具数据。",
+    "when": "当用户的问题指向“之前的会话”而非当前对话时触发,例如问“这个我们之前解决过吗”“上次怎么做的 X”“上周发生了什么”。",
     "say": [
       {
-        "text": "我们上次是怎么解决登录问题的？",
-        "note": "在历史会话中按关键词搜索相关做法。"
+        "text": "上次我们是怎么解决登录超时的?",
+        "note": "触发对历史会话的记忆搜索。"
       },
       {
-        "text": "查一下上周我们处理那个故障时做了什么。",
-        "note": "按日期筛选取出上周相关记录。"
+        "text": "把上周数据库迁移失败的原始报错找出来。",
+        "note": "摘要不够时会读取原始工具输出。"
       },
       {
-        "text": "我们之前遇到这个报错时是怎么处理的？",
-        "note": "按报错关键词回溯旧记录。"
+        "text": "我们之前讨论过用哪个缓存方案吗?",
+        "note": "检索过去的决策记录。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T08:19:30.582Z",
+    "generated_at": "2026-09-09T08:27:05.591Z",
     "lint_pass": true,
-    "what_en": "Claude can search past-session memories. It returns a filtered table of matching IDs/times/titles, then fetches full details for selected IDs via a layered workflow (search -> timeline -> fetch); raw tool I/O is used only when needed.",
-    "when_en": "Triggered when the user asks about previous sessions, e.g. \"did we already fix this?\", \"how did we do X last time?\", or \"what happened last week?\" rather than the current conversation.",
+    "what_en": "When the user asks about work done in previous sessions, Claude searches the cross-session memory store: first returns an indexed list and timeline, filters, then fetches full records only for shortlisted IDs; raw tool I/O is opened only when exact output is required.",
+    "when_en": "Triggered when the question concerns previous sessions rather than the current conversation—e.g. “did we already fix this?”, “how did we do X last time?”, “what happened last week?”.",
     "say_en": [
       {
-        "text": "How did we solve the login issue last time?",
-        "note": "Searches past sessions for that solution."
+        "text": "How did we resolve the login timeout last time?",
+        "note": "Triggers a search across past sessions."
       },
       {
-        "text": "What did we do about that failure last week?",
-        "note": "Fetches records from last week."
+        "text": "Pull up the raw error from last week's failed DB migration.",
+        "note": "Reads the stored tool response when summaries are unclear."
       },
       {
-        "text": "How did we handle this error before?",
-        "note": "Triggers a search of past issue records."
+        "text": "Did we ever settle on a caching approach?",
+        "note": "Retrieves past decision records."
       }
     ]
   }

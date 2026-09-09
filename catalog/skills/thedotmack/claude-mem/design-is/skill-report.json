@@ -5,7 +5,7 @@
     "name": "design-is",
     "description": "Audit a design against Dieter Rams' ten \"Good design is...\" principles, then hand off a /make-plan prompt for one of three outcomes — new design, refine design, or redesign. Use when the user says \"audit this design\", \"design review\", \"check this UI against Rams\", \"is this UI good\", \"critique this design\", \"design audit\", or asks for a critique that should lead to a plan.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/design-is",
-    "upstream_commit": "fd0ecf023336ce631c8a5cd7b70cdeca8f0e82e0",
+    "upstream_commit": "8bc631a71a487424b866756e43a6efa4574cc66b",
     "content_hash": "sha256:98bae4bb04d28cb97864979a831e68903facc38973270cb375552cb2c8500c2b",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93369,
+    "stars_github": 93540,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-07T07:48:15.816Z",
+    "fetched_at": "2026-09-09T07:46:20.369Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-06T18:25:26-07:00",
-    "repo_skill_count": 26
+    "upstream_commit_at": "2026-09-08T23:11:26-07:00",
+    "repo_skill_count": 27
   },
   "context_size": {
     "version": "1",
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-07T07:48:15.816Z",
+    "generated_at": "2026-09-09T07:46:20.369Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "你说要审计设计时,Claude 会按迪特·拉姆斯的十项原则逐条给设计打分(0–3)并附证据,再判断该新建、优化还是重做,最后生成一份可执行的 /make-plan 方案。",
-    "when": "当你说出「audit this design」这类审计指令,或要求按 Rams 原则评价界面并给出后续方案时触发。常规代码审查、纯文案修改不会用它。",
+    "what": "让 Claude 对照 Dieter Rams 的十项原则给设计逐项打分(0-3分)并附证据,裁决为“新设计/细化/重设计”,再输出一份 /make-plan 提示。它不写代码,只产出证据、评分、裁决与交接提示。",
+    "when": "当你说“audit this design”“design review”“design audit”等短语,或要求按 Rams 原则做设计评审并导出后续计划时;若设计还不存在,直接进入新设计规划。",
     "say": [
       {
-        "text": "按迪特·拉姆斯的十条好设计原则,审计这个设计。",
-        "note": "Claude 会对每条原则打分并附证据。"
+        "text": "按 Rams 十原则审计当前界面,给出每项分数和证据。",
+        "note": "会生成 02-scorecard.md 等文件。"
       },
       {
-        "text": "检查这个界面是否符合 Rams 原则,然后给我改进计划。",
-        "note": "适合先提供截图、链接或仓库路径。"
+        "text": "审计这个设计并做出裁决,再给 /make-plan 提示。"
       },
       {
-        "text": "这个组件按 Rams 原则该优化还是重做?",
-        "note": "会先给出「新建/优化/重做」结论。"
+        "text": "对照“好设计”十原则,判断这个 UI 是否需要重做。",
+        "note": "总分较低时会判 REDESIGN。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:98bae4bb04d28cb97864979a831e68903facc38973270cb375552cb2c8500c2b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T08:18:22.623Z",
+    "generated_at": "2026-09-09T08:26:03.051Z",
     "lint_pass": true,
-    "what_en": "When you ask for a design audit, Claude scores the work 0–3 on Dieter Rams' ten principles with evidence, decides NEW/REFINE/REDESIGN, writes audit files, and produces a runnable /make-plan prompt.",
-    "when_en": "Triggers when you say \"audit this design\" or similar, ask to check a UI against Rams, or ask for a critique that should lead to a plan. Not used for routine code reviews or pure copy edits.",
+    "what_en": "When triggered, Claude audits the design against Dieter Rams' ten principles, scoring each 0–3 with cited evidence, issues a verdict (NEW/REFINE/REDESIGN), and writes a ready-to-run /make-plan prompt. It does not write code; it produces evidence, scorecard, verdict, and handoff.",
+    "when_en": "Triggered when the user says phrases like “audit this design”, “design review”, “design audit”, or asks for a Rams-based critique that leads to a plan. If no design exists yet, it skips evidence phases and plans a NEW design.",
     "say_en": [
       {
-        "text": "Audit this design against Dieter Rams' ten principles.",
-        "note": "Each principle gets a score and evidence."
+        "text": "Audit this UI against Rams' ten principles, give scores and evidence.",
+        "note": "Writes scorecard files."
       },
       {
-        "text": "Check this UI against Rams and propose an improvement plan.",
-        "note": "Works best with a screenshot, URL, or repo."
+        "text": "Audit this design, issue a verdict, and hand off a /make-plan prompt.",
+        "note": "Produces 03-verdict.md and 04-handoff-prompt.md."
       },
       {
-        "text": "Should this component be refined or redesigned per Rams?",
-        "note": "You'll get a NEW/REFINE/REDESIGN verdict."
+        "text": "Check this UI against the ten principles — does it need a redesign?",
+        "note": "Low total leads to REDESIGN verdict."
       }
     ]
   }
