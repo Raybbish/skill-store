@@ -5,7 +5,7 @@
     "name": "entra-agent-id",
     "description": "Provision Microsoft Entra Agent Identity Blueprints, BlueprintPrincipals, and per-instance Agent Identities via Microsoft Graph, and configure OAuth 2.0 token exchange (fmi_path, OBO, cross-tenant) including the Microsoft Entra SDK for AgentID sidecar. USE FOR: Agent Identity Blueprint, BlueprintPrincipal, agent OAuth, fmi_path token exchange, agent OBO, Workload Identity Federation for agents, polyglot agent auth, Microsoft.Identity.Web.AgentIdentities. DO NOT USE FOR: standard Entra app registration (use entra-app-registration), Microsoft Foundry agent authoring (use microsoft-foundry).",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/entra-agent-id",
-    "upstream_commit": "bc9939f8ca1ae8e3da8e6ae647e0d1d22e3a424a",
+    "upstream_commit": "f5fffa1026f84abe67d7062792b6fc07771fc34d",
     "content_hash": "sha256:be90faaed4c3e92d39244a61babe7a7bbddf4b2553c12ef8a461a21c1c6f97c6",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 290100,
-    "fetched_at": "2026-09-09T07:48:04.778Z",
+    "installs_skills_sh": 292800,
+    "fetched_at": "2026-09-10T07:49:50.157Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-08T09:38:22-07:00"
+    "upstream_commit_at": "2026-09-09T15:38:39-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:48:04.778Z",
+    "generated_at": "2026-09-10T07:49:50.157Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -99,41 +99,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "启用后,Claude会通过Microsoft Graph帮您创建和管理AI代理在微软Entra里的身份:创建代理身份蓝图、蓝图主体和各实例的独立代理身份,并配置OAuth2.0令牌交换与权限授权。",
-    "when": "当您提出要创建Agent Identity Blueprint、配置代理的fmi_path/OBO令牌交换、管理跨租户Agent Identities等Agent ID需求时触发;标准Entra应用注册不适用。",
+    "what": "它按 Microsoft Graph 接口帮你为 AI Agent 创建 Entra Agent Identity(Blueprint、BlueprintPrincipal、每实例身份),并配置 OAuth 2.0 令牌交换与按实例的权限授予。",
+    "when": "当你提到 Agent Identity Blueprint、fmi_path 令牌交换等关键词,或要为 agent 配置 OAuth 身份时触发。标准 Entra 应用注册与 Foundry agent 编写不使用它。",
     "say": [
       {
-        "text": "创建一个代理身份蓝图,名为“订单代理”。",
-        "note": "Claude会生成创建请求,并返回新蓝图ID。"
+        "text": "用 fmi_path 两步交换给这个 agent 实例换令牌",
+        "note": "为实例换出独立的 Graph 令牌。"
       },
       {
-        "text": "为“订单代理”蓝图创建蓝图主体。",
-        "note": "这一步必须有,否则后续会报400错误。"
-      },
-      {
-        "text": "给agent-1授予User.Read.All应用权限。",
-        "note": "Claude会调用应用角色分配接口完成授权。"
+        "text": "给 agent-1 授予 User.Read.All 应用权限",
+        "note": "权限按单个 Agent Identity 授予。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:be90faaed4c3e92d39244a61babe7a7bbddf4b2553c12ef8a461a21c1c6f97c6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:13:39.686Z",
+    "generated_at": "2026-09-10T07:54:04.886Z",
     "lint_pass": true,
-    "what_en": "Enables Claude to build and manage AI-agent identities in Microsoft Entra via Microsoft Graph: create agent identity blueprints, blueprint principals, per-instance agent identities, and configure OAuth2.0 token exchange and permission grants.",
-    "when_en": "Triggered when you ask to create an Agent Identity Blueprint, configure agent fmi_path/OBO token exchange, manage cross-tenant Agent Identities, or similar Agent ID tasks. Not for standard Entra app registration.",
+    "what_en": "It provisions Microsoft Entra Agent Identity objects — Blueprint, BlueprintPrincipal, and per-instance Agent Identities — via Microsoft Graph, and configures OAuth 2.0 token exchange and permission grants.",
+    "when_en": "Triggers when you mention Agent Identity Blueprint, fmi_path token exchange, or agent OAuth provisioning. Not for standard Entra app registration or Foundry agent authoring.",
     "say_en": [
       {
-        "text": "Create an agent identity blueprint named Order Agent.",
-        "note": "Claude returns the new Blueprint ID."
+        "text": "Create an Agent Identity Blueprint and its BlueprintPrincipal for me",
+        "note": "Runs Microsoft Graph calls to create both."
       },
       {
-        "text": "Create the blueprint principal for the Order Agent blueprint.",
-        "note": "This is mandatory to avoid 400 errors later."
+        "text": "Do the two-step fmi_path exchange for this agent instance",
+        "note": "Yields a token for that instance."
       },
       {
-        "text": "Grant agent-1 the User.Read.All application permission.",
-        "note": "Claude uses the app role assignment endpoint."
+        "text": "Grant User.Read.All application permission to agent-1",
+        "note": "Scoped per Agent Identity."
       }
     ]
   }

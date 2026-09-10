@@ -5,7 +5,7 @@
     "name": "dag-library",
     "description": "Stores a DAG definition once and re-runs it by name, instead of pasting the definition into every run. Use when the user wants to save a DAG, run a saved one, or schedule the same multi-agent graph repeatedly.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/dag-library",
-    "upstream_commit": "18666db8ff1949a76e4c631e5208a214fc4a4dc2",
+    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
     "content_hash": "sha256:3de8a258d19e94b9956dac7592c68c965456a4011e3c56a6bfb6cca439a128b7",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68836,
+    "stars_github": 68871,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:24.878Z",
+    "fetched_at": "2026-09-10T07:47:46.276Z",
     "first_seen_at": "2026-08-27T13:37:06.727Z",
-    "upstream_commit_at": "2026-09-09T16:31:49+09:00",
+    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:24.878Z",
+    "generated_at": "2026-09-10T07:47:46.276Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,33 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 能把一个多步骤流程（叫 DAG）存成有名字的文件；之后你说这个名字，它会按保存的定义启动一次新运行，不必每次重新描述步骤。每次运行自动带时间戳，避免互相覆盖。",
-    "when": "当你想保存一个多步骤流程、运行之前保存过的流程，或反复跑同一个流程时，Claude 就会使用这个技能。",
+    "what": "把一张 DAG 定义存成库里的 <name>.json,之后用名字直接重跑,不必每次粘贴定义;加载时会把 key 轮换成带时间戳的新 key,并填充 {{key}}、{{date}} 等占位符。",
+    "when": "当你想保存当前的 DAG、运行已存的定义,或反复调度同一张多智能体图时触发;若要全新编写一张图,原文建议先看 mass-ulw。",
     "say": [
       {
-        "text": "把当前这个流程保存下来，命名为 nightly-audit。",
-        "note": "定义存入本地库并立刻试跑一次。"
+        "text": "把当前这张图存成 nightly-audit,再跑一次确认",
+        "note": "写入库目录后立即 lib.start 验证"
       },
       {
-        "text": "重新运行 nightly-audit。",
-        "note": "会以新时间戳启动一次全新运行。"
+        "text": "跑 nightly-audit,suffix 传空字符串,复用上次结果",
+        "note": "完全幂等,不产生新运行"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3de8a258d19e94b9956dac7592c68c965456a4011e3c56a6bfb6cca439a128b7",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T07:57:22.971Z",
+    "generated_at": "2026-09-10T07:52:23.222Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude can save a multi-step workflow (a DAG) under a named file. When you later speak that name, it starts a fresh run from the saved definition instead of you restating all steps. Each run automatically gets a timestamp suffix, so runs stay distinct.",
-    "when_en": "Triggered when you want to save a DAG, run one you saved before, or repeatedly reuse the same multi-agent workflow.",
+    "what_en": "Saves a DAG definition as <name>.json in a library dir and re-runs it by name, so you don't paste the definition each time. On load it rotates the key and fills {{key}}, {{date}}, {{datetime}} placeholders.",
+    "when_en": "Use when you want to save a DAG, run a saved one, or schedule the same multi-agent graph repeatedly. For authoring a brand-new graph, read mass-ulw first.",
     "say_en": [
       {
-        "text": "Save this workflow as nightly-audit.",
-        "note": "Stores it locally and does a quick test run."
+        "text": "Save the current graph as nightly-audit and run it once to confirm",
+        "note": "Writes to the library dir, then calls lib.start"
       },
       {
-        "text": "Run nightly-audit again.",
-        "note": "Starts a fresh run with a new timestamp."
+        "text": "Run nightly-audit with suffix 20260818 to reuse the same run",
+        "note": "A failed node is retried on that run id"
+      },
+      {
+        "text": "Run nightly-audit with an empty suffix to reuse the last result",
+        "note": "Fully idempotent, no fresh run"
       }
     ]
   }

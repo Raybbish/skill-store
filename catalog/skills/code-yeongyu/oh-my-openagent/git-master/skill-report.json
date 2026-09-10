@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "Handles git work: atomic commits, rebase, squash, blame, bisect, reflog, and history questions. Use whenever a task needs a commit or a git-history investigation; skip for ordinary code edits.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "18666db8ff1949a76e4c631e5208a214fc4a4dc2",
+    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68836,
+    "stars_github": 68871,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:24.878Z",
+    "fetched_at": "2026-09-10T07:47:46.276Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T16:31:49+09:00",
+    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:24.878Z",
+    "generated_at": "2026-09-10T07:47:46.276Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "把git任务拆成提交、变基、历史调查等模式处理:先读取仓库状态取证,再只执行你明确要求的操作(如原子提交、rebase/squash、blame/bisect),并给出带命令证据的结论。普通代码编辑不干预。",
-    "when": "当你提出提交代码、改写提交历史(如rebase、squash),或询问某改动何时由谁引入等git历史问题时触发;一般性改代码不会触发。",
+    "what": "装上后,Claude 会先读取仓库当前状态,把请求归入提交、改写历史、查历史、看状态四类模式;只有你明确要求才执行提交、rebase、推送等写操作,否则只报调查结果,并给出版本哈希和命令证据。",
+    "when": "当任务需要做提交或调查 Git 历史时触发;只在明确要求时才执行改写、推送等写操作,普通代码编辑不适用。",
     "say": [
       {
-        "text": "帮我把这两个改动拆成两个原子提交",
-        "note": "会先检查diff再按功能分组提交"
+        "text": "把这些改动拆成几个原子提交",
+        "note": "会先按本地历史风格判断消息格式"
       },
       {
-        "text": "用git blame查一下这行最后一次是谁改的",
-        "note": "返回commit哈希、作者与时间"
+        "text": "查一下这行代码是谁最后改的",
+        "note": "用 blame 给出提交哈希和改动内容"
       },
       {
-        "text": "帮我用autosquash把fixup整理进对应提交",
-        "note": "按fixup目标自动整理并执行rebase"
+        "text": "把最近三次提交合并成一个",
+        "note": "若分支已推送会先问你是否强推"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T07:57:35.962Z",
+    "generated_at": "2026-09-10T07:52:29.129Z",
     "lint_pass": true,
-    "what_en": "Classifies git requests into commit, rebase, history, or status modes; reads repository state for evidence, then only performs operations you explicitly asked for, such as atomic commits, rebase/squash, blame, bisect, and reports command-backed conclusions. It leaves ordinary code edits alone.",
-    "when_en": "Activates when you ask to commit, rewrite history (rebase, squash), or investigate when/who/why a line or commit changed; it is skipped for ordinary code edits.",
+    "what_en": "Claude reads the repo state first, sorts the request into commit, history-rewrite, history-lookup, or status mode, and only writes to Git when you explicitly ask; otherwise it reports findings with hashes and command evidence.",
+    "when_en": "Triggers when a task needs a commit or a Git-history investigation; skipped for ordinary code edits. Rewriting protected branches needs your explicit ask.",
     "say_en": [
       {
-        "text": "Split these two changes into two atomic commits.",
-        "note": "It inspects the diff and groups by feature."
+        "text": "Split these changes into several atomic commits",
+        "note": "Matches the repo's recent message style"
       },
       {
-        "text": "Use git blame to find the last author of this line.",
-        "note": "It returns the commit hash, author, and time."
+        "text": "Who last changed this line of code?",
+        "note": "Uses git blame with hash and diff"
       },
       {
-        "text": "Autosquash my fixup into the matching commit.",
-        "note": "It targets the fixup and runs an interactive rebase."
+        "text": "Squash the last three commits into one",
+        "note": "Asks before force-pushing pushed work"
       }
     ]
   }

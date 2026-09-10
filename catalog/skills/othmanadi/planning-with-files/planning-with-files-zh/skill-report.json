@@ -5,7 +5,7 @@
     "name": "planning-with-files-zh",
     "description": "用于多步骤 AI 代理工作的持久化文件规划系统。将 task_plan.md、findings.md 和 progress.md 保存在磁盘上，生命周期钩子会注入选定的项目规划上下文。自动恢复只读取项目规划文件。只有显式运行 session-catchup.py --metadata 才会检查本机同项目的会话元数据；--replay 可输出有长度限制且由 nonce 框定的同项目摘录。可选门禁仅在宿主支持时请求继续，绝不执行 Markdown 中声明的命令。本技能没有网络上传路径。适用于研究或需要 5 次以上工具调用的工作。触发词：任务规划、项目计划、制定计划、分解任务、多步骤规划、进度跟踪、文件规划、帮我规划、拆解项目",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-zh",
-    "upstream_commit": "f67e2bb7294867c37bbea150de0bf81f2c3449d3",
+    "upstream_commit": "1ec8f4eb5c683e31644856d98f9abde0d5a53448",
     "content_hash": "sha256:48f173048729d51d8883d834c05cd9ff13830c27c3a150619c6d6ccebe8b1355",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26736,
+    "stars_github": 26757,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:35.790Z",
+    "fetched_at": "2026-09-10T07:47:59.167Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T08:10:43+02:00",
+    "upstream_commit_at": "2026-09-10T00:00:01+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:35.790Z",
+    "generated_at": "2026-09-10T07:47:59.167Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -122,41 +122,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "用户要求多步规划或研究时,Claude 会在项目目录读取或创建 task_plan.md、findings.md、progress.md,把阶段、发现、进度写到磁盘;之后每次对话或工具调用都会刷新计划,中间断了也能靠文件恢复。",
-    "when": "当用户要求规划、拆解或组织多步骤项目、做研究,或做需要超过 5 次工具调用的事时;说“任务规划”“帮我规划”“拆解项目”等词也会触发。",
+    "what": "Claude 会在你的项目目录里建 task_plan.md、findings.md、progress.md 三个文件,把阶段计划、研究发现和进度写进去,每步操作后更新,清空会话后也能靠它们接着做。",
+    "when": "当你要做多步骤任务(3 步以上)、研究任务,或提到「任务规划」「制定计划」「帮我规划」等词时接管;简单问答、单文件编辑会跳过。",
     "say": [
       {
-        "text": "把这个项目拆成小步骤,按计划一步步执行,每步更新进度。",
-        "note": "会建立计划文件并随步骤维护进度。"
+        "text": "帮我规划这个多步骤任务,先建好计划文件",
+        "note": "生成 task_plan.md 等三个规划文件"
       },
       {
-        "text": "先做调研,把每个关键发现都记下来,最后汇总再给结论。",
-        "note": "发现会存入 findings.md,不会因上下文长而丢。"
+        "text": "接下这个研究任务,发现记到 findings.md",
+        "note": "研究会写入 findings.md 保存"
       },
       {
-        "text": "我中途可能会打断;下次说继续时,请接着上次进度接着干。",
-        "note": "会根据 progress.md 恢复,不必从头再来。"
+        "text": "更新进度,把完成的阶段标成 complete"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:48f173048729d51d8883d834c05cd9ff13830c27c3a150619c6d6ccebe8b1355",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:22:47.668Z",
+    "generated_at": "2026-09-10T07:54:59.448Z",
     "lint_pass": true,
-    "what_en": "On multi-step planning or research tasks, Claude reads or creates task_plan.md, findings.md, and progress.md in the project folder, writes the plan, findings, and progress to disk, and reloads them each turn/tool use so interrupted work can resume.",
-    "when_en": "Used when you ask Claude to plan, break down, or organize a multi-step project, do research, or work that will need more than 5 tool calls; saying “任务规划”, “帮我规划” or “拆解项目” also triggers it.",
+    "what_en": "Claude creates task_plan.md, findings.md and progress.md in your project directory, writing phase plans, research notes and progress into them, and updates them after each step. After /clear it re-reads these files to resume.",
+    "when_en": "Triggers on multi-step tasks (3+ steps), research work, or when you say things like \"任务规划\", \"制定计划\" or \"帮我规划\"; simple questions and single-file edits are skipped.",
     "say_en": [
       {
-        "text": "Break this project into small steps, execute each step, and update progress.",
-        "note": "It will maintain plan files and update progress as you go."
+        "text": "Plan this multi-step task and create the plan files first",
+        "note": "Creates task_plan.md and the other two files"
       },
       {
-        "text": "Do research first, save every key finding, then summarize at the end.",
-        "note": "Findings are stored in findings.md so they survive long contexts."
+        "text": "Take on this research task and log findings to findings.md",
+        "note": "Research notes get saved in findings.md"
       },
       {
-        "text": "I may interrupt you; next time I say continue, pick up where we left off.",
-        "note": "It resumes from progress.md instead of starting over."
+        "text": "Update progress and mark the finished phase complete",
+        "note": "Edits progress.md and task_plan.md status"
       }
     ]
   }

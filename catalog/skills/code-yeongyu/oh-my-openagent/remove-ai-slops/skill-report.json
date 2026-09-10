@@ -5,7 +5,7 @@
     "name": "remove-ai-slops",
     "description": "Removes AI-generated code smells from branch changes or an explicit file list behind regression tests. Use when the user asks to clean up, deslop, or remove AI-slop patterns from recent changes.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/remove-ai-slops",
-    "upstream_commit": "18666db8ff1949a76e4c631e5208a214fc4a4dc2",
+    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
     "content_hash": "sha256:5c22666a3ad35993eb2f7bdd2d6d0792ae090d975d0772e250e3494f33342239",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68836,
+    "stars_github": 68871,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:24.878Z",
+    "fetched_at": "2026-09-10T07:47:46.276Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T16:31:49+09:00",
+    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:24.878Z",
+    "generated_at": "2026-09-10T07:47:46.276Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它先检查这次要动的代码，把行为用回归测试锁住，然后清理分支或指定文件里AI生成风格的垃圾：多余注释、无用死代码、过度防御等，最后跑测试和检查确认行为不变。",
-    "when": "当你说要“清理”“去AI味儿”“deslop”等，或要求移除最近改动中的AI痕迹时触发。",
+    "what": "清理分支改动或指定文件里的 AI 生成代码味(如冗余注释、过度防御、死代码等):先用回归测试锁住行为,再分类多轮清理,最后过质量门禁复查,验证失败则回滚。",
+    "when": "当你要求清理、deslop 或移除最近改动中的 AI-slop 模式时触发;默认范围是分支相对 merge-base main 的 diff,也可传入指定文件列表。",
     "say": [
       {
-        "text": "把这次分支改动里的AI痕迹清理掉。",
-        "note": "它会先跑回归测试再开删，避免弄坏功能。"
+        "text": "把我这个分支的改动 deslop 一遍",
+        "note": "先锁回归测试,再分类清理并跑门禁"
       },
       {
-        "text": "针对 src/foo.py，去掉多余的注释和死代码。",
-        "note": "技能会只处理这个文件并做行为锁定。"
+        "text": "清理 src/foo.py 和 src/bar.py 里的 AI slop",
+        "note": "按文件列表逐个处理,行为保持不变"
       },
       {
-        "text": "看看哪些地方过度防御，能删就删，测试要保持绿。",
-        "note": "只有证明冗余才会删，没把握会保留。"
+        "text": "把这些改动里重复和过度防御的代码清掉,别改行为",
+        "note": "先删后简,验证不过就回滚"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5c22666a3ad35993eb2f7bdd2d6d0792ae090d975d0772e250e3494f33342239",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:00:45.556Z",
+    "generated_at": "2026-09-10T07:52:47.601Z",
     "lint_pass": true,
-    "what_en": "Analyzes the code changed in a branch or passed file list, pins its behavior with regression tests first, then removes AI-style slop such as redundant comments, dead code, and over-defensive code, and verifies tests and checks still pass.",
-    "when_en": "When the user asks to clean up, deslop, or remove AI-slop patterns from recent changes.",
+    "what_en": "Cleans AI-generated slop from branch changes or a given file list: locks behavior with regression tests, runs categorized cleanup passes, then quality gates, reverting if verification fails.",
+    "when_en": "Triggers when the user asks to clean up, deslop, or remove AI-slop patterns from recent changes. Default scope is the branch diff vs merge-base main; an explicit file list can be passed.",
     "say_en": [
       {
-        "text": "Clean up the AI-slop in this branch's changes.",
-        "note": "It locks behavior with tests before deleting anything."
+        "text": "Deslop my branch changes",
+        "note": "Locks tests first, then cleans in passes"
       },
       {
-        "text": "For src/foo.py, remove redundant comments and dead code.",
-        "note": "It will limit its pass to that file."
+        "text": "Clean up the AI slop in src/foo.py and src/bar.py",
+        "note": "Processes each file, behavior unchanged"
       },
       {
-        "text": "Find over-defensive spots and remove them if provably safe; keep tests green.",
-        "note": "Guards at trust boundaries are kept unless proven redundant."
+        "text": "Remove the duplication and over-defensive code, keep behavior",
+        "note": "Delete then simplify, revert if checks fail"
       }
     ]
   }

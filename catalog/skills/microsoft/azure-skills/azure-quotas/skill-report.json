@@ -5,7 +5,7 @@
     "name": "azure-quotas",
     "description": "Check/manage Azure quotas and usage across providers. For deployment planning, capacity validation, region selection. WHEN: \"check quotas\", \"service limits\", \"current usage\", \"request quota increase\", \"quota exceeded\", \"validate capacity\", \"regional availability\", \"provisioning limits\", \"vCPU limit\", \"how many vCPUs available in my subscription\".",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/azure-quotas",
-    "upstream_commit": "bc9939f8ca1ae8e3da8e6ae647e0d1d22e3a424a",
+    "upstream_commit": "f5fffa1026f84abe67d7062792b6fc07771fc34d",
     "content_hash": "sha256:0000e9c51e46c9895c0778a4aaf0d11c3738227f604e3e103d0dce3b573d8640",
     "license": "MIT",
     "hosting": "indexed",
@@ -20,10 +20,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 437300,
-    "fetched_at": "2026-09-09T07:48:04.778Z",
+    "installs_skills_sh": 440000,
+    "fetched_at": "2026-09-10T07:49:50.157Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-09-08T09:38:22-07:00"
+    "upstream_commit_at": "2026-09-09T15:38:39-07:00"
   },
   "context_size": {
     "version": "1",
@@ -32,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:48:04.778Z",
+    "generated_at": "2026-09-10T07:49:50.157Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,36 +94,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会调用 Azure CLI 或随附脚本,查询订阅在各区域的服务配额上限、当前用量与剩余可用容量,列出某资源提供者(如计算、网络)的配额,还能对比不同区域并提交配额提升申请、查看审批状态。",
-    "when": "当你说到“检查配额”“配额超限”“请求提高配额”等,或表达部署规划、区域容量验证、跨区域对比等需求时触发。",
+    "what": "装上后,Claude 会帮你查 Azure 配额(服务限制)与当前用量,对比不同区域还剩多少可用容量,必要时提交配额提升请求。它走 Azure CLI 的 az quota 命令,脚本一次调用返回限额、用量和剩余可用量。",
+    "when": "当你提到 “check quotas”“quota exceeded” 等关键词,或要规划部署、验证容量、挑选区域时触发。",
     "say": [
       {
-        "text": "查一下我的订阅在 eastus 的 vCPU 配额和用量。"
+        "text": "对比几个候选区域,看哪个 standardDSv3Family 剩余配额最多",
+        "note": "逐区域列出限额、用量、可用量"
       },
       {
-        "text": "帮我把 standardDSv3Family 的配额提高到 500。",
-        "note": "调用 az quota update 提交增加申请。"
+        "text": "把我的 standardDSv3Family 配额申请提到 500",
+        "note": "提交配额提升请求并查看状态"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0000e9c51e46c9895c0778a4aaf0d11c3738227f604e3e103d0dce3b573d8640",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:11:48.791Z",
+    "generated_at": "2026-09-10T07:53:59.823Z",
     "lint_pass": true,
-    "what_en": "Claude queries Azure quota limits, current usage and available capacity per region via the Azure CLI/scripts; lists quotas per provider, compares regions, and submits or tracks quota-increase requests.",
-    "when_en": "Triggered by phrases like “check quotas”, “quota exceeded” or “request quota increase”, or during deployment planning, region selection, capacity validation and quota troubleshooting.",
+    "what_en": "Claude checks Azure quotas (service limits) and usage, compares capacity across regions, and can submit quota increase requests. Uses Azure CLI `az quota`; one script call returns limit, usage, and available capacity.",
+    "when_en": "Triggered when you mention \"check quotas\", \"quota exceeded\" etc., or ask to plan a deployment, validate capacity, or pick an Azure region.",
     "say_en": [
       {
-        "text": "Check my vCPU quota and usage in eastus for my subscription.",
-        "note": "Returns limit, usage and available for cores etc."
+        "text": "Check quotas and usage for Microsoft.Compute in eastus",
+        "note": "Returns limit, usage, available"
       },
       {
-        "text": "Compare standardDSv3Family available capacity in eastus and westus2.",
-        "note": "Loops regions and lists available numbers."
+        "text": "Compare candidate regions for remaining standardDSv3Family quota",
+        "note": "Lists limit/usage/available per region"
       },
       {
-        "text": "Raise my standardDSv3Family quota to 500.",
-        "note": "Calls az quota update to submit increase."
+        "text": "Request a quota increase for standardDSv3Family to 500",
+        "note": "Submits request and shows status"
       }
     ]
   }

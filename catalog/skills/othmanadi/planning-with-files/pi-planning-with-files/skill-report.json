@@ -5,7 +5,7 @@
     "name": "pi-planning-with-files",
     "description": "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/.pi/skills/planning-with-files",
-    "upstream_commit": "f67e2bb7294867c37bbea150de0bf81f2c3449d3",
+    "upstream_commit": "1ec8f4eb5c683e31644856d98f9abde0d5a53448",
     "content_hash": "sha256:afaf576f63862be317b0a36ff5e3d88c125fbe1f3b08b5a4cd76935ab82f3ced",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26736,
+    "stars_github": 26757,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:35.790Z",
+    "fetched_at": "2026-09-10T07:47:59.167Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T08:10:43+02:00",
+    "upstream_commit_at": "2026-09-10T00:00:01+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:35.790Z",
+    "generated_at": "2026-09-10T07:47:59.167Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -148,33 +148,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它让 AI 把复杂任务写进三个磁盘文件：开工前先建任务计划，随时把发现与进度记下来，做决定前先读计划，从而在长期任务中不丢上下文。",
-    "when": "当你要求它规划、拆解或组织多步骤项目/研究任务，或安排需要 5 次以上工具调用的工作时触发。",
+    "what": "Claude 会在你的项目目录里创建 task_plan.md、findings.md、progress.md 三个文件，把计划、发现和进度写进磁盘；每完成一个阶段就更新，做重大决定前先重读计划，出错也记进计划文件。",
+    "when": "当你要求规划或拆分多步项目、做研究任务，或这项活需要 5+ 次工具调用时它会接管；在 /clear 之后也能靠读回这些计划文件恢复上下文。",
     "say": [
       {
-        "text": "帮我规划这个多步项目，把任务拆成阶段并用文件记录进度。",
-        "note": "触发它创建计划文件并开始执行。"
+        "text": "先建 task_plan.md，把这个多步任务拆成几个阶段",
+        "note": "会在项目根目录生成三个规划文件"
       },
       {
-        "text": "我要做一个需要很多搜索的调研，先建好计划文件。",
-        "note": "让它先准备 task_plan.md 再动手。"
+        "text": "读一下当前计划，我们再继续下一步",
+        "note": "它会先读 task_plan.md 再动手"
+      },
+      {
+        "text": "把刚查到的资料写进 findings.md",
+        "note": "外部内容只写 findings.md，不写进计划"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:afaf576f63862be317b0a36ff5e3d88c125fbe1f3b08b5a4cd76935ab82f3ced",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:21:18.527Z",
+    "generated_at": "2026-09-10T07:54:55.114Z",
     "lint_pass": true,
-    "what_en": "It makes the AI keep complex work in three disk files: write a task plan before starting, save discoveries and progress along the way, and re-read the plan before decisions, so context survives long tasks.",
-    "when_en": "Triggered when you ask it to plan, break down, or organize a multi-step project/research task, or any work needing 5+ tool calls.",
+    "what_en": "Claude creates task_plan.md, findings.md and progress.md in your project folder, writes plans, findings and progress to disk, updates them after each phase, re-reads the plan before major decisions, and logs errors into the plan file.",
+    "when_en": "It takes over when you ask to plan or break down a multi-step project or research task, or when the work needs 5+ tool calls. After /clear it can also restore context by reading those planning files.",
     "say_en": [
       {
-        "text": "Plan this multi-step project into phases and track progress in files.",
-        "note": "Triggers it to create plan files and follow them."
+        "text": "Create task_plan.md first and split this multi-step task into phases",
+        "note": "Creates three planning files in your project root"
       },
       {
-        "text": "I need a long research task; create the plan files first.",
-        "note": "It prepares task_plan.md before acting."
+        "text": "Read the current plan, then let's continue with the next step",
+        "note": "It reads task_plan.md before acting"
+      },
+      {
+        "text": "Write what you just found into findings.md",
+        "note": "External content goes only to findings.md"
       }
     ]
   }

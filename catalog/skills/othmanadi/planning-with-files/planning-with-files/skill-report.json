@@ -5,7 +5,7 @@
     "name": "planning-with-files",
     "description": "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/planning-with-files",
-    "upstream_commit": "f67e2bb7294867c37bbea150de0bf81f2c3449d3",
+    "upstream_commit": "1ec8f4eb5c683e31644856d98f9abde0d5a53448",
     "content_hash": "sha256:44082cc86fe8f1d00ef394111931866990dd1732ecdc69eeaa3a0784b36b12d2",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26736,
+    "stars_github": 26757,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:35.790Z",
+    "fetched_at": "2026-09-10T07:47:59.167Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T08:10:43+02:00",
+    "upstream_commit_at": "2026-09-10T00:00:01+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:35.790Z",
+    "generated_at": "2026-09-10T07:47:59.167Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -135,41 +135,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会把任务计划与进度写进磁盘:task_plan.md 存计划、findings.md 存发现、progress.md 存进度;之后对话会自动注入计划片段并提醒更新进度,/clear 后靠这些文件恢复。",
-    "when": "当你要求规划、拆解或组织多步骤项目/研究任务,或任务预计需要 5 次以上工具调用时;此后每次发消息只要有计划文件,它都会自动带出计划与最近进度。",
+    "what": "它把任务计划、研究记录和进度分别写进项目里的 task_plan.md、findings.md、progress.md 三个文件,当作磁盘上的工作记忆;每完成一个阶段就更新状态,清空上下文或 /clear 后仍能接着做。",
+    "when": "当你要规划、拆解多步项目或研究任务,或预估需要 5 次以上工具调用时触发;计划文件被改动时它会拦截注入。",
     "say": [
       {
-        "text": "帮我把这个市场调研拆成详细计划,一步步做。",
-        "note": "会先检查上次会话记录,再创建计划与进度文件。"
+        "text": "帮我规划这个多步任务,先建好 task_plan.md",
+        "note": "它会先生成计划文件再动手"
       },
       {
-        "text": "刚才的访谈有结论了,帮我记进 findings.md。",
-        "note": "会追加写入 findings.md 并同步进度。"
+        "text": "把刚才的发现记到 findings.md",
+        "note": "把研究结果落盘保存"
       },
       {
-        "text": "接着上次的计划继续做,先看看进度。",
-        "note": "它会从磁盘读回计划与最近进度再继续。"
+        "text": "我 /clear 过了,用 session-catchup 恢复上次进度",
+        "note": "读取同项目会话记录并汇总"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:44082cc86fe8f1d00ef394111931866990dd1732ecdc69eeaa3a0784b36b12d2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:22:55.983Z",
+    "generated_at": "2026-09-10T07:54:57.326Z",
     "lint_pass": true,
-    "what_en": "Claude keeps the plan and progress on disk: task_plan.md, findings.md, progress.md. It injects plan excerpts on prompts, nudges progress updates, and recovers after /clear by re-reading files.",
-    "when_en": "Triggers on requests to plan, break down, or organize multi-step work (5+ tool calls). While plan files exist, it auto-loads plan and recent progress on later prompts.",
+    "what_en": "It keeps task_plan.md, findings.md, and progress.md in your project as working memory on disk, updates them after each phase, and lets work survive context loss or /clear.",
+    "when_en": "Use when asked to plan out, break down, or organize a multi-step project or research task, or for work needing 5+ tool calls. Tampered plans block injection.",
     "say_en": [
       {
-        "text": "Help me break this market research into a detailed plan and go step by step.",
-        "note": "It checks for a previous session, then writes plan files."
+        "text": "Help me plan this multi-step task and create task_plan.md first",
+        "note": "It writes the plan file before starting"
       },
       {
-        "text": "Log our interview conclusions into findings.md.",
-        "note": "Appends to findings.md and syncs progress."
+        "text": "Save what we just found into findings.md",
+        "note": "Writes research results to disk"
       },
       {
-        "text": "Continue from the previous plan, read the current progress first.",
-        "note": "It re-reads the plan and recent progress files from disk."
+        "text": "I ran /clear, catch up on my last session",
+        "note": "Reads same-project session records"
       }
     ]
   }

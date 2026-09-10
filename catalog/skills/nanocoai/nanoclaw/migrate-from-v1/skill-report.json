@@ -5,7 +5,7 @@
     "name": "migrate-from-v1",
     "description": "Finish migrating a NanoClaw v1 install into v2. Run after `bash migrate-v2.sh` completes. Seeds the owner, migrates legacy memory, reconciles container configs, and helps port custom v1 code. Triggers on \"migrate from v1\", \"finish migration\", \"v1 migration\".",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-from-v1",
-    "upstream_commit": "409a88456d1487d6e48f25638b24b5494efbd665",
+    "upstream_commit": "2c754a2234390fcc597273cef6344d99e8ac03d0",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30728,
+    "stars_github": 30732,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:35.024Z",
+    "fetched_at": "2026-09-10T07:47:58.260Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T00:25:22+03:00",
+    "upstream_commit_at": "2026-09-09T11:36:54+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:35.024Z",
+    "generated_at": "2026-09-10T07:47:58.260Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在 NanoClaw 软件从旧版迁移到新版后,Claude 会接手完成需要人工判断的收尾工作:先检查迁移报告,再帮你设置管理员账号、调整谁能使用机器人、把旧聊天记忆搬进新系统、核对容器设置,并处理你在旧版上做的自定义改动。",
-    "when": "当你说出 “migrate from v1”“finish migration” 或 “v1 migration” 时触发。它只负责收尾:须先在终端运行过 `bash migrate-v2.sh`,否则 Claude 会让你先去运行。",
+    "what": "在 migrate-v2.sh 跑完后接手收尾:读取 handoff.json,修补失败步骤、给账号授予 owner 角色、迁移旧记忆、核对容器配置,并帮忙搬运 v1 的自定义改动。",
+    "when": "当你提到“migrate from v1”、“finish migration”等关键词,或在 `bash migrate-v2.sh` 跑完、需要收尾这次迁移时触发。",
     "say": [
       {
-        "text": "帮我完成 NanoClaw 从 v1 到 v2 的迁移收尾。",
-        "note": "Claude 会先检查是否已运行过迁移脚本。"
+        "text": "迁移脚本已经跑完了,帮我完成剩下的 v1 到 v2 迁移。",
+        "note": "它会先读 handoff.json,再分阶段接手。"
       },
       {
-        "text": "迁移后帮我设置管理员账号,并选择谁能使用机器人。",
-        "note": "它会询问确认你的身份,然后设定访问策略。"
+        "text": "帮我确认一下 v2 的 owner 账号设好了没有。",
+        "note": "它会查 users 表并核对 owner 角色。"
       },
       {
-        "text": "怎么处理我旧版的自定义代码和容器配置？",
-        "note": "Claude 会检查你的 fork 改动并给出处理选项。"
+        "text": "我在 v1 里改过一些自定义代码,帮我看怎么搬到 v2。",
+        "note": "它会检查 v1 仓库的提交记录。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:20:48.347Z",
+    "generated_at": "2026-09-10T07:54:50.066Z",
     "lint_pass": true,
-    "what_en": "Claude finishes a NanoClaw v1→v2 migration: checks the migration report, helps seed the owner, adjusts access policy, runs the memory migration for each group, reconciles container configs, and ports v1 fork customizations.",
-    "when_en": "Triggers when you say 'migrate from v1', 'finish migration', or 'v1 migration'. It starts only after `bash migrate-v2.sh` has run — otherwise Claude tells you to run that script first.",
+    "what_en": "After migrate-v2.sh finishes, it takes over: reads handoff.json, fixes failed steps, grants the owner role, runs the shared-memory migration, reconciles container configs, and helps move custom v1 code.",
+    "when_en": "Triggers when you say \"migrate from v1\", \"finish migration\", etc., or after you run `bash migrate-v2.sh` and need the migration finished.",
     "say_en": [
       {
-        "text": "Help me finish the NanoClaw v1 to v2 migration.",
-        "note": "Claude first checks whether the migration script ran."
+        "text": "The migration script already ran — finish the rest of the v1 to v2 migration.",
+        "note": "Reads handoff.json, then works phase by phase."
       },
       {
-        "text": "Set me as owner and choose who can use the bot after migration.",
-        "note": "It confirms your identity and asks about the access policy."
+        "text": "Check whether the v2 owner account is set up correctly.",
+        "note": "Queries the users table and checks the owner role."
       },
       {
-        "text": "How do we handle my custom v1 code and container configs?",
-        "note": "It lists your fork commits and checks container.json paths."
+        "text": "I customized some v1 code — show me how to port it to v2.",
+        "note": "Inspects the v1 repo's commit history."
       }
     ]
   }

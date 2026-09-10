@@ -5,7 +5,7 @@
     "name": "smart-explore",
     "description": "Token-optimized structural code search using tree-sitter AST parsing. Use instead of reading full files when you need to understand code structure, find functions, or explore a codebase efficiently.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/smart-explore",
-    "upstream_commit": "8bc631a71a487424b866756e43a6efa4574cc66b",
+    "upstream_commit": "1461655740297a34e11d721b612eb682db3f2ea7",
     "content_hash": "sha256:a3fc2901c7cbe643cffd951ecb27dfef76bd5d48bb0501057afd0c216be8cdbd",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -20,11 +20,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93540,
+    "stars_github": 93592,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:20.369Z",
+    "fetched_at": "2026-09-10T07:47:41.387Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-08T23:11:26-07:00",
+    "upstream_commit_at": "2026-09-09T21:10:32-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:20.369Z",
+    "generated_at": "2026-09-10T07:47:41.387Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 探索代码时会先用结构分析工具生成代码结构图，再按需展开你要看的函数/类的完整实现；通常不会直接读取整个文件。",
-    "when": "当你要理解代码结构、查找函数或高效探索代码库时，该技能会触发，让 Claude 优先用结构化搜索而不是直接读文件。",
+    "what": "装上后,Claude 会用 smart_search、smart_outline、smart_unfold 三个工具探索代码:先给出文件与符号的结构地图,再按需展开某个函数或类的完整源码,而不是直接整份读文件。",
+    "when": "当你要理解代码结构、查找函数,或要读超过约 100 行的代码文件时触发,接管默认的 Read、Grep 等探索行为。",
     "say": [
       {
-        "text": "帮我查一下代码库中和 shutdown 相关的代码",
-        "note": "会搜索目录并返回相关符号、行号和文件视图。"
-      },
-      {
-        "text": "这个文件里有哪些函数和类？给我列出来",
-        "note": "会显示文件的结构骨架，方便定位。"
+        "text": "用 smart_search 在 ./src 里找 shutdown 相关的符号",
+        "note": "一次返回排序后的符号和折叠文件视图"
       },
       {
         "text": "展开 worker-service.ts 里的 shutdown 方法",
-        "note": "会返回该方法的完整代码，而不是整个文件。"
+        "note": "只返回该符号的完整源码"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a3fc2901c7cbe643cffd951ecb27dfef76bd5d48bb0501057afd0c216be8cdbd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:28:35.285Z",
+    "generated_at": "2026-09-10T07:55:25.667Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude explores code by first generating a structural map and then unfolding only the function/class implementation you asked for, instead of reading entire files by default.",
-    "when_en": "Triggers when you need to understand code structure, find a function, or explore a codebase efficiently; Claude then prioritizes structured search over direct file reading.",
+    "what_en": "Once installed, Claude explores code with smart_search, smart_outline, and smart_unfold instead of reading whole files: it first returns a structural map of files and symbols, then unfolds only the function or class you need.",
+    "when_en": "Triggers when you need to understand code structure, find functions, or read code files over ~100 lines; it takes over the default Read, Grep, and Glob exploration behavior.",
     "say_en": [
       {
-        "text": "Find shutdown-related code in the repo.",
-        "note": "Returns ranked symbols with file locations."
+        "text": "Use smart_search to find shutdown symbols under ./src",
+        "note": "Returns ranked symbols and folded file views"
       },
       {
-        "text": "List the functions and classes in this file.",
-        "note": "Gives a structural outline of the file."
+        "text": "Outline services/worker-service.ts first",
+        "note": "Returns the file's structural skeleton"
       },
       {
-        "text": "Expand the shutdown method in worker-service.ts.",
-        "note": "Shows the full source of just that method."
+        "text": "Unfold the shutdown method in worker-service.ts",
+        "note": "Returns only that symbol's full source"
       }
     ]
   }

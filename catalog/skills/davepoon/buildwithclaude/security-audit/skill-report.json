@@ -5,7 +5,7 @@
     "name": "security-audit",
     "description": "Deep security audit covering OWASP Top 10, authentication, authorization, data protection, dependency vulnerabilities, and secrets scanning. Delegates to the Centinela (QA) agent.",
     "upstream": "https://github.com/davepoon/buildwithclaude/tree/main/plugins/agent-triforce/skills/security-audit",
-    "upstream_commit": "363b4deb3b823a3ac79739d3cbd2955a8e9ee441",
+    "upstream_commit": "51cb4d5a2455e2104cede58ed9142ca3bcb09933",
     "content_hash": "sha256:af1315d34ff070412f6dd7e8077ab79dfb9726b6b0c787f1bef9b8daca99ecfe",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 3429,
+    "stars_github": 3434,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-08T07:43:59.172Z",
+    "fetched_at": "2026-09-10T07:48:42.755Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-08T17:38:02+10:00",
-    "repo_skill_count": 373,
+    "upstream_commit_at": "2026-09-09T18:18:47+10:00",
+    "repo_skill_count": 374,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-08T07:43:59.172Z",
+    "generated_at": "2026-09-10T07:48:42.755Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会委托 Centinela(QA)代理做安全审计:跑 SIGN IN 清单,查 OWASP Top 10,扫硬编码密钥和依赖 CVE;有 Solidity 时也查智能合约。最后给判定并写报告到 docs/reviews 日期文件,把修复顺序交给 Dev 代理。只记录,不修复。",
-    "when": "当用户让 Claude 执行 /security-audit(可带路径如 src/auth/)时触发。正文建议在发版前、涉及认证/授权或数据处理的代码大改后、定期复查等场景使用。",
+    "what": "对代码做深度安全审计：跑 OWASP Top 10 检查、扫描硬编码密钥、审查依赖 CVE，有 Solidity 时查合约；最后给出 APPROVED 或 CHANGES REQUIRED 结论，并把报告写到 docs/reviews/security-audit-{日期}.md。",
+    "when": "在发布前、改动了认证/授权/数据处理的代码之后，或做定期安全审查、新增依赖与外部集成时触发。",
     "say": [
       {
-        "text": "请运行 /security-audit,做一次默认审计。",
-        "note": "不指定路径时默认审查 src/ 全部代码。"
+        "text": "/security-audit",
+        "note": "未指定范围时审计整个 src/ 目录"
       },
       {
-        "text": "请运行 /security-audit src/auth/,只查认证目录。",
-        "note": "按限定范围审计,不审 src/ 其余部分。"
+        "text": "/security-audit src/auth/ src/api/",
+        "note": "只审计列出的目录"
       },
       {
-        "text": "发版前请跑一次 /security-audit,把结果写成报告。",
-        "note": "它只生成报告,不会改动代码。"
+        "text": "/security-audit src/payments/",
+        "note": "报告写到 docs/reviews/ 下"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:af1315d34ff070412f6dd7e8077ab79dfb9726b6b0c787f1bef9b8daca99ecfe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-08T08:00:13.534Z",
+    "generated_at": "2026-09-10T07:53:06.708Z",
     "lint_pass": true,
-    "what_en": "Runs an audit via Centinela (QA): SIGN IN checklist, OWASP Top 10, secrets scan, dependency CVEs, Solidity checks if present. Writes a report to docs/reviews/, returns verdict, and hands fix order to Dev agent. Does not modify code.",
-    "when_en": "Triggered when the user runs /security-audit, optionally scoped to a path like src/auth/. Intended before releases, after auth/authz/data-handling code changes, and for periodic reviews.",
+    "what_en": "Runs a deep security audit: OWASP Top 10, hardcoded secrets, dependency CVEs, plus Solidity contracts if present. Gives an APPROVED or CHANGES REQUIRED verdict and writes docs/reviews/security-audit-{date}.md.",
+    "when_en": "Triggers before a release, after code changes touching auth, authorization or data handling, for periodic reviews, or when adding new dependencies or integrations.",
     "say_en": [
       {
-        "text": "Run /security-audit for a default audit.",
-        "note": "Without a path, it checks the whole src/ directory."
+        "text": "/security-audit",
+        "note": "Audits the whole src/ directory when no scope is given."
       },
       {
-        "text": "Run /security-audit src/auth/ to audit only that path.",
-        "note": "Restricts the audit to the specified scope."
+        "text": "/security-audit src/auth/ src/api/",
+        "note": "Audits only the listed paths."
       },
       {
-        "text": "Before release, run /security-audit and give me the report.",
-        "note": "It only generates a report; it does not change code."
+        "text": "/security-audit src/payments/",
+        "note": "Writes the report under docs/reviews/."
       }
     ]
   }

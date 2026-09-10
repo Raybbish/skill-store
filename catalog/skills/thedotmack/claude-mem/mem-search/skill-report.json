@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Use this when the user asks to search memory, \"did we already solve this?\", \"how did we do X last time?\", or wants work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-cursor/skills/mem-search",
-    "upstream_commit": "8bc631a71a487424b866756e43a6efa4574cc66b",
+    "upstream_commit": "1461655740297a34e11d721b612eb682db3f2ea7",
     "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93540,
+    "stars_github": 93592,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:20.369Z",
+    "fetched_at": "2026-09-10T07:47:41.387Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-08T23:11:26-07:00",
+    "upstream_commit_at": "2026-09-09T21:10:32-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:20.369Z",
+    "generated_at": "2026-09-10T07:47:41.387Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,当你问起以前会话做过的事,Claude 会先在记忆库搜出带编号的条目列表(含标题/时间等),再挑相关条目查看时间线,最后只对选中的编号批量取完整记录。",
-    "when": "当你说要搜索记忆,或问“是不是已经解决过”“上次怎么做的”,或需要之前会话的工作记录时,Claude 会调用本技能。",
+    "what": "它让 Claude 能检索你在历史会话里留下的记忆:先用 search 拿到带 ID 的索引,再用 timeline 看某条记录前后的上下文,最后只对挑中的 ID 用 get_observations 取完整内容。",
+    "when": "当你问的是以往会话而非当前对话时,例如「这个之前修过吗」「上次 X 是怎么做的」等涉及历史工作的问题。",
     "say": [
       {
-        "text": "这个登录报错我们以前解决过吗?",
-        "note": "Claude 会搜索历史记录来回答。"
+        "text": "帮我搜一下认证相关的历史记录",
+        "note": "调用 search,返回带 ID 的索引表"
       },
       {
-        "text": "上次我们是怎么修登录超时问题的?",
-        "note": "按关键词搜出相关修复记录。"
+        "text": "上次 token 过期那个问题我们是怎么修的?",
+        "note": "先搜索,再用 timeline 看上下文"
       },
       {
-        "text": "上周在这个项目里遇到过哪些 bug?",
-        "note": "按 bugfix 类型搜最近记录。"
+        "text": "把 #11131 和 #10942 的完整内容拉出来",
+        "note": "用 get_observations 批量取详情"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:27:45.277Z",
+    "generated_at": "2026-09-10T07:55:17.885Z",
     "lint_pass": true,
-    "what_en": "After installation, when you ask about previous sessions, Claude searches the memory database for a numbered list of matching entries, examines timeline context around relevant ones, then fetches full details only for the chosen IDs.",
-    "when_en": "Triggered when the user asks to search memory, asks “did we already solve this?”, “how did we do X last time?”, or wants work from previous sessions.",
+    "what_en": "Claude can search claude-mem's cross-session memory: run search for an index with IDs, timeline for surrounding context, then get_observations for full details only on the IDs you pick, saving tokens.",
+    "when_en": "Triggers when you ask about previous sessions rather than the current chat, e.g. \"did we already fix this?\" or \"how did we solve X last time?\"",
     "say_en": [
       {
-        "text": "Have we ever fixed this login error before?",
-        "note": "Claude searches history before answering."
+        "text": "Search my history for authentication work.",
+        "note": "Runs search, returns an index table with IDs"
       },
       {
-        "text": "How did we fix the login timeout last time?",
-        "note": "Searches for relevant fix records."
+        "text": "How did we fix the token expiration bug last time?",
+        "note": "Searches, then pulls timeline context"
       },
       {
-        "text": "What bugs did we hit in this project last week?",
-        "note": "Searches recent records filtered by bugfix type."
+        "text": "Fetch full details for #11131 and #10942.",
+        "note": "Uses get_observations to batch fetch"
       }
     ]
   }

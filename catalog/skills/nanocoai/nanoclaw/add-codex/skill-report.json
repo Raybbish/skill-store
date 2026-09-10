@@ -5,7 +5,7 @@
     "name": "add-codex",
     "description": "Use Codex (OpenAI's codex app-server) as a full agent provider — planning, tool orchestration, MCP tools, server-side history, session resume — alongside or instead of Claude. ChatGPT subscription or OpenAI API key, vault-only via OneCLI. Per-group via `ncl groups config update --provider codex`. Distinct from using OpenAI as an MCP tool (where Claude remains the planner).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-codex",
-    "upstream_commit": "409a88456d1487d6e48f25638b24b5494efbd665",
+    "upstream_commit": "2c754a2234390fcc597273cef6344d99e8ac03d0",
     "content_hash": "sha256:5fe61acdd93f022a2eace7bfab1518a1314d8424d6def1e5a82ec48249bfd312",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30728,
+    "stars_github": 30732,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:35.024Z",
+    "fetched_at": "2026-09-10T07:47:58.260Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T00:25:22+03:00",
+    "upstream_commit_at": "2026-09-09T11:36:54+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:35.024Z",
+    "generated_at": "2026-09-10T07:47:58.260Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 能按你的指令把 NanoClaw 接上 Codex：每个组都可以改用 OpenAI Codex 做代理，由 Codex 规划、调用工具，并支持 MCP 工具、服务端历史与续聊；需要 ChatGPT 订阅或 OpenAI API key，凭据只存在 OneCLI 保险库。",
-    "when": "当你明确要求用 Codex 接管某个组、把某个组切到 Codex，或要把它设为新建组的默认代理时执行；不切换就仍是 Claude。",
+    "what": "给 NanoClaw 分组装上 Codex 作为 agent 后端：由它做规划、调用工具与 MCP、在服务端保存会话历史并支持继续会话。凭证只存于 OneCLI 保险库，容器内读不到密钥。",
+    "when": "当你按组执行 `ncl groups config update --provider codex` 切换后端，或把新建分组的默认后端设为 Codex 时接管。切换是操作者在主机上执行的动作。",
     "say": [
       {
-        "text": "把 acme 组切到 codex，并重启它",
-        "note": "执行切组命令并重启该组"
+        "text": "把 <group-id> 这组切到 codex，然后重启它",
+        "note": "该组改用 Codex 运行，记忆自动保留"
       },
       {
-        "text": "帮 NanoClaw 做 codex 认证，用 ChatGPT 登录",
-        "note": "运行认证并把凭据写进保险库"
+        "text": "帮我给 Codex 跑一遍登录认证",
+        "note": "走订阅登录或 API key，存进保险库"
       },
       {
-        "text": "把新建群组的默认代理设为 codex，然后重启主机",
-        "note": "只影响之后新建的群组；已有组不变"
+        "text": "这组还有旧的 .seed.md 记忆，帮我迁移",
+        "note": "仅旧记忆未索引时才需要"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5fe61acdd93f022a2eace7bfab1518a1314d8424d6def1e5a82ec48249bfd312",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:15:26.254Z",
+    "generated_at": "2026-09-10T07:54:10.181Z",
     "lint_pass": true,
-    "what_en": "After install, Claude can switch a NanoClaw group to Codex. Codex then plans and calls tools, supports MCP tools, server-side history and session resume. Needs a ChatGPT subscription or OpenAI API key; credentials are vault-only via OneCLI.",
-    "when_en": "Triggered when you ask to use Codex as an agent backend for a NanoClaw group, or to switch a group to it; not automatic — control via ncl groups config.",
+    "what_en": "Installs Codex as a full agent backend for NanoClaw groups: it plans, calls tools and MCP, keeps server-side history and resumes sessions. Credentials live only in the OneCLI vault; nothing readable in the container.",
+    "when_en": "Takes over when you switch a group with `ncl groups config update --provider codex`, or default new groups to Codex. Switching is an operator action run from the host.",
     "say_en": [
       {
-        "text": "Switch group acme to codex, then restart it.",
-        "note": "Switches the group provider and restarts it."
+        "text": "Switch group <group-id> to codex, then restart it",
+        "note": "That group now runs on Codex; memory carries over"
       },
       {
-        "text": "Run codex authentication for NanoClaw via ChatGPT or API key.",
-        "note": "Starts codex auth and stores the credential in the vault."
+        "text": "Run the Codex provider auth walk-through",
+        "note": "Subscription login or API key, landed in the vault"
       },
       {
-        "text": "Make codex the default provider for new groups, then restart the host.",
-        "note": "Sets the env default; affects newly created groups only."
+        "text": "Migrate this group's legacy memory",
+        "note": "Only for .seed.md or unindexed memory"
       }
     ]
   }

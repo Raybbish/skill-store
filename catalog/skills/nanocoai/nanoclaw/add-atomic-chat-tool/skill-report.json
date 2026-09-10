@@ -5,7 +5,7 @@
     "name": "add-atomic-chat-tool",
     "description": "Add Atomic Chat MCP server so the container agent can call local models served by the Atomic Chat desktop app via its OpenAI-compatible API.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-atomic-chat-tool",
-    "upstream_commit": "409a88456d1487d6e48f25638b24b5494efbd665",
+    "upstream_commit": "2c754a2234390fcc597273cef6344d99e8ac03d0",
     "content_hash": "sha256:a3ad833f177e220d1db2e28a95e33a602e6c32ff007b597692d980f15f97122a",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30728,
+    "stars_github": 30732,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:35.024Z",
+    "fetched_at": "2026-09-10T07:47:58.260Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T00:25:22+03:00",
+    "upstream_commit_at": "2026-09-09T11:36:54+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:35.024Z",
+    "generated_at": "2026-09-10T07:47:58.260Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -96,41 +96,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会多出两个工具：列出 Atomic Chat 中的本地模型，把提示词发给选定的模型并拿回回答。Claude 仍负责整体任务，但可以把部分环节交给本地模型处理。",
-    "when": "当用户要求把 Atomic Chat 接入项目、让 agent 能调用本地模型，或说“用 Atomic Chat 回答”时，该技能会运行并完成代码修改与注册。",
+    "what": "装好后 Claude 仍负责调度，但能把活儿交给本机 Atomic Chat 桌面应用里的模型：先列出可用模型，再把提示发给指定模型并取回它的回复。",
+    "when": "当你说「用 atomic chat……」或直接点名 atomic_chat_generate 等工具时触发；前提是 Atomic Chat 已在本机运行并开启了 1337 端口的本地 API。",
     "say": [
       {
-        "text": "帮我把 Atomic Chat 的 MCP 工具加进 NanoClaw 项目。",
-        "note": "会先检查是否已安装，再做配置。"
+        "text": "用 atomic chat 告诉我法国首都是哪里",
+        "note": "会先列模型，再生成回复"
       },
       {
-        "text": "添加 Atomic Chat 集成，让 agent 能调用本地模型。",
-        "note": "将复制文件并注册 MCP 服务器。"
-      },
-      {
-        "text": "给代理装上 Atomic Chat 的两个工具，用于列模型和生成回答。",
-        "note": "完成后 Claude 就能调用本地模型。"
+        "text": "用 atomic_chat_list_models 列出本机有哪些模型",
+        "note": "返回 Atomic Chat 里可用的模型 ID"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a3ad833f177e220d1db2e28a95e33a602e6c32ff007b597692d980f15f97122a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:13:03.794Z",
+    "generated_at": "2026-09-10T07:54:09.649Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude gains two tools: one lists local models in Atomic Chat, the other sends prompts to a selected model and returns its answer. Claude stays the main controller but can hand off parts of the job to these local models.",
-    "when_en": "Runs when the user asks to integrate Atomic Chat into the project so the agent can call local models, or says to answer using Atomic Chat; it then applies code changes and registers the MCP server.",
+    "what_en": "Once installed, Claude stays the orchestrator but can offload to models in the local Atomic Chat desktop app: it lists available models, sends a prompt to a chosen model and returns that model's reply.",
+    "when_en": "Triggers when you tell the agent to use Atomic Chat (e.g. \"use atomic chat to...\") or name the atomic_chat_generate tool. Requires Atomic Chat running with its local API server on port 1337.",
     "say_en": [
       {
-        "text": "Add the Atomic Chat MCP tool to the NanoClaw project.",
-        "note": "Checks prerequisites, copies files, and registers the server."
+        "text": "use atomic chat to tell me the capital of France",
+        "note": "Lists models, then generates a reply."
       },
       {
-        "text": "Add Atomic Chat integration so the agent can call local models.",
-        "note": "Edits the runner config and forwards environment variables."
+        "text": "use atomic_chat_generate with llama3.2-3b-instruct to answer: ...",
+        "note": "Sends the prompt to that model."
       },
       {
-        "text": "Install two Atomic Chat tools for listing models and generating replies.",
-        "note": "After this, Claude can use those two MCP tools."
+        "text": "list Atomic Chat models with atomic_chat_list_models",
+        "note": "Shows available model IDs."
       }
     ]
   }

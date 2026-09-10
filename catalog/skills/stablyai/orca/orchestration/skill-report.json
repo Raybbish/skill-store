@@ -5,7 +5,7 @@
     "name": "orchestration",
     "description": "Coordinate supervised Orca workers: threaded messages, blocking ask/reply, task dispatch, worker_done/escalation waits, task DAGs, decision gates, coordinator loops, and decomposing work across agents. Use `orca-cli` for full ownership handoffs — \"hand off\", \"handoff\", \"handover\", \"give this to another agent\", \"another worktree\" — unless asked to supervise, monitor, or coordinate a DAG, and for terminal control, lightweight terminal prompts, shell commands, Orca worktree management, and reading or waiting on terminals. Use Computer Use for external browser windows, webviews, Orca app UI, or desktop UI outside Orca's embedded browser only when the task requires OS/window-level control such as focus, menus, dialogs, coordinates, or screenshots. Use `orca-cli` for Orca's embedded pages and a page-automation tool such as Playwright or CDP for external pages.",
     "upstream": "https://github.com/stablyai/orca/tree/main/skills/orchestration",
-    "upstream_commit": "65631e449af36bba24b6a2d6c331a3c184e7a3e2",
+    "upstream_commit": "2bf298d1dc1a41c03a270e89eca08834c36f13e0",
     "content_hash": "sha256:574921339cbae3098e3cdab3ec0a37bbc6701795a394422203385bc0ddcb9f65",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 189300,
-    "fetched_at": "2026-09-09T07:48:39.527Z",
+    "installs_skills_sh": 193600,
+    "fetched_at": "2026-09-10T07:50:40.934Z",
     "first_seen_at": "2026-08-09T04:19:11.634Z",
-    "upstream_commit_at": "2026-09-09T03:36:41-04:00"
+    "upstream_commit_at": "2026-09-09T23:47:47-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:48:39.527Z",
+    "generated_at": "2026-09-10T07:50:40.934Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后，Claude 遇到多代理协作会走 Orca 协调流程：用 Orca 子代理执行任务，负责跨代理传话、等进度或求助，并按场景选用工具。",
-    "when": "当需要协调多个 Orca 子代理或子任务时触发，比如分派多项任务或等待进度；只求把整个任务交给另一代理则不属于本技能。",
+    "what": "装上后,Claude 能通过 Orca 运行时协调多个受监管的 worker:发线程消息、阻塞式一问一答、派发任务、等 worker 完成或升级、按任务 DAG 和决策门推进,并把工作拆给多个代理。它必须先加载与二进制匹配的指南再执行命令。",
+    "when": "当你需要结构化的多代理协调——如任务 DAG、决策门、等待 worker 完成等——时接管;若只是交接所有权、普通终端或 shell 操作,则改用 orca-cli 技能。",
     "say": [
       {
-        "text": "拆成两个子任务，让两个子代理并行跑，都完成后汇总。",
-        "note": "Claude 会同时分派任务并等待全部完成。"
+        "text": "把这项工作拆成任务 DAG,分派给几个 worker 并等它们回来",
+        "note": "会派发任务并阻塞等待 worker_done"
       },
       {
-        "text": "先派一个子代理收集资料，拿到结果后交给我。",
-        "note": "触发一次任务分派和结果回收。"
+        "text": "给这个 worker 发条线程消息,问它进度然后等回复",
+        "note": "走阻塞式 ask/reply 流程"
       },
       {
-        "text": "子代理 A 做完阶段一，再叫 B 接着做阶段二。",
-        "note": "Claude 按先后顺序调度转交。"
+        "text": "起一个协调循环监控各 worker,有升级就告诉我",
+        "note": "进入协调循环并处理升级"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:574921339cbae3098e3cdab3ec0a37bbc6701795a394422203385bc0ddcb9f65",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:26:06.343Z",
+    "generated_at": "2026-09-10T07:55:06.537Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude coordinates real Orca subagents for multi-agent jobs: dispatching tasks, passing messages, waiting on progress or escalation, and choosing the right tool.",
-    "when_en": "It triggers when you need to coordinate several Orca subagents/tasks, e.g., distributing subtasks or waiting on progress. Full handover of a whole task to another agent is handled elsewhere.",
+    "what_en": "Once installed, Claude coordinates supervised Orca workers via the Orca runtime: threaded messages, blocking ask/reply, task dispatch, waiting on worker_done or escalation, task DAGs and decision gates, splitting work across agents. It loads the version-matched guide before running commands.",
+    "when_en": "Engage when you need structured multi-agent coordination, such as task DAGs, decision gates, or waiting on workers. For ownership handoffs, ordinary terminal or shell work, use the orca-cli skill instead.",
     "say_en": [
       {
-        "text": "Split this into two subtasks for two subagents, wait for both, then combine.",
-        "note": "Claude dispatches tasks and waits for all to finish."
+        "text": "Split this work into a task DAG, dispatch it to several workers, and wait for them",
+        "note": "Dispatches tasks and blocks on worker_done"
       },
       {
-        "text": "Dispatch a subagent to gather the info and hand the result to me.",
-        "note": "Triggers one task dispatch and result return."
+        "text": "Send this worker a threaded message asking for status, then wait for the reply",
+        "note": "Uses the blocking ask/reply flow"
       },
       {
-        "text": "Have A finish stage one, then call B for stage two.",
-        "note": "Claude sequences the handoff between them."
+        "text": "Run a coordinator loop over the workers and tell me about escalations",
+        "note": "Enters the coordinator loop and handles escalation"
       }
     ]
   }

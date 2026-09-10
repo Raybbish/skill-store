@@ -5,7 +5,7 @@
     "name": "add-anydoc",
     "description": "Add local office-document-to-Markdown conversion to NanoClaw agent containers with the pinned Firecrawl AnyDoc CLI. Use when agents need to read attached Word, PowerPoint, Excel, OpenDocument, RTF, EPUB, CSV, or text-based PDF files without uploading them to a hosted parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc",
-    "upstream_commit": "409a88456d1487d6e48f25638b24b5494efbd665",
+    "upstream_commit": "2c754a2234390fcc597273cef6344d99e8ac03d0",
     "content_hash": "sha256:1e06f5199dd218f27f571366d004c0852b5c9fb4b26f644a55f75c380cb8bd49",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30728,
+    "stars_github": 30732,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:35.024Z",
+    "fetched_at": "2026-09-10T07:47:58.260Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-09T00:25:22+03:00",
+    "upstream_commit_at": "2026-09-09T11:36:54+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:35.024Z",
+    "generated_at": "2026-09-10T07:47:58.260Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,40 +92,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会在代理容器里把你附带的办公文档、文本 PDF、CSV 等转成 Markdown,并只围绕相关部分总结回答,不把文件上传;图片型 PDF 会失败,扫描 PDF 仍需 OCR,电子表格 Markdown 不适用于计算。",
-    "when": "当 Claude 需要读取你附带的 Office 文档、文本 PDF、CSV 等,且要求不把文件上传到云端解析服务时,会先在本机代理容器内转成 Markdown 再处理。",
+    "what": "在 NanoClaw 的 agent 容器内装好固定版本的 Firecrawl AnyDoc CLI 和一个容器技能,让 agent 能读取容器里的 Word、PPT、Excel 等办公文档,在本地转成 Markdown,不经过托管解析服务。",
+    "when": "当 agent 需要读取容器里附件的 Word、PowerPoint、Excel 等办公文档,又不希望把这些文件上传到托管解析服务时,由它接管转换。",
     "say": [
       {
-        "text": "把附件里的 Word 转成 Markdown,再总结要点。"
+        "text": "把这个 XLSX 附件转成 Markdown 表格。",
+        "note": "表格 Markdown 不用于计算。"
       },
       {
-        "text": "这份 PPT 附件讲了什么?概括一下。",
-        "note": "Claude 会先转成 Markdown,再从中概括。"
-      },
-      {
-        "text": "把附件 CSV 转成 Markdown 表格并展示。",
-        "note": "转换在本地进行,文件不会上传。"
+        "text": "这个纯图片 PDF 转不了就直说,别上传。",
+        "note": "扫描件需要 OCR。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1e06f5199dd218f27f571366d004c0852b5c9fb4b26f644a55f75c380cb8bd49",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:14:10.641Z",
+    "generated_at": "2026-09-10T07:54:06.611Z",
     "lint_pass": true,
-    "what_en": "Installed: Claude converts docs like Office, CSV, or text-PDF to Markdown in-container and answers only from the Markdown; nothing is uploaded. Image-only PDFs fail; scanned PDFs need OCR; spreadsheet Markdown is not for calculations.",
-    "when_en": "Triggered when Claude needs to read attached Office docs, text PDFs, or CSV files and should keep conversion local instead of uploading them to a hosted parser.",
+    "what_en": "Installs a pinned Firecrawl AnyDoc CLI plus a container skill so NanoClaw agents convert attached Word, PowerPoint, Excel and other office files to Markdown locally inside the container, without uploading them to a hosted parser.",
+    "when_en": "Triggers when an agent needs to read attached Word, PowerPoint or Excel files from the container and the files must not be uploaded to a hosted parser.",
     "say_en": [
       {
-        "text": "Convert the Word attachment to Markdown and summarize the key points.",
-        "note": "Claude converts locally and summarizes from the relevant Markdown."
+        "text": "Convert the DOCX in /workspace/inbox to Markdown and summarize it.",
+        "note": "Output lands in /workspace/agent/converted/."
       },
       {
-        "text": "Summarize what this attached PPT is about.",
-        "note": "Claude converts it to Markdown, then summarizes from the converted text."
+        "text": "Turn this XLSX attachment into a Markdown table.",
+        "note": "Markdown tables aren't authoritative for calculations."
       },
       {
-        "text": "Turn the attached CSV into a Markdown table and display it.",
-        "note": "The conversion runs locally; the file is not uploaded."
+        "text": "If this image-only PDF can't be converted, say so and don't upload it.",
+        "note": "Scanned PDFs need OCR."
       }
     ]
   }

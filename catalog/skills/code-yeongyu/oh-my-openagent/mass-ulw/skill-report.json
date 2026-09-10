@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "18666db8ff1949a76e4c631e5208a214fc4a4dc2",
+    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
     "content_hash": "sha256:4fa67eafdbdf3087e175b9fb7aebd9201e8bcc9e95b5ace753be57ba1efd5cb4",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68836,
+    "stars_github": 68871,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:24.878Z",
+    "fetched_at": "2026-09-10T07:47:46.276Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-09T16:31:49+09:00",
+    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:24.878Z",
+    "generated_at": "2026-09-10T07:47:46.276Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，面对多步骤任务，Claude 会把各步骤按依赖关系组成一张节点图，一次只执行图上当前阶段；节点失败或跑偏时，它会用重试、补充指令或修改定义的方式来恢复，已完成的部分不会重做。",
-    "when": "当用户要求使用 mass-ulw、要求按任务 DAG 执行，或要求做需要部分任务等另一些任务完成的扇出工作时。",
+    "what": "它把有先后依赖的多步任务拆成节点图,按依赖分批并行派出子代理执行;某个节点失败可单独重试或改写指令,已完成的结果会被复用,节点和运行声称完成前须用证据核验。",
+    "when": "当你说出 “mass-ulw”,或给出的并行多代理任务里存在依赖关系(例如任务 C 需等 A、B 完成)时触发。",
     "say": [
       {
-        "text": "用 mass-ulw 跑这个任务图：做完 A 和 B，再启动 C",
-        "note": "会建立依赖节点并按阶段推进"
+        "text": "用 mass-ulw 把这次任务拆成有依赖的节点图并跑起来",
+        "note": "先在 eval 单元里定义 DAG 再启动运行"
       },
       {
-        "text": "帮我用 mass-ulw 重试刚才失败的那个节点",
-        "note": "只重试该节点，其他已完成结果保留"
+        "text": "重跑刚才失败的节点,并把它的指令改成跳过 vendor 目录",
+        "note": "只重试该节点及受影响的下游节点"
       },
       {
-        "text": "把这几步拆成有依赖关系的多阶段，用 mass-ulw 执行",
-        "note": "每个阶段只跑该阶段能开始的节点"
+        "text": "取消这次运行,原因是被新计划取代了",
+        "note": "运行停止并在记录中写明取消原因"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4fa67eafdbdf3087e175b9fb7aebd9201e8bcc9e95b5ace753be57ba1efd5cb4",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T07:59:29.513Z",
+    "generated_at": "2026-09-10T07:52:40.921Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude organizes multi-step jobs into a dependency-ordered node graph and runs only the current phase at a time. Failed or drifting nodes are recovered via retry, steering messages, or definition edits; completed work is reused.",
-    "when_en": "Triggered when the user asks for mass-ulw, a task DAG, or fan-out work where some tasks must wait for others.",
+    "what_en": "It turns a multi-step job with real dependencies into a node graph, dispatches child agents in parallel waves as dependencies clear, and lets you retry or re-prompt one failed node while reusing finished results.",
+    "when_en": "Triggers when you ask for mass-ulw, give a task DAG, or request fan-out work where some tasks must wait on others.",
     "say_en": [
       {
-        "text": "Run this graph with mass-ulw: do A and B first, then start C.",
-        "note": "Builds dependency nodes and advances by phase."
+        "text": "Use mass-ulw to split this job into a dependency graph and run it",
+        "note": "It defines the DAG in an eval cell, then starts the run"
       },
       {
-        "text": "Use mass-ulw to retry the node that just failed.",
-        "note": "Only that node is retried; finished results are kept."
+        "text": "Retry the failed node and edit its prompt to skip the vendored dir",
+        "note": "Only that node and its dependents re-run"
       },
       {
-        "text": "Split these steps into dependency-ordered phases and run them with mass-ulw.",
-        "note": "Each phase only runs nodes whose dependencies are clear."
+        "text": "Cancel this run, reason: superseded by a new plan",
+        "note": "The run stops and records the reason"
       }
     ]
   }

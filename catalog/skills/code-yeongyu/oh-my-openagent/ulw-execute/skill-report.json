@@ -5,7 +5,7 @@
     "name": "ulw-execute",
     "description": "Executes a written Prometheus work plan with Boulder state, evidence ledger, worktree discipline, and parallel subagents. Use when the user says ulw-execute or asks to run a .omo/plans plan.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ulw-execute",
-    "upstream_commit": "18666db8ff1949a76e4c631e5208a214fc4a4dc2",
+    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
     "content_hash": "sha256:06cf012f12cdb7680fac6e19b7c65493e7b0176a89ed37907c9718f5ba15a1fd",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68836,
+    "stars_github": 68871,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:24.878Z",
+    "fetched_at": "2026-09-10T07:47:46.276Z",
     "first_seen_at": "2026-08-27T13:37:06.727Z",
-    "upstream_commit_at": "2026-09-09T16:31:49+09:00",
+    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:24.878Z",
+    "generated_at": "2026-09-10T07:47:46.276Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 不会自己写代码或改文件。它会读工作计划，把待办拆小、分给多个子代理并行执行，再核对结果并更新进度记录，直到计划项全部完成。",
-    "when": "当你说“ulw-execute”、“start work”或要求运行 `.omo/plans` 里的某个计划时触发；若还没有可选计划，它会先引导生成一份再执行。",
+    "what": "Claude 不再自己写代码，而是当调度者：读 .omo/plans/ 里的 Prometheus 计划，把实现、测试、评审全部派给子代理并行执行，用 .omo/boulder.json 记录进度，逐条勾掉计划复选框，直到顶层复选框全部完成。",
+    "when": "当你说 “ulw-execute”，或要求执行 .omo/plans 下的某份计划时触发；若没有可用计划，会先调用 ulw-plan 生成计划再开始执行。",
     "say": [
       {
-        "text": "执行 `.omo/plans` 里的 `web-redesign` 计划。",
-        "note": "Claude 会选中该计划并逐项推进所有待办。"
+        "text": "$ulw-execute my-feature",
+        "note": "选中并开始执行该计划"
       },
       {
-        "text": "运行 ulw-execute，接着上次的进度继续。",
-        "note": "它会恢复记录中的未完成任务并派发子代理。"
+        "text": "$ulw-execute my-feature --make-pr",
+        "note": "每个阶段以 pull request 交付"
       },
       {
-        "text": "用 ulw-execute --ship 完成整个计划并合入。",
-        "note": "它会在 PR 打开后持续跟进，直到合并才收尾。"
+        "text": "$ulw-execute my-feature --ship",
+        "note": "跟进 PR 直到合并"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:06cf012f12cdb7680fac6e19b7c65493e7b0176a89ed37907c9718f5ba15a1fd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:03:16.833Z",
+    "generated_at": "2026-09-10T07:52:58.814Z",
     "lint_pass": true,
-    "what_en": "Claude becomes an orchestrator that never implements: it reads a plan, breaks each todo into units, delegates them to parallel subagents, checks the outcomes, and tracks progress until every item is complete.",
-    "when_en": "It activates when you say “ulw-execute” or “start work”, or when you ask it to run an existing plan under `.omo/plans`. In the absence of a plan, it bootstraps one before executing.",
+    "what_en": "Claude stops coding itself: it reads a Prometheus plan in .omo/plans/, delegates implementation, tests and review to parallel subagents, tracks state in .omo/boulder.json, and checks off plan boxes until all top-level ones are done.",
+    "when_en": "Triggers when you say \"ulw-execute\" or ask it to run a .omo/plans plan; with no usable plan it first calls ulw-plan to create one.",
     "say_en": [
       {
-        "text": "Run the `web-redesign` plan under `.omo/plans`.",
-        "note": "It selects that plan and advances through its pending items."
+        "text": "$ulw-execute my-feature",
+        "note": "Selects and starts that plan"
       },
       {
-        "text": "Run ulw-execute and continue from the saved progress.",
-        "note": "It restores the unfinished work and dispatches subagents."
+        "text": "$ulw-execute my-feature --make-pr",
+        "note": "Delivers each phase as a pull request"
       },
       {
-        "text": "Use ulw-execute --ship to deliver and merge the whole plan.",
-        "note": "It keeps tracking until the PR merges, then cleans up."
+        "text": "$ulw-execute my-feature --ship",
+        "note": "Follows the PR through to merge"
       }
     ]
   }

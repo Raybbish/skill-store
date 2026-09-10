@@ -5,7 +5,7 @@
     "name": "remove-deadcode",
     "description": "Remove unused code from this project with ultrawork mode, LSP-verified safety, atomic commits. Triggers: remove dead code, dead code, cleanup, remove unused.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/remove-deadcode",
-    "upstream_commit": "18666db8ff1949a76e4c631e5208a214fc4a4dc2",
+    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
     "content_hash": "sha256:5e87c2118e567b4a1ddcb9d423ec86110488347fce8b2acaa7d1d0a3bd47ebf1",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68836,
+    "stars_github": 68871,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:24.878Z",
+    "fetched_at": "2026-09-10T07:47:46.276Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T16:31:49+09:00",
+    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:24.878Z",
+    "generated_at": "2026-09-10T07:47:46.276Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会扫描并清理项目中未被使用的代码:先定位候选,再用 LSP 引用查找确认确无引用,随后把删除任务分批交给多个并行子代理执行,最后跑类型检查、测试和构建并汇报。入口文件、测试文件等受保护对象不会被删除。",
-    "when": "当用户提出移除死代码、清理未使用代码等要求时触发,例如说“remove dead code”“cleanup”“remove unused”。默认扫描整个项目,也可指定文件、目录或符号以缩小范围。",
+    "what": "扫描项目中未被引用的代码,用 LSP 引用查询逐个核实后,派多个并行 agent 按文件分组删除,每组通过类型检查才单独提交一次 commit,最后给出删除与跳过清单。",
+    "when": "当你提到「remove dead code」「dead code」「cleanup」等关键词,或要求清理项目里没用到的代码时触发。",
     "say": [
       {
-        "text": "请清理这个项目里的死代码",
-        "note": "Claude 会开始全项目扫描并删除未使用项"
+        "text": "扫描整个项目里的未使用代码,先列出候选给我",
+        "note": "只列出候选,不直接删除"
       },
       {
-        "text": "只检查 src/features/login 目录下的未使用代码",
-        "note": "范围限定在指定目录"
+        "text": "只清理 src/utils 目录下的死代码",
+        "note": "给参数可把扫描范围缩到该目录"
       },
       {
-        "text": "帮我把 src/utils.ts 中未使用的导出函数删掉",
-        "note": "按单文件处理"
+        "text": "把确认无用的导出函数和类型删掉并提交",
+        "note": "每个文件单独一次原子提交"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5e87c2118e567b4a1ddcb9d423ec86110488347fce8b2acaa7d1d0a3bd47ebf1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:00:50.298Z",
+    "generated_at": "2026-09-10T07:52:47.892Z",
     "lint_pass": true,
-    "what_en": "Claude orchestrates dead-code removal: scans for candidates, verifies via LSP, batches by file, delegates each batch to parallel agents, then runs typecheck/test/build. Protected files (entry points, tests, configs, packages) are never removed.",
-    "when_en": "Triggered when the user asks to remove dead code or unused code, says 'cleanup', etc. Defaults to full project scan; can be narrowed to a file, directory, or symbol.",
+    "what_en": "Claude scans your project for unused code, verifies each candidate with LSP reference lookups, then dispatches parallel agents to remove them in file-based batches, each committing separately only after typecheck passes.",
+    "when_en": "Triggers when you mention \"remove dead code\", \"dead code\", \"cleanup\" and similar keywords, or ask to clean up unused code in the project.",
     "say_en": [
       {
-        "text": "Please clean up dead code in this project",
-        "note": "Claude starts a full-project scan and removal."
+        "text": "Scan the whole project for unused code and list the candidates first",
+        "note": "Lists candidates only, removes nothing yet"
       },
       {
-        "text": "Only check unused code under src/features/login",
-        "note": "Limits scan to that directory."
+        "text": "Only clean up dead code under src/utils",
+        "note": "Passing a scope narrows the scan to that place"
       },
       {
-        "text": "Remove the unused exported function from src/utils.ts",
-        "note": "Processes a single file."
+        "text": "Delete the confirmed unused exported functions and types, then commit",
+        "note": "One atomic commit per file"
       }
     ]
   }

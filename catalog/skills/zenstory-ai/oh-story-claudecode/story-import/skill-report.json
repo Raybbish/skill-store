@@ -5,8 +5,8 @@
     "name": "story-import",
     "description": "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容 story-long-write / story-short-write 后续写作流程；内部复用 story-long-analyze / story-short-analyze 的拆解管道，按篇幅自动分流。触发方式：/story-import、「导入小说」「反向解析」「导入」「把我的书导进来」。",
     "upstream": "https://github.com/zenstory-ai/oh-story-claudecode/tree/main/skills/story-import",
-    "upstream_commit": "12a300afb9735307657e2f84f27c51f8ca069f24",
-    "content_hash": "sha256:dce29273e0d882f5bc2dc4798f9c14b90174791be0e3892feaf011369b2f9f14",
+    "upstream_commit": "fde17546758c58ad4d3306ef93d0db8ad28f9f3c",
+    "content_hash": "sha256:b091111e0954876b8f7d167c319112246060ac62cf81b512c14f872ab6ec2ceb",
     "license": "MIT",
     "hosting": "indexed",
     "category": "writing",
@@ -14,18 +14,16 @@
     "publisher": "zenstory-ai",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": [
-      "automation"
-    ]
+    "tags": []
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6689,
+    "stars_github": 6719,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:58.981Z",
+    "fetched_at": "2026-09-10T07:48:26.209Z",
     "first_seen_at": "2026-08-27T13:37:59.445Z",
-    "upstream_commit_at": "2026-09-08T06:12:34-07:00",
+    "upstream_commit_at": "2026-09-09T03:54:00-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -35,16 +33,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:58.981Z",
+    "generated_at": "2026-09-10T07:48:26.209Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 42702,
-        "chars": 22108,
-        "tokens": 13184
+        "bytes": 42722,
+        "chars": 22118,
+        "tokens": 13189
       },
       "activation_with_declared_refs": {
         "files": [
@@ -55,13 +53,14 @@
           "references/state-tracking.md",
           "references/structure-mapping-long.md",
           "references/structure-mapping-short.md",
+          "references/tracking-initialization.md",
           "references/tracking-transaction.md",
           "scripts/tracking_commit.py"
         ],
-        "text_files": 9,
-        "bytes": 165059,
-        "chars": 108511,
-        "tokens": 44692
+        "text_files": 10,
+        "bytes": 165387,
+        "chars": 108679,
+        "tokens": 44791
       },
       "package_total_text": {
         "files": [
@@ -72,36 +71,80 @@
           "references/state-tracking.md",
           "references/structure-mapping-long.md",
           "references/structure-mapping-short.md",
+          "references/tracking-initialization.md",
           "references/tracking-transaction.md",
           "scripts/check-outline-contract.js",
           "scripts/tracking_commit.py",
           "scripts/wordcount_core.py"
         ],
-        "text_files": 11,
-        "bytes": 193421,
-        "chars": 133431,
-        "tokens": 51239
+        "text_files": 12,
+        "bytes": 193749,
+        "chars": 133599,
+        "tokens": 51339
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "导入已有小说并整理成标准写作项目",
+    "tagline": "把已写好或写了一半的小说导进写作项目,接着往下写",
     "scene_tags": [
-      "小说导入",
-      "旧稿续写"
+      "续写旧稿",
+      "整理半成品",
+      "导入存稿",
+      "长篇改稿"
     ],
-    "fit_line": "适合你,如果你已有半成品小说,想纳入统一写作流程继续创作",
-    "tagline_en": "Import existing novels and format them into standard writing projects",
+    "fit_line": "适合你,如果手头有完本或半成品小说,想放进统一流程继续创作。",
+    "tagline_en": "Import your finished or half-written novel into a project and keep writing",
     "scene_tags_en": [
-      "novel import",
-      "draft continuation"
+      "continue old draft",
+      "organize half-finished novel",
+      "import manuscript",
+      "long-form revision"
     ],
-    "fit_line_en": "For you if you have existing novel drafts and want to continue in a structured flow",
+    "fit_line_en": "For you if you have a finished or half-written novel and want to keep writing it in one flow.",
     "source": "llm",
-    "content_hash": "sha256:dce29273e0d882f5bc2dc4798f9c14b90174791be0e3892feaf011369b2f9f14",
+    "content_hash": "sha256:b091111e0954876b8f7d167c319112246060ac62cf81b512c14f872ab6ec2ceb",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T07:55:36.474Z",
+    "generated_at": "2026-09-10T07:51:53.082Z",
     "lint_pass": true
+  },
+  "howto": {
+    "what": "把已写好的小说（半成品或完本）反向解析成可续写的项目结构：设定、大纲、正文、追踪，并按篇幅自动分流长篇或短篇两条路径；拆解与迁移产物分别落在拆文库和书名目录下。",
+    "when": "当你说出 “/story-import”、“导入小说”、“反向解析” 等关键词，或询问“已有小说怎么续写”“导入流程先走哪一步”时接管。",
+    "say": [
+      {
+        "text": "把我的书导进来，做成能接着续写的写作工程",
+        "note": "会先问你要导入哪本书、提供路径或贴原文"
+      },
+      {
+        "text": "导入这本小说，只要一份拆文库分析",
+        "note": "只跑拆解管道，不做结构迁移"
+      },
+      {
+        "text": "导入续写先走 story-setup 还是 story-import？",
+        "note": "先给推荐顺序，再收集原文"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:b091111e0954876b8f7d167c319112246060ac62cf81b512c14f872ab6ec2ceb",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-10T07:55:39.894Z",
+    "lint_pass": true,
+    "what_en": "Turns an existing novel (unfinished or complete) into a resumable project structure—settings, outline, chapters, tracking—routing long or short works down separate paths. Analysis and migration output land in the book directory.",
+    "when_en": "Triggered when you say \"/story-import\", \"导入小说\", \"反向解析\", or ask how to continue an existing novel or which step comes first.",
+    "say_en": [
+      {
+        "text": "Import my book and turn it into a project I can keep writing",
+        "note": "It first asks which book, path or pasted text"
+      },
+      {
+        "text": "Import this novel, analysis only",
+        "note": "Runs the analysis pipeline, no structure migration"
+      },
+      {
+        "text": "Should I run story-setup or story-import first?",
+        "note": "Gives the order, then collects the source"
+      }
+    ]
   }
 }

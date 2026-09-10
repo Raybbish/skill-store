@@ -5,7 +5,7 @@
     "name": "add-wechat",
     "description": "Add WeChat (personal) channel integration via Tencent's official iLink Bot API. Uses long-polling and QR scan — no webhook, no ToS risk, no paid token.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-wechat",
-    "upstream_commit": "409a88456d1487d6e48f25638b24b5494efbd665",
+    "upstream_commit": "2c754a2234390fcc597273cef6344d99e8ac03d0",
     "content_hash": "sha256:455ba01e2a000544d6de6c150790dc57c552daa9bb1800093765e73163e598ae",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30728,
+    "stars_github": 30732,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:35.024Z",
+    "fetched_at": "2026-09-10T07:47:58.260Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T00:25:22+03:00",
+    "upstream_commit_at": "2026-09-09T11:36:54+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:35.024Z",
+    "generated_at": "2026-09-10T07:47:58.260Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "这个技能把个人微信接入 Claude。扫码登录并配好接线后,别人给你的微信号发消息,Claude 就能自动回复;单聊和群聊都支持,无需公网回调地址。",
-    "when": "当你想把个人微信接到 Claude 上让它收发微信消息,或说出“添加微信通道”“配置微信机器人”等要求时,就会用到这个技能。",
+    "what": "装上后会把你的个人微信通过腾讯官方 iLink Bot API 接成一条渠道:长轮询收消息、手机扫码登录,不需要 webhook 或付费 token。扫码成功后,微信消息交给 agent 处理并回复。",
+    "when": "当你安装这个技能、设置 WECHAT_ENABLED=true 并重启服务,日志里出现待扫二维码时;也用于把某个微信联系人/群接到 agent 时。",
     "say": [
       {
-        "text": "帮我把个人微信接到 Claude 上",
-        "note": "会开始安装微信适配器并提示你扫码。"
+        "text": "帮我把个人微信接入 NanoClaw"
       },
       {
-        "text": "配置微信通道并显示登录二维码,我来扫",
-        "note": "会修改 .env、重启服务,把二维码给你扫。"
+        "text": "把刚给我发消息的那个微信联系人接到 agent"
       },
       {
-        "text": "把微信刚收到的消息接到指定的 agent 组",
-        "note": "会运行 wire-dm 脚本完成接线。"
+        "text": "微信提示 session expired,帮我重新登录",
+        "note": "删除 auth.json 并重启,重新扫码"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:455ba01e2a000544d6de6c150790dc57c552daa9bb1800093765e73163e598ae",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:18:54.467Z",
+    "generated_at": "2026-09-10T07:54:38.325Z",
     "lint_pass": true,
-    "what_en": "Adds a personal WeChat channel to Claude: after install, QR login, and wiring to an agent group, messages sent to that WeChat account (DMs and group chats) are received in real time by long-poll and Claude can answer. No webhook or paid token needed.",
-    "when_en": "Triggers when the user asks to connect their personal WeChat to Claude, add a WeChat channel, or configure a WeChat bot, or chooses WeChat as a channel during setup.",
+    "what_en": "Wires your personal WeChat into NanoClaw via Tencent's official iLink Bot API: long-polling messages and phone QR login, no webhook or paid token. After the scan, WeChat messages reach the agent, which replies.",
+    "when_en": "Triggers when you install the skill and enable WECHAT_ENABLED=true, then restart and a QR code appears in the logs; also when wiring a WeChat contact or group to an agent.",
     "say_en": [
       {
-        "text": "Connect my personal WeChat to Claude.",
-        "note": "It installs the adapter and asks you to scan a QR."
+        "text": "Connect my personal WeChat to NanoClaw",
+        "note": "Starts QR login and saves credentials to data/wechat/auth.json"
       },
       {
-        "text": "Enable the WeChat channel and show me the QR code.",
-        "note": "It changes .env, restarts the service, and shows the QR."
+        "text": "Wire the WeChat contact who just messaged me to an agent",
+        "note": "Runs the wire-dm script to pick an agent group"
       },
       {
-        "text": "Wire the latest WeChat DM I received to an agent group.",
-        "note": "It runs wire-dm.ts to create the wiring."
+        "text": "WeChat says session expired, re-log me in",
+        "note": "Deletes auth.json, restarts, asks for a new scan"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "planning-with-files-de",
     "description": "Persistente dateibasierte Planung für mehrstufige Arbeit mit KI-Agenten. Hält task_plan.md, findings.md und progress.md auf dem Datenträger; Lebenszyklus-Hooks speisen ausgewählten Planungskontext des Projekts ein. Die automatische Wiederherstellung liest nur die Planungsdateien des Projekts. Nur ein ausdrücklicher Aufruf von session-catchup.py --metadata darf lokale Sitzungsmetadaten desselben Projekts prüfen; --replay darf begrenzte, nonce-gerahmte Auszüge ausgeben. Der optionale Gate-Modus kann nur bei Unterstützung durch den Host eine Fortsetzung anfordern und führt niemals in Markdown angegebene Befehle aus. Der Skill hat keinen Netzwerk-Uploadpfad. Verwenden für Forschung oder Arbeit mit mehr als 5 Tool-Aufrufen.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-de",
-    "upstream_commit": "f67e2bb7294867c37bbea150de0bf81f2c3449d3",
+    "upstream_commit": "1ec8f4eb5c683e31644856d98f9abde0d5a53448",
     "content_hash": "sha256:566f250cd62b3e9a7ef949040348eaa27dc1ce42e99f417ef846ae90f3432d57",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26736,
+    "stars_github": 26757,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:35.790Z",
+    "fetched_at": "2026-09-10T07:47:59.167Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T08:10:43+02:00",
+    "upstream_commit_at": "2026-09-10T00:00:01+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:35.790Z",
+    "generated_at": "2026-09-10T07:47:59.167Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -120,41 +120,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude会在你的项目里创建三份文件，分别记录任务计划、研究发现和进度。每次对话前会先查看这些文件；在写入或编辑文件后提醒更新进度；清空会话后能据此恢复。",
-    "when": "当你要求做任务规划、项目分解、多步研究这类的活儿，或者这件事需要连续调用5次以上工具时启动。",
+    "what": "装上后,Claude 会在你的项目目录里创建并维护 task_plan.md、findings.md、progress.md 三个文件,把阶段计划、研究发现和进度记录下来,每完成一个阶段就更新一次;会话被 /clear 清空后,它靠这些磁盘文件把上下文接回来。",
+    "when": "当你做多步项目、调研任务,或预估超过 5 次工具调用的工作,以及提到「任务规划」「项目拆解」「进度跟踪」等关键词时会触发;在 /clear 之后也会自动恢复计划上下文。",
     "say": [
       {
-        "text": "请帮我把这次的任务拆成步骤，整理成计划文件。",
-        "note": "生成新的计划文件。"
+        "text": "帮我把这个多步任务拆成计划,写进 task_plan.md",
+        "note": "生成带阶段与状态的计划文件"
       },
       {
-        "text": "查看一下研究记录文件，把刚才的新发现加进去。",
-        "note": "更新研究记录。"
-      },
-      {
-        "text": "我进行到哪一步了？看看进度文件告诉我。",
-        "note": "读取进度文件。"
+        "text": "把这次的调研发现整理到 findings.md",
+        "note": "研究成果落地到发现文件"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:566f250cd62b3e9a7ef949040348eaa27dc1ce42e99f417ef846ae90f3432d57",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:22:35.124Z",
+    "generated_at": "2026-09-10T07:54:57.844Z",
     "lint_pass": true,
-    "what_en": "Claude creates three project files for the task plan, findings, and progress. Before each turn it reads them, reminds you to update after file writes/edits, and restores from them after a cleared session.",
-    "when_en": "Activates when you ask for task planning, project breakdown, or multi-step research, or when the job would require more than 5 tool calls.",
+    "what_en": "Once installed, Claude creates and maintains task_plan.md, findings.md and progress.md in your project directory, recording phases, research and progress, updating them after each phase. After /clear it reloads context from those on-disk files.",
+    "when_en": "Triggers for multi-step projects, research tasks, or work estimated at more than 5 tool calls, and when you mention task planning, project breakdown or progress tracking; it also restores plan context after /clear.",
     "say_en": [
       {
-        "text": "Break this task into steps and save them as a plan file.",
-        "note": "Creates a new plan file."
+        "text": "Break this multi-step task into a plan and write it to task_plan.md",
+        "note": "Creates the phase/status plan file"
       },
       {
-        "text": "Check the research notes file and add today's findings.",
-        "note": "Updates the research log."
+        "text": "Read task_plan.md, continue the unfinished phase and update progress.md",
+        "note": "Resumes per the on-disk plan and logs progress"
       },
       {
-        "text": "Which step am I on? Look at the progress file and tell me.",
-        "note": "Reads progress back to you."
+        "text": "Put this research into findings.md",
+        "note": "Stores findings in the findings file"
       }
     ]
   }

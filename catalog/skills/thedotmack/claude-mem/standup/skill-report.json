@@ -5,7 +5,7 @@
     "name": "standup",
     "description": "Facilitate a read-only standup across git worktrees, branches, or PRs to compare changes and produce one consolidation plan.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/standup",
-    "upstream_commit": "8bc631a71a487424b866756e43a6efa4574cc66b",
+    "upstream_commit": "1461655740297a34e11d721b612eb682db3f2ea7",
     "content_hash": "sha256:9f930921b4da027db63add61887ce9a0559d7e92134ae8edfb9b056f669c9ae9",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93540,
+    "stars_github": 93592,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:20.369Z",
+    "fetched_at": "2026-09-10T07:47:41.387Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-08T23:11:26-07:00",
+    "upstream_commit_at": "2026-09-09T21:10:32-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:20.369Z",
+    "generated_at": "2026-09-10T07:47:41.387Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,41 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把每个 git 分支、工作树或 PR 当成虚拟参会者，让它们轮流发言、对比改动、协商冲突，最后给出统一合并计划。过程只读，不直接改代码。",
-    "when": "当你要求跨多个 git 分支、工作树或 PR 对比改动并产出一个合并方案时触发；也可指定时间窗口（如1小时/24小时）来自动挑选活跃分支参与。",
+    "what": "把每个 git worktree、分支或 PR 当作一名 agent，加入同一份 markdown 会议文件（默认 ~/.claude-mem/STANDUP.md），分轮讨论后产出一份合并计划：目标 worktree、合并顺序与冲突处理。全程只读，不提交不合并，合并交给 /do。",
+    "when": "当你要求跨 worktree、分支或 PR 做 standup、比较改动并给出统一合并计划时触发；没指定时间窗会先问你要哪个（1h、4h、24h 等）。候选只有 0 或 1 个时，它会说明这不构成 standup。",
     "say": [
       {
-        "text": "给这几个分支开个 standup，比较各自改动，给我一个合并计划。",
-        "note": "Claude 会分轮次主持并把结论总结给你。"
+        "text": "帮我给最近 4 小时活跃的 worktree 开个 standup",
+        "note": "它们会加入同一份会议文件，分轮发言"
       },
       {
-        "text": "以过去24小时为窗口，让活跃工作树讨论如何合并。",
-        "note": "会先按窗口筛选参会分支再开始。"
+        "text": "把这两个分支和这个 PR 拉进 standup，比一比改了什么",
+        "note": "全程只读，最后给出合并计划"
       },
       {
-        "text": "把 develop 和 PR #12 拉进来，梳理冲突并给出合并顺序。",
-        "note": "只读对比并出计划，不会替你合并。"
+        "text": "把 standup 的结论用人话讲给我，需要我拍板的决定列出来",
+        "note": "清楚的选项会用 AskUserQuestion 问你"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f930921b4da027db63add61887ce9a0559d7e92134ae8edfb9b056f669c9ae9",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:28:17.260Z",
+    "generated_at": "2026-09-10T07:55:29.427Z",
     "lint_pass": true,
-    "what_en": "Each git worktree/branch/PR becomes a virtual participant; they talk in a shared read-only log, compare changes and conflicts, and produce one merge plan. Claude does not merge or edit code itself.",
-    "when_en": "Triggered by user requests to compare multiple git worktrees/branches/PRs and produce one merge plan, or by choosing a time window (e.g., 1h/24h) for active worktrees.",
+    "what_en": "Each git worktree, branch, or PR joins one shared markdown room (default ~/.claude-mem/STANDUP.md) as an agent. Claude runs rounds, then writes one plan: target worktree, merge order, conflicts. Read-only; merges go to /do.",
+    "when_en": "Triggers when you ask for a standup across worktrees, branches, or PRs to compare changes and get one plan. No window given: it asks (1h/4h/24h). Under 2 candidates, it says that isn't a standup.",
     "say_en": [
       {
-        "text": "Run a standup across these branches, compare changes, and give me a merge plan.",
-        "note": "Claude will run turns and summarize the conclusion."
+        "text": "Run a standup on worktrees active in the last 4 hours.",
+        "note": "They join the shared room and talk in rounds."
       },
       {
-        "text": "Considering activity in the last 24h, have active worktrees discuss how to merge.",
-        "note": "It filters branches by the chosen window first."
+        "text": "Pull these two branches and this PR into a standup.",
+        "note": "Read-only; ends with a consolidation plan."
       },
       {
-        "text": "Pull in local develop and PR #12, sort out conflicts and give merge order.",
-        "note": "Read-only; actual merging is done later, not by Claude here."
+        "text": "Translate the standup outcome in plain language and list my calls.",
+        "note": "It uses AskUserQuestion for the clear-cut ones."
       }
     ]
   }

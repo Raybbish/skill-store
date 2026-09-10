@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Processes and analyzes data with resident-kernel engines (DuckDB, Polars) and one-shot tools. Use for CSV/parquet/JSON analysis, group-by/join/aggregation, time series, distributions, cleaning, or plotting a dataset.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "18666db8ff1949a76e4c631e5208a214fc4a4dc2",
+    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68836,
+    "stars_github": 68871,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:24.878Z",
+    "fetched_at": "2026-09-10T07:47:46.276Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-09-09T16:31:49+09:00",
+    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:24.878Z",
+    "generated_at": "2026-09-10T07:47:46.276Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -106,41 +106,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后,面对 CSV/Parquet/JSON 等数据文件,Claude 会用 DuckDB、Polars 等内置引擎做查询、聚合、清洗、制图,并把计算放在最合适的位置(内存内、直接查文件或远程),且绝不使用 pandas,Excel 需先转格式。",
-    "when": "当你要求分析 CSV/Parquet/JSON 等数据文件,或做分组、连接、聚合、时间序列、分布、清洗、绘图等数据集任务时触发。",
+    "what": "它会先判断计算该放在哪里（常驻内核、载入内存、原地或远程查询），再用 DuckDB、Polars 或 numpy 分析 CSV/Parquet/JSON，回答问题并报告行数和耗时，需要时画图；不使用 pandas。",
+    "when": "当你要求分析某个 CSV/Parquet/JSON 数据集，或要做分组聚合、时间序列、清洗、画图等任务时，它会接管。",
     "say": [
       {
-        "text": "分析这个 CSV:按省份分组的销售额总和是多少?",
-        "note": "用 DuckDB 直接查询文件并报告行数。"
+        "text": "分析 data.csv，按月统计订单总额",
+        "note": "它先探查文件再选引擎"
       },
       {
-        "text": "处理这个 parquet 文件,按时间做滚动平均。",
-        "note": "用 Polars 流式处理。"
+        "text": "这个文件比内存大，别整份读进来",
+        "note": "会改用原地查询或流式处理"
       },
       {
-        "text": "画出这两列的散点图,检查异常值。",
-        "note": "按规范绘图并做视觉检查。"
+        "text": "把结果画成趋势图",
+        "note": "按可视化规范出图并做检查"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T07:57:25.062Z",
+    "generated_at": "2026-09-10T07:52:23.765Z",
     "lint_pass": true,
-    "what_en": "Claude processes data files (CSV/Parquet/JSON) with DuckDB/Polars engines: querying, aggregating, cleaning, plotting, choosing where to compute (memory, in-place, remote). No pandas; Excel converted first.",
-    "when_en": "Triggers when you ask to analyze CSV/Parquet/JSON data files or handle group-by, joins, aggregations, time series, distributions, cleaning, or plotting of a dataset.",
+    "what_en": "It decides where the computation should live, then analyzes CSV/Parquet/JSON with DuckDB, Polars, or numpy — answering the question, reporting row counts and timing, charting when asked, and never using pandas.",
+    "when_en": "Takes over when you ask to analyze a CSV/Parquet/JSON dataset, or to do group-by aggregation, time series, cleaning, or plotting.",
     "say_en": [
       {
-        "text": "Analyze this CSV: what is total sales per province?",
-        "note": "DuckDB queries the file and reports row counts."
+        "text": "Analyze data.csv and total orders by month",
+        "note": "It probes the file, then picks an engine"
       },
       {
-        "text": "Process this parquet file with a rolling time-series mean.",
-        "note": "Polars handles it in streaming mode."
+        "text": "This file is bigger than RAM, don't read it all",
+        "note": "Switches to in-place or streaming reads"
       },
       {
-        "text": "Plot a scatter of these two columns and check outliers.",
-        "note": "Follows the chart spec and visual QA."
+        "text": "Chart the result as a trend line",
+        "note": "Follows the visualization guide, with QA"
       }
     ]
   }

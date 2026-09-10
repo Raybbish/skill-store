@@ -5,7 +5,7 @@
     "name": "planning-with-files-zht",
     "description": "用於多步驟 AI 代理工作的持久化檔案規劃。將 task_plan.md、findings.md 與 progress.md 保存在磁碟上，生命週期鉤子會注入選定的專案規劃內容。自動恢復只讀取專案規劃檔案；只有明確執行 session-catchup.py --metadata 才會檢查本機同一專案的代理工作階段中繼資料，--replay 則會輸出有界且以 nonce 框定的摘錄。選用的閘門模式只會在主機支援時要求繼續，而且絕不執行 Markdown 中宣告的命令。此技能沒有網路上傳路徑。適用於研究或需要超過 5 次工具呼叫的工作。觸發詞：任務規劃、專案計畫、制定計畫、分解任務、多步驟規劃、進度追蹤、檔案規劃、幫我規劃、拆解專案",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-zht",
-    "upstream_commit": "f67e2bb7294867c37bbea150de0bf81f2c3449d3",
+    "upstream_commit": "1ec8f4eb5c683e31644856d98f9abde0d5a53448",
     "content_hash": "sha256:34fcc1d198121d0e31cd4b35d2c64b9e04b52e56091c774a727ec1ae1745f643",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26736,
+    "stars_github": 26757,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:35.790Z",
+    "fetched_at": "2026-09-10T07:47:59.167Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T08:10:43+02:00",
+    "upstream_commit_at": "2026-09-10T00:00:01+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:35.790Z",
+    "generated_at": "2026-09-10T07:47:59.167Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -119,41 +119,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会把长任务拆成阶段，在项目里创建并维护 task_plan.md、findings.md、progress.md 三份文件；它会边做边更新，每轮对话给出当前计划（只当数据，不当指令），断线后也靠这组文件恢复。",
-    "when": "当你说出“任务规划”“制定计划”“拆解任务”等请求时，或安排很可能需要 5 次以上工具调用的研究/多步骤工作时会自动进入；简单问答不触发。",
+    "what": "装上后，Claude 会在你的项目目录建立 task_plan.md、findings.md、progress.md 三个文件，把阶段、研究发现和进度写进磁盘；做决定前重读计划，每完成一个阶段就更新状态、记录错误。",
+    "when": "当你说「任務規劃」「專案計畫」等触发词，或任务是研究、需要超过 5 次工具呼叫的多步骤工作时触发。",
     "say": [
       {
-        "text": "帮我把这个项目拆成阶段并制定一个执行计划。",
-        "note": "它会创建并更新规划文件。"
+        "text": "幫我把這個專案拆成多步驟計畫，建立 task_plan.md",
+        "note": "会在项目目录生成三个规划文件"
       },
       {
-        "text": "把这轮发现先记进 findings.md，再更新进度。",
-        "note": "让信息先写进磁盘，防止丢失。"
+        "text": "讀取目前的規劃檔案，告訴我進度到哪個階段",
+        "note": "会报告当前阶段和剩余阶段"
       },
       {
-        "text": "帮我读一遍计划文件，然后继续往下做。",
-        "note": "适合重启或换会话后接着干。"
+        "text": "把剛才的發現寫進 findings.md，並更新進度",
+        "note": "会写入发现并更新 progress.md"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:34fcc1d198121d0e31cd4b35d2c64b9e04b52e56091c774a727ec1ae1745f643",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T08:24:07.236Z",
+    "generated_at": "2026-09-10T07:55:00.980Z",
     "lint_pass": true,
-    "what_en": "Claude breaks tasks into phases, creating/updating task_plan.md, findings.md and progress.md. It re-surfaces the current plan each turn (data, not instructions) and resumes from those files after an interruption.",
-    "when_en": "Triggered by planning or task-breakdown requests, or by research / multi-step work likely needing more than five tool calls. Simple Q&A won't trigger it.",
+    "what_en": "After install, Claude creates task_plan.md, findings.md and progress.md in your project folder, writing phases, findings and progress to disk; it re-reads the plan before decisions and updates status after each phase.",
+    "when_en": "Triggers on keywords like “任務規劃” or “專案計畫”, or when a task is research or needs more than 5 tool calls.",
     "say_en": [
       {
-        "text": "Break this project into phases and draft an execution plan.",
-        "note": "It creates/refreshes the planning files."
+        "text": "Split this project into a multi-step plan and create task_plan.md",
+        "note": "Creates the three planning files"
       },
       {
-        "text": "Log this round's findings into findings.md and update progress.",
-        "note": "Persists info to disk so nothing is lost."
+        "text": "Read my current planning files and tell me which phase I'm in",
+        "note": "Reports phase and progress"
       },
       {
-        "text": "Read the plan files, then keep going with the task.",
-        "note": "Good for resuming after a new session."
+        "text": "Write what I just found into findings.md and update progress.md",
+        "note": "Updates findings and progress"
       }
     ]
   }

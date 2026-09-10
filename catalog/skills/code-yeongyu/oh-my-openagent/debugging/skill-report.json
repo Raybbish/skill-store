@@ -5,7 +5,7 @@
     "name": "debugging",
     "description": "Runs a hypothesis-driven debugging loop across any language or binary, escalating to orthogonal oracle angles and locking the fix with a failing test. Use for crashes, silent failures, hangs, wrong responses, memory leaks, async misbehavior, or reverse engineering.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/debugging",
-    "upstream_commit": "18666db8ff1949a76e4c631e5208a214fc4a4dc2",
+    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
     "content_hash": "sha256:875f7dd733912ed4ad2f3987bc2008968d13c28526856b785ed2a440a70db979",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68836,
+    "stars_github": 68871,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-09T07:46:24.878Z",
+    "fetched_at": "2026-09-10T07:47:46.276Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T16:31:49+09:00",
+    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-09T07:46:24.878Z",
+    "generated_at": "2026-09-10T07:47:46.276Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -133,41 +133,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会先判断程序和运行环境，打开对应的调试手册，然后按固定阶段排查：每一步先记录改动，用实际运行观察验证假设，不靠读代码猜测；根因确认后用先失败后通过的测试验证修复，最后清理所有调试痕迹。",
-    "when": "当你报告程序崩溃、卡死、静默出错等故障，或需要逆向分析二进制时，本技能会启动。",
+    "what": "Claude 会按假设驱动的循环排查 bug:先读对应运行时和工具的参考文档,用运行时实际观测确认根因,再用「先失败后通过」的测试锁定修复,并清理调试中产生的所有痕迹。",
+    "when": "当你遇到崩溃、卡死、响应错误等故障,或需要逆向分析二进制时接管;动手前它会先确认运行时类型并读对应参考。",
     "say": [
       {
-        "text": "程序一启动就崩溃，帮我查一下根因。",
-        "note": "会进入分阶段排查，最后用测试验证修复。"
+        "text": "这个 Node 服务偶尔卡死,帮我找出根因",
+        "note": "会先读 Node 运行时参考再开始排查"
       },
       {
-        "text": "这段接口偶尔没响应，帮我查查是不是异步问题。",
-        "note": "会先读运行环境手册，再按步骤调试。"
+        "text": "帮我调试这个 Python 异步任务为什么没返回结果",
+        "note": "走阶段循环定位,并补一个先失败的测试"
       },
       {
-        "text": "给你一段没有源码的二进制，帮我逆向分析它在做什么。",
-        "note": "会先识别二进制类型，再选择对应的逆向方法。"
+        "text": "这个剥离符号的二进制行为不对,帮我逆向看看",
+        "note": "会先判断是原生还是打包的二进制"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:875f7dd733912ed4ad2f3987bc2008968d13c28526856b785ed2a440a70db979",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T07:58:29.139Z",
+    "generated_at": "2026-09-10T07:52:23.878Z",
     "lint_pass": true,
-    "what_en": "Claude identifies the program type, opens the matching reference, then runs a staged loop: logs each change, checks hypotheses against observed runtime behavior, confirms root cause, fixes with a failing test, and cleans up all artifacts.",
-    "when_en": "Triggers when you report crashes, hangs, silent failures, or other error signs, or need to reverse-engineer a binary.",
+    "what_en": "Claude debugs in a hypothesis-driven loop: it reads the matching runtime and tool references first, confirms root cause from observed runtime state, locks the fix with a failing-first test, and cleans up the debug artifacts it made.",
+    "when_en": "Triggers on crashes, silent failures, hangs, wrong responses, or reverse engineering; it identifies the runtime and reads the matching reference before attaching.",
     "say_en": [
       {
-        "text": "My program crashes on startup. Can you investigate the root cause?",
-        "note": "Runs the staged debug loop and verifies the fix with a test."
+        "text": "This Node service hangs occasionally — find the root cause",
+        "note": "Reads the Node runtime reference first"
       },
       {
-        "text": "This endpoint sometimes hangs. Check if it is an async issue.",
-        "note": "Reads the runtime reference first, then debugs step by step."
+        "text": "Debug why this Python async task never returns",
+        "note": "Runs the phase loop, then adds a failing test"
       },
       {
-        "text": "Here is a binary with no source. Reverse-engineer what it does.",
-        "note": "Identifies the binary type first, then picks a matching method."
+        "text": "This stripped binary misbehaves — help me reverse it",
+        "note": "Decides native vs bundled binary"
       }
     ]
   }
