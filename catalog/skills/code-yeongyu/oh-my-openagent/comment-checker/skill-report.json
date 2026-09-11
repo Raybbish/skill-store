@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 68871,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-10T07:47:46.276Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
+    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
+    "repo_skill_count": 51,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-10T07:47:46.276Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，代码编辑会触发注释检查。若有警告，Claude 会停下，要求修复或解释被标记的注释，然后才继续。非编辑操作忽略，检查器缺失则无输出。",
-    "when": "在 Claude 成功完成 apply_patch、write、edit 等编辑操作后自动触发。非编辑操作不触发。",
+    "what": "它会在成功的编辑类操作（如 apply_patch、write、edit 等）后自动做注释检查：一旦 comment-checker 报警，Codex 会收到阻断性反馈，需要先修复或解释被标记的注释，再继续往下做。",
+    "when": "当 Codex 成功执行 apply_patch、write、edit 等编辑类调用后触发；非编辑类工具不受影响，缺少检查器程序时不产生任何钩子输出。",
     "say": [
       {
-        "text": "修复被标记的注释。",
-        "note": "Claude 会修改该注释以通过检查。"
+        "text": "这条注释警告是什么意思？"
       },
       {
-        "text": "解释为何这条注释被警告。",
-        "note": "Claude 会分析并说明原因。"
+        "text": "把被标记的注释改掉",
+        "note": "修改注释后再继续任务"
       },
       {
-        "text": "修复后继续下一步。",
-        "note": "Claude 修复后恢复执行。"
+        "text": "这条警告可以忽略吗？说明原因",
+        "note": "不改的话需要给出解释"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:56:58.187Z",
+    "generated_at": "2026-09-10T07:52:17.821Z",
     "lint_pass": true,
-    "what_en": "After successful edit-like actions, Claude runs a comment check. Warnings block progress until Claude fixes or explains the flagged comment. Non-edit tools are ignored; missing checker binaries cause no output.",
-    "when_en": "Triggered after successful edit calls such as apply_patch, write, edit, etc. Non-edit tools are ignored.",
+    "what_en": "After a successful edit-like call (apply_patch, write, edit, etc.), a PostToolUse hook runs comment checking. If comment-checker warns, Codex gets blocking feedback and must fix or explain the flagged comment before continuing.",
+    "when_en": "Triggers after Codex makes a successful apply_patch, write, edit or similar edit call; non-edit tools are ignored, and a missing checker binary produces no hook output.",
     "say_en": [
       {
-        "text": "Fix the flagged comment.",
-        "note": "Claude updates the comment to satisfy the checker."
+        "text": "What does this comment warning mean?",
+        "note": "Claude explains what was flagged"
       },
       {
-        "text": "Explain why this comment is flagged.",
-        "note": "Claude analyzes and gives the reason."
+        "text": "Fix the flagged comments",
+        "note": "Comments get fixed before work continues"
       },
       {
-        "text": "Fix it and continue.",
-        "note": "Claude then resumes the workflow."
+        "text": "Can I ignore this warning? Explain why",
+        "note": "You get a reason if no fix is made"
       }
     ]
   }

@@ -3,28 +3,30 @@
   "meta": {
     "id": "thedotmack/claude-mem/mem-search",
     "name": "mem-search",
-    "description": "This skill should be used when the user asks to \"search memory\", \"what do you remember about X\", \"check claude-mem\", \"mem search\", \"find past observations\", \"what did we do last session\", or wants prior-session context about a project, decision, file, or task. Searches the user's Claude-Mem (cmem.ai) memory.\n",
-    "upstream": "https://github.com/thedotmack/claude-mem/tree/main/cowork/skills/mem-search",
-    "upstream_commit": "866a0ca3b34cddd8aa4c5fba72b9ad2b3a5621fe",
-    "content_hash": "sha256:ad7868555719e59588b7db3f3037597ce946932604e5cf00f002a500d284e37a",
+    "description": "Use this when the user asks to search memory, \"did we already solve this?\", \"how did we do X last time?\", or wants work from previous sessions.",
+    "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-cursor/skills/mem-search",
+    "upstream_commit": "1461655740297a34e11d721b612eb682db3f2ea7",
+    "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "license": "Apache-2.0",
     "hosting": "indexed",
-    "category": "uncategorized",
+    "category": "dev",
     "version": null,
     "publisher": "thedotmack",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": []
+    "tags": [
+      "agent-ops"
+    ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 92056,
+    "stars_github": 93592,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:00.249Z",
+    "fetched_at": "2026-09-10T07:47:41.387Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-26T09:56:07-07:00",
-    "repo_skill_count": 22
+    "upstream_commit_at": "2026-09-09T21:10:32-07:00",
+    "repo_skill_count": 27
   },
   "context_size": {
     "version": "1",
@@ -33,95 +35,95 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:00.249Z",
+    "generated_at": "2026-09-10T07:47:41.387Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 2059,
-        "chars": 2041,
-        "tokens": 456
+        "bytes": 898,
+        "chars": 890,
+        "tokens": 212
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 2059,
-        "chars": 2041,
-        "tokens": 456
+        "bytes": 898,
+        "chars": 890,
+        "tokens": 212
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 2059,
-        "chars": 2041,
-        "tokens": 456
+        "bytes": 898,
+        "chars": 890,
+        "tokens": 212
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "搜索历史记忆，找回之前的对话和项目背景",
+    "tagline": "快速找回之前会话中解决过的问题和做法",
     "scene_tags": [
-      "找回上下文",
-      "回忆旧项目",
-      "会话续接"
+      "回忆旧方案",
+      "历史问题查询",
+      "跨会话搜索"
     ],
-    "fit_line": "适合你,如果经常需要查阅过去的会话记录来继续工作。",
-    "tagline_en": "Search past memories to retrieve prior conversations and project context.",
+    "fit_line": "适合你,如果 你常想从过往对话里快速找回答案。",
+    "tagline_en": "Recall past solutions and how you did things before.",
     "scene_tags_en": [
-      "recall context",
-      "past projects",
-      "session handoff"
+      "recalling past solutions",
+      "searching previous sessions",
+      "finding old decisions"
     ],
-    "fit_line_en": "For you if you often need to look back at previous chat records to continue your work.",
+    "fit_line_en": "For you if you often need to dig up answers from earlier conversations.",
     "source": "llm",
-    "content_hash": "sha256:ad7868555719e59588b7db3f3037597ce946932604e5cf00f002a500d284e37a",
+    "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:10:09.527Z",
+    "generated_at": "2026-09-07T07:54:26.961Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会先用 search 工具搜索你跨会话的记忆库,再用 timeline 看前后上下文,最后只对筛选出的记录调 get_observations 取详情。",
-    "when": "当用户问起之前会话的内容,比如“上次怎么解决的”“上周发生了什么”,或明确说“搜索记忆/查 claude-mem”时触发。",
+    "what": "它让 Claude 能检索你在历史会话里留下的记忆:先用 search 拿到带 ID 的索引,再用 timeline 看某条记录前后的上下文,最后只对挑中的 ID 用 get_observations 取完整内容。",
+    "when": "当你问的是以往会话而非当前对话时,例如「这个之前修过吗」「上次 X 是怎么做的」等涉及历史工作的问题。",
     "say": [
       {
-        "text": "帮我搜一下之前关于登录认证的记录",
-        "note": "会先返回带 ID 的搜索结果列表。"
+        "text": "帮我搜一下认证相关的历史记录",
+        "note": "调用 search,返回带 ID 的索引表"
       },
       {
-        "text": "上次那个 bug 最后怎么修的?查一下记忆",
-        "note": "会搜索 bugfix 类观察并给时间线。"
+        "text": "上次 token 过期那个问题我们是怎么修的?",
+        "note": "先搜索,再用 timeline 看上下文"
       },
       {
-        "text": "把最近一周的项目进展调出来看看",
-        "note": "按日期范围搜索观察记录。"
+        "text": "把 #11131 和 #10942 的完整内容拉出来",
+        "note": "用 get_observations 批量取详情"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:ad7868555719e59588b7db3f3037597ce946932604e5cf00f002a500d284e37a",
+    "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:49:04.734Z",
+    "generated_at": "2026-09-10T07:55:17.885Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude searches the cross-session memory index, inspects surrounding timeline context, then fetches details only for the records you select.",
-    "when_en": "Triggered when you ask about previous sessions, e.g. “how did we fix this last time?”, “what happened last week?”, or say “search memory”/“check claude-mem”.",
+    "what_en": "Claude can search claude-mem's cross-session memory: run search for an index with IDs, timeline for surrounding context, then get_observations for full details only on the IDs you pick, saving tokens.",
+    "when_en": "Triggers when you ask about previous sessions rather than the current chat, e.g. \"did we already fix this?\" or \"how did we solve X last time?\"",
     "say_en": [
       {
-        "text": "Search my memory for records about login authentication.",
-        "note": "Returns a result list with IDs first."
+        "text": "Search my history for authentication work.",
+        "note": "Runs search, returns an index table with IDs"
       },
       {
-        "text": "How did we fix that bug last time? Check memory.",
-        "note": "Searches bugfix observations and shows a timeline."
+        "text": "How did we fix the token expiration bug last time?",
+        "note": "Searches, then pulls timeline context"
       },
       {
-        "text": "Show me project progress from the last week.",
-        "note": "Searches observations by date range."
+        "text": "Fetch full details for #11131 and #10942.",
+        "note": "Uses get_observations to batch fetch"
       }
     ]
   }

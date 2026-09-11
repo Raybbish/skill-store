@@ -5,7 +5,7 @@
     "name": "baoyu-youtube-transcript",
     "description": "Downloads YouTube video transcripts/subtitles and cover images by URL or video ID. Supports multiple languages, translation, chapters, and speaker identification. Caches raw data for fast re-formatting. Use when user asks to \"get YouTube transcript\", \"download subtitles\", \"get captions\", \"YouTube字幕\", \"YouTube封面\", \"视频封面\", \"video thumbnail\", \"video cover image\", or provides a YouTube URL and wants the transcript/subtitle text or cover image extracted.",
     "upstream": "https://github.com/JimLiu/baoyu-skills/tree/main/skills/baoyu-youtube-transcript",
-    "upstream_commit": "6b7a2e417500561a5ecdd0b168332f4142584617",
+    "upstream_commit": "8ae8c33a8d7c8c7c6de291b2c91ba1debe1d2766",
     "content_hash": "sha256:e8f84ddad6b8fa428836042b54e24c9b376c1776477b475e5eab45c99dafbb7b",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 23811,
+    "stars_github": 25791,
     "installs_skills_sh": null,
-    "fetched_at": "2026-07-06T07:11:21.394Z",
-    "repo_skill_count": 22,
+    "fetched_at": "2026-09-10T07:48:00.833Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-07-03T20:22:55-05:00"
+    "upstream_commit_at": "2026-09-09T09:40:42-05:00",
+    "repo_skill_count": 22
   },
   "context_size": {
     "version": "1",
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-09T04:45:17.863Z",
+    "generated_at": "2026-09-10T07:48:00.833Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -97,36 +97,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 能根据 YouTube 视频链接或 ID 下载字幕、封面图，支持多语言、翻译、章节分段和说话人识别，并缓存数据以便快速重新格式化。",
-    "when": "当用户要求“获取 YouTube 字幕”、“下载字幕”、“YouTube 封面”等，或直接提供 YouTube 链接并希望提取字幕或封面时触发。",
+    "what": "给它一个 YouTube 链接或视频 ID，它会下载字幕（含自动生成）和封面图，输出带时间戳、章节的 Markdown 或 SRT 文件，并存到 youtube-transcript 目录、缓存原始数据以便重新排版。",
+    "when": "当你提到“YouTube 字幕”“下载字幕”“YouTube 封面”等关键词，或给出 YouTube 链接并要求提取字幕文本或封面图时触发。",
     "say": [
       {
-        "text": "帮我下载这个视频的字幕：https://youtu.be/dQw4w9WgXcQ"
+        "text": "把这个 YouTube 视频的字幕下载成 Markdown：<链接>",
+        "note": "默认带章节和说话人标注"
       },
       {
-        "text": "给我这个视频的封面图：https://youtu.be/dQw4w9WgXcQ",
-        "note": "Claude 会下载视频封面并返回。"
+        "text": "列出这条视频有哪些语言的字幕",
+        "note": "只打印到屏幕，不保存文件"
+      },
+      {
+        "text": "把这条视频的字幕翻译成简体中文",
+        "note": "使用 --translate zh-Hans"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e8f84ddad6b8fa428836042b54e24c9b376c1776477b475e5eab45c99dafbb7b",
-    "model": "deepseek-chat",
-    "generated_at": "2026-07-13T03:59:16.083Z",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-10T07:53:46.123Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude can download YouTube video transcripts/subtitles and cover images by URL or video ID. It supports multiple languages, translation, chapters, and speaker identification, and caches raw data for fast re-formatting.",
-    "when_en": "Triggered when the user asks to \"get YouTube transcript\", \"download subtitles\", \"get captions\", \"YouTube cover\", etc., or provides a YouTube URL and wants the transcript or cover image extracted.",
+    "what_en": "Given a YouTube link or video ID, it downloads the transcript (manual or auto-generated) and cover image, then outputs Markdown with timestamps and chapters or an SRT file, saved under youtube-transcript and cached for re-formatting.",
+    "when_en": "Triggers when you ask to get a YouTube transcript, download subtitles or captions, get a video thumbnail/cover image, or give a YouTube URL and want the transcript text or cover extracted.",
     "say_en": [
       {
-        "text": "Download the transcript for this video: https://youtu.be/dQw4w9WgXcQ",
-        "note": "Claude will fetch the default English transcript in Markdown."
+        "text": "Download the transcript of this YouTube video as Markdown: <URL>",
+        "note": "Chapters and speaker labels on by default"
       },
       {
-        "text": "Get Chinese subtitles and translate to English: https://youtu.be/dQw4w9WgXcQ",
-        "note": "Claude will download Chinese subtitles then translate to English."
+        "text": "List the available subtitle languages for this video",
+        "note": "Prints to stdout only, saves no file"
       },
       {
-        "text": "Get the cover image for this video: https://youtu.be/dQw4w9WgXcQ",
-        "note": "Claude will download the video thumbnail."
+        "text": "Translate this video's transcript into Simplified Chinese",
+        "note": "Uses --translate zh-Hans"
       }
     ]
   }
