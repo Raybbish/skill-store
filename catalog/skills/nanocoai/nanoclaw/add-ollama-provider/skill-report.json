@@ -5,7 +5,7 @@
     "name": "add-ollama-provider",
     "description": "Route a NanoClaw agent group to a local Ollama model instead of the Anthropic API. Ollama speaks the Anthropic API natively (v1/messages), so no provider code changes are needed — just env var overrides and a model setting. Use when the user wants to run their agent locally, cut API costs, or experiment with open-weight models. See docs/ollama.md for background.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-provider",
-    "upstream_commit": "2c754a2234390fcc597273cef6344d99e8ac03d0",
+    "upstream_commit": "74224f62a6c08418acccc727114ab02f92e403bf",
     "content_hash": "sha256:19581bc8bfc3bb3dfa5b96d11f0f3e151dd048df81207c7f6ac6ed7af40741fb",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30732,
+    "stars_github": 30743,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:58.260Z",
+    "fetched_at": "2026-09-11T07:41:55.788Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T11:36:54+03:00",
+    "upstream_commit_at": "2026-09-10T16:24:16+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:58.260Z",
+    "generated_at": "2026-09-11T07:41:55.788Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,34 +90,32 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会把指定的 NanoClaw agent group 从 Anthropic API 改接到本机 Ollama 模型:写入 container.json 的环境变量、在共享 settings.json 里设好模型名,再重建并重启服务,最后验证是否生效。也能按同样步骤改回 Claude。",
-    "when": "当你想让 agent 本地运行、减少 API 花费,或试用开放权重模型时触发;前提是 Ollama 已安装运行、已拉取模型,且目标 agent group 已存在。",
+    "what": "按步骤把一个 NanoClaw agent group 的请求从 Anthropic API 转到本机 Ollama 模型:在 container.json 里加环境变量、在 settings.json 里设模型名,再重建并重启服务;可选屏蔽 Anthropic API。",
+    "when": "当你想让 agent 在本机运行、降低 API 开销,或试用开源权重模型时触发。",
     "say": [
       {
-        "text": "顺便给这个 agent group 屏蔽 api.anthropic.com"
-      },
-      {
-        "text": "把这个 agent 改回用 Claude"
+        "text": "列出本机 Ollama 已拉取的模型,我挑一个用",
+        "note": "查 api/tags 拿准确模型名"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:19581bc8bfc3bb3dfa5b96d11f0f3e151dd048df81207c7f6ac6ed7af40741fb",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:54:28.141Z",
-    "lint_pass": false,
-    "what_en": "Claude routes a chosen NanoClaw agent group from the Anthropic API to a local Ollama model: writes env vars in container.json, sets the model name in settings.json, rebuilds and restarts the service, then verifies. Reversible.",
-    "when_en": "Triggers when you want the agent to run locally, cut API costs, or try open-weight models. Requires Ollama installed and running with a model pulled, and the agent group already created.",
+    "generated_at": "2026-09-11T07:49:30.906Z",
+    "lint_pass": true,
+    "what_en": "Walks through pointing one NanoClaw agent group at a local Ollama model: env var overrides in container.json, the model name in settings.json, a rebuild and restart, plus optional blocking of the Anthropic API.",
+    "when_en": "Use when you want an agent group running locally, lower API costs, or to try open-weight models.",
     "say_en": [
       {
-        "text": "Switch agent group my-agent to the local Ollama model gemma4:latest",
-        "note": "Edits container.json env and settings.json model"
+        "text": "Switch the default agent group to the local Ollama model qwen3-coder",
+        "note": "Edits env and settings.json, then rebuilds and restarts"
       },
       {
-        "text": "Also block api.anthropic.com for this agent group",
-        "note": "Stops accidental Anthropic API spend"
+        "text": "List the models pulled on this machine so I can pick one",
+        "note": "Reads api/tags for the exact model name"
       },
       {
-        "text": "Revert this agent back to Claude",
+        "text": "Move this agent group back from Ollama to the Anthropic API",
         "note": "Removes env, blockedHosts and model, then restarts"
       }
     ]

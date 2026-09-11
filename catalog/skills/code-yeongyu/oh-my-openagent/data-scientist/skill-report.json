@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Processes and analyzes data with resident-kernel engines (DuckDB, Polars) and one-shot tools. Use for CSV/parquet/JSON analysis, group-by/join/aggregation, time series, distributions, cleaning, or plotting a dataset.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
+    "upstream_commit": "a861affbe633e1fc72c9636548c5019f4f2de3d3",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68871,
+    "stars_github": 68929,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:46.276Z",
+    "fetched_at": "2026-09-11T07:41:45.569Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
+    "upstream_commit_at": "2026-09-11T14:43:56+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:46.276Z",
+    "generated_at": "2026-09-11T07:41:45.569Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -106,41 +106,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会先判断计算该放在哪里（常驻内核、载入内存、原地或远程查询），再用 DuckDB、Polars 或 numpy 分析 CSV/Parquet/JSON，回答问题并报告行数和耗时，需要时画图；不使用 pandas。",
-    "when": "当你要求分析某个 CSV/Parquet/JSON 数据集，或要做分组聚合、时间序列、清洗、画图等任务时，它会接管。",
+    "what": "装上后 Claude 会先探测文件大小与可用内存,再选 DuckDB、Polars、numpy 等引擎直接分析 CSV、Parquet、JSON,做分组、连接、聚合、时序、分布、清洗和绘图,并报告行数与耗时。",
+    "when": "当你要求分析 CSV、Parquet、JSON 等格式的数据集,或需要分组、聚合、清洗、绘图等数据操作时触发。",
     "say": [
       {
-        "text": "分析 data.csv，按月统计订单总额",
-        "note": "它先探查文件再选引擎"
+        "text": "把这个 CSV 按城市分组,统计每城订单量",
+        "note": "先加载进 DuckDB,后续查询走内存"
       },
       {
-        "text": "这个文件比内存大，别整份读进来",
-        "note": "会改用原地查询或流式处理"
+        "text": "这个 Parquet 有 5 亿行,内存放不下,帮我算均值",
+        "note": "改用流式或直接读文件,不整份载入"
       },
       {
-        "text": "把结果画成趋势图",
-        "note": "按可视化规范出图并做检查"
+        "text": "画一张销售额随时间变化的折线图",
+        "note": "按可视化规范出图并做视觉检查"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:52:23.765Z",
+    "generated_at": "2026-09-11T07:46:40.027Z",
     "lint_pass": true,
-    "what_en": "It decides where the computation should live, then analyzes CSV/Parquet/JSON with DuckDB, Polars, or numpy — answering the question, reporting row counts and timing, charting when asked, and never using pandas.",
-    "when_en": "Takes over when you ask to analyze a CSV/Parquet/JSON dataset, or to do group-by aggregation, time series, cleaning, or plotting.",
+    "what_en": "Claude probes file size and free RAM, then picks an engine (DuckDB, Polars, numpy) to query CSV, Parquet or JSON: grouping, joins, aggregation, time series, cleaning, charts. It reports row counts and timing.",
+    "when_en": "Triggers when you ask to analyze a CSV, Parquet or JSON dataset, or to do grouping, aggregation, cleaning or plotting on data.",
     "say_en": [
       {
-        "text": "Analyze data.csv and total orders by month",
-        "note": "It probes the file, then picks an engine"
+        "text": "Group this CSV by city and count orders per city",
+        "note": "Loads once into DuckDB, later queries hit memory"
       },
       {
-        "text": "This file is bigger than RAM, don't read it all",
-        "note": "Switches to in-place or streaming reads"
+        "text": "This Parquet has 500M rows, over RAM — compute the mean",
+        "note": "Streams or reads the file in place instead"
       },
       {
-        "text": "Chart the result as a trend line",
-        "note": "Follows the visualization guide, with QA"
+        "text": "Plot sales over time as a line chart",
+        "note": "Follows the visualization guide and visual QA"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "add-github",
     "description": "Add GitHub channel integration via Chat SDK. PR and issue comment threads as conversations.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-github",
-    "upstream_commit": "2c754a2234390fcc597273cef6344d99e8ac03d0",
+    "upstream_commit": "74224f62a6c08418acccc727114ab02f92e403bf",
     "content_hash": "sha256:536532a08d2dd637e092c62c3b9296b9ff309d5e50266f444807a6543ba2e793",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30732,
+    "stars_github": 30743,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:58.260Z",
+    "fetched_at": "2026-09-11T07:41:55.788Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T11:36:54+03:00",
+    "upstream_commit_at": "2026-09-10T16:24:16+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:58.260Z",
+    "generated_at": "2026-09-11T07:41:55.788Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会把 GitHub 接进对话系统:用一个专门的机器人账号参与 PR 和 issue 的评论线程,被 @ 提及后在评论线程里回复,并继续响应该线程的后续评论。",
-    "when": "当有人在 PR 或 issue 评论里 @ 机器人账号,且仓库已配好 webhook(订阅 Issue comments、Pull request review comments 等事件)时接管。",
+    "what": "给 NanoClaw 加上 GitHub 通道：agent 会进入 PR 和 issue 的评论线程参与对话，被人 @ 提及后回复；之后这条线程的后续评论它都会跟进。需要另建一个专用机器人 GitHub 账号来收发评论。",
+    "when": "当有人在 PR 或 issue 评论里 @ 到机器人的 GitHub 用户名时触发；前提是机器人账号已作为协作者、仓库 webhook 已订阅 Issue 评论和 PR 评审评论等事件。",
     "say": [
       {
-        "text": "帮我把 GitHub 渠道接进来,机器人账号叫 my-org-bot",
-        "note": "从 channels 分支拷贝适配器并注册"
+        "text": "帮我在这个仓库上接入 GitHub 通道",
+        "note": "会复制并注册适配器、装依赖、构建与跑测试"
       },
       {
-        "text": "这个仓库是公开的,接线时用 strict 策略",
-        "note": "只有已注册成员能触发 agent"
+        "text": "这个仓库是私有的，按 public 策略配置",
+        "note": "据此决定 unknown_sender_policy"
       },
       {
-        "text": "PR 和 issue 用 per-thread 会话模式",
-        "note": "每个 PR/issue 各自独立会话"
+        "text": "把 github:acme/backend 接到我的 agent group"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:536532a08d2dd637e092c62c3b9296b9ff309d5e50266f444807a6543ba2e793",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:54:18.323Z",
+    "generated_at": "2026-09-11T07:49:22.886Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude connects GitHub into the chat system: a dedicated bot account takes part in PR and issue comment threads, replying when @-mentioned and then answering follow-up comments in that thread.",
-    "when_en": "Triggers when someone @-mentions the bot account in a PR or issue comment, with a repo webhook subscribed to issue comments and PR review comments events.",
+    "what_en": "Adds a GitHub channel to NanoClaw: the agent joins PR and issue comment threads, replies after being @-mentioned, and then follows up on later comments in that thread. A dedicated GitHub bot account is required to post and receive comments.",
+    "when_en": "Triggered when someone @-mentions the bot's GitHub username in a PR or issue comment; requires the bot account as a collaborator and repo webhooks subscribed to issue comments and PR review comments, etc.",
     "say_en": [
       {
-        "text": "Add the GitHub channel, my bot account is my-org-bot",
-        "note": "copies the adapter from the channels branch"
+        "text": "Add the GitHub channel to this repo",
+        "note": "Copies and registers the adapter, installs the dep, builds and tests"
       },
       {
-        "text": "This repo is public, wire it with the strict policy",
-        "note": "only registered members can trigger it"
+        "text": "This repo is private, use the public policy",
+        "note": "Sets unknown_sender_policy accordingly"
       },
       {
-        "text": "Use per-thread session mode for PR and issue threads",
-        "note": "each PR or issue gets its own session"
+        "text": "Wire github:acme/backend to my agent group",
+        "note": "Creates the messaging group and wiring, one session per thread"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "add-mnemon",
     "description": "Add persistent graph-based memory via mnemon. Agents recall past context before responding and remember insights after each turn.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-mnemon",
-    "upstream_commit": "2c754a2234390fcc597273cef6344d99e8ac03d0",
+    "upstream_commit": "74224f62a6c08418acccc727114ab02f92e403bf",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30732,
+    "stars_github": 30743,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:58.260Z",
+    "fetched_at": "2026-09-11T07:41:55.788Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T11:36:54+03:00",
+    "upstream_commit_at": "2026-09-10T16:24:16+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:58.260Z",
+    "generated_at": "2026-09-11T07:41:55.788Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,40 +94,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后 Claude Code 会在回复前自动浮现相关记忆,每轮结束把新洞见写入记忆图谱;记忆存在每个 agent group 的 .claude/ 挂载里,容器重启后依然保留。",
-    "when": "只对使用默认 Claude provider 的 agent group 生效;若某组的 provider 被设成 opencode 等其他值,注册的 hooks 不会运行。",
+    "what": "装上后,Claude 每次回应前会先调取相关历史记忆,每轮结束后把新见解存下来。记忆写在每个 agent group 的 .claude/ 挂载里,容器重启也不丢。",
+    "when": "用在运行默认 Claude provider 的 agent group 上,group 的 container.json 里 provider 缺失或为 claude 时才生效。mnemon hooks 只在 --target claude-code 下运行。",
     "say": [
       {
-        "text": "帮这个 agent group 装上 mnemon 持久记忆"
+        "text": "把 mnemon 装到容器镜像里,然后重建镜像并重启服务。",
+        "note": "走安装、重建与重启三步流程。"
       },
       {
-        "text": "检查一下 mnemon hooks 有没有注册成功",
-        "note": "会查看容器内 settings.json 里的 hooks"
-      },
-      {
-        "text": "重置这个 agent 的全部记忆",
-        "note": "停容器并删除主机上的 mnemon/ 目录"
+        "text": "检查 mnemon hooks 有没有注册上,再测一次记忆召回。",
+        "note": "查 settings.json 并做跨会话召回测试。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:54:24.736Z",
-    "lint_pass": true,
-    "what_en": "Once installed, Claude Code recalls relevant past context before responding and stores new insights after each turn, through hooks mnemon setup registers at container start. Memory lives in each agent group's .claude/ mount and survives restarts.",
-    "when_en": "Fires only on agent groups running the default Claude provider (absent or \"claude\" in container.json). If a group sets another provider such as opencode, the registered hooks do not run.",
+    "generated_at": "2026-09-11T07:49:32.971Z",
+    "lint_pass": false,
+    "what_en": "Installs mnemon into the agent container image, so it recalls relevant past context before answering and stores new insights after each turn. Memory sits in the per-agent-group .claude/ mount and survives container restarts.",
+    "when_en": "Runs on agent groups using the default Claude provider; mnemon hooks only fire under --target claude-code, and a group with a different provider (e.g. opencode) never invokes the claude CLI.",
     "say_en": [
       {
-        "text": "Install mnemon persistent memory on this agent group",
-        "note": "Edits Dockerfile and entrypoint, then rebuilds the image"
+        "text": "Install mnemon in the container image, then rebuild and restart the service.",
+        "note": "Runs the install, rebuild and restart steps."
       },
       {
-        "text": "Check whether the mnemon hooks are registered",
-        "note": "Inspects settings.json inside the running container"
+        "text": "Check whether this agent group uses the default Claude provider.",
+        "note": "Reads the provider key in each group's container.json."
       },
       {
-        "text": "Reset all memory for this agent",
-        "note": "Stops the container and deletes the host mnemon/ directory"
+        "text": "Verify the mnemon hooks are registered and test recall across sessions.",
+        "note": "Checks settings.json, then tests memory recall."
       }
     ]
   }

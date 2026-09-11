@@ -5,7 +5,7 @@
     "name": "oh-my-issues",
     "description": "Cluster a GitHub issue backlog by root cause into a small set of plan-master issues, redirect children with a standardized comment, and bundle architectural-fix PRs that close clusters atomically. Use when an issue tracker has accumulated dozens of reports that share underlying defects, when asked to triage / consolidate / cluster / dedupe issues, when asked to build a plan series or roadmap from open issues, or when routing a new incoming bug into an existing plan.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/oh-my-issues",
-    "upstream_commit": "1461655740297a34e11d721b612eb682db3f2ea7",
+    "upstream_commit": "7f6e02552516c424d77d3055cfc9c5e4c6e49889",
     "content_hash": "sha256:60bd448950afb01d988c47007e0dad4434bfbb983724fd9083d82aad9fcea037",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93592,
+    "stars_github": 93657,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:41.387Z",
+    "fetched_at": "2026-09-11T07:41:41.007Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-09T21:10:32-07:00",
+    "upstream_commit_at": "2026-09-11T07:31:51Z",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:41.387Z",
+    "generated_at": "2026-09-11T07:41:41.007Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,33 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会把 GitHub 的 issue 积压按根因聚类成少量 plan-master issue,用标准评论把子 issue 重定向并关闭,并把每个集群打包成一个架构修复 PR 一次性关闭全部子 issue。最终形态是未关闭 issue 数与未关闭 plan 数 1:1。",
-    "when": "当仓库累积了 20 个以上同源缺陷的 issue,或你要求 triage、consolidate、cluster、dedupe 等整理动作,或要从 open issue 生成 plan 系列/路线图时触发。",
+    "what": "它先读完每个开放 issue 的正文和评论,按同一架构根因把它们归成少数几个 plan-master issue,用统一评论把子 issue 重定向关闭,并让每个组由一个 PR 原子关闭全部子项。",
+    "when": "当仓库有 20 个以上开放 issue 且疑似同源缺陷,或你要求 triage、归并、聚类 issue,或要把新报的 bug 归入已有 plan 时接管。",
     "say": [
       {
-        "text": "帮我 triage 这个新 bug,看它属于哪个已有 plan",
-        "note": "命中就往 master 追加 Round N 评论并关闭它"
+        "text": "把仓库里开放的 issue 按根本原因聚类成几个 plan-master",
+        "note": "会先读全部正文与评论再聚类"
+      },
+      {
+        "text": "这个新报的 bug 该归入哪个已有 plan?",
+        "note": "匹配已有 master,没有才新建"
+      },
+      {
+        "text": "为这个 plan 生成 PR,自动关闭它的所有子 issue",
+        "note": "PR 描述里带 Closes #N"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:60bd448950afb01d988c47007e0dad4434bfbb983724fd9083d82aad9fcea037",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:55:23.734Z",
+    "generated_at": "2026-09-11T07:50:18.700Z",
     "lint_pass": true,
-    "what_en": "Claude clusters a GitHub issue backlog by root cause into a few plan-master issues, closes each child with a standard redirect comment, and ships one fix PR per cluster closing all children. End state: open issues equal open plans.",
-    "when_en": "Triggers when a tracker has dozens of reports sharing underlying defects, when asked to triage / consolidate / cluster / dedupe issues, or when building a plan series from open issues.",
+    "what_en": "It first reads every open issue's body and comments, clusters them by shared architectural root cause into a few plan-master issues, closes children with a standard redirect comment, and ships one PR per cluster that closes all children at once.",
+    "when_en": "Use when a tracker has 20+ open issues that look like symptoms of the same defect, when asked to triage, consolidate or cluster issues, or when routing a new bug into an existing plan.",
     "say_en": [
       {
-        "text": "Cluster all open issues by root cause, open plan-masters and close the children.",
-        "note": "It reads every body and comment thread first."
+        "text": "Cluster the repo's open issues by root cause into plan-masters",
+        "note": "Reads all bodies and comments first"
       },
       {
-        "text": "Triage this new bug and tell me which existing plan it belongs to.",
-        "note": "On a match it adds a Round N comment and closes it."
+        "text": "Which existing plan does this new bug belong to?",
+        "note": "Matches a master; opens one only if none fit"
       },
       {
-        "text": "Open a PR for the plan-02 cluster that closes every child with Closes #N.",
-        "note": "The same PR also adds the plan's test matrix."
+        "text": "Generate the PR for this plan and auto-close its children",
+        "note": "PR body carries Closes #N"
       }
     ]
   }

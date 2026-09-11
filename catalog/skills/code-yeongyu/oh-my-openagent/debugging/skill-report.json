@@ -5,7 +5,7 @@
     "name": "debugging",
     "description": "Runs a hypothesis-driven debugging loop across any language or binary, escalating to orthogonal oracle angles and locking the fix with a failing test. Use for crashes, silent failures, hangs, wrong responses, memory leaks, async misbehavior, or reverse engineering.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/debugging",
-    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
+    "upstream_commit": "a861affbe633e1fc72c9636548c5019f4f2de3d3",
     "content_hash": "sha256:875f7dd733912ed4ad2f3987bc2008968d13c28526856b785ed2a440a70db979",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68871,
+    "stars_github": 68929,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:46.276Z",
+    "fetched_at": "2026-09-11T07:41:45.569Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
+    "upstream_commit_at": "2026-09-11T14:43:56+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:46.276Z",
+    "generated_at": "2026-09-11T07:41:45.569Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -133,41 +133,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会按假设驱动的循环排查 bug:先读对应运行时和工具的参考文档,用运行时实际观测确认根因,再用「先失败后通过」的测试锁定修复,并清理调试中产生的所有痕迹。",
-    "when": "当你遇到崩溃、卡死、响应错误等故障,或需要逆向分析二进制时接管;动手前它会先确认运行时类型并读对应参考。",
+    "what": "装上后 Claude 会按「假设—验证」循环调试:先读对应运行时的参考文件,再提出至少三个可区分的假设,用运行时实际状态确认根因,最后用先失败的测试锁定修复,并把调试产生的每个中间痕迹记入日志后清除。",
+    "when": "当你遇到崩溃、静默失败、卡死等问题,或需要逆向分析时触发;间歇性故障、只在 CI 挂的情况也适用。",
     "say": [
       {
-        "text": "这个 Node 服务偶尔卡死,帮我找出根因",
-        "note": "会先读 Node 运行时参考再开始排查"
+        "text": "服务偶发卡死,带我走一遍调试循环找出根因",
+        "note": "会先读运行时参考再进入 Phase 0"
       },
       {
-        "text": "帮我调试这个 Python 异步任务为什么没返回结果",
-        "note": "走阶段循环定位,并补一个先失败的测试"
+        "text": "浏览器页面点了没反应,用 Playwright 驱动复现",
+        "note": "Phase 8 会驱动真实浏览器验证"
       },
       {
-        "text": "这个剥离符号的二进制行为不对,帮我逆向看看",
-        "note": "会先判断是原生还是打包的二进制"
+        "text": "这个 bug 只在 CI 挂,先做 flaky 排查",
+        "note": "会在 Phase 2 前先读 flaky 参考"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:875f7dd733912ed4ad2f3987bc2008968d13c28526856b785ed2a440a70db979",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:52:23.878Z",
+    "generated_at": "2026-09-11T07:46:39.693Z",
     "lint_pass": true,
-    "what_en": "Claude debugs in a hypothesis-driven loop: it reads the matching runtime and tool references first, confirms root cause from observed runtime state, locks the fix with a failing-first test, and cleans up the debug artifacts it made.",
-    "when_en": "Triggers on crashes, silent failures, hangs, wrong responses, or reverse engineering; it identifies the runtime and reads the matching reference before attaching.",
+    "what_en": "Claude runs a hypothesis-driven debugging loop: reads the runtime reference first, forms at least three hypotheses, confirms root cause from observed runtime state, locks the fix with a failing-first test, then reverts every debug artifact.",
+    "when_en": "Use when you hit crashes, silent failures, hangs, wrong responses and similar bugs, or need reverse engineering; also fits intermittent failures that only show up in CI.",
     "say_en": [
       {
-        "text": "This Node service hangs occasionally — find the root cause",
-        "note": "Reads the Node runtime reference first"
+        "text": "A service hangs intermittently; walk the debug loop and find the root cause",
+        "note": "Reads the runtime reference before Phase 0"
       },
       {
-        "text": "Debug why this Python async task never returns",
-        "note": "Runs the phase loop, then adds a failing test"
+        "text": "A browser page ignores clicks; reproduce it with Playwright",
+        "note": "Phase 8 drives a real browser"
       },
       {
-        "text": "This stripped binary misbehaves — help me reverse it",
-        "note": "Decides native vs bundled binary"
+        "text": "This bug only fails in CI; triage it as flaky first",
+        "note": "Reads the flaky reference before Phase 2"
       }
     ]
   }

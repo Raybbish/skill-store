@@ -5,7 +5,7 @@
     "name": "dask",
     "description": "Distributed computing for larger-than-RAM pandas/NumPy workflows. Use when you need to scale existing pandas/NumPy code beyond memory or across clusters. Best for parallel file processing, distributed ML, integration with existing pandas code. For out-of-core analytics on single machine use vaex; for in-memory speed use polars.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/dask",
-    "upstream_commit": "9cf7d9aea7d84754db4c167ab04b299d33c444bc",
+    "upstream_commit": "15e77e6215425bd9a498ca54e049a06176277189",
     "content_hash": "sha256:52fe1cebf229d78b43f40c31faf2ccfab34b5ba2f3dac888884f17874d9e56b4",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 43697,
+    "stars_github": 44372,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-08T07:43:14.646Z",
+    "fetched_at": "2026-09-11T07:41:51.253Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-07T09:35:26Z",
-    "repo_skill_count": 163,
+    "upstream_commit_at": "2026-09-10T15:54:37-07:00",
+    "repo_skill_count": 164,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-08T07:43:14.646Z",
+    "generated_at": "2026-09-11T07:41:51.253Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,37 +100,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会改用 Dask 库：把放不进内存的 pandas/NumPy 运算拆成小块，并行跑在多个核心或多台电脑上，并在表格、数组、文本、自定义任务等组件中选合适的。",
-    "when": "当数据量超出内存、需要并行处理多个文件、或想把 pandas/NumPy 代码扩展到多核或集群时触发。",
+    "what": "装上后,Claude 会把你的 pandas/NumPy 代码改写成 Dask 版本,让超出内存的数据也能处理,并可并行到多核或多台机器。这些计算是惰性的,调用 .compute() 才真正执行并返回结果。",
+    "when": "当你要把现有 pandas/NumPy 代码扩展到超出内存,或在多核、多机集群上运行时接管。原文建议:单机 out-of-core 分析用 vaex,追求内存内速度用 polars。",
     "say": [
       {
-        "text": "我的 100GB CSV 内存装不下，请用 Dask 帮我按类统计。",
-        "note": "Claude 会写出分块读取并统计的 Dask 代码。"
+        "text": "用 Dask Futures 把这批参数并行跑一遍,再把结果收集起来",
+        "note": "需先建 Client(),任务提交即执行"
       },
       {
-        "text": "把这套 pandas 代码改成 Dask，并在 4 台机器上运行。",
-        "note": "Claude 会让这些计算在多台机器上并行完成。"
+        "text": "数据比内存大,帮我把这段 pandas 代码改成 Dask DataFrame",
+        "note": "别先用 pandas 读入再交给 Dask"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:52fe1cebf229d78b43f40c31faf2ccfab34b5ba2f3dac888884f17874d9e56b4",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-08T08:06:51.755Z",
+    "generated_at": "2026-09-11T07:48:27.475Z",
     "lint_pass": true,
-    "what_en": "Claude will write Python code using Dask: it splits pandas/NumPy operations that exceed memory into chunks and runs them in parallel across cores or machines, choosing from DataFrame, Array, Bag, or Futures as appropriate.",
-    "when_en": "Triggers when data exceeds RAM, multiple files need parallel processing, or existing pandas/NumPy code should scale to multiple cores or a cluster.",
+    "what_en": "Claude rewrites your pandas/NumPy code into Dask versions that handle data larger than RAM and parallelize across cores or machines. Operations stay lazy until .compute() is called, which returns the computed result.",
+    "when_en": "Use when you need to scale existing pandas/NumPy code beyond memory or run it across cores or a cluster. The source suggests vaex for single-machine out-of-core analytics and polars for in-memory speed.",
     "say_en": [
       {
-        "text": "My 100GB CSV won't fit in RAM; use Dask to summarize it by category.",
-        "note": "Claude will produce Dask code that reads in chunks and aggregates."
+        "text": "Read this folder of large CSVs with Dask, group by category, and save means to Parquet.",
+        "note": "Lazy until .compute(); results appear then"
       },
       {
-        "text": "Turn this pandas code into Dask and run it on 4 machines.",
-        "note": "Claude will run the computation in parallel across machines."
+        "text": "Use Dask Futures to run this parameter sweep in parallel and gather the results.",
+        "note": "Requires a Client(); submitted tasks run at once"
       },
       {
-        "text": "Use Dask to process these JSON logs in parallel and keep status=error records.",
-        "note": "Claude will parse the JSON and keep only error entries."
+        "text": "This data is bigger than memory - convert this pandas code to Dask DataFrame.",
+        "note": "Don't load in pandas first, then hand to Dask"
       }
     ]
   }

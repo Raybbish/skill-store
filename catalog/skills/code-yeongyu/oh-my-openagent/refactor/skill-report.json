@@ -5,8 +5,8 @@
     "name": "refactor",
     "description": "Guides a refactor, cleanup, or restructure with the right decomposition. Use when the user asks to refactor, simplify, extract, or modernize code.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
-    "content_hash": "sha256:aafdcf2a500af7c0eb1fa3000b299f205e76db0665829c605b563ea723eeeb31",
+    "upstream_commit": "a861affbe633e1fc72c9636548c5019f4f2de3d3",
+    "content_hash": "sha256:f0070b178b0a3c8c2f9e29955ce6fc9dc9a21e42940290ca887a9502a5009d5c",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
     "category": "dev",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68871,
+    "stars_github": 68929,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:46.276Z",
+    "fetched_at": "2026-09-11T07:41:45.569Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
+    "upstream_commit_at": "2026-09-11T14:43:56+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,93 +36,95 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:46.276Z",
+    "generated_at": "2026-09-11T07:41:45.569Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 25153,
-        "chars": 25041,
-        "tokens": 5226
+        "bytes": 25173,
+        "chars": 25061,
+        "tokens": 5234
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 25153,
-        "chars": 25041,
-        "tokens": 5226
+        "bytes": 25173,
+        "chars": 25061,
+        "tokens": 5234
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 25153,
-        "chars": 25041,
-        "tokens": 5226
+        "bytes": 25173,
+        "chars": 25061,
+        "tokens": 5234
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "将混乱代码改造成清晰结构",
+    "tagline": "把混乱的代码拆解重组，理清结构",
     "scene_tags": [
-      "重构代码",
-      "清理冗余"
+      "代码重构",
+      "遗留代码整理",
+      "模块拆分"
     ],
-    "fit_line": "适合你,如果 代码越来越乱,想在不改功能的前提下变得清晰好维护。",
-    "tagline_en": "Restructure messy code into a clear, maintainable design.",
+    "fit_line": "适合你，如果手头代码越改越乱，想在不改行为的前提下梳理结构",
+    "tagline_en": "Break messy code apart and rebuild it into clear structure",
     "scene_tags_en": [
-      "code cleanup",
-      "code refactoring"
+      "code refactor",
+      "legacy cleanup",
+      "module split"
     ],
-    "fit_line_en": "For you if your codebase is messy and you want to clean it up without changing behavior.",
+    "fit_line_en": "For you if your codebase has grown messy and you want to reorganize it without changing behavior",
     "source": "llm",
-    "content_hash": "sha256:aafdcf2a500af7c0eb1fa3000b299f205e76db0665829c605b563ea723eeeb31",
+    "content_hash": "sha256:f0070b178b0a3c8c2f9e29955ce6fc9dc9a21e42940290ca887a9502a5009d5c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-04T07:45:20.055Z",
+    "generated_at": "2026-09-11T07:45:22.483Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会按阶段做重构:先确认目标,再并行探查代码库、画依赖与影响范围、评估测试覆盖,出计划后用 LSP 和 AST-grep 逐步改,每步跑测试校验,最后整体验证。",
-    "when": "当你要重构、简化、抽取或现代化代码时触发;也可直接调用 /refactor 加目标,并配合 --scope 与 --strategy 两个参数。",
+    "what": "装上后，Claude 会接管重构任务：先向你确认意图，再分析代码库和依赖、评估测试覆盖，然后分步骤改代码，每步跑测试和类型检查；覆盖率过低时先让你补测试。",
+    "when": "当你要求重构、抽取或现代化某段代码时触发，也可用 /refactor 命令手动调用。",
     "say": [
       {
-        "text": "/refactor src/auth/handler.ts",
-        "note": "默认 module 范围、safe 策略。"
+        "text": "帮我重构 src/auth/handler.ts，只改这个文件",
+        "note": "按 file 范围，先评估再动手"
       },
       {
-        "text": "把 AuthService 里的校验逻辑抽成独立模块",
-        "note": "它会先确认目标再出计划。"
+        "text": "把 AuthService 类里的校验逻辑抽取成独立模块",
+        "note": "默认 module 范围加 safe 策略"
       },
       {
-        "text": "重构项目里所有废弃 API 的调用",
-        "note": "加 --scope=project 覆盖整个代码库。"
+        "text": "重构所有用到废弃 API 的函数，用 aggressive 策略",
+        "note": "仍会要求测试覆盖足够"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:aafdcf2a500af7c0eb1fa3000b299f205e76db0665829c605b563ea723eeeb31",
+    "content_hash": "sha256:f0070b178b0a3c8c2f9e29955ce6fc9dc9a21e42940290ca887a9502a5009d5c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:52:48.069Z",
+    "generated_at": "2026-09-11T07:47:04.190Z",
     "lint_pass": true,
-    "what_en": "Installed, Claude refactors in phases: clarify the goal, explore the codebase, map dependencies, check test coverage, plan, then edit via LSP and AST-grep, running tests after each step and a full check at the end.",
-    "when_en": "Triggers when you ask to refactor, simplify, extract, or modernize code; you can call /refactor with a target plus --scope and --strategy options.",
+    "what_en": "After install, Claude runs refactors: it confirms intent, maps code and dependencies, checks test coverage, then edits step by step, running tests and type checks each time. With low coverage it asks you to add tests first.",
+    "when_en": "Triggered when you ask to refactor, extract, or modernize code, or when you invoke the /refactor command with a target.",
     "say_en": [
       {
-        "text": "/refactor src/auth/handler.ts",
-        "note": "Defaults to module scope and safe strategy."
+        "text": "Refactor src/auth/handler.ts, just this file",
+        "note": "file scope, assessment before edits"
       },
       {
-        "text": "Extract the validation logic from AuthService into its own module",
-        "note": "It confirms the goal first."
+        "text": "Extract the validation logic in AuthService into its own module",
+        "note": "module scope with safe strategy"
       },
       {
-        "text": "Refactor every call to the deprecated API across the project",
-        "note": "Use --scope=project to cover the whole codebase."
+        "text": "Refactor every function using the deprecated API, aggressive strategy",
+        "note": "still needs adequate test coverage"
       }
     ]
   }

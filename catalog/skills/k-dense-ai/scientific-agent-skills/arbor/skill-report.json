@@ -5,7 +5,7 @@
     "name": "arbor",
     "description": "Autonomously improve a real artifact (code, training recipe, agent harness, data pipeline, prompt) against an objective and an evaluator, using Hypothesis Tree Refinement (HTR) from the Arbor paper. Use this whenever someone wants to iteratively optimize something over many experiments without overfitting — e.g. \"get my model's eval score up\", \"improve this agent/harness\", \"tune this pipeline\", \"beat the baseline on this benchmark\", \"run a search over approaches and keep the best\", \"do an MLE-bench / Kaggle-style optimization\", or any long-horizon \"make this artifact better and don't just memorize the dev set\" task. Trigger it even when the user doesn't say \"Arbor\" or \"hypothesis tree\" but describes repeated experiment-and-evaluate loops, branching exploration of competing ideas, or worries about a dev/test gap. Runs Claude itself as the coordinator with subagent executors in isolated git worktrees; for the standalone `arbor` CLI tool see references/arbor-upstream.md.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arbor",
-    "upstream_commit": "9cf7d9aea7d84754db4c167ab04b299d33c444bc",
+    "upstream_commit": "15e77e6215425bd9a498ca54e049a06176277189",
     "content_hash": "sha256:0e5fc8f4b16bf37d229b60ae48a90b942376d2656b0bce6e800ee5cb1ad718da",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 43697,
+    "stars_github": 44372,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-08T07:43:14.646Z",
+    "fetched_at": "2026-09-11T07:41:51.253Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-07T09:35:26Z",
-    "repo_skill_count": 163,
+    "upstream_commit_at": "2026-09-10T15:54:37-07:00",
+    "repo_skill_count": 164,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-08T07:43:14.646Z",
+    "generated_at": "2026-09-11T07:41:51.253Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,26 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude会进入自主优化循环:先和你确认优化目标、初始工件与开发/测试两套评估器,再搭建假设树,把每次实验的证据存入并向上提炼;派子代理在隔离工作区验证假设,只有通过独立测试评估器的改动才会被采纳为新最优。最终给出改进后的工件、测试分数和简短报告。",
-    "when": "当你想对代码、训练配方、agent流程等多轮实验提升可测指标(如提分、打败baseline),或描述反复实验-评估、担心过拟合时触发。单次修改或纯头脑风暴不触发。",
+    "what": "Claude 会自己反复做实验改进一个已有产物(代码、训练配方、agent 等),把每次尝试记录成一棵假设树,并用另设的测试评测决定是否合并。最后留下一个可运行的改进版本和一份报告。",
+    "when": "当你想反复实验优化某个可评测的产物(如提升模型评分、改进 agent、调数据管线),或担心只是记住了 dev 集时触发,不必说出 Arbor 一词。",
     "say": [
       {
-        "text": "请用假设树优化我这个agent的评测准确率,先设好dev和test两种评估。",
-        "note": "会自动初始化并开始多轮带隔离实验。"
+        "text": "帮我把这个模型的评测分提上去,多跑几轮实验来优化"
       },
       {
-        "text": "对这个训练配方跑20轮优化,目标是降低loss,别让结果只过拟合dev集。",
-        "note": "Claude会建立假设树并派子代理验证。"
+        "text": "改进这个 agent harness 的通过率,注意别过拟合 dev 集",
+        "note": "每个假设由子代理在独立 git worktree 中测试。"
       },
       {
-        "text": "像Kaggle那样探索多种方案,只把test上最好的版本合入主分支。",
-        "note": "合并前会跑保留测试评估器。"
+        "text": "跑一轮 MLE-bench 风格的优化,保留能通过测试评测的方案",
+        "note": "只有通过测试门的候选才会成为新的最优版本。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0e5fc8f4b16bf37d229b60ae48a90b942376d2656b0bce6e800ee5cb1ad718da",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-08T08:04:39.126Z",
-    "lint_pass": true
+    "generated_at": "2026-09-11T07:48:14.047Z",
+    "lint_pass": true,
+    "what_en": "Claude improves an existing artifact over many experiments, records hypotheses in a persistent tree, and merges a change only when a held-out test evaluator approves it. Output: a runnable improved version and a report.",
+    "when_en": "Triggers when you want repeated experiment-and-evaluate improvement of a scorable artifact — raising a model's eval score, improving an agent or harness, tuning a pipeline.",
+    "say_en": [
+      {
+        "text": "Raise this model's dev eval score through many experiments",
+        "note": "Claude first pins the objective, dev and test evaluators."
+      },
+      {
+        "text": "Improve this agent harness's pass rate without overfitting",
+        "note": "Subagents test each hypothesis in isolated git worktrees."
+      },
+      {
+        "text": "Run an MLE-bench style search and keep the best submission",
+        "note": "Only candidates that pass the test gate become the new best."
+      }
+    ]
   }
 }

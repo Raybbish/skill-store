@@ -5,7 +5,7 @@
     "name": "host-observer",
     "description": "Use this when fulfilling claude-mem observer jobs on Grok Bot: reply only skip_summary or one full observation XML, never prose.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-grok-bot/skills/host-observer",
-    "upstream_commit": "1461655740297a34e11d721b612eb682db3f2ea7",
+    "upstream_commit": "7f6e02552516c424d77d3055cfc9c5e4c6e49889",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93592,
+    "stars_github": 93657,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:41.387Z",
+    "fetched_at": "2026-09-11T07:41:41.007Z",
     "first_seen_at": "2026-09-03T07:38:50.068Z",
-    "upstream_commit_at": "2026-09-09T21:10:32-07:00",
+    "upstream_commit_at": "2026-09-11T07:31:51Z",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:41.387Z",
+    "generated_at": "2026-09-11T07:41:41.007Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,40 +86,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 在 claude-mem observer 任务里只说两种结果:无可记录内容时回 skip_summary;有可搜索单元时输出一条 observation(含标题、4–10 条事实与叙述)。",
-    "when": "当你通过 Grok Bot 领取 claude-mem 的 observer 任务时接管;任务空闲、初始化或没有工具结果时,回 skip_summary。",
+    "what": "跑 claude-mem 观察者任务时,它只回两种结果:无可记内容就回 <skip_summary reason=\"noise\" />,完成一个可搜索单元就回一条 <observation> XML(真实标题、4–10 条带路径事实和叙述)。",
+    "when": "当你在 Grok Bot 上执行 claude-mem 的 observer 任务时接管:空闲、初始化或无工具结果时回 skip_summary,完成可搜索单元时回 observation。",
     "say": [
       {
-        "text": "把这条 inbox 任务写成 outbox 文件",
-        "note": "只写 outbox/{id}.txt"
+        "text": "这次没有可记录的内容,只回 skip_summary。"
       },
       {
-        "text": "这条任务没有工具结果,直接回 skip_summary"
+        "text": "把这个搜索单元写成一条 observation XML,标题用真实标题。",
+        "note": "输出含标题、事实与路径的 observation。"
       },
       {
-        "text": "把这次的搜索结果整理成一条 observation",
-        "note": "输出含标题与 4–10 条带路径事实的 XML"
+        "text": "不要用散文回答,直接给我观察 XML。",
+        "note": "散文会被丢弃,只保留 XML。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:55:17.121Z",
+    "generated_at": "2026-09-11T07:50:14.125Z",
     "lint_pass": true,
-    "what_en": "After install, Claude only replies with one of two results inside claude-mem observer jobs: skip_summary when nothing is worth recording, or a single observation (title, 4–10 facts with paths, narrative). No prose.",
-    "when_en": "Takes over when you run claude-mem observer jobs via Grok Bot; on idle, init, or no tool results it returns skip_summary.",
+    "what_en": "On claude-mem observer jobs in Grok Bot it replies with two forms only: <skip_summary reason=\"noise\" /> when nothing is worth recording, or one <observation> XML (real title, 4–10 facts with paths, narrative) when a searchable unit is done.",
+    "when_en": "It takes over when you run claude-mem observer jobs on Grok Bot: skip_summary on idle, init, or no tool results; observation when a searchable unit is done.",
     "say_en": [
       {
-        "text": "Write this inbox job to the outbox file",
-        "note": "Writes only outbox/{id}.txt"
+        "text": "Nothing to record this time - reply with skip_summary only.",
+        "note": "It returns <skip_summary reason=\"noise\" />."
       },
       {
-        "text": "This job has no tool results, just return skip_summary",
-        "note": "Returns <skip_summary reason=\"noise\" />"
+        "text": "Turn this search unit into one observation XML with a real title.",
+        "note": "It outputs an observation with facts and paths."
       },
       {
-        "text": "Turn this search result into one observation",
-        "note": "Outputs XML with title and 4–10 facts"
+        "text": "No prose, give me the observation XML directly.",
+        "note": "Prose is dropped; only the XML is kept."
       }
     ]
   }

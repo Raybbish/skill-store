@@ -5,7 +5,7 @@
     "name": "arboreto",
     "description": "Infer gene regulatory networks (GRNs) from gene expression data using scalable algorithms (GRNBoost2, GENIE3). Use when analyzing transcriptomics data (bulk RNA-seq, single-cell RNA-seq) to identify transcription factor-target gene relationships and regulatory interactions. Supports distributed computation for large-scale datasets.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arboreto",
-    "upstream_commit": "9cf7d9aea7d84754db4c167ab04b299d33c444bc",
+    "upstream_commit": "15e77e6215425bd9a498ca54e049a06176277189",
     "content_hash": "sha256:e1502f2a00b00b1434411a52ff16b47cde33820990c4bf003c5cfa4dbb6207b6",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 43697,
+    "stars_github": 44372,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-08T07:43:14.646Z",
+    "fetched_at": "2026-09-11T07:41:51.253Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-07T09:35:26Z",
-    "repo_skill_count": 163,
+    "upstream_commit_at": "2026-09-10T15:54:37-07:00",
+    "repo_skill_count": 164,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-08T07:43:14.646Z",
+    "generated_at": "2026-09-11T07:41:51.253Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,41 +94,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 面对基因表达数据时,会用 arboreto 的 GRNBoost2 或 GENIE3 算法推断基因调控网络,输出包含转录因子、靶基因和调控强度(importance)的表格。",
-    "when": "当用户给出批量或单细胞 RNA-seq 等转录组数据,要求找出转录因子与靶基因的调控关系时触发。",
+    "what": "在 Python 里调用 GRNBoost2 或 GENIE3，从基因表达数据推断转录因子与靶基因的调控网络，产出含 TF、target、importance 三列的表格文件。",
+    "when": "当你分析转录组数据（如 bulk RNA-seq、单细胞 RNA-seq），要找出转录因子与靶基因的调控关系，或需要用分布式计算处理大规模数据时触发。",
     "say": [
       {
-        "text": "用这份 bulk RNA-seq 数据帮我推断基因调控网络。",
-        "note": "会调用 GRNBoost2 并返回调控链接表。"
+        "text": "只保留 importance 大于 0.5 的调控关系",
+        "note": "得到过滤后的调控链接表"
       },
       {
-        "text": "改用 GENIE3 跑一遍,并和 GRNBoost2 对比。",
-        "note": "输出两种算法的结果供比较。"
-      },
-      {
-        "text": "把网络里重要性高于 0.5 的调控关系存成文件。",
-        "note": "按 importance 阈值过滤后保存结果。"
+        "text": "用多个随机种子各跑一次，按重要性取均值做共识网络",
+        "note": "多次运行结果合并为一张共识表"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e1502f2a00b00b1434411a52ff16b47cde33820990c4bf003c5cfa4dbb6207b6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-08T08:04:48.248Z",
+    "generated_at": "2026-09-11T07:48:11.343Z",
     "lint_pass": true,
-    "what_en": "After installation, when given gene expression data, Claude can use the arboreto library to infer gene regulatory networks. It runs the GRNBoost2 or GENIE3 algorithm and outputs a table of transcription factors, target genes, and regulatory importance scores.",
-    "when_en": "When the user provides transcriptomics data (bulk or single-cell RNA-seq) and asks to identify regulatory relationships between transcription factors and target genes.",
+    "what_en": "Runs GRNBoost2 or GENIE3 in Python to infer gene regulatory networks from expression data, then writes a table of TF, target and importance columns.",
+    "when_en": "Triggers when you analyze transcriptomics data such as bulk or single-cell RNA-seq to find transcription factor-target relationships, or need distributed computation for large datasets.",
     "say_en": [
       {
-        "text": "Infer a gene regulatory network from these bulk RNA-seq data.",
-        "note": "Runs GRNBoost2 and returns a table of links."
+        "text": "Infer a network from expression_data.tsv with grnboost2 and save it as TSV",
+        "note": "Writes TF, target, importance rows to a file"
       },
       {
-        "text": "Run it again with GENIE3 and compare the results.",
-        "note": "Produces a comparison between the two algorithms."
+        "text": "Keep only regulatory links with importance above 0.5",
+        "note": "Outputs a filtered link table"
       },
       {
-        "text": "Save regulatory links with importance above 0.5 to a file.",
-        "note": "Filters by importance threshold and saves output."
+        "text": "Run several seeds and average importance into a consensus network",
+        "note": "Combines runs into one consensus table"
       }
     ]
   }

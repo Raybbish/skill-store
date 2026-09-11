@@ -5,7 +5,7 @@
     "name": "coding-agent-sessions",
     "description": "Finds, reads, and reconstructs coding-agent sessions across Codex, Claude, OpenCode, OMO/Senpi, and other local agent logs. Use when asked to find or search past sessions, transcripts, or subagent runs, or to recover what an earlier session did.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/coding-agent-sessions",
-    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
+    "upstream_commit": "a861affbe633e1fc72c9636548c5019f4f2de3d3",
     "content_hash": "sha256:f8dacf65d0429dd37618467ff4b0c8d1b352be3bedc0c02ea9a37dcaa8d6d7d0",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68871,
+    "stars_github": 68929,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:46.276Z",
+    "fetched_at": "2026-09-11T07:41:45.569Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
+    "upstream_commit_at": "2026-09-11T14:43:56+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:46.276Z",
+    "generated_at": "2026-09-11T07:41:45.569Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -125,40 +125,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你要回忆过去用某个编程 agent 做过什么时，它会在本机日志里搜索、读取并重建会话记录，含子代理任务，结果以 JSON 列出平台、路径、首末用户提示等字段。",
-    "when": "当你要求查找、搜索过去的会话、记录或子代理运行，或想恢复早先某次会话做过什么时触发；没指定平台就并行搜全部已注册平台。",
+    "what": "装上后,Claude 在回答前会先搜索你本机的编程代理会话记录(Codex、Claude、OpenCode 等),定位到那次会话,读它的原始记录,再说明当时做了什么、派生了哪些子会话。",
+    "when": "当你要求找或读某次本地编程代理会话,或问「前几天在忙什么」「X 是不是已经改过」这类回忆问题时接管;先扩展查询词,再按平台、目录、时间收窄。",
     "say": [
       {
-        "text": "列出最近几天的 Codex 会话。"
+        "text": "帮我找一下前几天那个 OpenCode 的 bug 会话",
+        "note": "跨平台搜索并列出候选会话"
       },
       {
-        "text": "找一下上周关于 proxy 的 OpenCode 会话。",
-        "note": "跨平台关键词搜索并给出 detail_hint"
+        "text": "读一下这个会话,看看它当时改了什么",
+        "note": "给出首尾提示、事件和子会话"
       },
       {
-        "text": "读一下这个会话的详情 <session-id>。",
-        "note": "返回事件、提示与子代理"
+        "text": "搜 deploy,顺便把子代理的会话也带上",
+        "note": "加 --include-subagents,查被委派的工作"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f8dacf65d0429dd37618467ff4b0c8d1b352be3bedc0c02ea9a37dcaa8d6d7d0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:52:17.970Z",
+    "generated_at": "2026-09-11T07:46:35.056Z",
     "lint_pass": true,
-    "what_en": "It searches, reads, and reconstructs past coding-agent sessions from local logs across Codex, Claude, OpenCode and others, including subagent runs, returning JSON with platform, path, and first/last user prompts.",
-    "when_en": "Use when you ask to find or search past sessions, transcripts, or subagent runs, or to recover what an earlier session did; with no platform named it searches all registered platforms.",
+    "what_en": "After install, Claude searches your local coding-agent logs (Codex, Claude, OpenCode and others) before answering, locates the session, reads its raw transcript, and reports what it did and which child sessions it spawned.",
+    "when_en": "Triggers when you ask to find or read a past local coding-agent session, or ask what you worked on a few days ago. It expands query terms first, then narrows by platform, cwd and time.",
     "say_en": [
       {
-        "text": "List my Codex sessions from the last few days.",
-        "note": "Runs list --platform codex --from 7d"
+        "text": "Find that OpenCode bug session from a few days ago",
+        "note": "Runs the cross-platform finder and lists candidates"
       },
       {
-        "text": "Find last week's OpenCode sessions about proxy.",
-        "note": "Cross-platform keyword search, returns detail_hint"
+        "text": "Read that session and tell me what it changed",
+        "note": "Shows first/last prompts, events and child sessions"
       },
       {
-        "text": "Read the details of session <session-id>.",
-        "note": "Shows events, prompts, and subagents"
+        "text": "Search for deploy and include subagent sessions",
+        "note": "Adds --include-subagents to catch delegated work"
       }
     ]
   }

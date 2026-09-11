@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
+    "upstream_commit": "a861affbe633e1fc72c9636548c5019f4f2de3d3",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68871,
+    "stars_github": 68929,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:46.276Z",
+    "fetched_at": "2026-09-11T07:41:45.569Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
+    "upstream_commit_at": "2026-09-11T14:43:56+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:46.276Z",
+    "generated_at": "2026-09-11T07:41:45.569Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,40 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会在成功的编辑类操作（如 apply_patch、write、edit 等）后自动做注释检查：一旦 comment-checker 报警，Codex 会收到阻断性反馈，需要先修复或解释被标记的注释，再继续往下做。",
-    "when": "当 Codex 成功执行 apply_patch、write、edit 等编辑类调用后触发；非编辑类工具不受影响，缺少检查器程序时不产生任何钩子输出。",
+    "what": "装上后，每当 apply_patch、write、edit 等改动类操作成功，插件会自动检查代码注释；若发现问题会给出阻断性反馈，Claude 需先修正或说明被标记的注释再继续。不提供 MCP 工具。",
+    "when": "当 Codex 成功执行 apply_patch、write、edit 等改动类工具调用后触发；非改动类工具会被忽略，缺少检查器程序时不会输出任何提示。",
     "say": [
       {
-        "text": "这条注释警告是什么意思？"
+        "text": "先处理刚才 comment-checker 的警告再继续。",
+        "note": "Claude 会修正或说明被标记的注释。"
       },
       {
-        "text": "把被标记的注释改掉",
-        "note": "修改注释后再继续任务"
+        "text": "解释一下这次被标记的注释问题出在哪。",
+        "note": "Claude 会说明警告针对的具体注释。"
       },
       {
-        "text": "这条警告可以忽略吗？说明原因",
-        "note": "不改的话需要给出解释"
+        "text": "改完这个文件后，再看看注释有没有被标记。",
+        "note": "改动成功后会再次触发注释检查。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:52:17.821Z",
+    "generated_at": "2026-09-11T07:46:41.466Z",
     "lint_pass": true,
-    "what_en": "After a successful edit-like call (apply_patch, write, edit, etc.), a PostToolUse hook runs comment checking. If comment-checker warns, Codex gets blocking feedback and must fix or explain the flagged comment before continuing.",
-    "when_en": "Triggers after Codex makes a successful apply_patch, write, edit or similar edit call; non-edit tools are ignored, and a missing checker binary produces no hook output.",
+    "what_en": "Once installed, after successful apply_patch, write, edit and similar calls the plugin checks comments; if comment-checker warns, Codex gets blocking feedback and should fix or explain the flagged comment before continuing.",
+    "when_en": "Triggers after Codex successfully runs edit-like tool calls such as apply_patch, write, edit; non-edit tools are ignored, and a missing checker binary produces no hook output.",
     "say_en": [
       {
-        "text": "What does this comment warning mean?",
-        "note": "Claude explains what was flagged"
+        "text": "Fix or explain the flag from the last comment-checker warning.",
+        "note": "Codex addresses the flagged comment before continuing."
       },
       {
-        "text": "Fix the flagged comments",
-        "note": "Comments get fixed before work continues"
+        "text": "Why was this comment flagged?",
+        "note": "Codex explains the flagged comment."
       },
       {
-        "text": "Can I ignore this warning? Explain why",
-        "note": "You get a reason if no fix is made"
+        "text": "After this edit, check again for comment warnings.",
+        "note": "The hook runs again after the edit."
       }
     ]
   }

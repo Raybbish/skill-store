@@ -5,7 +5,7 @@
     "name": "remove-ai-slops",
     "description": "Removes AI-generated code smells from branch changes or an explicit file list behind regression tests. Use when the user asks to clean up, deslop, or remove AI-slop patterns from recent changes.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/remove-ai-slops",
-    "upstream_commit": "f42621f5ac42cfba7ca371c1834c03ac9df1058e",
+    "upstream_commit": "a861affbe633e1fc72c9636548c5019f4f2de3d3",
     "content_hash": "sha256:5c22666a3ad35993eb2f7bdd2d6d0792ae090d975d0772e250e3494f33342239",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68871,
+    "stars_github": 68929,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:47:46.276Z",
+    "fetched_at": "2026-09-11T07:41:45.569Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-10T16:42:37+09:00",
+    "upstream_commit_at": "2026-09-11T14:43:56+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:47:46.276Z",
+    "generated_at": "2026-09-11T07:41:45.569Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "清理分支改动或指定文件里的 AI 生成代码味(如冗余注释、过度防御、死代码等):先用回归测试锁住行为,再分类多轮清理,最后过质量门禁复查,验证失败则回滚。",
-    "when": "当你要求清理、deslop 或移除最近改动中的 AI-slop 模式时触发;默认范围是分支相对 merge-base main 的 diff,也可传入指定文件列表。",
+    "what": "它会先为改动文件补上回归测试锁住现有行为,再按九类 AI 代码异味(多余注释、过度防御、死代码等)分批清理,最后跑测试与静态检查;验证不通过就回退。",
+    "when": "当你要求清理、deslop 或去除最近改动里的 AI 代码异味时触发;不传参数时默认处理分支相对 merge-base main 的 diff,也可直接给出文件列表。",
     "say": [
       {
-        "text": "把我这个分支的改动 deslop 一遍",
-        "note": "先锁回归测试,再分类清理并跑门禁"
+        "text": "清理我这次分支改动里的 AI 代码异味",
+        "note": "先跑回归测试锁定行为,再分批清理。"
       },
       {
-        "text": "清理 src/foo.py 和 src/bar.py 里的 AI slop",
-        "note": "按文件列表逐个处理,行为保持不变"
+        "text": "帮我把 src/foo.py 和 src/bar.py 去一下 slop",
+        "note": "按你给的文件列表处理。"
       },
       {
-        "text": "把这些改动里重复和过度防御的代码清掉,别改行为",
-        "note": "先删后简,验证不过就回滚"
+        "text": "看看我的改动里有没有超过 250 行的文件并拆分",
+        "note": "发现超长文件会先给拆分方案。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5c22666a3ad35993eb2f7bdd2d6d0792ae090d975d0772e250e3494f33342239",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:52:47.601Z",
+    "generated_at": "2026-09-11T07:47:07.187Z",
     "lint_pass": true,
-    "what_en": "Cleans AI-generated slop from branch changes or a given file list: locks behavior with regression tests, runs categorized cleanup passes, then quality gates, reverting if verification fails.",
-    "when_en": "Triggers when the user asks to clean up, deslop, or remove AI-slop patterns from recent changes. Default scope is the branch diff vs merge-base main; an explicit file list can be passed.",
+    "what_en": "Locks behavior with regression tests first, then cleans nine categories of AI code smells (redundant comments, over-defensive code, dead code, etc.) in batches, and runs tests plus static checks; failed verification reverts.",
+    "when_en": "Triggers when you ask to clean up, deslop, or remove AI-slop patterns from recent changes. Defaults to the branch diff against merge-base main; a file list can be given instead.",
     "say_en": [
       {
-        "text": "Deslop my branch changes",
-        "note": "Locks tests first, then cleans in passes"
+        "text": "Clean up the AI slop in my branch changes",
+        "note": "Locks behavior with tests, then cleans in batches."
       },
       {
-        "text": "Clean up the AI slop in src/foo.py and src/bar.py",
-        "note": "Processes each file, behavior unchanged"
+        "text": "Deslop src/foo.py and src/bar.py",
+        "note": "Runs on the files you list."
       },
       {
-        "text": "Remove the duplication and over-defensive code, keep behavior",
-        "note": "Delete then simplify, revert if checks fail"
+        "text": "Find files over 250 lines in my changes and split them",
+        "note": "Shows a split plan first."
       }
     ]
   }
