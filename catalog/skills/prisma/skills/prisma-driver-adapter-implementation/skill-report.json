@@ -5,7 +5,7 @@
     "name": "prisma-driver-adapter-implementation",
     "description": "Required reference for Prisma ORM 7 SQL driver adapter work. Use when implementing or modifying adapters, adding database drivers, or touching SqlDriverAdapter, Transaction, savepoint, result mapping, or DriverAdapterError behavior. Covers current transaction lifecycle, optional savepoint hooks, original database-error preservation, and verification.",
     "upstream": "https://github.com/prisma/skills/tree/main/prisma-driver-adapter-implementation",
-    "upstream_commit": "808913c1dac11dc425631c2454f7fcb2d5ade5ca",
+    "upstream_commit": "1123817e60d15ca0f3af91878923241dee7e3b09",
     "content_hash": "sha256:e94fbb32f73e9c9f552d57e1e916eb790034729c94b04dc25b967f021793afec",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 107200,
-    "fetched_at": "2026-08-05T05:44:36.271Z",
+    "installs_skills_sh": 259800,
+    "fetched_at": "2026-09-09T07:48:25.599Z",
     "first_seen_at": "2026-08-04T05:46:24.648Z",
-    "upstream_commit_at": "2026-08-04T17:51:31+05:30"
+    "upstream_commit_at": "2026-09-08T20:26:26+05:30"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-05T05:44:36.271Z",
+    "generated_at": "2026-09-09T07:48:25.599Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,41 +86,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "提供 Prisma 驱动适配器的实现规范。装上后，Claude 会按此规范指导编写连接、查询、事务、保存点、错误映射和资源清理的代码，并逐项验证。",
-    "when": "当用户要求实现或修改 Prisma 驱动适配器、添加数据库驱动，或处理事务、保存点等适配器细节时触发。",
+    "what": "当 Claude 被要求编写或修改 Prisma 用来连接数据库的组件时，它会遵守明确规则：每个事务独享一条连接，提交/回滚只做清理，保存点只能加在事务对象上，数据库错误要保留原始代码和消息。",
+    "when": "当你要求实现或修改 Prisma 驱动适配器、添加数据库驱动，或处理事务等场景时触发。",
     "say": [
       {
-        "text": "实现一个 PostgreSQL 驱动适配器。",
-        "note": "按规范生成代码。"
+        "text": "帮我写一个 SqlDriverAdapter 的 queryRaw 实现。",
+        "note": "Claude 会按参数和结果映射规则生成代码。"
       },
       {
-        "text": "给现有适配器添加保存点支持。",
-        "note": "修改事务接口。"
+        "text": "如何实现事务的保存点方法？"
       },
       {
-        "text": "审查这段适配器代码的错误映射。",
-        "note": "对照规范检查。"
+        "text": "数据库错误如何转成 DriverAdapterError？",
+        "note": "Claude 会展示保留原始错误码和消息的写法。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e94fbb32f73e9c9f552d57e1e916eb790034729c94b04dc25b967f021793afec",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-05T06:00:52.900Z",
+    "generated_at": "2026-09-09T08:24:47.781Z",
     "lint_pass": true,
-    "what_en": "Provides implementation guidelines for Prisma SQL driver adapters: how to write connection, query, transaction, savepoint, error-mapping, and cleanup code, plus a verification checklist.",
-    "when_en": "Triggered when implementing or modifying Prisma driver adapters, adding database drivers, or touching transaction/savepoint/result-mapping/error behavior.",
+    "what_en": "When asked to write or modify the Prisma component that talks to a database, Claude follows clear rules: each transaction has one dedicated connection, commit/rollback only clean up, savepoints live on the Transaction object, and database errors preserve original code/message.",
+    "when_en": "Triggers when you ask to implement or modify a Prisma driver adapter, add a database driver, or handle transactions and similar scenarios.",
     "say_en": [
       {
-        "text": "Implement a PostgreSQL driver adapter.",
-        "note": "Generates adapter code per spec."
+        "text": "Help me implement a queryRaw method for a SqlDriverAdapter.",
+        "note": "Claude will generate code following mapping rules."
       },
       {
-        "text": "Add savepoint support to the adapter.",
-        "note": "Modifies transaction interface."
+        "text": "How should savepoint methods be implemented for a transaction?",
+        "note": "Claude explains savepoints must be on Transaction."
       },
       {
-        "text": "Review the error mapping in this adapter code.",
-        "note": "Checks against the guidelines."
+        "text": "How do I convert database errors to DriverAdapterError?",
+        "note": "Claude shows preserving original code and message."
       }
     ]
   }
