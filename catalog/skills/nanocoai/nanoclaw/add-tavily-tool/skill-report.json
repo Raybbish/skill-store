@@ -5,7 +5,7 @@
     "name": "add-tavily-tool",
     "description": "Add Tavily Search and Extract as keyless remote MCP tools for selected NanoClaw agent groups. Use when installing Tavily web search or URL extraction without an API key.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-tavily-tool",
-    "upstream_commit": "74224f62a6c08418acccc727114ab02f92e403bf",
+    "upstream_commit": "d96dde93db7a766531ca288190ca202ad473547e",
     "content_hash": "sha256:2d9ebf4b4d47a240ccd043ff286d0bd5ee5355d8394e0ddbb5352263870df53f",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30743,
+    "stars_github": 30745,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:55.788Z",
+    "fetched_at": "2026-09-12T07:36:09.926Z",
     "first_seen_at": "2026-08-12T04:44:23.959Z",
-    "upstream_commit_at": "2026-09-10T16:24:16+02:00",
+    "upstream_commit_at": "2026-09-12T02:43:51+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:55.788Z",
+    "generated_at": "2026-09-12T07:36:09.926Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -96,37 +96,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "为指定的 NanoClaw agent group 注册 Tavily 远程 MCP,提供 tavily_search(网页搜索)和 tavily_extract(网页提取)两个工具,无需 API key。额度用尽时 agent 会主动给出改用付费 key 的指引。",
-    "when": "当你要在 NanoClaw 的 agent group 里安装 Tavily 网页搜索或 URL 提取、且不使用 API key 时使用;技能会先检查镜像与 group 列表。",
+    "what": "为选定的 NanoClaw agent 组安装 mcp-remote 桥接并注册 Tavily 远程 MCP 服务器,使该组多出 tavily_search 和 tavily_extract 两个工具,无需 API key。",
+    "when": "当你为 NanoClaw 的 agent 组安装 Tavily 网页搜索或 URL 提取、且不用 API key 时触发。Claude provider 的组已有内置 WebSearch、WebFetch,其他 provider 的组收益更大。",
     "say": [
       {
-        "text": "看一下这个 group 的 tavily 服务器配置和两个请求头。",
-        "note": "读取已存储的配置"
+        "text": "给 group my-group 装上 Tavily 搜索和提取",
+        "note": "会装桥接并注册 keyless 服务器"
       },
       {
-        "text": "Tavily 返回 429 了,把升级到付费 key 的指引装上。",
-        "note": "写入升级说明块并重启 group"
+        "text": "用 Tavily 搜一条,max_results 设为 1",
+        "note": "用来验证 tavily_search 是否可用"
+      },
+      {
+        "text": "Tavily 报 429 了,帮我改用 API key",
+        "note": "走 OneCLI 面板的升级流程"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2d9ebf4b4d47a240ccd043ff286d0bd5ee5355d8394e0ddbb5352263870df53f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:49:37.803Z",
+    "generated_at": "2026-09-12T07:43:11.672Z",
     "lint_pass": true,
-    "what_en": "Registers Tavily's remote MCP server for selected NanoClaw agent groups, adding two keyless tools: tavily_search and tavily_extract. It also adds upgrade instructions so the agent offers a paid API key once the keyless allowance runs out.",
-    "when_en": "Use when installing Tavily web search or URL extraction for NanoClaw agent groups without an API key. The skill checks the image manifest and lists groups first.",
+    "what_en": "Installs an mcp-remote bridge and registers Tavily's remote MCP server for selected NanoClaw agent groups, exposing tavily_search and tavily_extract with no API key.",
+    "when_en": "Use when installing Tavily web search or URL extraction for a NanoClaw agent group without an API key. Groups on the Claude provider already have built-in WebSearch and WebFetch.",
     "say_en": [
       {
-        "text": "Add Tavily search and extract to this agent group, no API key.",
-        "note": "Lists your groups first."
+        "text": "Add Tavily search and extract to group my-group",
+        "note": "Installs the bridge and registers the keyless server"
       },
       {
-        "text": "Show this group's tavily MCP server config and its two headers.",
-        "note": "Runs ncl groups config get."
+        "text": "Run one Tavily search with max_results 1",
+        "note": "Checks whether tavily_search works"
       },
       {
-        "text": "Tavily returned 429 - install the paid-key upgrade instructions.",
-        "note": "Writes the upgrade block, then restarts."
+        "text": "Tavily returned 429 — switch me to an API key",
+        "note": "Starts the OneCLI dashboard upgrade path"
       }
     ]
   }

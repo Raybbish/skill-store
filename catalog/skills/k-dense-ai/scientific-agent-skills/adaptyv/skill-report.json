@@ -5,7 +5,7 @@
     "name": "adaptyv",
     "description": "How to use the Adaptyv Bio Foundry API and Python SDK for protein experiment design, submission, and results retrieval. Use this skill whenever the user mentions Adaptyv, Foundry API, protein binding assays, protein screening experiments, BLI/SPR assays, thermostability assays, or wants to submit protein sequences for experimental characterization. Also trigger when code imports `adaptyv`, `adaptyv_sdk`, or `FoundryClient`, or references `foundry-api-public.adaptyvbio.com`.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/adaptyv",
-    "upstream_commit": "15e77e6215425bd9a498ca54e049a06176277189",
+    "upstream_commit": "c1ed16d97dd61ff50a3bd46dd353e4a55fd77f34",
     "content_hash": "sha256:e9127bd1bd40cece0e78688d16352fbe0d909ecb5c4bfad982b30807d7b44963",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 44372,
+    "stars_github": 44514,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:51.253Z",
+    "fetched_at": "2026-09-12T07:36:04.582Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-10T15:54:37-07:00",
-    "repo_skill_count": 164,
+    "upstream_commit_at": "2026-09-11T19:09:21-07:00",
+    "repo_skill_count": 165,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:51.253Z",
+    "generated_at": "2026-09-12T07:36:04.582Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会用 Adaptyv Foundry API 和 Python SDK 帮你查靶点、估算费用、创建并提交蛋白实验,之后再取回实验结果。它会从环境变量 ADAPTYV_API_KEY 读取密钥,不把 token 写进代码。",
-    "when": "当你提到 Adaptyv、Foundry API、蛋白结合实验等关键词,或代码里出现 adaptyv、FoundryClient 时触发;也可用于把蛋白序列提交做实验表征。",
+    "what": "Claude 会用 Adaptyv Foundry API 与 Python SDK 帮你操作蛋白实验：查靶点、估算费用、创建并提交实验，之后拉取结果。",
+    "when": "当你提到 Adaptyv、Foundry API、蛋白结合实验等关键词，或代码导入 adaptyv、FoundryClient 时触发，用于提交蛋白序列做实验表征。",
     "say": [
       {
-        "text": "帮我查一下可自助的 EGFR 靶点,并估算这组序列的筛选费用",
-        "note": "会列出靶点并返回费用估算"
+        "text": "帮我用 Adaptyv 查一下 EGFR 这个靶点，看哪些可以自助下单",
+        "note": "搜索靶点并筛选可自助下单的"
       },
       {
-        "text": "把这批序列建成一个 BLI 筛选实验并提交审核",
-        "note": "实验先进入 Draft 再提交"
+        "text": "给这几条序列做一次 BLI 结合筛选实验，先估算费用再提交",
+        "note": "先估算费用，再创建并提交实验"
       },
       {
-        "text": "取回这个实验的结果,并告诉我 results_status",
-        "note": "返回结果与结果状态"
+        "text": "查一下我上一个实验的结果，用 get_results 拉回来",
+        "note": "拉取指定实验的结果"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e9127bd1bd40cece0e78688d16352fbe0d909ecb5c4bfad982b30807d7b44963",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:48:07.353Z",
+    "generated_at": "2026-09-12T07:41:42.945Z",
     "lint_pass": true,
-    "what_en": "Claude uses the Adaptyv Foundry API and Python SDK to browse targets, estimate cost, create and submit protein experiments, then retrieve results. It reads the key from ADAPTYV_API_KEY.",
-    "when_en": "Triggers when you mention Adaptyv, Foundry API, or protein binding assays, or when code imports adaptyv, adaptyv_sdk, or FoundryClient.",
+    "what_en": "Claude uses the Adaptyv Foundry API and Python SDK to work with protein experiments: list targets, estimate cost, create and submit assays (binding, thermostability, expression, fluorescence), and fetch results.",
+    "when_en": "Triggered when you mention Adaptyv, Foundry API, or protein binding assays, when code imports adaptyv or FoundryClient, or when you submit protein sequences for characterization.",
     "say_en": [
       {
-        "text": "List self-service EGFR targets and estimate the cost of screening these sequences",
-        "note": "Returns targets and a cost estimate"
+        "text": "Find the EGFR target on Adaptyv and show self-service options",
+        "note": "Runs targets.list with the search and selfservice filter"
       },
       {
-        "text": "Create a BLI screening experiment for these sequences and submit it",
-        "note": "Starts as Draft, then submits"
+        "text": "Run a BLI screening assay on these sequences, estimating cost first",
+        "note": "Calls cost_estimate, then create and submit"
       },
       {
-        "text": "Fetch the results for this experiment and report results_status",
-        "note": "Returns results and status"
+        "text": "Pull the results for my last experiment",
+        "note": "Calls get_results for that experiment id"
       }
     ]
   }

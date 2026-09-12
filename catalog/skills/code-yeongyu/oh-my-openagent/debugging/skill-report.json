@@ -5,7 +5,7 @@
     "name": "debugging",
     "description": "Runs a hypothesis-driven debugging loop across any language or binary, escalating to orthogonal oracle angles and locking the fix with a failing test. Use for crashes, silent failures, hangs, wrong responses, memory leaks, async misbehavior, or reverse engineering.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/debugging",
-    "upstream_commit": "a861affbe633e1fc72c9636548c5019f4f2de3d3",
+    "upstream_commit": "e0746bcbcdf6341f697358867b2de436251fa5ad",
     "content_hash": "sha256:875f7dd733912ed4ad2f3987bc2008968d13c28526856b785ed2a440a70db979",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68929,
+    "stars_github": 68956,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:45.569Z",
+    "fetched_at": "2026-09-12T07:35:57.315Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-11T14:43:56+09:00",
+    "upstream_commit_at": "2026-09-12T15:32:34+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:45.569Z",
+    "generated_at": "2026-09-12T07:35:57.315Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -133,41 +133,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会按「假设—验证」循环调试:先读对应运行时的参考文件,再提出至少三个可区分的假设,用运行时实际状态确认根因,最后用先失败的测试锁定修复,并把调试产生的每个中间痕迹记入日志后清除。",
-    "when": "当你遇到崩溃、静默失败、卡死等问题,或需要逆向分析时触发;间歇性故障、只在 CI 挂的情况也适用。",
+    "what": "装上后,Claude 会按「假设驱动」的调试循环工作:每个结论都要有实际运行观察支撑,而不是读代码猜出来;修好之前必须先写一个失败的测试,调试过程中产生的临时改动都会先记录、最后清理。",
+    "when": "当你排查崩溃、静默失败、卡死、内存泄漏、异步异常等故障,或做逆向工程时触发;进入每个阶段前,它要求先读对应的 references 文件。",
     "say": [
       {
-        "text": "服务偶发卡死,带我走一遍调试循环找出根因",
-        "note": "会先读运行时参考再进入 Phase 0"
+        "text": "帮我调这个 Node 服务的崩溃,先列三个假设和各自的区分证据",
+        "note": "它会先读 Node 运行时参考再动手"
       },
       {
-        "text": "浏览器页面点了没反应,用 Playwright 驱动复现",
-        "note": "Phase 8 会驱动真实浏览器验证"
+        "text": "这个测试在 CI 上间歇性失败,帮我做 flaky 排查",
+        "note": "会先读 flaky 排查参考再进第 2 阶段"
       },
       {
-        "text": "这个 bug 只在 CI 挂,先做 flaky 排查",
-        "note": "会在 Phase 2 前先读 flaky 参考"
+        "text": "这个二进制没有源码,帮我定位并复现这个 bug",
+        "note": "会先判断是原生还是打包二进制"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:875f7dd733912ed4ad2f3987bc2008968d13c28526856b785ed2a440a70db979",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:46:39.693Z",
+    "generated_at": "2026-09-12T07:40:23.895Z",
     "lint_pass": true,
-    "what_en": "Claude runs a hypothesis-driven debugging loop: reads the runtime reference first, forms at least three hypotheses, confirms root cause from observed runtime state, locks the fix with a failing-first test, then reverts every debug artifact.",
-    "when_en": "Use when you hit crashes, silent failures, hangs, wrong responses and similar bugs, or need reverse engineering; also fits intermittent failures that only show up in CI.",
+    "what_en": "Claude runs a hypothesis-driven debug loop: every conclusion comes from observed runtime state, not code reading. Fixes require a failing test first, and all debug artifacts are journaled and cleaned up.",
+    "when_en": "Triggers on crashes, silent failures, hangs, memory leaks, async misbehavior, or reverse engineering. It reads the matching reference file before entering each phase.",
     "say_en": [
       {
-        "text": "A service hangs intermittently; walk the debug loop and find the root cause",
-        "note": "Reads the runtime reference before Phase 0"
+        "text": "Debug this Node service crash; give 3 hypotheses with distinguishing evidence.",
+        "note": "It reads the Node runtime reference first"
       },
       {
-        "text": "A browser page ignores clicks; reproduce it with Playwright",
-        "note": "Phase 8 drives a real browser"
+        "text": "This test fails intermittently in CI; help me triage the flakiness.",
+        "note": "Reads the flaky-triage reference before Phase 2"
       },
       {
-        "text": "This bug only fails in CI; triage it as flaky first",
-        "note": "Reads the flaky reference before Phase 2"
+        "text": "This binary has no source; help me locate and reproduce the bug.",
+        "note": "It first checks native vs bundled binary"
       }
     ]
   }

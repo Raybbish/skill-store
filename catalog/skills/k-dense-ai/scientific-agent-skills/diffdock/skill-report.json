@@ -5,7 +5,7 @@
     "name": "diffdock",
     "description": "DiffDock and DiffDock-L molecular docking. Use for protein-small-molecule pose prediction from PDB or sequence plus SMILES/SDF/MOL2, batch docking, virtual screening, and pose-confidence interpretation. Not for binding affinity prediction.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/diffdock",
-    "upstream_commit": "15e77e6215425bd9a498ca54e049a06176277189",
+    "upstream_commit": "c1ed16d97dd61ff50a3bd46dd353e4a55fd77f34",
     "content_hash": "sha256:48acab0889b500a3529ad9023d4a2c2888e18a27b2f0e1d1bcd831d6dc645d24",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 44372,
+    "stars_github": 44514,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:51.253Z",
+    "fetched_at": "2026-09-12T07:36:04.582Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-10T15:54:37-07:00",
-    "repo_skill_count": 164,
+    "upstream_commit_at": "2026-09-11T19:09:21-07:00",
+    "repo_skill_count": 165,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:51.253Z",
+    "generated_at": "2026-09-12T07:36:04.582Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,37 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会用 DiffDock 做分子对接:给它蛋白 PDB 或序列,再加配体的 SMILES/SDF/MOL2,它输出配体的 3D 结合构象和置信度分数,单条和批量虚拟筛选都支持。",
-    "when": "当你说「把这个配体对接进蛋白」「预测结合构象」,或提到虚拟筛选、批量对接时接管。它不预测结合亲和力。",
+    "what": "Claude 可以用 DiffDock 预测小分子配体在蛋白上的 3D 结合姿态:输入 PDB 或蛋白序列加 SMILES/SDF/MOL2,产出带置信度分数的 SDF 姿态文件,支持单个或批量对接与虚拟筛选。它不预测结合亲和力。",
+    "when": "当你要求做分子对接、预测结合姿态,或进行虚拟筛选、批量对接蛋白-配体对时触发;典型输入是 PDB 文件或序列搭配 SMILES/SDF/MOL2。",
     "say": [
       {
-        "text": "用 batch_input.csv 批量对接这些蛋白-配体对",
-        "note": "按 CSV 逐行对接并生成结果目录"
+        "text": "把这个配体 dock 到蛋白 protein.pdb 上,预测结合姿态。",
+        "note": "生成带置信度分数的 SDF 姿态文件。"
       },
       {
-        "text": "分析 results/ 里的置信度分数,列出每个复合物前 5 个构象",
-        "note": "调用分析脚本做排序和统计"
+        "text": "用 batch_input.csv 批量对接这些蛋白-配体对。",
+        "note": "结果写入指定的输出目录。"
+      },
+      {
+        "text": "分析 results/batch/ 的置信度分数,导出前 5 名。",
+        "note": "输出统计摘要和 CSV。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:48acab0889b500a3529ad9023d4a2c2888e18a27b2f0e1d1bcd831d6dc645d24",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:48:36.573Z",
+    "generated_at": "2026-09-12T07:42:07.340Z",
     "lint_pass": true,
-    "what_en": "Runs DiffDock to dock ligands into proteins: give a PDB or sequence plus a ligand SMILES/SDF/MOL2, and it outputs ranked 3D binding poses with confidence scores, for single or batch virtual screening.",
-    "when_en": "Triggers when you ask to dock a ligand into a protein, predict binding poses, or run virtual screening. It does not predict binding affinity.",
+    "what_en": "Claude can run DiffDock to predict 3D binding poses of small-molecule ligands on proteins: input a PDB file or sequence plus SMILES/SDF/MOL2, and it returns SDF pose files with confidence scores. It does not predict binding affinity.",
+    "when_en": "Triggers when you ask to dock a ligand to a protein, predict a binding pose, or run virtual screening and batch docking of protein-ligand pairs, typically with PDB plus SMILES input.",
     "say_en": [
       {
-        "text": "Dock this SMILES ligand into protein.pdb and save results under results/",
-        "note": "Runs DiffDock and writes confidence-scored poses"
+        "text": "Dock this ligand to protein.pdb and predict its binding pose.",
+        "note": "Writes SDF pose files with confidence scores."
       },
       {
-        "text": "Batch dock these protein-ligand pairs using batch_input.csv",
-        "note": "Docks each CSV row and creates result folders"
+        "text": "Batch dock these protein-ligand pairs using batch_input.csv.",
+        "note": "Results go to the output directory."
       },
       {
-        "text": "Analyze confidence scores in results/ and show top 5 poses per complex",
-        "note": "Runs the analysis script to rank and summarize"
+        "text": "Analyze confidence scores in results/batch/ and export the top 5.",
+        "note": "Prints a summary and a CSV."
       }
     ]
   }

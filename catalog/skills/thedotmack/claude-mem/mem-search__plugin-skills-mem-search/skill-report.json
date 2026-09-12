@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Search claude-mem's persistent cross-session memory database. Use when user asks \"did we already solve this?\", \"how did we do X last time?\", or needs work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/mem-search",
-    "upstream_commit": "7f6e02552516c424d77d3055cfc9c5e4c6e49889",
+    "upstream_commit": "ed57a511f5dbf84e75c9a785df818c43b66b5849",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93657,
+    "stars_github": 93705,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:41.007Z",
+    "fetched_at": "2026-09-12T07:35:51.999Z",
     "first_seen_at": "2026-08-28T14:48:34.339Z",
-    "upstream_commit_at": "2026-09-11T07:31:51Z",
+    "upstream_commit_at": "2026-09-11T10:33:46-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:41.007Z",
+    "generated_at": "2026-09-12T07:35:51.999Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能查 claude-mem 保存的跨会话历史:按「搜索→时间线→取详情」分层检索旧会话记录,先返回带 ID、时间的标题索引与摘要,摘要不够时才取原始工具输入输出。",
-    "when": "当你问的是以往会话而不是当前对话时触发,例如「这个问题之前修过吗」「上次 X 是怎么做的」「上周发生了什么」等。",
+    "what": "装上后,Claude 能检索 claude-mem 的跨会话记忆库,回答你之前会话里做过的事。流程是搜索 → 时间线 → 取详情,产出带 ID 的结果表和摘要;只有在摘要不够时才调出原始工具输入输出。",
+    "when": "当你问到之前会话(不是当前对话)里的事,例如“这个问题我们是不是解决过?”、“上次 X 是怎么做的?”等,就会触发检索。",
     "say": [
       {
-        "text": "上周我们是怎么修好那个 bug 的?",
-        "note": "先搜索记忆库,给出带 ID 的标题索引"
+        "text": "帮我搜一下之前会话里关于 authentication 的记录",
+        "note": "返回一张带 ID 的结果表"
       },
       {
-        "text": "搜索本项目里跟 migration 相关的记录",
-        "note": "返回结果列表和摘要"
+        "text": "这个 bug 我们之前是不是修过?查一下过去的会话",
+        "note": "先搜索引,再按需取详情"
       },
       {
-        "text": "把那次命令的原始输出调出来",
-        "note": "摘要不够时才取原始工具输入输出"
+        "text": "把上次那个迁移失败的完整命令输出调出来",
+        "note": "摘要不够时才取原始工具输出"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:50:20.063Z",
+    "generated_at": "2026-09-12T07:43:49.868Z",
     "lint_pass": true,
-    "what_en": "Claude searches claude-mem's cross-session memory in layers: search -> timeline -> fetch. It first returns titles with IDs and timestamps plus summaries, and only pulls raw tool I/O when the summary is not enough.",
-    "when_en": "Triggered when you ask about previous sessions rather than the current conversation — e.g. \"did we already fix this?\", \"how did we do X last time?\", or \"what happened last week?\".",
+    "what_en": "Once installed, Claude can search claude-mem's cross-session memory for work done in past sessions. It works search → timeline → fetch, returning ID'd result tables and summaries, and only pulls raw tool I/O when a summary is not enough.",
+    "when_en": "Triggers when you ask about previous sessions (not the current chat): “did we already solve this?”, “how did we do X last time?”, “what happened last week?” etc.",
     "say_en": [
       {
-        "text": "How did we fix that bug last week?",
-        "note": "Searches the memory index first, returns titles with IDs"
+        "text": "Search my memory for anything about authentication",
+        "note": "Returns an ID'd result table"
       },
       {
-        "text": "Search this project for records about migration",
-        "note": "Returns a list of results and summaries"
+        "text": "Did we already fix this bug? Check past sessions",
+        "note": "Searches the index first, then details"
       },
       {
-        "text": "Pull up the raw output of that command",
-        "note": "Only used when a summary is not enough"
+        "text": "Show the exact command output from last week's migration",
+        "note": "Fetches raw tool I/O only if needed"
       }
     ]
   }

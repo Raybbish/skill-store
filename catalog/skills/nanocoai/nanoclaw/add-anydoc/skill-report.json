@@ -5,7 +5,7 @@
     "name": "add-anydoc",
     "description": "Add local office-document-to-Markdown conversion to NanoClaw agent containers with the pinned Firecrawl AnyDoc CLI. Use when agents need to read attached Word, PowerPoint, Excel, OpenDocument, RTF, EPUB, CSV, or text-based PDF files without uploading them to a hosted parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc",
-    "upstream_commit": "74224f62a6c08418acccc727114ab02f92e403bf",
+    "upstream_commit": "d96dde93db7a766531ca288190ca202ad473547e",
     "content_hash": "sha256:1e06f5199dd218f27f571366d004c0852b5c9fb4b26f644a55f75c380cb8bd49",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30743,
+    "stars_github": 30745,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:55.788Z",
+    "fetched_at": "2026-09-12T07:36:09.926Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-10T16:24:16+02:00",
+    "upstream_commit_at": "2026-09-12T02:43:51+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:55.788Z",
+    "generated_at": "2026-09-12T07:36:09.926Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,37 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在 NanoClaw 的 agent 容器里装上 0.1.6 版 Firecrawl AnyDoc CLI 和转换技能,让 agent 把本地 Word、Excel、PDF 等附件转成 Markdown,不经托管解析服务。",
-    "when": "当 agent 需要读取附件里的 Word、Excel、PDF 等办公文档、又不希望上传到托管解析服务时触发。",
+    "what": "装上后,Claude 能在 NanoClaw agent 容器内用固定版本的 Firecrawl AnyDoc CLI,把附加的 Word、PowerPoint、Excel 等本地办公文档转成 Markdown,文件不外传给托管解析器,也不改动原有附件流程。",
+    "when": "当 agent 需要读取附加的 Word、PowerPoint、Excel 等办公文档,又不希望把它们上传到托管解析器时,由这个容器技能接管转换。",
     "say": [
       {
-        "text": "读取我附上的 Excel 表格,把内容转成 Markdown",
-        "note": "转换在容器内本地完成"
+        "text": "把附加的 report.docx 转成 Markdown,只总结相关段落",
+        "note": "它按绝对路径读取本地文件"
       },
       {
-        "text": "这个 PDF 如果是扫描件请直接告诉我",
-        "note": "扫描版 PDF 需要 OCR,会明确失败"
+        "text": "把测试用的 PPTX 和 XLSX 转成 Markdown",
+        "note": "结果写入 agent 的 converted 目录"
+      },
+      {
+        "text": "用纯图片的 PDF 试一下,确认它会明确报错且不上传",
+        "note": "图片型 PDF 需要 OCR"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1e06f5199dd218f27f571366d004c0852b5c9fb4b26f644a55f75c380cb8bd49",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:49:12.740Z",
+    "generated_at": "2026-09-12T07:42:43.479Z",
     "lint_pass": true,
-    "what_en": "Installs pinned Firecrawl AnyDoc CLI 0.1.6 plus a container skill so NanoClaw agents convert local Word, Excel, PDF and similar attachments to Markdown inside the container, with no hosted parser.",
-    "when_en": "Triggers when an agent must read attached Word, Excel, PDF or similar office files without uploading them to a hosted parser.",
+    "what_en": "Once installed, Claude can convert attached local Word, PowerPoint, Excel, and other office documents to Markdown inside NanoClaw agent containers using the pinned Firecrawl AnyDoc CLI, without uploading files to a hosted parser.",
+    "when_en": "Triggers when an agent must read attached Word, PowerPoint, Excel, or similar office documents and should not send them to a hosted parser.",
     "say_en": [
       {
-        "text": "Convert the .docx under /workspace/inbox to Markdown",
-        "note": "Then summarize only the relevant sections"
+        "text": "Convert the attached report.docx to Markdown and summarize only the relevant parts.",
+        "note": "It reads the file from its absolute local path."
       },
       {
-        "text": "Read the Excel attachment and turn it into Markdown",
-        "note": "Conversion stays local in the container"
+        "text": "Convert the test PPTX and XLSX files to Markdown.",
+        "note": "Output lands in the agent's converted directory."
       },
       {
-        "text": "Tell me if this PDF is a scan without a text layer",
-        "note": "Scanned PDFs need OCR and fail clearly"
+        "text": "Try an image-only PDF and check that it fails with a clear error.",
+        "note": "Scanned PDFs need OCR."
       }
     ]
   }

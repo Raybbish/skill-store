@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "Handles git work: atomic commits, rebase, squash, blame, bisect, reflog, and history questions. Use whenever a task needs a commit or a git-history investigation; skip for ordinary code edits.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "a861affbe633e1fc72c9636548c5019f4f2de3d3",
+    "upstream_commit": "e0746bcbcdf6341f697358867b2de436251fa5ad",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68929,
+    "stars_github": 68956,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:45.569Z",
+    "fetched_at": "2026-09-12T07:35:57.315Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-11T14:43:56+09:00",
+    "upstream_commit_at": "2026-09-12T15:32:34+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:45.569Z",
+    "generated_at": "2026-09-12T07:35:57.315Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 处理 git 事务时会先读取仓库状态,再按请求分类完成提交、改写分支历史(变基、压缩)或调查历史(blame、bisect、reflog),并附上命令与提交哈希作为证据。",
-    "when": "当任务需要提交代码或调查 git 历史时触发,例如 commit、rebase、blame 等;普通的代码编辑不接管。",
+    "what": "装上后,Claude 会先读仓库状态再动手:按仓库已有风格做原子提交、改写分支历史(squash/fixup),或用 log/blame/bisect 查历史。没让你做的提交、推送、重置等写操作不会执行。",
+    "when": "当任务需要提交代码、改写分支历史,或调查某处改动的来源时触发;普通代码编辑不适用。",
     "say": [
       {
-        "text": "把这些改动按功能拆成几个原子提交",
-        "note": "先看 diff 和近期提交风格再分组提交"
+        "text": "把这几个改动拆成原子提交,信息风格跟仓库现有的一致",
+        "note": "按行为分组逐个提交,最后回报哈希"
       },
       {
-        "text": "这行代码是谁改的,用 blame 查一下",
-        "note": "回答会附提交哈希和行号证据"
+        "text": "查一下 src/auth.js 第 40-60 行最后是谁改的",
+        "note": "用 git blame 给出提交哈希和行上下文"
       },
       {
-        "text": "把这三个提交压缩后变基到 main",
-        "note": "改写前会说明恢复路径"
+        "text": "把我这两个 fixup 提交自动压进对应的提交",
+        "note": "用 autosquash 改写,冲突按意图解决"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:46:43.239Z",
+    "generated_at": "2026-09-12T07:40:25.113Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude reads repo state first, then classifies the request to commit, rewrite branch history (rebase, squash), or investigate history (blame, bisect, reflog), citing commands and commit hashes as evidence.",
-    "when_en": "Triggered when a task needs a commit or a git-history investigation, e.g. commit, rebase, blame; skipped for ordinary code edits.",
+    "what_en": "Once installed, Claude reads repo state first: atomic commits in your repo's style, rebases or squashes, and history answers via log/blame/bisect. Write operations happen only when you ask for them.",
+    "when_en": "Triggers when a task needs a commit, a branch-history rewrite, or a Git-history question; ordinary code edits are out of scope.",
     "say_en": [
       {
-        "text": "Split these changes into atomic commits by feature",
-        "note": "Reads diff and recent commit style first"
+        "text": "Split these changes into atomic commits using the repo's own message style",
+        "note": "Groups by behavior, commits each, reports hashes"
       },
       {
-        "text": "Who last changed this line? Run blame",
-        "note": "Answer cites commit hash and line evidence"
+        "text": "Who last changed lines 40-60 of src/auth.js?",
+        "note": "git blame with hash and line context"
       },
       {
-        "text": "Squash these three commits and rebase onto main",
-        "note": "Explains the recovery path first"
+        "text": "Squash these fixup commits into their targets",
+        "note": "Autosquash rewrite; conflicts resolved by intent"
       }
     ]
   }

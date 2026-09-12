@@ -5,7 +5,7 @@
     "name": "arboreto",
     "description": "Infer gene regulatory networks (GRNs) from gene expression data using scalable algorithms (GRNBoost2, GENIE3). Use when analyzing transcriptomics data (bulk RNA-seq, single-cell RNA-seq) to identify transcription factor-target gene relationships and regulatory interactions. Supports distributed computation for large-scale datasets.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arboreto",
-    "upstream_commit": "15e77e6215425bd9a498ca54e049a06176277189",
+    "upstream_commit": "c1ed16d97dd61ff50a3bd46dd353e4a55fd77f34",
     "content_hash": "sha256:e1502f2a00b00b1434411a52ff16b47cde33820990c4bf003c5cfa4dbb6207b6",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 44372,
+    "stars_github": 44514,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:51.253Z",
+    "fetched_at": "2026-09-12T07:36:04.582Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-10T15:54:37-07:00",
-    "repo_skill_count": 164,
+    "upstream_commit_at": "2026-09-11T19:09:21-07:00",
+    "repo_skill_count": 165,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:51.253Z",
+    "generated_at": "2026-09-12T07:36:04.582Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,37 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在 Python 里调用 GRNBoost2 或 GENIE3，从基因表达数据推断转录因子与靶基因的调控网络，产出含 TF、target、importance 三列的表格文件。",
-    "when": "当你分析转录组数据（如 bulk RNA-seq、单细胞 RNA-seq），要找出转录因子与靶基因的调控关系，或需要用分布式计算处理大规模数据时触发。",
+    "what": "装上后,Claude 会用 arboreto 从基因表达数据推断基因调控网络,产出含转录因子、靶基因和重要性分数的表格,并可按转录因子名单筛选或过滤高置信度链接。",
+    "when": "当你分析转录组数据(如 bulk RNA-seq、单细胞 RNA-seq)并想找出转录因子与靶基因的调控关系时触发。",
     "say": [
       {
-        "text": "只保留 importance 大于 0.5 的调控关系",
-        "note": "得到过滤后的调控链接表"
+        "text": "用 GRNBoost2 从这份表达矩阵推断基因调控网络",
+        "note": "输出 TF、target、importance 三列表格"
       },
       {
-        "text": "用多个随机种子各跑一次，按重要性取均值做共识网络",
-        "note": "多次运行结果合并为一张共识表"
+        "text": "把 importance 大于 0.5 的调控链接筛出来保存",
+        "note": "只留下高置信度的调控关系"
+      },
+      {
+        "text": "换成 seed 777 重跑,比较不同种子的网络",
+        "note": "固定随机种子,结果可复现"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e1502f2a00b00b1434411a52ff16b47cde33820990c4bf003c5cfa4dbb6207b6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:48:11.343Z",
+    "generated_at": "2026-09-12T07:41:43.681Z",
     "lint_pass": true,
-    "what_en": "Runs GRNBoost2 or GENIE3 in Python to infer gene regulatory networks from expression data, then writes a table of TF, target and importance columns.",
-    "when_en": "Triggers when you analyze transcriptomics data such as bulk or single-cell RNA-seq to find transcription factor-target relationships, or need distributed computation for large datasets.",
+    "what_en": "Arboreto infers gene regulatory networks from expression data, returning a table of transcription factor, target gene and importance score; it can restrict to a TF list or filter by an importance threshold.",
+    "when_en": "Use when analyzing transcriptomics data such as bulk or single-cell RNA-seq to identify transcription factor-target gene regulatory interactions.",
     "say_en": [
       {
-        "text": "Infer a network from expression_data.tsv with grnboost2 and save it as TSV",
-        "note": "Writes TF, target, importance rows to a file"
+        "text": "Infer a gene regulatory network from this expression matrix with GRNBoost2",
+        "note": "Returns a TF, target, importance table"
       },
       {
-        "text": "Keep only regulatory links with importance above 0.5",
-        "note": "Outputs a filtered link table"
+        "text": "Keep only links with importance above 0.5 and save them",
+        "note": "Writes high-confidence links to a file"
       },
       {
-        "text": "Run several seeds and average importance into a consensus network",
-        "note": "Combines runs into one consensus table"
+        "text": "Rerun with seed 777 and compare the networks",
+        "note": "Fixed seeds give reproducible results"
       }
     ]
   }

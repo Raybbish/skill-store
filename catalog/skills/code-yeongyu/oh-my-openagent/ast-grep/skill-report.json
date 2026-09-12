@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Searches and rewrites code by AST shape across 25 languages. Use when the target is a syntax pattern (every call/class/import shaped like X, a codemod, a YAML rule) rather than literal text; for plain strings, comments, or filenames, use rg.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "a861affbe633e1fc72c9636548c5019f4f2de3d3",
+    "upstream_commit": "e0746bcbcdf6341f697358867b2de436251fa5ad",
     "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68929,
+    "stars_github": 68956,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:45.569Z",
+    "fetched_at": "2026-09-12T07:35:57.315Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-11T14:43:56+09:00",
+    "upstream_commit_at": "2026-09-12T15:32:34+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:45.569Z",
+    "generated_at": "2026-09-12T07:35:57.315Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -113,37 +113,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会用 AST 按代码结构查找和改写代码,覆盖 25 种语言;改写前先做离线模式校验和干跑预览,确认后再真正修改文件。",
-    "when": "当目标是语法形状时触发:查找某种形状的函数、调用或导入,做批量改写,或运行 YAML 规则;若只找字符串、注释或文件名,则用 rg。",
+    "what": "装上后 Claude 会用 ast-grep（sg）按代码的语法结构而不是文本去搜索和改写，覆盖 25 种语言：找出形如某个模式的函数、调用、类、导入，执行批量改写（codemod），或运行 YAML 规则扫描。",
+    "when": "当目标是语法结构（某个形状的调用、类、导入，codemod，YAML 规则）而不是字面文本时触发；纯字符串、注释或文件名则改用 rg。",
     "say": [
       {
-        "text": "找出所有接收 Request 参数的函数",
-        "note": "按 AST 形状匹配,不是文本搜索"
+        "text": "找出仓库里所有的空 catch 块",
+        "note": "按语法结构匹配，不是文本搜索"
       },
       {
-        "text": "找出所有空的 catch 块",
-        "note": "用 search 子命令遍历代码库"
+        "text": "把仓库里的 require() 都改成 import",
+        "note": "会汇报受影响文件数量"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d0689cf35fc5c0acf9a06d47879f6b420e84e037adf26aa07075da7dbf92e5ff",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:46:33.493Z",
+    "generated_at": "2026-09-12T07:40:15.120Z",
     "lint_pass": true,
-    "what_en": "After install, Claude searches and rewrites code by AST shape across 25 languages, validating patterns offline and dry-running rewrites before it touches files.",
-    "when_en": "Triggers when the target is syntax shape: finding functions, calls or imports shaped like X, running codemods, or applying YAML rules. For strings, comments or filenames, use rg.",
+    "what_en": "Claude uses ast-grep (sg) to search and rewrite code by syntax structure rather than text, across 25 languages: find functions, calls, classes or imports shaped like X, run deterministic codemods, or scan YAML rules.",
+    "when_en": "Triggers when the target is a syntax shape (a call/class/import pattern, a codemod, a YAML rule) rather than literal text; for plain strings, comments or filenames it uses rg instead.",
     "say_en": [
       {
-        "text": "Find every function that takes a Request parameter",
-        "note": "Matches by AST shape, not text"
+        "text": "Rewrite every console.log(x) to logger.info(x), show me the preview first",
+        "note": "Dry-run is the default; no files change"
       },
       {
-        "text": "Rewrite console.log(x) to logger.info(x) under src/, dry-run first",
-        "note": "Nothing is written until you add --apply"
+        "text": "Find all the empty catch blocks in this repo",
+        "note": "Matches by syntax structure, not text"
       },
       {
-        "text": "Find all empty catch blocks",
-        "note": "Runs the search subcommand over the tree"
+        "text": "Replace require() with import across the repo",
+        "note": "Reports how many files are affected"
       }
     ]
   }

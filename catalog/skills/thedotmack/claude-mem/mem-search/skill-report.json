@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Use this when the user asks to search memory, \"did we already solve this?\", \"how did we do X last time?\", or wants work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-cursor/skills/mem-search",
-    "upstream_commit": "7f6e02552516c424d77d3055cfc9c5e4c6e49889",
+    "upstream_commit": "ed57a511f5dbf84e75c9a785df818c43b66b5849",
     "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93657,
+    "stars_github": 93705,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:41.007Z",
+    "fetched_at": "2026-09-12T07:35:51.999Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-11T07:31:51Z",
+    "upstream_commit_at": "2026-09-11T10:33:46-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:41.007Z",
+    "generated_at": "2026-09-12T07:35:51.999Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会去检索你过往会话的记忆库:先给你一张带 ID 的索引表,你挑出相关的几条,它再取回完整细节,而不是一次全拉出来。",
-    "when": "当你问「这个问题我们之前解决过吗」「上次 X 是怎么做的」等关于以往会话的问题,或需要查看以前会话的工作时触发。",
+    "what": "Claude 会去查 claude-mem 的跨会话记忆库,按「搜索→时间线→取详情」三步走:先返回带 ID 的索引表,筛掉无关项后再批量取完整记录,以减少 token 消耗。",
+    "when": "当你问起之前的会话而非当前对话时触发,例如「这个问题之前解决过吗」「上次 X 是怎么做的」「上周发生了什么」等。",
     "say": [
       {
-        "text": "上次我们是怎么修 authentication 的?",
-        "note": "先返回索引表,挑中后再取全文"
+        "text": "帮我搜一下之前的会话里有没有解决过认证超时的问题",
+        "note": "先返回带 ID 的索引表"
       },
       {
-        "text": "搜一下最近的 bugfix,项目 my-project",
-        "note": "可按类型、时间过滤搜索"
+        "text": "上次这个项目的 token 过期是怎么修的?取一下 #10942 的完整记录",
+        "note": "只对筛出的 ID 取完整详情"
       },
       {
-        "text": "把 #11131 的完整内容取出来",
-        "note": "按 ID 批量拉取观察记录全文"
+        "text": "看看上周这个项目都发生了什么",
+        "note": "按日期范围搜索观察记录"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:50:14.254Z",
+    "generated_at": "2026-09-12T07:43:47.250Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude searches your persistent cross-session memory: it returns an index table with IDs, then fetches full details only for the entries you pick.",
-    "when_en": "Triggers when you ask whether something was already solved or how it was done last time, or need work from previous sessions.",
+    "what_en": "Claude searches claude-mem's cross-session memory database with a search → timeline → fetch workflow: it returns an index table with IDs first, then batch-fetches full records only for the filtered IDs to save tokens.",
+    "when_en": "Triggers when you ask about previous sessions rather than the current conversation, e.g. \"did we already solve this?\" or \"how did we do X last time?\"",
     "say_en": [
       {
-        "text": "How did we fix authentication last time?",
-        "note": "Returns an index first, then full details"
+        "text": "Search past sessions for whether we already solved the auth timeout issue",
+        "note": "Returns an index table with IDs first"
       },
       {
-        "text": "Search recent bugfixes in project my-project",
-        "note": "Filters by type and date"
+        "text": "How did we fix token expiration last time? Fetch #10942",
+        "note": "Fetches full details only for filtered IDs"
       },
       {
-        "text": "Fetch the full record for #11131",
-        "note": "Pulls observation details by ID"
+        "text": "What happened in this project last week?",
+        "note": "Searches observations by date range"
       }
     ]
   }

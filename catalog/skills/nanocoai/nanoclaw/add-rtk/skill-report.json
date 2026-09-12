@@ -5,7 +5,7 @@
     "name": "add-rtk",
     "description": "Install rtk token-compression proxy into agent containers. Routes Bash tool calls through rtk for 60–90% token savings on dev commands (git, cargo, pytest, docker, kubectl, etc.).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-rtk",
-    "upstream_commit": "74224f62a6c08418acccc727114ab02f92e403bf",
+    "upstream_commit": "d96dde93db7a766531ca288190ca202ad473547e",
     "content_hash": "sha256:2d794ab4db2bf9ef8982e33e03b2fadb8ef70ea63e033599111fc938314accc6",
     "license": "MIT",
     "hosting": "mirrored",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30743,
+    "stars_github": 30745,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:55.788Z",
+    "fetched_at": "2026-09-12T07:36:09.926Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-10T16:24:16+02:00",
+    "upstream_commit_at": "2026-09-12T02:43:51+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -39,7 +39,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:55.788Z",
+    "generated_at": "2026-09-12T07:36:09.926Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -95,37 +95,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,agent 容器里的每次 Bash 调用都会经过 rtk 代理,git、cargo、pytest 等开发命令的 token 消耗可降低 60–90%,不需要在 CLAUDE.md 里写指令。",
-    "when": "安装该技能时给指定 agent group 装上 rtk:宿主机装二进制、只读挂载进容器、在 settings.json 写入 PreToolUse 钩子。之后容器里跑 git、cargo、pytest 等命令时自动被拦截。",
+    "what": "安装后会把 rtk 挂进指定 agent 容器,并在 settings.json 里加一条 PreToolUse 钩子,使每次 Bash 调用自动经 rtk 过滤。git、cargo、pytest 等开发命令的输出因此被压缩,以降低 token 消耗。",
+    "when": "由操作者在宿主机执行:装 rtk、把二进制挂载进容器、写入 PreToolUse 钩子并重启容器。此后每当 Claude 发起 Bash 调用,就会被 rtk 自动接管。",
     "say": [
       {
-        "text": "跑一下 git status,看看 rtk 有没有拦截",
-        "note": "rtk 会静默拦截该命令。"
+        "text": "帮我跑一下 git status",
+        "note": "rtk 会静默拦截该命令"
       },
       {
-        "text": "执行 rtk gain 看节省了多少 token",
-        "note": "输出 token 节省统计。"
+        "text": "运行 pytest 看测试结果",
+        "note": "输出经 rtk 过滤后返回"
+      },
+      {
+        "text": "跑 rtk gain 看省了多少 token",
+        "note": "显示累计的 token 节省量"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2d794ab4db2bf9ef8982e33e03b2fadb8ef70ea63e033599111fc938314accc6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:49:36.671Z",
+    "generated_at": "2026-09-12T07:43:04.255Z",
     "lint_pass": true,
-    "what_en": "Once installed, every Bash call in the agent container is routed through the rtk proxy, cutting token use on dev commands like git, cargo and pytest by 60–90% — no CLAUDE.md instructions needed.",
-    "when_en": "When installing rtk for an agent group: rtk is installed on the host, mounted into the container, and a PreToolUse hook routes every Bash call through it, so git, cargo, pytest are intercepted.",
+    "what_en": "After install, rtk is mounted into the agent container and a PreToolUse hook is added to settings.json, so every Bash call is filtered through rtk, cutting token use on dev commands like git, cargo, pytest, docker.",
+    "when_en": "Run by an operator: install rtk on the host, mount the binary into a container, add the PreToolUse hook, then restart the container. After that every Bash call is auto-filtered by rtk.",
     "say_en": [
       {
-        "text": "Install rtk for this agent group and add the PreToolUse hook",
-        "note": "Installs rtk, mounts it, writes the hook."
+        "text": "Run git status for me",
+        "note": "rtk intercepts it silently"
       },
       {
-        "text": "Run git status to check whether rtk intercepts it",
-        "note": "rtk filters the command silently."
+        "text": "Run pytest and show the results",
+        "note": "output is filtered through rtk"
       },
       {
-        "text": "Run rtk gain to see the token savings",
-        "note": "Prints token savings stats."
+        "text": "Run rtk gain to see token savings",
+        "note": "shows accumulated savings"
       }
     ]
   }

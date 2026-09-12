@@ -5,7 +5,7 @@
     "name": "story-review",
     "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/story-review、/审查、「审查一下」「帮我审一下」。",
     "upstream": "https://github.com/zenstory-ai/oh-story-claudecode/tree/main/skills/story-review",
-    "upstream_commit": "fde17546758c58ad4d3306ef93d0db8ad28f9f3c",
+    "upstream_commit": "aa3574fe6887fe1204168167b747d709607e77b6",
     "content_hash": "sha256:b21cef14ccf881039df6ba46c35e593639db0b7b1b2f43702ec19ef5d878482d",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6719,
+    "stars_github": 6788,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-10T07:48:26.209Z",
+    "fetched_at": "2026-09-12T07:36:41.282Z",
     "first_seen_at": "2026-08-27T13:37:59.445Z",
-    "upstream_commit_at": "2026-09-09T03:54:00-07:00",
+    "upstream_commit_at": "2026-09-11T10:07:05-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-10T07:48:26.209Z",
+    "generated_at": "2026-09-12T07:36:41.282Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -119,40 +119,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 以审查协调器身份读你的小说,找出结构、角色、文字、设定上的问题,按 S1~S4 严重度输出带原文证据和修改建议的报告。full/lean 模式并行调用多个 reviewer 子代理;代理缺失或调用失败时自动降级为 solo 自查。",
-    "when": "当你输入 /story-review、/审查 等命令,或说「审查一下」「帮我审一下」时接管。未指定模式默认走 full;在子代理内运行或缺少必需 agent 时自动降级 solo。",
+    "what": "审你写的小说稿，从结构、角色、文字、设定等角度挑问题，输出带 S1–S4 严重度分级的修改建议报告。默认并行多视角审查，agent 缺失或调用失败时自动降为单会话审查。",
+    "when": "当你输入 /story-review、/审查 等指令，或让 Claude「帮我审一下」稿件时接管；未指定模式则默认 full，报告会写明实际执行模式。",
     "say": [
       {
-        "text": "用 full 模式审查最新章节,列出所有问题和修改建议。",
-        "note": "会并行调用 4 个 reviewer 子代理。"
+        "text": "/story-review 帮我审一下刚写的这一章",
+        "note": "默认 full，报告开头标明实际执行模式"
       },
       {
-        "text": "帮我以 lean 模式审一下第三章。"
+        "text": "/story-review lean 审这两章",
+        "note": "优先 spawn 架构与一致性两个 agent"
       },
       {
-        "text": "审查一下最近的改动,按番茄小说的标准来。",
-        "note": "按目标平台 rubric 逐项对照。"
+        "text": "/story-review 按番茄平台标准审这章",
+        "note": "按指定平台加载对应 rubric"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:b21cef14ccf881039df6ba46c35e593639db0b7b1b2f43702ec19ef5d878482d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-10T07:55:43.395Z",
+    "generated_at": "2026-09-12T07:44:08.417Z",
     "lint_pass": true,
-    "what_en": "Claude reads your novel as a review coordinator, finds structure, character, prose and setting issues, and reports S1–S4 findings with evidence and fixes. full/lean spawn reviewer subagents; missing agents or failed spawn fall back to solo.",
-    "when_en": "Triggers on /story-review or /审查, or phrases like “审查一下” / “帮我审一下”. Unspecified mode defaults to full; inside a subagent or with missing agents it falls back to solo.",
+    "what_en": "Reviews your novel chapters and reports problems in structure, characters, prose and settings, with severity-ranked (S1-S4) fix suggestions. Runs multi-perspective parallel review by default, falling back to solo review if agents are missing or fail.",
+    "when_en": "Takes over when you run /story-review or /review, or ask Claude to review a draft; unspecified mode defaults to full, and the report states the actual mode used.",
     "say_en": [
       {
-        "text": "Run a full review of the latest chapter and list every issue with fixes.",
-        "note": "Spawns 4 reviewer subagents in parallel."
+        "text": "/story-review review the chapter I just wrote",
+        "note": "Defaults to full; report states the actual mode"
       },
       {
-        "text": "Review chapter 3 in lean mode.",
-        "note": "Spawns only story-architect and consistency-checker."
+        "text": "/story-review lean review these two chapters",
+        "note": "Prefers spawning the architect and consistency agents"
       },
       {
-        "text": "Review the latest changes against the Fanqie rubric.",
-        "note": "Checks items against the target platform rubric."
+        "text": "/story-review review this chapter by Fanqie standards",
+        "note": "Loads the rubric for the stated platform"
       }
     ]
   }

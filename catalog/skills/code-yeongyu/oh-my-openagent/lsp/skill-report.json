@@ -5,7 +5,7 @@
     "name": "lsp",
     "description": "Use when Codex needs language-server diagnostics, definitions, references, symbols, or rename safety checks in the current workspace.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/lsp/skills/lsp",
-    "upstream_commit": "a861affbe633e1fc72c9636548c5019f4f2de3d3",
+    "upstream_commit": "e0746bcbcdf6341f697358867b2de436251fa5ad",
     "content_hash": "sha256:46143f2cc0b6cbf136b8c819f2cc0da8dc1d86e21430b1992f4596c956cceefd",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68929,
+    "stars_github": 68956,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:45.569Z",
+    "fetched_at": "2026-09-12T07:35:57.315Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-11T14:43:56+09:00",
+    "upstream_commit_at": "2026-09-12T15:32:34+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:45.569Z",
+    "generated_at": "2026-09-12T07:35:57.315Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会通过 lsp 工具调用语言服务器:检查文件或目录的诊断,按行列定位符号定义,搜索工作区引用与符号,并检查、执行重命名。",
-    "when": "当你需要语言服务器的诊断、定义、引用等能力,或要为重命名做安全检查时触发;若诊断提示缺少语言服务器,先用 lsp.status 查看。",
+    "what": "装上后，Claude 可通过工具调用 lsp 系列 MCP 工具，做语言服务器诊断、跳转定义、查找引用、查看符号、重命名校验与执行重命名；这些是工具名，不是 shell 命令。",
+    "when": "当你在当前工作区需要语言服务器诊断、定义、引用等检查时会触发；若诊断提示缺少语言服务器，先运行 lsp.status 查看。",
     "say": [
       {
-        "text": "对 src/index.ts 跑一下 lsp 诊断,只看 error",
-        "note": "返回该文件的诊断结果并过滤为错误级"
+        "text": "用 lsp 检查这个文件有哪些报错"
       },
       {
-        "text": "用 lsp.status 看看有哪些语言服务器",
-        "note": "列出已配置、已安装、缺失、禁用的服务器"
+        "text": "用 lsp 找这个符号在整个项目里的引用",
+        "note": "调用 lsp.find_references 扫描工作区"
       },
       {
-        "text": "把 foo 这个符号重命名,先检查是否合法",
-        "note": "先 prepare_rename 校验,再应用工作区编辑"
+        "text": "用 lsp 把这个符号改名"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:46143f2cc0b6cbf136b8c819f2cc0da8dc1d86e21430b1992f4596c956cceefd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:46:52.325Z",
+    "generated_at": "2026-09-12T07:40:33.392Z",
     "lint_pass": true,
-    "what_en": "It lets Claude call language servers through lsp tools: check diagnostics for a file or directory, jump to a symbol definition by line and character, search workspace references and symbols, and prepare or apply renames.",
-    "when_en": "Triggers when you need language-server diagnostics, definitions, references or similar, or a rename safety check; run lsp.status first if a diagnostic reports a missing language server.",
+    "what_en": "Claude gains lsp MCP tools to run language-server diagnostics, go-to-definition, find references, inspect symbols, and check or apply renames in the workspace. These are tool-call names, not shell commands.",
+    "when_en": "Triggered when Codex needs language-server diagnostics, definitions, references, symbols, or rename safety checks in the current workspace; run lsp.status first if a language server is missing.",
     "say_en": [
       {
-        "text": "Run lsp diagnostics on src/index.ts, errors only",
-        "note": "Returns that file's diagnostics filtered to errors"
+        "text": "Use lsp to check this file for errors",
+        "note": "Runs lsp.diagnostics; error severity is preferred after edits"
       },
       {
-        "text": "Run lsp.status to see the language servers",
-        "note": "Lists configured, installed, missing and disabled servers"
+        "text": "Use lsp to find all references to this symbol",
+        "note": "Runs lsp.find_references across the workspace"
       },
       {
-        "text": "Rename the symbol foo, check validity first",
-        "note": "prepare_rename runs first, then the rename edit is applied"
+        "text": "Use lsp to rename this symbol",
+        "note": "prepare_rename validates, then rename applies the edit"
       }
     ]
   }

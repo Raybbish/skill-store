@@ -5,7 +5,7 @@
     "name": "version-bump",
     "description": "Automated semantic versioning and release workflow for Claude Code plugins. Handles version increments across package.json, marketplace.json, plugin.json manifests, build verification, git tagging, GitHub releases, and changelog generation. NPM publishing is the final human-required handoff because the maintainer raised npm security.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/version-bump",
-    "upstream_commit": "7f6e02552516c424d77d3055cfc9c5e4c6e49889",
+    "upstream_commit": "ed57a511f5dbf84e75c9a785df818c43b66b5849",
     "content_hash": "sha256:0048451c24226d99cccb3234595281df876368578f2acd6ef1b543c136b7d3f6",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93657,
+    "stars_github": 93705,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-11T07:41:41.007Z",
+    "fetched_at": "2026-09-12T07:35:51.999Z",
     "first_seen_at": "2026-07-24T05:45:04.603Z",
-    "upstream_commit_at": "2026-09-11T07:31:51Z",
+    "upstream_commit_at": "2026-09-11T10:33:46-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-11T07:41:41.007Z",
+    "generated_at": "2026-09-12T07:35:51.999Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,37 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "把插件发版流程交给 Claude:它判断该升 PATCH、MINOR 还是 MAJOR,同步修改八个清单文件里的版本号,构建验证、打 git tag、推送、创建 GitHub release,并重新生成 CHANGELOG。最后一步 npm publish 必须由人手动执行。",
-    "when": "当你准备为 Claude Code 插件发布新版本时接管——无论是修 bug、加功能还是破坏性改动。它会先从 git remote 判断仓库归属,再走完整个发版流程。",
+    "what": "Claude 把新版本号写进八个清单文件（package.json 等），再跑构建、提交推送、打 git tag、建 GitHub release、重新生成 CHANGELOG；npm 发布留给你手动执行。",
+    "when": "当你要给 Claude Code 插件发新版本、并已确定是 PATCH、MINOR 还是 MAJOR 升级时接管，从改版本号一直做到 GitHub release 和 changelog。",
     "say": [
       {
-        "text": "帮我发个 patch 版本,升版本号并走完发布流程",
-        "note": "它会改版本号、构建、打 tag 并推送"
+        "text": "帮我把版本从 1.2.0 升到 1.2.1，走完整发布流程",
+        "note": "它会改八个清单文件并提交、打 tag"
       },
       {
-        "text": "检查八个清单文件的版本号是否都一致",
-        "note": "用 git grep 核对新旧版本号"
+        "text": "这次是修 bug，按 PATCH 升版并建 GitHub release",
+        "note": "会补上发布说明并推送"
+      },
+      {
+        "text": "发布完成后重新生成 CHANGELOG 并推送",
+        "note": "跑项目里的 changelog 脚本"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0048451c24226d99cccb3234595281df876368578f2acd6ef1b543c136b7d3f6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-11T07:50:23.470Z",
+    "generated_at": "2026-09-12T07:43:57.774Z",
     "lint_pass": true,
-    "what_en": "Claude runs the plugin release flow: decides PATCH/MINOR/MAJOR, bumps the version in eight manifest files, builds and verifies, tags, pushes, creates a GitHub release, and regenerates CHANGELOG. npm publish stays a human step.",
-    "when_en": "Use when releasing a new version of a Claude Code plugin — bug fix, feature, or breaking change. It reads git remote to identify the repo, then runs the release workflow.",
+    "what_en": "Claude writes the new version into all eight manifest files, runs the build, commits and pushes, creates the git tag and GitHub release, and regenerates the changelog. It stops before npm publish and hands that final step to you.",
+    "when_en": "Use when you are releasing a new version of a Claude Code plugin and have settled on a PATCH, MINOR, or MAJOR bump; it takes over from the version edits through the GitHub release and changelog.",
     "say_en": [
       {
-        "text": "Cut a patch release: bump the version and run the whole workflow",
-        "note": "It edits versions, builds, tags and pushes"
+        "text": "Bump the version from 1.2.0 to 1.2.1 and run the full release flow",
+        "note": "Updates eight manifests, commits, tags"
       },
       {
-        "text": "This one adds features, so MINOR — with CHANGELOG and GitHub release",
-        "note": "It stops and waits for you to run npm publish"
+        "text": "This is a bug fix, so do a PATCH bump and create the GitHub release",
+        "note": "Adds release notes and pushes"
       },
       {
-        "text": "Check that all eight manifest files have the same version",
-        "note": "Uses git grep to match old and new versions"
+        "text": "After publishing, regenerate the CHANGELOG and push it",
+        "note": "Runs the project changelog script"
       }
     ]
   }
