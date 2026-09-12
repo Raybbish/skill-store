@@ -5,7 +5,7 @@
     "name": "add-mnemon",
     "description": "Add persistent graph-based memory via mnemon. Agents recall past context before responding and remember insights after each turn.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-mnemon",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "d96dde93db7a766531ca288190ca202ad473547e",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30745,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-12T07:36:09.926Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-12T02:43:51+02:00",
+    "repo_skill_count": 61,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-12T07:36:09.926Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,41 +94,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude在每次回答前会先回想相关的过往对话,并在每轮结束后把新的要点存入记忆。这些记忆按智能体工作区分开保存,容器重启后依然存在。",
-    "when": "当智能体使用默认的Claude提供商时,每次容器启动会启用记忆功能,之后Claude在每次回应前调取相关记忆,每轮后保存新内容。",
+    "what": "会在 agent 容器里安装 mnemon,并注册 Claude Code 钩子:回话前自动调取相关记忆,每轮结束后写入新见解。记忆写入每个 agent group 的 .claude/ 挂载,容器重启后仍在。",
+    "when": "当 agent group 使用默认 Claude provider(container.json 里 provider 缺失或为 claude)时适用;若设成其他 provider,mnemon 钩子不会被调用。",
     "say": [
       {
-        "text": "你还记得我之前提过的那个客户需求吗?",
-        "note": "Claude会检索相关记忆并回应。"
+        "text": "把 mnemon 装到容器镜像里"
       },
       {
-        "text": "请记住这个数据:本月销售额为100万。",
-        "note": "这条信息会被存入长期记忆。"
+        "text": "确认容器里的 mnemon 钩子已经注册"
       },
       {
-        "text": "结合我们过去的讨论,给我一些建议。",
-        "note": "Claude会基于已有记忆生成回答。"
+        "text": "开个新会话,引用我们刚才聊过的内容",
+        "note": "用来测试能否自动调取之前的上下文"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:05:54.043Z",
+    "generated_at": "2026-09-12T07:43:01.459Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude recalls relevant past conversations before responding and stores new insights after each turn. Memory is kept per agent group in the .claude mount and survives container restarts.",
-    "when_en": "Triggered when the agent group uses the default Claude provider (no 'provider' key or 'provider':'claude'). On each container start, hooks fire before responding and after each turn.",
+    "what_en": "Installs mnemon in the agent container image and registers Claude Code hooks that surface relevant memory before each response and store new insights after each turn. Memory persists in the per-agent-group .claude/ mount.",
+    "when_en": "Applies to agent groups using the default Claude provider (container.json provider absent or claude). Hooks only fire under --target claude-code; a different provider never invokes the claude CLI.",
     "say_en": [
       {
-        "text": "Do you remember the client requirement I mentioned earlier?",
-        "note": "Claude will retrieve relevant memory and respond."
+        "text": "Install mnemon into the container image.",
+        "note": "Edits the Dockerfile and runs mnemon setup at each start."
       },
       {
-        "text": "Please remember this data: monthly sales are 1 million.",
-        "note": "This will be saved to long-term memory."
+        "text": "Check that the mnemon hooks are registered in the container.",
+        "note": "Reads docker logs and settings.json."
       },
       {
-        "text": "Based on our past discussions, give me some advice.",
-        "note": "Claude will answer using existing memory."
+        "text": "Start a new session and reference what we discussed earlier.",
+        "note": "Tests whether memory recall works."
       }
     ]
   }

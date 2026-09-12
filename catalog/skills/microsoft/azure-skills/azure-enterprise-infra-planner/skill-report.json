@@ -5,7 +5,7 @@
     "name": "azure-enterprise-infra-planner",
     "description": "Architect and provision enterprise Azure infrastructure from workload descriptions. For cloud architects and platform engineers planning networking, identity, security, compliance, and multi-resource topologies with WAF alignment. Generates Bicep or Terraform directly (no azd). WHEN: 'plan Azure infrastructure', 'architect Azure landing zone', 'design hub-spoke network', 'plan multi-region DR topology', 'set up VNets firewalls and private endpoints', 'subscription-scope Bicep deployment', 'Azure Backup for VM workloads'. PREFER azure-prepare FOR app-centric workflows.",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/azure-enterprise-infra-planner",
-    "upstream_commit": "8bcae3112896668ae0a4d02b44dddc0424d88c8c",
+    "upstream_commit": "9d46511c1828eee052d6d0ef4652dcd548565e27",
     "content_hash": "sha256:2d748129140c74384ebd28a3b739053291d5ccb2a695ae90d3c97ba6bc879e7d",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 383400,
-    "fetched_at": "2026-08-27T13:40:04.561Z",
+    "installs_skills_sh": 411500,
+    "fetched_at": "2026-09-12T07:38:17.125Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-08-26T10:02:28-07:00"
+    "upstream_commit_at": "2026-09-11T09:46:50-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:40:04.561Z",
+    "generated_at": "2026-09-12T07:38:17.125Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -134,36 +134,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后,Claude 会按 7 阶段流程规划企业 Azure 基础设施(网络、身份、安全、合规等),并直接生成 Bicep 或 Terraform 代码;若涉及已有资源,会盘点并增量部署,不重建已有资源。",
-    "when": "当提出规划 Azure 基础设施、设计 hub-spoke 网络、多区域容灾拓扑等需求,或要求生成订阅级 Bicep/Terraform 时触发。",
+    "what": "按你的工作负载描述，分七个阶段规划 Azure 企业基础设施：先产出计划 JSON，经你批准后生成 Bicep 或 Terraform 代码，本地校验通过才部署。",
+    "when": "当你要求规划 Azure 基础设施、landing zone 或多区域容灾拓扑时触发；面向应用的工作负载建议改用 azure-prepare。",
     "say": [
       {
-        "text": "设计一个双区域灾备拓扑,用 Terraform 生成代码。"
+        "text": "帮我规划一套 hub-spoke 网络，含 VNet、防火墙和私有终结点",
+        "note": "先出计划，等你批准后再生成代码"
       },
       {
-        "text": "我们已有 VNet,把新工作负载接进去,别动已有资源。",
-        "note": "按 brownfield 流程盘点现有资源,增量部署。"
+        "text": "为这个工作负载设计多区域容灾拓扑，并生成 Bicep",
+        "note": "校验通过后才提示部署确认"
+      },
+      {
+        "text": "基于已有的资源组规划新工作负载，只做增量部署",
+        "note": "已有资源只被引用，不会重建"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2d748129140c74384ebd28a3b739053291d5ccb2a695ae90d3c97ba6bc879e7d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:38:14.339Z",
+    "generated_at": "2026-09-12T07:42:35.964Z",
     "lint_pass": true,
-    "what_en": "Claude acts as an enterprise cloud architect: plans Azure infrastructure (network, identity, security, compliance) and generates Bicep or Terraform via a 7-phase gated pipeline. For referenced infra, it inventories existing resources and deploys additively only.",
-    "when_en": "Triggers when you ask to plan Azure infrastructure, design hub-spoke networks or multi-region DR, or generate subscription-scope Bicep/Terraform deployments.",
+    "what_en": "From a workload description, Claude runs a 7-phase gated pipeline to plan enterprise Azure infrastructure, writes a plan JSON, then generates Bicep or Terraform that must pass validation before an approved deploy.",
+    "when_en": "Use when you ask to plan Azure infrastructure, a landing zone, or multi-region DR topologies; for app-centric workflows it points to azure-prepare.",
     "say_en": [
       {
-        "text": "Plan an enterprise Azure landing zone with hub-spoke network and security baseline.",
-        "note": "Starts the 7-phase pipeline; produces plan and IaC."
+        "text": "Plan a hub-spoke network with VNets, firewalls and private endpoints",
+        "note": "Produces a plan first, waits for your approval"
       },
       {
-        "text": "Design a two-region DR topology and generate Terraform code.",
-        "note": "Researches best practices and generates validated Terraform."
+        "text": "Design a multi-region DR topology for this workload and generate Bicep",
+        "note": "Asks for deploy confirmation after validation"
       },
       {
-        "text": "We have an existing VNet; wire in the new workload without touching current resources.",
-        "note": "Uses brownfield flow: inventories and deploys additively."
+        "text": "Plan a new workload on my existing resource group, additive only",
+        "note": "Existing resources are referenced, never recreated"
       }
     ]
   }
