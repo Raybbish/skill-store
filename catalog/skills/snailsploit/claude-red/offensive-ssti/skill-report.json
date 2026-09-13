@@ -5,7 +5,7 @@
     "name": "offensive-ssti",
     "description": "Dense description covering Server-Side Template Injection across Jinja2, Twig, Freemarker, Velocity, Pebble, Smarty, Mako, Handlebars, ERB, Thymeleaf, EJS, Pug. Engine fingerprinting, filter bypass, blind exploitation, WAF evasion, SSTI-to-RCE chains. Tools: tplmap. CWE-1336. MITRE T1190. Use when testing template rendering endpoints or exploiting template injection for code execution.",
     "upstream": "https://github.com/SnailSploit/Claude-Red/tree/main/Skills/web/offensive-ssti",
-    "upstream_commit": "a14d10d5d5effd48ea315ae04c8b46396ef23754",
+    "upstream_commit": "24d7968bab4b883e7f13477afe0fd91f2df3b722",
     "content_hash": "sha256:dcf5c5a89999f593bc873d258eba5a5e633c583e8efa79e9299e58ac5bf726b5",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 2980,
+    "stars_github": 2999,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:38:24.263Z",
+    "fetched_at": "2026-08-30T08:52:15.720Z",
     "first_seen_at": "2026-08-27T13:38:24.263Z",
-    "upstream_commit_at": "2026-08-27T08:45:09+03:00",
+    "upstream_commit_at": "2026-08-29T19:31:36+03:00",
     "repo_skill_count": 78,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:38:24.263Z",
+    "generated_at": "2026-08-30T08:52:15.720Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,40 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会按这套方法处理服务端模板注入：先注入探测语句判断漏洞，再通过特征识别引擎类型，再生成针对该引擎的利用代码，可读取文件或执行命令；也涵盖盲测、过滤绕过和 WAF 绕过的写法。",
-    "when": "当你要测试模板渲染接口是否存在注入，或已知注入点想进一步实现代码执行时，它会启动这套攻击流程。",
+    "what": "Claude 会执行服务端模板注入(SSTI)测试:向网址参数、表单、请求头注入探测代码,判断是否被当作模板执行;识别引擎(Jinja2、Twig 等);用对应方法读取文件、泄露配置或执行命令;可绕过过滤/WAF,给出非破坏性验证例子。",
+    "when": "当用户要求测试应用的模板渲染功能是否存在服务端模板注入(SSTI)漏洞,或要求利用模板注入实现代码执行时触发。",
     "say": [
       {
-        "text": "帮我测一下这个 URL 是否有 SSTI 漏洞。",
-        "note": "Claude 会注入通用探测语句并观察回显。"
+        "text": "帮我检测 example.com 的模板渲染端点是否存在SSTI漏洞",
+        "note": "Claude 会注入探测载荷并分析响应。"
       },
       {
-        "text": "识别这个模板引擎，并用它读 /etc/passwd。"
+        "text": "用 tplmap 测试这个模板注入点并尝试执行命令",
+        "note": "Claude 会借助 tplmap 进行自动化利用。"
       },
       {
-        "text": "帮我绕过字符过滤执行 whoami。",
-        "note": "Claude 会套用编码、参数走私等绕过技巧。"
+        "text": "针对 Jinja2 模板注入,给我一个读取 /etc/passwd 的载荷",
+        "note": "Claude 会提供 Jinja2 的利用链。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dcf5c5a89999f593bc873d258eba5a5e633c583e8efa79e9299e58ac5bf726b5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:51:34.058Z",
+    "generated_at": "2026-08-30T09:20:04.267Z",
     "lint_pass": true,
-    "what_en": "Claude will guide SSTI testing: inject probes to confirm the flaw, fingerprint the engine (Jinja2, Twig, etc.), and provide engine-specific exploitation for file read or command execution, including blind detection, filter bypass, and WAF evasion.",
-    "when_en": "Triggers when you want to test template-rendering endpoints for injection or exploit a confirmed template injection to achieve code execution.",
+    "what_en": "Claude performs SSTI attacks: injects probes into URL params/forms/headers; fingerprints engine (Jinja2, Twig, etc.); uses chains for file read/config leak/RCE; bypasses filters/WAF; outputs non-destructive PoC.",
+    "when_en": "Triggered when the user asks to test template rendering endpoints for SSTI vulnerabilities, or to exploit template injection for code execution.",
     "say_en": [
       {
-        "text": "Help me test this URL for SSTI vulnerability.",
-        "note": "Claude will inject probes and examine the response."
+        "text": "Check if example.com's template rendering endpoint has SSTI vulnerability",
+        "note": "Claude will inject probes and analyze the response."
       },
       {
-        "text": "Identify the template engine and read /etc/passwd with it.",
-        "note": "Claude fingerprints the engine and provides a file-read payload."
+        "text": "Use tplmap to test this template injection point and try to execute a command",
+        "note": "Claude will leverage tplmap for automated exploitation."
       },
       {
-        "text": "Help me bypass character filters to run whoami.",
-        "note": "Claude applies encoding and parameter smuggling tricks."
+        "text": "For Jinja2 template injection, give me a payload to read /etc/passwd",
+        "note": "Claude will provide the Jinja2 exploitation chain."
       }
     ]
   }

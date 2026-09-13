@@ -1,0 +1,146 @@
+{
+  "schema_version": "2",
+  "meta": {
+    "id": "zenstory-ai/drama-skills/short-drama-novel-analyze",
+    "name": "short-drama-novel-analyze",
+    "description": "把长篇小说、连载网文或多集散稿拆成可追溯的原著分析：章节索引、改编价值快评、逐章功能提取、剧情单元与节奏聚合、人物与设定归并，最后给出改编价值判定与分集候选，交给 $short-drama-develop 立契约。用户说“导入这本小说”“拆这本书”“分析原著”“这本书能不能改短剧”“先看看值不值得拆”“把长篇拆成分集候选”，或直接给出小说文件路径时使用。只做只读的结构化分析，不写剧本、不建资产、不生成媒体，也不替创作者决定改编方案。",
+    "upstream": "https://github.com/zenstory-ai/drama-skills/tree/main/skills/short-drama-novel-analyze",
+    "upstream_commit": "4c40ca6101648579b2455d0c0d890ce701f05173",
+    "content_hash": "sha256:73de4dc837ed82da3cda4f66a66d594873c91eaa8fdfad88b09b6684b3f0503d",
+    "license": "MIT",
+    "hosting": "indexed",
+    "category": "writing",
+    "version": null,
+    "publisher": "zenstory-ai",
+    "publisher_verified": false,
+    "duplicate_of": null,
+    "tags": []
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "signals": {
+    "stars_github": 1806,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-09-12T07:37:16.732Z",
+    "first_seen_at": "2026-09-12T07:37:16.732Z",
+    "upstream_commit_at": "2026-09-11T10:02:56-07:00",
+    "repo_skill_count": 12
+  },
+  "context_size": {
+    "version": "1",
+    "counter": {
+      "id": "static-mixed-estimate-v1.1",
+      "method": "heuristic",
+      "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
+    },
+    "generated_at": "2026-09-12T07:37:16.732Z",
+    "scopes": {
+      "activation_core": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 14855,
+        "chars": 7531,
+        "tokens": 4606
+      },
+      "activation_with_declared_refs": {
+        "files": [
+          "SKILL.md",
+          "assets/episode-candidate.example.jsonl",
+          "references/adaptation-triage.md",
+          "references/adaptation-value.md",
+          "references/aggregation-and-entities.md",
+          "references/chapter-extraction.md",
+          "references/stage-contract.md",
+          "scripts/novel_index.py"
+        ],
+        "text_files": 8,
+        "bytes": 77330,
+        "chars": 51198,
+        "tokens": 21177
+      },
+      "package_total_text": {
+        "files": [
+          "SKILL.md",
+          "agents/openai.yaml",
+          "assets/episode-candidate.example.jsonl",
+          "references/adaptation-triage.md",
+          "references/adaptation-value.md",
+          "references/aggregation-and-entities.md",
+          "references/chapter-extraction.md",
+          "references/stage-contract.md",
+          "scripts/novel_index.py",
+          "scripts/selftest.py"
+        ],
+        "text_files": 10,
+        "bytes": 79386,
+        "chars": 52982,
+        "tokens": 21619
+      }
+    }
+  },
+  "eval": null,
+  "copy": {
+    "tagline": "把长篇小说逐章拆解成索引、人物与剧情节奏,评估能否改编成分集短剧。",
+    "scene_tags": [
+      "小说改编评估",
+      "连载网文拆解",
+      "分集大纲准备",
+      "原著人物梳理"
+    ],
+    "fit_line": "适合你,如果手上有一本长篇小说或连载网文,想先判断它能不能改成短剧。",
+    "tagline_en": "Break a novel into chapter indexes, character maps, and episode candidates.",
+    "scene_tags_en": [
+      "novel adaptation",
+      "web fiction breakdown",
+      "episode planning",
+      "character mapping"
+    ],
+    "fit_line_en": "For you if you have a long novel or serial fiction and want to judge its short-drama potential.",
+    "source": "llm",
+    "content_hash": "sha256:73de4dc837ed82da3cda4f66a66d594873c91eaa8fdfad88b09b6684b3f0503d",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-12T07:40:00.756Z",
+    "lint_pass": true
+  },
+  "howto": {
+    "what": "给一份长篇原著后，它只读不写：建章节索引、抽样做改编价值快评、逐章提取功能、聚合剧情单元与节奏、归并人物与设定，最后给出改编价值判定和分集候选，交给 $short-drama-develop 立契约。",
+    "when": "当你给出小说文件路径，或说“拆这本书”“分析原著”等关键词时接管；只有书名没有原文时，它会先要文件路径或正文。",
+    "say": [
+      {
+        "text": "帮我拆一下这本小说，先看看值不值得全量拆解",
+        "note": "写出 triage.md 快评并停下问你"
+      },
+      {
+        "text": "导入这本原著的原文，先把章节索引建好",
+        "note": "生成 _index.json 索引"
+      },
+      {
+        "text": "从上次的断点继续往下拆",
+        "note": "读 _progress.md 续跑，不重跑已完成阶段"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:73de4dc837ed82da3cda4f66a66d594873c91eaa8fdfad88b09b6684b3f0503d",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-12T07:44:26.754Z",
+    "lint_pass": true,
+    "what_en": "Given a long novel, it works read-only: builds a chapter index, samples an adaptation-value triage, extracts per-chapter functions, aggregates story units and characters, then hands episode candidates to $short-drama-develop.",
+    "when_en": "Triggered when you give a novel file path or say things like \"split this book\" or \"analyze the source\"; if you only have a title, it asks for the file first.",
+    "say_en": [
+      {
+        "text": "Split this novel and see if it's worth a full breakdown",
+        "note": "Writes triage.md and pauses to ask you"
+      },
+      {
+        "text": "Import the source novel and build the chapter index first",
+        "note": "Creates _index.json"
+      },
+      {
+        "text": "Resume the breakdown from where it stopped",
+        "note": "Reads _progress.md, skips finished stages"
+      }
+    ]
+  }
+}
