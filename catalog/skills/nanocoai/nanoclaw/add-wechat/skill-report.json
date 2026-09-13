@@ -5,7 +5,7 @@
     "name": "add-wechat",
     "description": "Add WeChat (personal) channel integration via Tencent's official iLink Bot API. Uses long-polling and QR scan — no webhook, no ToS risk, no paid token.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-wechat",
-    "upstream_commit": "d96dde93db7a766531ca288190ca202ad473547e",
+    "upstream_commit": "3f9ed607b7e7a4872747295f75286f1c377d7c33",
     "content_hash": "sha256:455ba01e2a000544d6de6c150790dc57c552daa9bb1800093765e73163e598ae",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30745,
+    "stars_github": 30750,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-12T07:36:09.926Z",
+    "fetched_at": "2026-09-13T07:55:25.962Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-12T02:43:51+02:00",
+    "upstream_commit_at": "2026-09-13T10:52:38+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-12T07:36:09.926Z",
+    "generated_at": "2026-09-13T07:55:25.962Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,38 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会通过腾讯官方 iLink Bot API 接入你的个人微信:用手机扫码登录,靠长轮询实时收消息,再由接好线的 agent 回复。不需要公网 webhook,也不需要付费 token。",
-    "when": "当你要求给 NanoClaw 添加个人微信渠道、配置微信机器人扫码登录时触发;若在 /setup 流程中选择微信渠道也同样进入。",
+    "what": "给 NanoClaw 加一个微信个人号通道:它把微信适配器复制进项目、装上 iLink 客户端,再用手机扫码登录你的微信。登录后 agent 就能收发微信私聊和群消息。",
+    "when": "当你要求给 NanoClaw 接入个人微信时运行此技能。装好并完成扫码登录、把会话接线到某个 agent 组之后,别人给机器人微信发消息就会被接管。",
     "say": [
       {
-        "text": "帮我添加微信渠道,并给出扫码登录的二维码链接"
+        "text": "帮我把个人微信接进 NanoClaw",
+        "note": "会复制适配器、装依赖,并提示你重启后扫码"
       },
       {
-        "text": "把这个微信联系人接到我的 agent group 上"
+        "text": "把这个微信会话接到我的 agent 组上",
+        "note": "运行 wire-dm.ts 建立接线"
       },
       {
-        "text": "微信提示 session expired 了,怎么重新登录"
+        "text": "微信通道提示 session expired,帮我重新扫码",
+        "note": "删掉 auth.json 重启后会再出二维码"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:455ba01e2a000544d6de6c150790dc57c552daa9bb1800093765e73163e598ae",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-12T07:43:12.834Z",
+    "generated_at": "2026-09-13T08:00:17.034Z",
     "lint_pass": true,
-    "what_en": "After install, Claude connects your personal WeChat through Tencent's official iLink Bot API: scan a QR code to log in, receive messages via long-polling, and reply through a wired agent group. No webhook URL and no paid token needed.",
-    "when_en": "Triggers when you ask to add a personal WeChat channel to NanoClaw or set up WeChat bot QR login; picking the WeChat channel inside /setup also enters it.",
+    "what_en": "Adds a personal WeChat channel to NanoClaw: it copies the WeChat adapter into the project, installs the iLink client, and logs in by QR scan. After that the agent can read and reply to WeChat DMs and group messages.",
+    "when_en": "Run this skill when you want to connect a personal WeChat account to NanoClaw. Once QR login is done and the chat is wired to an agent group, messages sent to the bot account are picked up.",
     "say_en": [
       {
-        "text": "Add the WeChat channel for me and give me the QR login link",
-        "note": "After restart the logs print a QR URL, also saved to data/wechat/qr.txt"
+        "text": "Add my personal WeChat account to NanoClaw",
+        "note": "copies adapter, installs deps, then asks for a restart and QR scan"
       },
       {
-        "text": "Wire this WeChat contact to my agent group",
-        "note": "Run wire-dm.ts and pick the target agent group"
+        "text": "Wire this WeChat chat to my agent group",
+        "note": "runs wire-dm.ts to create the wiring"
       },
       {
-        "text": "WeChat says session expired, how do I log in again",
-        "note": "Delete data/wechat/auth.json and restart to re-scan"
+        "text": "The WeChat channel says session expired, re-scan for me",
+        "note": "delete auth.json and restart to get a new QR"
       }
     ]
   }

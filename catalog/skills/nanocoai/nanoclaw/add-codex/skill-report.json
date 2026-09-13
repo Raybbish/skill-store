@@ -5,7 +5,7 @@
     "name": "add-codex",
     "description": "Use Codex (OpenAI's codex app-server) as a full agent provider — planning, tool orchestration, MCP tools, server-side history, session resume — alongside or instead of Claude. ChatGPT subscription or OpenAI API key, vault-only via OneCLI. Per-group via `ncl groups config update --provider codex`. Distinct from using OpenAI as an MCP tool (where Claude remains the planner).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-codex",
-    "upstream_commit": "d96dde93db7a766531ca288190ca202ad473547e",
+    "upstream_commit": "3f9ed607b7e7a4872747295f75286f1c377d7c33",
     "content_hash": "sha256:5fe61acdd93f022a2eace7bfab1518a1314d8424d6def1e5a82ec48249bfd312",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30745,
+    "stars_github": 30750,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-12T07:36:09.926Z",
+    "fetched_at": "2026-09-13T07:55:25.962Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-12T02:43:51+02:00",
+    "upstream_commit_at": "2026-09-13T10:52:38+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-12T07:36:09.926Z",
+    "generated_at": "2026-09-13T07:55:25.962Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,38 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,NanoClaw 的群组可以改用 Codex app-server 作为 agent 后端,负责规划、工具编排、MCP 工具、服务端历史与会话续接;凭据只存 OneCLI vault。",
-    "when": "当运维在主机上运行 ncl groups config update --provider codex 并重启该群组时,该群组就改用 Codex。新建群组默认仍是 Claude,除非显式改默认值。",
+    "what": "装上后,可把 Codex 设为某个群组的 agent 后端,由它负责规划、工具调度、MCP 工具、服务端会话历史和会话恢复;凭据只存 OneCLI 保险库,不写进 .env。",
+    "when": "当你在主机上把某个群组切换为 codex 并重启时接管;新群组默认仍用 claude,需另行选择才改默认。",
     "say": [
       {
-        "text": "跑 provider-auth codex 完成 Codex 认证",
-        "note": "把认证信息存进 OneCLI vault"
+        "text": "把 123 群组换成 codex 后端"
       },
       {
-        "text": "把 <group-id> 群组的 provider 改成 codex 再重启",
-        "note": "该群组会用 Codex 作为 agent 后端"
+        "text": "给 Codex 配置认证"
       },
       {
-        "text": "把默认 provider 设为 codex 后重启 host",
-        "note": "只影响之后新建的群组"
+        "text": "把新建群组的默认后端改成 codex"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5fe61acdd93f022a2eace7bfab1518a1314d8424d6def1e5a82ec48249bfd312",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-12T07:42:49.911Z",
+    "generated_at": "2026-09-13T07:59:48.557Z",
     "lint_pass": true,
-    "what_en": "Installs Codex (codex app-server) as a NanoClaw agent provider: planning, tool orchestration, MCP tools, server-side history and session resume. Credentials live only in the OneCLI vault.",
-    "when_en": "Triggers when the operator runs `ncl groups config update --provider codex` for a group and restarts it. New groups still default to Claude unless the instance default is changed.",
+    "what_en": "Installs Codex (OpenAI's codex app-server) as a group's full agent provider: planning, tool orchestration, MCP tools, server-side history and session resume, alongside or instead of Claude. Credentials are vault-only via OneCLI.",
+    "when_en": "Triggers when you switch a group on the host with `ncl groups config update --provider codex` and restart it. New groups still default to claude until you opt in.",
     "say_en": [
       {
-        "text": "Run provider-auth codex to finish Codex authentication",
-        "note": "Stores the secret in the OneCLI vault"
+        "text": "Switch group 123 to the codex provider",
+        "note": "Runs ncl groups config update --provider codex, then restarts the group."
       },
       {
-        "text": "Switch group <group-id> to the codex provider and restart it",
-        "note": "That group then runs Codex as its agent backend"
+        "text": "Set up Codex authentication",
+        "note": "Runs the vault auth walk-through: ChatGPT subscription or OpenAI API key."
       },
       {
-        "text": "Set the default provider to codex and restart the host",
-        "note": "Only affects groups created afterwards"
+        "text": "Default new groups to codex",
+        "note": "Sets DEFAULT_AGENT_PROVIDER=codex and restarts the host."
       }
     ]
   }

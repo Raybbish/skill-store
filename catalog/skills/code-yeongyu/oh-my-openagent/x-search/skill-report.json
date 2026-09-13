@@ -5,7 +5,7 @@
     "name": "x-search",
     "description": "MUST read before searching X/Twitter with the x_search tool. When xAI is connected: date-bound every time-sensitive query (from_date >= yesterday, widen to 7 days), scope trusted accounts with allowed_x_handles, phrase queries as latest/recent with since:/from:/filter: operators, split into 2-3 searches by account and by keyword, and reconcile against web_search. Triggers: X search, Twitter search, tweets, posts on X, what people are saying on X, x_search, social signal.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/src/components/x-search/skill",
-    "upstream_commit": "e0746bcbcdf6341f697358867b2de436251fa5ad",
+    "upstream_commit": "d1557a4b48fdbec06a7144fdc4afa3e65c6523ed",
     "content_hash": "sha256:92b9df0211400eb17044e87437ad9d1d182fbb644d52783b1fef983ef43e54ba",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68956,
+    "stars_github": 68991,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-12T07:35:57.315Z",
+    "fetched_at": "2026-09-13T07:55:14.152Z",
     "first_seen_at": "2026-09-04T07:41:04.908Z",
-    "upstream_commit_at": "2026-09-12T15:32:34+09:00",
+    "upstream_commit_at": "2026-09-13T16:50:57+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-12T07:35:57.315Z",
+    "generated_at": "2026-09-13T07:55:14.152Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,22 +90,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会用 x_search 工具检索 X(Twitter):时间敏感的查询会加日期边界、限定指定的可信账号、拆成 2~3 次检索,并与网页搜索对照;每条结论附 x.com 原帖链接,注明是某账号所发而非已证实事实。",
-    "when": "当你提到 X 搜索、Twitter 搜索、tweets 等关键词,或想了解 X 上人们的说法时触发;前提是已连接 xAI 账号,否则会说明不可用并改用网页搜索。",
+    "what": "连上 xAI 后，Claude 会在你问 X/Twitter 动态时调用 x_search：按日期限定时间敏感查询、限定可信账号、拆成 2-3 次搜索，并与 web_search 对照核实，报告时附上 x.com 链接并标明出处。",
+    "when": "当你提到「X search」「Twitter search」「x_search」等关键词，或要求查 X/Twitter 上的帖子时触发；前提是已连接 xAI 账号。",
     "say": [
       {
-        "text": "搜一下 X 上最近关于英伟达的讨论",
-        "note": "会带日期边界,并拆成账号与关键词两次检索"
+        "text": "帮我搜下 X 上最近关于 NVDA 的帖子",
+        "note": "会跑一次关键词搜索并附链接"
       },
       {
-        "text": "把这次 X 的搜索结果和网页搜索对照一下",
-        "note": "X 有、网页没有的说法会被标为未证实"
+        "text": "只看 growth_papa 和 aleabitoreddit 这两个账号的发言",
+        "note": "用 allowed_x_handles 限定账号"
+      },
+      {
+        "text": "这条 X 帖子的回复也一起拉出来",
+        "note": "会补一次会话抓取"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:92b9df0211400eb17044e87437ad9d1d182fbb644d52783b1fef983ef43e54ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-12T07:41:02.628Z",
-    "lint_pass": true
+    "generated_at": "2026-09-13T07:59:16.711Z",
+    "lint_pass": true,
+    "what_en": "With xAI connected, Claude calls x_search when you ask about X/Twitter: it date-bounds time-sensitive queries, scopes trusted accounts, splits work into 2-3 searches, reconciles against web_search, and reports with x.com links labeled as X posts.",
+    "when_en": "Triggers when you mention \"X search\", \"Twitter search\", \"x_search\" and similar terms, or ask what people are saying on X; requires a connected xAI account.",
+    "say_en": [
+      {
+        "text": "Search X for recent posts about NVDA",
+        "note": "Runs one keyword pass and cites links"
+      },
+      {
+        "text": "Only look at what growth_papa and aleabitoreddit posted",
+        "note": "Scopes with allowed_x_handles"
+      },
+      {
+        "text": "Pull the replies to this X post too",
+        "note": "Runs a thread-fetch pass"
+      }
+    ]
   }
 }

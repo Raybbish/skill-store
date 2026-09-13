@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "e0746bcbcdf6341f697358867b2de436251fa5ad",
+    "upstream_commit": "d1557a4b48fdbec06a7144fdc4afa3e65c6523ed",
     "content_hash": "sha256:4fa67eafdbdf3087e175b9fb7aebd9201e8bcc9e95b5ace753be57ba1efd5cb4",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68956,
+    "stars_github": 68991,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-12T07:35:57.315Z",
+    "fetched_at": "2026-09-13T07:55:14.152Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-12T15:32:34+09:00",
+    "upstream_commit_at": "2026-09-13T16:50:57+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-12T07:35:57.315Z",
+    "generated_at": "2026-09-13T07:55:14.152Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当任务之间有先后依赖时,Claude 会把它们定义成一张任务图(DAG),让要等上游先完成的子任务按批并行执行;某个节点失败时可以只重试它、改它的指令或给它发消息,不用重跑整张图。",
-    "when": "当你说出 “mass-ulw”、要求一张任务依赖图,或需要分批展开且部分任务必须等别的任务先完成时触发。一次运行只覆盖一个阶段。",
+    "what": "它把多步任务拆成有依赖关系的节点图,在 eval 单元里定义并运行:节点按依赖分批并行执行,可看每个节点的进度与失败。单个节点出错可用 retry、send 或 amend 恢复,已完成节点的结果会被复用。",
+    "when": "当你提到 mass-ulw、任务 DAG,或要求存在先后依赖的分批工作时触发;完全独立的并行任务则不需要它。",
     "say": [
       {
-        "text": "用 mass-ulw 帮我做一张任务图:先审计、再重写、最后验证",
-        "note": "Claude 会定义这张 DAG 并启动运行"
+        "text": "用 mass-ulw 把这次改动拆成有依赖的任务图",
+        "note": "先读规划文档,再定义节点"
       },
       {
-        "text": "重试 run_stub_1 里的 lint 节点,并改掉它的指令",
-        "note": "只重跑该节点,已完成的节点结果保留"
+        "text": "给评审节点加 dependsOn,让它等审计节点跑完再开始",
+        "note": "节点按依赖分批执行"
       },
       {
-        "text": "给正在跑的那个节点发条消息,让它跳过 vendored 目录",
-        "note": "send 会把消息投递给该节点的子代理"
+        "text": "重跑那个失败的节点,顺手把它的指令改一下",
+        "note": "只重试该节点,已完成的结果复用"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4fa67eafdbdf3087e175b9fb7aebd9201e8bcc9e95b5ace753be57ba1efd5cb4",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-12T07:40:42.320Z",
+    "generated_at": "2026-09-13T07:58:53.494Z",
     "lint_pass": true,
-    "what_en": "When tasks have real ordering dependencies, Claude defines a task graph (DAG) and runs its nodes in parallel waves, one run per phase; a failed node can be retried, re-instructed, or steered without redoing the graph.",
-    "when_en": "Triggers when you say “mass-ulw”, ask for a task dependency graph, or need fan-out work where some tasks must wait on others. One run covers a single phase.",
+    "what_en": "It turns multi-step requests into a dependency-ordered node graph and runs it in an eval cell: nodes run in parallel waves as dependencies clear. A failed node can be retried or amended; finished nodes keep their results.",
+    "when_en": "Triggers when you ask for mass-ulw, a task DAG, or fan-out work where some tasks must wait on others; fully independent parallel work does not need it.",
     "say_en": [
       {
-        "text": "Use mass-ulw to build a task graph: audit first, rewrite next, verify last",
-        "note": "Claude defines the DAG and starts the run"
+        "text": "Use mass-ulw to turn this change into a dependency-ordered task graph.",
+        "note": "It reads planning.md first, then defines the nodes."
       },
       {
-        "text": "Retry the lint node in run_stub_1 and edit its instruction",
-        "note": "Only that node re-runs; finished nodes keep results"
+        "text": "Add dependsOn to the review node so it waits for the audit node.",
+        "note": "Nodes run in parallel waves as dependencies clear."
       },
       {
-        "text": "Send the running node a message to skip the vendored dir",
-        "note": "send steers that node's child in place"
+        "text": "Retry the failed node and edit its prompt.",
+        "note": "Completed nodes keep their cached results."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "add-dashboard",
     "description": "Add a monitoring dashboard to NanoClaw. Installs @nanoco/nanoclaw-dashboard and a pusher that sends periodic JSON snapshots.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-dashboard",
-    "upstream_commit": "d96dde93db7a766531ca288190ca202ad473547e",
+    "upstream_commit": "3f9ed607b7e7a4872747295f75286f1c377d7c33",
     "content_hash": "sha256:e5861865fa48ddea5c1fdd13f33aa357fed8f21394113856e9a621df901082bb",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30745,
+    "stars_github": 30750,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-12T07:36:09.926Z",
+    "fetched_at": "2026-09-13T07:55:25.962Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-12T02:43:51+02:00",
+    "upstream_commit_at": "2026-09-13T10:52:38+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-12T07:36:09.926Z",
+    "generated_at": "2026-09-13T07:55:25.962Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,37 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，它会安装 @nanoco/nanoclaw-dashboard 并给 NanoClaw 加一个本地监控仪表盘，展示 agent 组、会话、频道、用户、token 用量、上下文窗口和实时日志，由一个推送器定期发送 JSON 快照。",
-    "when": "当你想给 NanoClaw 加本地监控仪表盘，或执行 /add-dashboard 时触发；它还要求配置 DASHBOARD_SECRET 等环境变量。",
+    "what": "为 NanoClaw 装上本地监控面板和推送模块:推送模块每 60 秒 POST 一次 JSON 快照、每 2 秒推送日志,面板提供概览、会话、频道、用户、日志等页面,启动逻辑会接入 src/index.ts 的 main()。",
+    "when": "当你要给 NanoClaw 加一个监控面板时触发。之后由它负责安装面板包、拷贝推送模块、改 .env 并重启服务。",
     "say": [
       {
-        "text": "帮我给 NanoClaw 装上监控仪表盘",
-        "note": "会安装 npm 包并把 pusher 接入 index.ts"
+        "text": "给 NanoClaw 加个监控面板",
+        "note": "会安装面板包并接入推送模块"
       },
       {
-        "text": "我想把仪表盘从项目里去掉",
-        "note": "会删 pusher 文件、依赖和 .env 变量"
+        "text": "把 dashboard 端口改成 3200",
+        "note": "改 .env 里的 DASHBOARD_PORT"
+      },
+      {
+        "text": "帮我卸掉 NanoClaw 的监控面板",
+        "note": "按移除步骤反向清理文件和依赖"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e5861865fa48ddea5c1fdd13f33aa357fed8f21394113856e9a621df901082bb",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-12T07:42:44.492Z",
+    "generated_at": "2026-09-13T07:59:48.980Z",
     "lint_pass": true,
-    "what_en": "Installs @nanoco/nanoclaw-dashboard and adds a local monitoring dashboard for NanoClaw: agent groups, sessions, channels, users, token usage, context windows and real-time logs, fed by a pusher that sends JSON snapshots.",
-    "when_en": "Use when you want to add a local monitoring dashboard to NanoClaw, or when /add-dashboard is invoked; it also needs DASHBOARD_SECRET and related env vars set.",
+    "what_en": "Installs @nanoco/nanoclaw-dashboard plus a pusher that POSTs a JSON snapshot every 60s and tails logs every 2s, and wires startDashboard() into main() in src/index.ts.",
+    "when_en": "Use when you ask to add a monitoring dashboard to NanoClaw; the skill handles install, wiring, .env, and restart.",
     "say_en": [
       {
-        "text": "Add the monitoring dashboard to NanoClaw",
-        "note": "Installs the npm package and wires the pusher into index.ts"
+        "text": "Add a monitoring dashboard to NanoClaw",
+        "note": "installs the package and pusher"
       },
       {
-        "text": "After restart, confirm http://localhost:3100/api/status responds",
-        "note": "The runtime check described in the skill"
+        "text": "Change the dashboard port to 3200",
+        "note": "edits DASHBOARD_PORT in .env"
       },
       {
-        "text": "Remove the dashboard from this project",
-        "note": "Deletes pusher files, the dependency and .env vars"
+        "text": "Remove the NanoClaw dashboard",
+        "note": "reverses the apply steps"
       }
     ]
   }

@@ -99,33 +99,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它让 Claude 通过 Microsoft Graph 为 AI 代理创建 Entra 身份:先建 Agent Identity Blueprint 和 BlueprintPrincipal,再建每个实例的 Agent Identity,并配置 OAuth 2.0 令牌交换(fmi_path、OBO、跨租户)。",
-    "when": "当你需要为 AI 代理开通 Entra 身份、配置 agent OAuth 令牌交换,或排查 AADSTS82001 等 Agent ID 报错时,它会接管。标准 Entra 应用注册和 Foundry 代理编写不归它管。",
+    "what": "它用 Microsoft Graph 创建 Agent Identity Blueprint、BlueprintPrincipal 和每个实例的 Agent Identity,配置令牌交换并按实例授予权限。",
+    "when": "当你需要为 AI 代理创建 Entra Agent Identity、配置 fmi_path 令牌交换,或部署 AgentID sidecar 时触发。",
     "say": [
       {
-        "text": "给这个 Agent Identity 授予 User.Read.All 应用权限",
-        "note": "通过 appRoleAssignments 完成授权"
+        "text": "帮我新建一个 Agent Identity Blueprint 和它的主体"
+      },
+      {
+        "text": "为我的代理创建一个 Agent Identity 并授予应用权限",
+        "note": "权限按该 Agent Identity 单独授予"
+      },
+      {
+        "text": "在 Blueprint 上加联合身份凭据,用 fmi_path 交换令牌",
+        "note": "凭据放在 Blueprint 上,代理实例不持有"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:be90faaed4c3e92d39244a61babe7a7bbddf4b2553c12ef8a461a21c1c6f97c6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-12T07:42:40.692Z",
-    "lint_pass": false,
-    "what_en": "It lets Claude provision Microsoft Entra Agent Identity Blueprints, BlueprintPrincipals and per-instance Agent Identities via Microsoft Graph, and set up OAuth 2.0 token exchange (fmi_path, OBO, cross-tenant).",
-    "when_en": "Triggers when you need Entra identities for AI agents, agent OAuth token exchange, or help with Agent ID errors like AADSTS82001. Not for standard Entra app registration or Foundry agent authoring.",
+    "generated_at": "2026-09-13T07:59:45.530Z",
+    "lint_pass": true,
+    "what_en": "It creates Entra Agent Identity Blueprints, BlueprintPrincipals and per-instance Agent Identities via Microsoft Graph, configures token exchange, and grants permissions per identity.",
+    "when_en": "Triggers when you need to provision Entra Agent Identities for AI agents, set up fmi_path token exchange, or deploy the AgentID sidecar.",
     "say_en": [
       {
-        "text": "Create an Agent Identity Blueprint and its BlueprintPrincipal for me",
-        "note": "Calls Graph to create the app object and its service principal"
+        "text": "Create an Agent Identity Blueprint and its BlueprintPrincipal",
+        "note": "Blueprint first, then its principal explicitly"
       },
       {
-        "text": "Add an Agent Identity named agent-1 under this Blueprint",
-        "note": "Creates a service-principal identity for one agent instance"
+        "text": "Create an Agent Identity for my agent and grant app permissions",
+        "note": "Grants are scoped to that identity"
       },
       {
-        "text": "Grant this Agent Identity the User.Read.All application permission",
-        "note": "Grants it via appRoleAssignments"
+        "text": "Add a federated identity credential to the Blueprint for fmi_path",
+        "note": "Credentials live on the Blueprint"
       }
     ]
   }

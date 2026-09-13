@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Guides a refactor, cleanup, or restructure with the right decomposition. Use when the user asks to refactor, simplify, extract, or modernize code.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "e0746bcbcdf6341f697358867b2de436251fa5ad",
+    "upstream_commit": "d1557a4b48fdbec06a7144fdc4afa3e65c6523ed",
     "content_hash": "sha256:f0070b178b0a3c8c2f9e29955ce6fc9dc9a21e42940290ca887a9502a5009d5c",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68956,
+    "stars_github": 68991,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-12T07:35:57.315Z",
+    "fetched_at": "2026-09-13T07:55:14.152Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-12T15:32:34+09:00",
+    "upstream_commit_at": "2026-09-13T16:50:57+09:00",
     "repo_skill_count": 51,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-12T07:35:57.315Z",
+    "generated_at": "2026-09-13T07:55:14.152Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,33 +90,28 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会走 /refactor 流程:先跟你确认重构目标,再梳理代码依赖、评估测试覆盖,然后逐步改动,每步跑测试和类型检查,最后给出改动清单和修改文件。",
-    "when": "当你要求重构、简化、抽取代码等操作时触发;目标、范围或期望结果不清楚时,它会先反问确认再动手。",
-    "say": [
-      {
-        "text": "把校验逻辑抽到单独的模块",
-        "note": "它会先确认目标再开始分析"
-      }
-    ],
+    "what": "装上后,Claude 会把一次重构拆成六个阶段执行:先确认你的重构意图,再分析代码库、画出依赖与影响范围、评估测试覆盖,然后生成逐步计划并一步步改代码,每改一步就跑测试和类型检查验证。",
+    "when": "当你要求重构、简化、抽取或现代化代码时触发;也可以直接输入 /refactor 加目标,并用 --scope 与 --strategy 等参数指定范围。",
+    "say": [],
     "source": "llm",
     "content_hash": "sha256:f0070b178b0a3c8c2f9e29955ce6fc9dc9a21e42940290ca887a9502a5009d5c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-12T07:40:43.480Z",
-    "lint_pass": true,
-    "what_en": "After install, Claude follows the /refactor flow: it first confirms the refactor goal with you, maps code dependencies and test coverage, then changes code step by step, running tests and type checks after each step, and ends with a change summary and modified files.",
-    "when_en": "Triggers when you ask to refactor, simplify, extract, or modernize code. If the target, scope, or desired outcome is unclear, it asks a clarifying question before starting.",
+    "generated_at": "2026-09-13T07:58:56.217Z",
+    "lint_pass": false,
+    "what_en": "Once installed, Claude runs a refactor in six phases: it confirms your intent, analyzes the codebase, maps dependencies and impact zones, assesses test coverage, generates a step-by-step plan, then executes each step and runs tests and type checks after every change.",
+    "when_en": "Triggers when you ask to refactor, simplify, extract, or modernize code. You can also run /refactor with a target and specify scope and strategy via flags.",
     "say_en": [
       {
-        "text": "/refactor src/auth/handler.ts --scope=file",
-        "note": "Only this file, default safe strategy"
+        "text": "/refactor src/auth/handler.ts extract validation into its own module",
+        "note": "It first confirms intent, then analyzes the codebase"
       },
       {
-        "text": "Extract the validation logic into its own module",
-        "note": "It confirms the goal before analyzing"
+        "text": "/refactor AuthService class --scope=module --strategy=safe",
+        "note": "Module-scoped conservative refactor, tests after each step"
       },
       {
-        "text": "/refactor AuthService --strategy=aggressive",
-        "note": "Broader changes allowed, needs adequate test coverage"
+        "text": "/refactor all functions using the deprecated API --strategy=aggressive",
+        "note": "With low coverage it may ask to add tests first"
       }
     ]
   }
