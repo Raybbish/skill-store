@@ -5,7 +5,7 @@
     "name": "weekly-digests",
     "description": "Generate a serial week-by-week narrative digest of a project's full claude-mem timeline. Splits the timeline into per-ISO-week files, then runs one consecutive subagent per week — each receiving the prior week's carry-forward block — to produce one chapter per ISO week of data. Use when asked for \"weekly digests\", \"week-by-week story\", \"serial timeline\", or \"narrative chapters\" of a project's history.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/weekly-digests",
-    "upstream_commit": "866a0ca3b34cddd8aa4c5fba72b9ad2b3a5621fe",
+    "upstream_commit": "07ba05ae64ef732edfcf4cfb3a73e522a2153892",
     "content_hash": "sha256:e3907281e044e35fb39d7ef7f2af9186dffcabbd809edec7b698f0752d4ea677",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 92056,
+    "stars_github": 93763,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:00.249Z",
+    "fetched_at": "2026-09-13T07:55:09.808Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-26T09:56:07-07:00",
-    "repo_skill_count": 22
+    "upstream_commit_at": "2026-09-12T11:28:36-07:00",
+    "repo_skill_count": 27
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:00.249Z",
+    "generated_at": "2026-09-13T07:55:09.808Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "把项目的历史记录(保存在 claude-mem 里)按自然周拆开,并为每一周生成一章连续叙事,最终产出多章“周报式”故事文档。",
-    "when": "当用户要求生成“每周摘要”“周更故事”“连续时间线”或某个项目的“叙事章节”时触发。",
+    "what": "它把项目完整的 claude-mem 时间线按 ISO 周拆成文件,再逐周依次派一个子代理,每个都接着上一周的 carry-forward 块继续写,产出每周一章的连续叙事摘要,存到 docs/timeline-weeks/ 下。",
+    "when": "当你要求「weekly digests」「week-by-week story」「serial timeline」等,或想按周连载项目历史章节时触发;若只想要一份长篇报告应改用 timeline-report。",
     "say": [
       {
-        "text": "给这个项目生成每周摘要,从头到尾。",
-        "note": "会按周拆时间线并逐章写出叙事。"
+        "text": "给这个项目做 weekly digests,从开头写到结尾",
+        "note": "会按周依次生成每周一章的摘要"
       },
       {
-        "text": "按周讲讲这个项目的连续故事。",
-        "note": "每周一章,章节之间会承接上一章的结尾。"
+        "text": "续写下一周的 digest,接上上一章的 carry-forward",
+        "note": "只跑下一周,并沿用上周交接块"
       },
       {
-        "text": "为 [项目名] 做叙事章节,按周划分。",
-        "note": "先探测项目名,再按 ISO 周生成章节。"
+        "text": "重跑第 3 周的章节,用同一份 carry-forward",
+        "note": "会重试该周,不跳过链条"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e3907281e044e35fb39d7ef7f2af9186dffcabbd809edec7b698f0752d4ea677",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:49:29.784Z",
+    "generated_at": "2026-09-13T08:00:57.766Z",
     "lint_pass": true,
-    "what_en": "Splits a project's claude-mem timeline into ISO-week files and produces one narrative chapter per week, chained by a carry-forward block so the story stays continuous.",
-    "when_en": "Triggered when the user asks for weekly digests, week-by-week stories, serial timelines, or narrative chapters of a project's history.",
+    "what_en": "Splits a project's full claude-mem timeline into per-ISO-week files, then runs one subagent per week in sequence — each gets the prior week's carry-forward block — producing one narrative chapter per ISO week.",
+    "when_en": "Use when the user asks for \"weekly digests\", \"week-by-week story\", \"serial timeline\" or narrative chapters of a project's history; for one long report, use timeline-report instead.",
     "say_en": [
       {
-        "text": "Generate weekly digests for this project, from start to finish.",
-        "note": "Splits the timeline and writes narrative chapters."
+        "text": "Make weekly digests for this project from start to finish",
+        "note": "Produces one chapter per ISO week"
       },
       {
-        "text": "Tell the project's story week by week.",
-        "note": "Each week becomes a chapter that continues from the last."
+        "text": "Continue with next week's digest, using the prior carry-forward",
+        "note": "Runs the next week only"
       },
       {
-        "text": "Make serial narrative chapters for [Project], grouped by week.",
-        "note": "Detects the project and drives the weekly pipeline."
+        "text": "Retry week 3 with the same carry-forward",
+        "note": "Reruns that week; the chain is not skipped"
       }
     ]
   }
