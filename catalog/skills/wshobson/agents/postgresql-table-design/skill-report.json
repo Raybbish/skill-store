@@ -5,7 +5,7 @@
     "name": "postgresql-table-design",
     "description": "Use this skill when designing or reviewing a PostgreSQL-specific schema. Covers best-practices, data types, indexing, constraints, performance patterns, and advanced features",
     "upstream": "https://github.com/wshobson/agents/tree/main/plugins/database-design/skills/postgresql-table-design",
-    "upstream_commit": "a30778f8c4e6b0a87567941b7cca4f534bf642b6",
+    "upstream_commit": "4236bb91f8395b0435f1d8b8baf9e8e4c69a8620",
     "content_hash": "sha256:20464483450557952fe99debb5b996d4c213631ec1412acfc55ac1fac175a2b7",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 39340,
+    "stars_github": 39638,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-02T07:31:58.484Z",
+    "fetched_at": "2026-09-14T08:28:32.749Z",
     "first_seen_at": "2026-08-27T13:37:08.572Z",
-    "upstream_commit_at": "2026-09-01T18:36:23-04:00",
+    "upstream_commit_at": "2026-09-13T10:43:53-04:00",
     "repo_skill_count": 183,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-02T07:31:58.484Z",
+    "generated_at": "2026-09-14T08:28:32.749Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,40 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你说要设计或审查 PostgreSQL 的表结构时，Claude 会套用这套规范给出建议：主键与数据类型选择、约束与索引配置、是否分区，并附上示例 SQL。",
-    "when": "当你想设计或复查 PostgreSQL 建表方案时触发，比如讨论字段类型、主键/索引、分区，或要求“帮我优化表结构”等。",
+    "what": "装上后,Claude 在设计或审查 PostgreSQL 表结构时会按技能内的规则行事:定主键、选数据类型、加约束与索引、判断是否分区,并给出可直接用的建表 DDL 示例。",
+    "when": "当你要设计新的 PostgreSQL schema、在它上线前做审查,或为某张表选列类型、索引、分区方式时触发。",
     "say": [
       {
-        "text": "帮我设计一张 PostgreSQL 用户表，包含邮箱和注册时间。"
+        "text": "帮我设计一个 PostgreSQL 的用户表,给出建表 DDL",
+        "note": "会输出含主键、NOT NULL、索引的 DDL"
       },
       {
-        "text": "请审查这段建表 SQL，指出索引和约束的问题。",
-        "note": "Claude 会对照规则逐条检查并给出修改建议。"
+        "text": "审查这个 PostgreSQL schema,看索引和数据类型有没有问题",
+        "note": "会指出缺 FK 索引、类型选错等问题"
       },
       {
-        "text": "这张千万级订单表，如何按时间分区？",
-        "note": "Claude 会给出 RANGE 分区方案及分区键建议。"
+        "text": "这张表上亿行、查询总按时间过滤,该怎么分区?",
+        "note": "会给出 RANGE 分区方案"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:20464483450557952fe99debb5b996d4c213631ec1412acfc55ac1fac175a2b7",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-02T08:15:34.002Z",
+    "generated_at": "2026-09-14T08:36:34.534Z",
     "lint_pass": true,
-    "what_en": "When asked to design or review a PostgreSQL table schema, Claude will follow this skill's built-in rules to recommend primary keys, data types, indexes, constraints, and partitioning, with sample SQL.",
-    "when_en": "Triggers when you ask to design or review a PostgreSQL-specific schema, e.g. choosing column types, keys, constraints, indexes, partitioning, or optimizing a table design.",
+    "what_en": "Once installed, Claude follows this skill's rules when designing or reviewing a PostgreSQL schema: choosing primary keys, data types, constraints and indexes, judging whether to partition, and producing ready-to-run DDL.",
+    "when_en": "Use it when designing a new PostgreSQL schema, reviewing one before it ships, or choosing column types, indexes, or partitioning for a specific table.",
     "say_en": [
       {
-        "text": "Design a PostgreSQL users table with email and created_at.",
-        "note": "Returns a suggested CREATE TABLE statement."
+        "text": "Design a PostgreSQL users table and give me the DDL",
+        "note": "Outputs DDL with PK, NOT NULL, indexes"
       },
       {
-        "text": "Review this schema SQL for index and constraint issues.",
-        "note": "Flags problems and suggests fixes."
+        "text": "Review this PostgreSQL schema for index and data-type issues",
+        "note": "Flags missing FK indexes and wrong types"
       },
       {
-        "text": "How should I partition a 10-million-row orders table by time?",
-        "note": "Shows a RANGE partitioning plan."
+        "text": "This table has 100M+ rows and queries filter by time — how to partition it?",
+        "note": "Gives a RANGE partitioning plan"
       }
     ]
   }

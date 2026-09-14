@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "Handles git work: atomic commits, rebase, squash, blame, bisect, reflog, and history questions. Use whenever a task needs a commit or a git-history investigation; skip for ordinary code edits.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "d1557a4b48fdbec06a7144fdc4afa3e65c6523ed",
+    "upstream_commit": "8d9ed07891a5693de10f099031f1492d675a6ebf",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,13 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68991,
+    "stars_github": 69024,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-13T07:55:14.152Z",
+    "fetched_at": "2026-09-14T08:28:21.399Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-13T16:50:57+09:00",
-    "repo_skill_count": 51,
-    "bulk_source": true
+    "upstream_commit_at": "2026-09-14T17:05:32+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -36,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-13T07:55:14.152Z",
+    "generated_at": "2026-09-14T08:28:21.399Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会按仓库已有风格把改动拆成原子提交,改写分支历史(rebase、squash),或用 blame、bisect、reflog 回答“何时、谁、为何改了某处”;动手前先读仓库状态,只提交你要求的内容。",
-    "when": "当你要求提交改动、改写分支历史,或追问某处代码是谁/何时改的时触发;普通代码编辑不触发。",
+    "what": "Claude 会先读仓库状态再动手,把请求分成提交、改写历史、查历史、看状态四类。回答带具体证据:提交哈希、文件路径、行号与命令输出。",
+    "when": "当任务需要做一次提交,或要调查 git 历史(谁改的、何时改的、哪个提交引入)时接管;普通代码编辑不触发。",
     "say": [
       {
-        "text": "把这些改动按仓库现有风格拆成几个原子提交",
-        "note": "先给分组,再逐个提交并报 hash"
+        "text": "把这些改动按功能拆成几个原子提交",
+        "note": "先看 diff 再分组暂存,逐个提交并报告哈希"
       },
       {
-        "text": "这几行代码最后一次是谁、哪次提交改的?",
-        "note": "用 git blame 给出提交与证据"
+        "text": "是谁在哪个提交里改了这个函数?给出证据",
+        "note": "用 log -S、blame 定位并附哈希与行号"
       },
       {
-        "text": "这个 bug 是哪个提交引入的?帮我 bisect",
-        "note": "需要可判定好坏的命令和已知好坏范围"
+        "text": "把本分支最近三个提交压缩成一个",
+        "note": "会先确认是否已推送再改写历史"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-13T07:58:39.993Z",
+    "generated_at": "2026-09-14T08:33:32.341Z",
     "lint_pass": true,
-    "what_en": "It commits your changes as atomic commits in the repo's existing style, rewrites branch history (rebase, squash), or answers history questions via blame, bisect and reflog — reading repo state first.",
-    "when_en": "Triggers when a task needs a commit or a git-history investigation — e.g. committing, rewriting branch history, or tracing who changed a line; skipped for ordinary code edits.",
+    "what_en": "Claude reads the repo state first, then sorts the request into commit, history-rewrite, history-question, or status modes. Answers cite concrete evidence: commit hashes, file paths, line numbers, command output.",
+    "when_en": "Triggers when a task needs a commit or a git-history investigation (who, when, which commit). Ordinary code edits do not trigger it.",
     "say_en": [
       {
-        "text": "Split these changes into a few atomic commits matching this repo's style",
-        "note": "Groups first, then commits one by one with hashes"
+        "text": "Split these changes into a few atomic commits",
+        "note": "Reads the diff, stages groups, commits each"
       },
       {
-        "text": "Who last changed these lines, and in which commit?",
-        "note": "Answers with blame output as evidence"
+        "text": "Who changed this function, and in which commit? Show evidence",
+        "note": "Uses log -S and blame with hashes and lines"
       },
       {
-        "text": "Which commit first introduced this bug? Run a bisect",
-        "note": "Needs a pass/fail command and good/bad bounds"
+        "text": "Squash the last three commits on this branch into one",
+        "note": "Checks pushed status before rewriting"
       }
     ]
   }

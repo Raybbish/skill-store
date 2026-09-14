@@ -5,7 +5,7 @@
     "name": "pre-publish-review",
     "description": "Nuclear-grade 12-agent pre-publish release gate. Runs /get-unpublished-changes to detect all changes since last npm release, spawns up to 10 ultrabrain agents for deep per-change analysis, invokes /review-work (orchestrator manual QA plus one gate reviewer) for holistic review, and 1 oracle for overall release synthesis. Runs ONLY when the user explicitly asks for a pre-publish review — a plain publish/release request MUST NOT trigger this; /publish ships directly. Triggers: 'pre-publish review', 'review before publish', 'release review', 'pre-release review', 'ready to publish?', 'can I publish?', 'pre-publish', 'safe to publish', 'publishing review', 'pre-publish check'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/pre-publish-review",
-    "upstream_commit": "d1557a4b48fdbec06a7144fdc4afa3e65c6523ed",
+    "upstream_commit": "8d9ed07891a5693de10f099031f1492d675a6ebf",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,13 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68991,
+    "stars_github": 69024,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-13T07:55:14.152Z",
+    "fetched_at": "2026-09-14T08:28:21.399Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-13T16:50:57+09:00",
-    "repo_skill_count": 51,
-    "bulk_source": true
+    "upstream_commit_at": "2026-09-14T17:05:32+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -36,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-13T07:55:14.152Z",
+    "generated_at": "2026-09-14T08:28:21.399Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,40 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "触发后先运行 /get-unpublished-changes 列出上次 npm 发布以来的改动,按模块分成最多 10 组,并行派 ultrabrain 逐个分析,并调用 /review-work 做整体复核,最后由 1 个 oracle 给出发布就绪度、版本号建议和阻塞问题。",
-    "when": "只有你明确要求「发布前审查」时才触发,例如说 “pre-publish review”、“ready to publish?” 等;普通的 publish/release 请求不会触发它,/publish 直接发布。",
+    "what": "装好后,当你要做发布前检查时,Claude 会先找出上次 npm 发布以来的全部改动,按模块分组逐个深审,再做一轮整体复核,最后给出发布风险、版本号升级建议和更新日志草稿。",
+    "when": "只有你明确要求做发布前评审时才接管,例如提到“pre-publish review”、“release review”等说法;单纯说发布或上线不会触发,由 /publish 直接发布。",
     "say": [
       {
-        "text": "帮我做一次 pre-publish review"
+        "text": "帮我做一次 pre-publish review",
+        "note": "会先列出未发布的改动,再逐项审。"
       },
       {
-        "text": "发布前帮我审一下这些改动",
-        "note": "每个改动组由一个 ultrabrain 分析并给结论"
+        "text": "这次的改动可以发布吗?先做发布前评审",
+        "note": "输出各改动组结论与阻塞问题。"
       },
       {
-        "text": "我能发布吗?建议升哪个版本号?",
-        "note": "oracle 汇总发布风险与版本号建议"
+        "text": "评审未发布的改动,并起草更新日志",
+        "note": "附带版本号建议与更新日志草稿。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-13T07:58:56.715Z",
+    "generated_at": "2026-09-14T08:33:46.738Z",
     "lint_pass": true,
-    "what_en": "Runs /get-unpublished-changes to list changes since the last npm release, splits them into up to 10 groups, spawns an ultrabrain agent per group, adds a /review-work pass and one oracle for release readiness, version bump and blocking issues.",
-    "when_en": "Triggers only when you explicitly ask for a pre-publish review, e.g. “pre-publish review”, “ready to publish?”. A plain publish/release request does not trigger it; /publish ships directly.",
+    "what_en": "When you ask for a pre-publish review, Claude detects changes since the last npm release, analyzes each change group, runs a holistic gate review, and reports release risk, a version bump recommendation and a changelog draft.",
+    "when_en": "Runs only when you explicitly ask for a pre-publish review, e.g. “pre-publish review” or “release review”. A plain publish or release request does not trigger it — /publish ships directly.",
     "say_en": [
       {
-        "text": "Run a pre-publish review for me.",
-        "note": "Starts with /get-unpublished-changes to detect changes."
+        "text": "Run a pre-publish review",
+        "note": "It lists unpublished changes first."
       },
       {
-        "text": "Review my changes before I publish.",
-        "note": "One ultrabrain agent per change group reports verdicts."
+        "text": "Is this changeset safe to publish? Review it first.",
+        "note": "Per-change and holistic review run."
       },
       {
-        "text": "Can I publish, and which version bump do you recommend?",
-        "note": "The oracle adds release risk and version guidance."
+        "text": "Review unpublished changes and draft the changelog.",
+        "note": "You get a changelog draft and a risk verdict."
       }
     ]
   }

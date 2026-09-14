@@ -5,7 +5,7 @@
     "name": "get-available-resources",
     "description": "Detect host inventory and effective CPU, memory, disk, scheduler, container, and accelerator limits when a user asks for resource-aware planning or before a clearly resource-sensitive local workload. Produces a redacted JSON snapshot and conservative planning helpers without stress tests or assuming visible host hardware is usable.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/get-available-resources",
-    "upstream_commit": "c1ed16d97dd61ff50a3bd46dd353e4a55fd77f34",
+    "upstream_commit": "0b2afe68a5f9379097ad815e028af664f1e222b7",
     "content_hash": "sha256:4f60507ade65f0a63abec5ad038948bb1b08f8f9e90ff127e217a47874b6fa38",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 44514,
+    "stars_github": 44825,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-12T07:36:04.582Z",
+    "fetched_at": "2026-09-14T08:28:29.008Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-11T19:09:21-07:00",
-    "repo_skill_count": 165,
+    "upstream_commit_at": "2026-09-13T09:27:11-07:00",
+    "repo_skill_count": 166,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-12T07:36:04.582Z",
+    "generated_at": "2026-09-14T08:28:29.008Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -103,41 +103,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在计算密集型任务开始前,Claude 会运行检测脚本,查 CPU 核数、GPU(NVIDIA/AMD/Apple Silicon)、内存与磁盘,在工作目录生成 .claude_resources.json,并附并行处理、内存与 GPU 加速建议。",
-    "when": "当你在数据分析、模型训练、大文件处理等计算密集型任务开始时,或要求做资源感知规划时,它会先接管。",
+    "what": "装上后,Claude 在跑耗资源的计算任务前会先运行检测脚本,把 CPU、GPU、内存、磁盘情况写进当前目录的 .claude_resources.json,并给出并行、内存、GPU 三方面的策略建议,再据此决定用什么方式算。",
+    "when": "当你提出要做资源敏感的本地任务时触发,比如分析大数据集、训练模型、并行处理大量文件等;原文还建议在项目开始前主动运行。",
     "say": [
       {
-        "text": "先检测一下这台机器的资源,再决定怎么跑",
-        "note": "生成资源快照并给出策略建议"
+        "text": "先检测一下这台机器的资源,再决定怎么分析",
+        "note": "生成 .claude_resources.json"
       },
       {
-        "text": "我要训练神经网络,先看看有没有可用的 GPU",
-        "note": "报告可用的 GPU 后端"
+        "text": "帮我看看有没有 GPU 可用,训练该用哪个后端",
+        "note": "输出可用后端与建议库"
       },
       {
-        "text": "分析这个 50GB 数据集前,先查内存和磁盘",
-        "note": "据此判断是否该用 Dask/Zarr"
+        "text": "这个 50GB 数据集,先看内存和磁盘够不够",
+        "note": "给出分块或落盘策略建议"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4f60507ade65f0a63abec5ad038948bb1b08f8f9e90ff127e217a47874b6fa38",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-12T07:42:26.663Z",
+    "generated_at": "2026-09-14T08:35:27.543Z",
     "lint_pass": true,
-    "what_en": "Before compute-intensive tasks, Claude runs a detection script for CPU cores, GPUs (NVIDIA/AMD/Apple Silicon), memory and disk, writes .claude_resources.json in the working directory, and adds parallel, memory and GPU suggestions.",
-    "when_en": "At the start of compute-intensive work such as data analysis, model training or large file processing, or when resource-aware planning is requested.",
+    "what_en": "Before resource-heavy local workloads, Claude runs a detection script that writes CPU, GPU, memory, and disk info to .claude_resources.json in the working directory, plus parallel, memory, and GPU strategy recommendations that inform the compute approach.",
+    "when_en": "Triggered when you ask for a resource-sensitive local task, such as analyzing a large dataset, training a model, or processing many files in parallel; the doc also suggests running it at project start.",
     "say_en": [
       {
-        "text": "Check this machine's resources first, then decide how to run",
-        "note": "Writes a resource snapshot plus strategy advice"
+        "text": "Check this machine's resources first, then decide how to analyze.",
+        "note": "Writes .claude_resources.json"
       },
       {
-        "text": "I want to train a neural net — see if a GPU is available",
-        "note": "Reports available GPU backends"
+        "text": "See if a GPU is available and which backend to train with.",
+        "note": "Lists backends and libraries"
       },
       {
-        "text": "Before analyzing this 50GB dataset, check memory and disk",
-        "note": "Suggests Dask/Zarr if needed"
+        "text": "For this 50GB dataset, check memory and disk first.",
+        "note": "Suggests chunking or streaming"
       }
     ]
   }
