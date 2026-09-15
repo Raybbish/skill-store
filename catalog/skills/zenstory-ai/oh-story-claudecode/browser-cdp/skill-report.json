@@ -5,7 +5,7 @@
     "name": "browser-cdp",
     "description": "Use this skill when you need to control a Chrome browser via CDP (Chrome DevTools Protocol) to reuse existing login sessions. Covers: launching Chrome in debug mode, opening URLs, waiting for page load, evaluating JavaScript, taking snapshots, and extracting auth tokens. Trigger phrases: browser automation, CDP, agent-browser, 浏览器操作, 操作浏览器, Chrome CDP, 复用登录态, extract token from browser.",
     "upstream": "https://github.com/zenstory-ai/oh-story-claudecode/tree/main/skills/browser-cdp",
-    "upstream_commit": "73b6c74538c2ef24e8a5481b2de9aef57d8cbe46",
+    "upstream_commit": "9b91465c533e8c8488e2116339c3107dd4431697",
     "content_hash": "sha256:56e9dc560aefb36b783f7be0e2cdac855518f7b38f27cf3efb5772791a800e3a",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6182,
+    "stars_github": 6851,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:49:22.686Z",
+    "fetched_at": "2026-09-14T08:29:13.993Z",
     "first_seen_at": "2026-08-27T13:37:59.445Z",
-    "upstream_commit_at": "2026-08-28T07:31:52-07:00",
+    "upstream_commit_at": "2026-09-13T06:59:39-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:49:22.686Z",
+    "generated_at": "2026-09-14T08:29:13.993Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会通过 CDP 协议控制你电脑上的 Chrome 浏览器，复用已登录的账号状态。它能打开网址、等待页面加载、执行 JavaScript、截取页面快照，还能从浏览器里提取登录令牌。启动前会先检查状态，需要重启 Chrome 时会先征求你的同意。",
-    "when": "当你说要操作浏览器、复用登录态，或提到“CDP”等关键词时触发。",
+    "what": "Claude 会通过 CDP 协议控制你已登录的 Chrome：打开网址、等待加载、执行 JavaScript、读取页面快照，并从 localStorage 或 cookie 里提取登录 token。若已有 Chrome 在运行，启动调试实例前会先征求你同意。",
+    "when": "当你提到“浏览器操作”“CDP”等关键词，或需要复用已有登录态、从浏览器提取 token 时触发；前提是已装 Chrome 与 agent-browser。",
     "say": [
       {
-        "text": "帮我打开 https://example.com 并读取页面文字",
-        "note": "Claude 会用调试 Chrome 打开并抓取页面文字"
+        "text": "帮我在浏览器里打开这个网址，并把登录 token 取出来",
+        "note": "走 CDP 读取 localStorage 或 cookie"
       },
       {
-        "text": "提取当前页面里的登录 token",
-        "note": "从 localStorage 或 cookie 中读取"
+        "text": "先探测一下 9222 端口的 CDP 状态",
+        "note": "只探测，不改动任何状态"
       },
       {
-        "text": "用 CDP 截取当前页面的快照",
-        "note": "生成交互元素快照，便于后续操作"
+        "text": "打开页面后等 3 秒，再把正文文本前 8000 字给我",
+        "note": "open → wait → eval innerText"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:56e9dc560aefb36b783f7be0e2cdac855518f7b38f27cf3efb5772791a800e3a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:10:00.471Z",
+    "generated_at": "2026-09-14T08:37:05.845Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude will control your local Chrome browser via CDP to reuse existing login sessions. It can open URLs, wait for page load, evaluate JavaScript, take snapshots, and extract auth tokens. Before starting, it checks status and asks your consent if Chrome needs to be restarted.",
-    "when_en": "Triggers when you ask to operate the browser, reuse login sessions, or mention keywords like CDP.",
+    "what_en": "Claude can drive your logged-in Chrome over CDP: open URLs, wait for load, run JavaScript, take page snapshots, and pull auth tokens from localStorage or cookies. If Chrome is already running, it asks your consent before launching the debug instance.",
+    "when_en": "Triggered when you mention “browser automation”, “CDP”, “浏览器操作” and similar, or need to reuse an existing login session or extract a token from the browser. Requires Chrome and agent-browser installed.",
     "say_en": [
       {
-        "text": "Open https://example.com and read the page text",
-        "note": "Claude opens it in debug Chrome and extracts text"
+        "text": "Open this URL in the browser and pull the login token out",
+        "note": "Uses CDP to read localStorage or cookies"
       },
       {
-        "text": "Extract the login token from the current page",
-        "note": "Reads from localStorage or cookie"
+        "text": "First detect the CDP status on port 9222",
+        "note": "Detection only, changes nothing"
       },
       {
-        "text": "Take a snapshot of the current page via CDP",
-        "note": "Produces interactive element snapshot for later use"
+        "text": "Open the page, wait 3 seconds, then give me the first 8000 chars of body text",
+        "note": "open → wait → eval innerText"
       }
     ]
   }
