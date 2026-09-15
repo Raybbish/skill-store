@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "When to delegate to `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit) or `cavecrew-reviewer` (diff review) instead of working inline or using `Explore`. Their output is compressed, so main context lasts longer.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "15581d14007fd01fb3f132016741962f34936ca2",
+    "upstream_commit": "4df4b03ba538751131d24415c59a1fad0d8c2c18",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 288800,
-    "fetched_at": "2026-09-08T07:45:06.467Z",
+    "installs_skills_sh": 302000,
+    "fetched_at": "2026-09-15T08:22:42.901Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-07T08:19:43Z"
+    "upstream_commit_at": "2026-09-14T21:00:33-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-08T07:45:06.467Z",
+    "generated_at": "2026-09-15T08:22:42.901Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装后，Claude 会把三类任务转交给专门的子代理：查找代码定义/调用、做 1~2 个文件的局部修改、审查 diff 以找出问题。这些子代理返回的是压缩且带文件行号的简要结果，比普通回复占用的对话记忆更少。",
-    "when": "当用户询问某个符号在哪定义或被谁调用，或要求小范围修改某个文件，或要检查最近改动里的错误时，Claude 就可能调用该技能对应的子代理。",
+    "what": "Claude 会把三类活派给子代理：定位代码、改 1~2 个文件、审查 diff，分别由 cavecrew-investigator、builder、reviewer 负责。它们返回的结果是压缩过的，主上下文更省。",
+    "when": "当你让它找某段代码在哪、改 1~2 个文件、或审查一次改动时，会派给对应子代理；答案你已知的一行问题仍由主线程直接回答。",
     "say": [
       {
-        "text": "函数 `foo` 定义在哪个文件？哪些地方调用了它？",
-        "note": "会触发 investigator 去定位并返回带行号的清单。"
+        "text": "帮我找出 handleLogin 在哪定义、谁调用了它"
       },
       {
-        "text": "帮我审查刚才的 diff，有没有潜在 bug？",
-        "note": "会触发 reviewer 给出按严重级别的发现列表。"
+        "text": "把 src/auth.ts 第 42 行的超时从 30 改成 60",
+        "note": "派给 builder，改完会回读校验"
+      },
+      {
+        "text": "审查当前分支的 diff 有没有 bug",
+        "note": "派给 reviewer，按文件和行号列问题"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-08T08:03:26.738Z",
+    "generated_at": "2026-09-15T08:26:09.681Z",
     "lint_pass": true,
-    "what_en": "Installing this adds three subagent presets: locate code, edit 1-2 files, review diffs. They return compressed, path/line-anchored findings, using less main-context than vanilla tools.",
-    "when_en": "Fires when you ask to locate code (defs/callers), make a small 1-2 file edit, or check a diff for bugs; Claude delegates to the matching subagent.",
+    "what_en": "Claude routes three kinds of work to subagents: locating code, editing 1-2 files, and reviewing a diff, handled by cavecrew-investigator, builder, and reviewer. Their replies are compressed, so your main context lasts longer.",
+    "when_en": "Triggers when you ask where code lives, request a 1-2 file edit, or want a diff reviewed; these go to the matching subagent. One-line answers you already know stay in the main thread.",
     "say_en": [
       {
-        "text": "Where is `foo` defined and who calls it?",
-        "note": "Sends to investigator for path:line results."
+        "text": "Find where handleLogin is defined and who calls it",
+        "note": "Goes to investigator; returns a path:line list"
       },
       {
-        "text": "In src/util.ts line 20, change default from true to false. Only that file.",
-        "note": "Builder performs the edit and returns verification."
+        "text": "In src/auth.ts, change the timeout on line 42 from 30 to 60",
+        "note": "Goes to builder; it re-reads to verify"
       },
       {
-        "text": "Check my last diff for bugs.",
-        "note": "Reviewer returns findings by severity."
+        "text": "Review the current branch diff for bugs",
+        "note": "Goes to reviewer; findings sorted by file and line"
       }
     ]
   }

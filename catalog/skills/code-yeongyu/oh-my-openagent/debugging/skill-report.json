@@ -5,7 +5,7 @@
     "name": "debugging",
     "description": "Runs a hypothesis-driven debugging loop across any language or binary, escalating to orthogonal oracle angles and locking the fix with a failing test. Use for crashes, silent failures, hangs, wrong responses, memory leaks, async misbehavior, or reverse engineering.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/debugging",
-    "upstream_commit": "8d9ed07891a5693de10f099031f1492d675a6ebf",
+    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
     "content_hash": "sha256:91d17ee05b17509006c7959b6815a83423b4ee2d348c91f791d190c1079b797d",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69024,
+    "stars_github": 69062,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:21.399Z",
+    "fetched_at": "2026-09-15T08:19:32.040Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-14T17:05:32+09:00",
+    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:21.399Z",
+    "generated_at": "2026-09-15T08:19:32.040Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -136,41 +136,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会按假设驱动的流程排查 bug:每一步结论都来自实际运行状态,而不是读代码猜出来的故事;确认根因后先写一个能失败的测试再动手修复。调试过程中新建的临时文件、改动都会记入日志,收尾时逐项清理还原。",
-    "when": "当程序崩溃、卡死、内存泄漏等异常出现,或需要做逆向工程时接管;排查前会先确认运行环境并读对应参考再动手。",
+    "what": "排查问题时先取运行时证据,而不是只读代码推断;按固定阶段循环推进:环境评估、形成多个假设、并行调查、确认根因、先写一个失败测试再改代码、手动 QA、清理痕迹。最后留下一个最小修复加测试,并回滚所有调试产物;是否提交由你决定。",
+    "when": "出现崩溃、卡死、静默失败、错误响应、内存泄漏、异步异常,或需要逆向工程时触发。它会先读对应运行时的参考文件,再接管排查流程。",
     "say": [
       {
-        "text": "我的程序偶尔崩溃,帮我定位根因",
-        "note": "会先评估运行环境再进入排查流程"
+        "text": "我这个 Node 服务跑一会儿就卡死,帮我按调试流程定位根因",
+        "note": "会先读 Node 运行时参考再进入阶段循环"
       },
       {
-        "text": "这个 Node 服务的返回结果是错的,查一下",
-        "note": "会先读 Node 运行时的参考再调试"
+        "text": "这个二进制没有源码,行为还跟文档不符,帮我逆向查一下",
+        "note": "可能用 Ghidra、Frida 这类工具"
       },
       {
-        "text": "帮我逆向这个没有源码的二进制文件",
-        "note": "会先判断是原生还是打包型二进制"
+        "text": "这个 bug 只在 CI 上偶发,每次失败的用例都不一样",
+        "note": "会先读 flaky-triage 参考再排查"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:91d17ee05b17509006c7959b6815a83423b4ee2d348c91f791d190c1079b797d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:33:28.822Z",
+    "generated_at": "2026-09-15T08:24:58.196Z",
     "lint_pass": true,
-    "what_en": "Claude then debugs in a hypothesis-driven loop: every claim about the cause comes from observed runtime state, not code reading, and the fix is locked with a failing test first. Debug artifacts are journaled as they are created and each one is reverted at cleanup.",
-    "when_en": "Triggers on crashes, hangs, memory leaks, wrong responses and similar failures, or reverse engineering. It first identifies the runtime and opens the matching reference before attaching anything.",
+    "what_en": "Claude debugs hypothesis-first: it uses runtime evidence rather than code reading alone, follows a fixed phase loop from setup through cleanup, and leaves a minimal fix locked by a failing-first test, reverting its debug artifacts.",
+    "when_en": "Triggers on crashes, silent failures, hangs, wrong responses, memory leaks, async misbehavior or reverse engineering; it then reads the matching runtime reference and takes over.",
     "say_en": [
       {
-        "text": "My program crashes occasionally, help me find the root cause",
-        "note": "It assesses the runtime before starting the loop"
+        "text": "This Node service freezes after a while, find the root cause",
+        "note": "Reads the Node runtime reference, then starts the phase loop"
       },
       {
-        "text": "This Node service returns wrong results, dig in",
-        "note": "It reads the Node runtime reference first"
+        "text": "This binary has no source and acts against its docs, dig in",
+        "note": "May reach for Ghidra or Frida"
       },
       {
-        "text": "Help me reverse engineer this binary with no source",
-        "note": "It first checks native vs bundled binary"
+        "text": "This bug only fails on CI, a different test every run",
+        "note": "Reads the flaky-triage reference first"
       }
     ]
   }

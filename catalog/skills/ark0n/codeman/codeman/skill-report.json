@@ -1,0 +1,141 @@
+{
+  "schema_version": "2",
+  "meta": {
+    "id": "ark0n/codeman/codeman",
+    "name": "codeman",
+    "description": "Drive Codeman, the session manager this agent is running inside, over its HTTP API: list sessions, start worker sessions, send them prompts, block until they finish (wait / wait-output / send-and-wait), read their output, and clean up; where available, message claude workers directly (Claude Code cross-session messaging). Use when asked to orchestrate or parallelize work across Codeman sessions, watch another session, or start and manage workers. Only usable inside a Codeman-managed session (CODEMAN_MUX=1); refuse to act otherwise.",
+    "upstream": "https://github.com/Ark0N/Codeman/tree/master/skills/codeman",
+    "upstream_commit": "88e3faa456cdbc23f33b9b78d8c9a73479f74d3a",
+    "content_hash": "sha256:797dc01c5425c6687bc09985f5cf16f619c73564eb02cdff361f3ddd6a320efb",
+    "license": "MIT",
+    "hosting": "indexed",
+    "category": "dev",
+    "version": null,
+    "publisher": "ark0n",
+    "publisher_verified": false,
+    "duplicate_of": null,
+    "tags": [
+      "agent-ops",
+      "api",
+      "automation"
+    ]
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "signals": {
+    "stars_github": 755,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-09-15T08:22:11.157Z",
+    "first_seen_at": "2026-09-15T08:22:11.157Z",
+    "upstream_commit_at": "2026-09-15T00:07:19+02:00",
+    "repo_skill_count": 1
+  },
+  "context_size": {
+    "version": "1",
+    "counter": {
+      "id": "static-mixed-estimate-v1.1",
+      "method": "heuristic",
+      "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
+    },
+    "generated_at": "2026-09-15T08:22:11.157Z",
+    "scopes": {
+      "activation_core": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 47706,
+        "chars": 47572,
+        "tokens": 11698
+      },
+      "activation_with_declared_refs": {
+        "files": [
+          "SKILL.md",
+          "reference/endpoints.md",
+          "reference/messaging.md",
+          "reference/recipes.md",
+          "reference/verbs.md"
+        ],
+        "text_files": 5,
+        "bytes": 220230,
+        "chars": 219510,
+        "tokens": 53581
+      },
+      "package_total_text": {
+        "files": [
+          "SKILL.md",
+          "preamble.sh",
+          "reference/endpoints.md",
+          "reference/messaging.md",
+          "reference/recipes.md",
+          "reference/verbs.md"
+        ],
+        "text_files": 6,
+        "bytes": 237204,
+        "chars": 236446,
+        "tokens": 57792
+      }
+    }
+  },
+  "eval": null,
+  "copy": {
+    "tagline": "并行调度多个编码会话,派任务、等它们跑完、读结果",
+    "scene_tags": [
+      "并行开发",
+      "等待长任务",
+      "盯多个会话"
+    ],
+    "fit_line": "适合你,如果手头多个编码任务要同时推进,又不想逐个盯着等结果",
+    "tagline_en": "Dispatch and run several coding sessions in parallel, then collect their results",
+    "scene_tags_en": [
+      "parallel dev",
+      "long-running tasks",
+      "watching sessions"
+    ],
+    "fit_line_en": "For you if you juggle several coding tasks at once and don't want to babysit each one",
+    "source": "llm",
+    "content_hash": "sha256:797dc01c5425c6687bc09985f5cf16f619c73564eb02cdff361f3ddd6a320efb",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-15T08:23:38.590Z",
+    "lint_pass": true
+  },
+  "howto": {
+    "what": "装上后，Claude 会通过 Codeman 的 HTTP API 管理本机上的其他会话：列出会话、启动 worker 会话、给它们发提示、阻塞等待其结束、读取输出并清理。",
+    "when": "只在 Codeman 管理的会话内可用（CODEMAN_MUX=1），否则直接拒绝执行；当你要求跨会话并行编排、监视另一会话，或启动并管理 worker 时触发。",
+    "say": [
+      {
+        "text": "启动两个 worker 会话分别做这两件事，完成后把输出给我",
+        "note": "它会新建会话、派活并等待结果"
+      },
+      {
+        "text": "看看我另一个会话现在跑到哪了，把它最新的输出读出来",
+        "note": "读取目标会话的终端输出"
+      },
+      {
+        "text": "这个 worker 用完就删掉",
+        "note": "带自身会话保护地删除会话"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:797dc01c5425c6687bc09985f5cf16f619c73564eb02cdff361f3ddd6a320efb",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-15T08:24:53.317Z",
+    "lint_pass": true,
+    "what_en": "Once installed, Claude can drive Codeman's HTTP API from inside its session: list sessions, start worker sessions, send them prompts, block until they finish, read their output, and clean up.",
+    "when_en": "Only works inside a Codeman-managed session (CODEMAN_MUX=1); otherwise it refuses. Triggers when asked to parallelize work across sessions, watch another session, or start and manage workers.",
+    "say_en": [
+      {
+        "text": "Start two worker sessions for these two tasks and give me their output when done",
+        "note": "It creates the sessions, tasks them and waits"
+      },
+      {
+        "text": "Check where my other session is now and read its latest output",
+        "note": "Reads the target session's terminal output"
+      },
+      {
+        "text": "Delete that worker session once it's done",
+        "note": "Deletes it with self-session protection"
+      }
+    ]
+  }
+}

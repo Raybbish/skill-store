@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "Handles git work: atomic commits, rebase, squash, blame, bisect, reflog, and history questions. Use whenever a task needs a commit or a git-history investigation; skip for ordinary code edits.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "8d9ed07891a5693de10f099031f1492d675a6ebf",
+    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69024,
+    "stars_github": 69062,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:21.399Z",
+    "fetched_at": "2026-09-15T08:19:32.040Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-14T17:05:32+09:00",
+    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:21.399Z",
+    "generated_at": "2026-09-15T08:19:32.040Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会先读仓库状态再动手,把请求分成提交、改写历史、查历史、看状态四类。回答带具体证据:提交哈希、文件路径、行号与命令输出。",
-    "when": "当任务需要做一次提交,或要调查 git 历史(谁改的、何时改的、哪个提交引入)时接管;普通代码编辑不触发。",
+    "what": "它会判断你的 Git 请求类型（提交、变基、查历史、看状态），先读取仓库现状，再按你明确要求执行提交或改写历史；仅调查的请求只报告证据，不擅自改动。产出提交哈希、消息和剩余未提交文件清单。",
+    "when": "当任务需要提交或调查 Git 历史时触发；普通代码编辑会跳过。",
     "say": [
       {
-        "text": "把这些改动按功能拆成几个原子提交",
-        "note": "先看 diff 再分组暂存,逐个提交并报告哈希"
+        "text": "把这些改动拆成原子提交，保留无关的未暂存内容。",
+        "note": "它会按行为分组并逐个提交。"
       },
       {
-        "text": "是谁在哪个提交里改了这个函数?给出证据",
-        "note": "用 log -S、blame 定位并附哈希与行号"
+        "text": "查一下这行代码是谁在哪个提交改的。",
+        "note": "它会用 blame 并给出提交哈希和行号。"
       },
       {
-        "text": "把本分支最近三个提交压缩成一个",
-        "note": "会先确认是否已推送再改写历史"
+        "text": "用 bisect 找出第一个坏提交，好版本 abc，坏版本 def。",
+        "note": "需要确定性的通过/失败命令。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:33:32.341Z",
+    "generated_at": "2026-09-15T08:25:13.376Z",
     "lint_pass": true,
-    "what_en": "Claude reads the repo state first, then sorts the request into commit, history-rewrite, history-question, or status modes. Answers cite concrete evidence: commit hashes, file paths, line numbers, command output.",
-    "when_en": "Triggers when a task needs a commit or a git-history investigation (who, when, which commit). Ordinary code edits do not trigger it.",
+    "what_en": "It classifies your Git request (commit, rebase, history, status), reads repo state, then only performs commits or history rewrites you explicitly asked for; investigative requests get evidence only. It reports hashes, messages, and uncommitted files.",
+    "when_en": "Triggers when a task needs a commit or a git-history investigation; ordinary code edits are skipped.",
     "say_en": [
       {
-        "text": "Split these changes into a few atomic commits",
-        "note": "Reads the diff, stages groups, commits each"
+        "text": "Split these changes into atomic commits, keeping unrelated staged work out.",
+        "note": "It groups by behavior and verifies each commit."
       },
       {
-        "text": "Who changed this function, and in which commit? Show evidence",
-        "note": "Uses log -S and blame with hashes and lines"
+        "text": "Find who last changed this line and in which commit.",
+        "note": "It uses blame and cites the hash and line."
       },
       {
-        "text": "Squash the last three commits on this branch into one",
-        "note": "Checks pushed status before rewriting"
+        "text": "Use bisect to find the first bad commit; good abc, bad def.",
+        "note": "Requires a deterministic pass/fail command."
       }
     ]
   }

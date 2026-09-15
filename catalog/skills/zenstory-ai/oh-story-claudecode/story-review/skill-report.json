@@ -5,7 +5,7 @@
     "name": "story-review",
     "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/story-review、/审查、「审查一下」「帮我审一下」。",
     "upstream": "https://github.com/zenstory-ai/oh-story-claudecode/tree/main/skills/story-review",
-    "upstream_commit": "9b91465c533e8c8488e2116339c3107dd4431697",
+    "upstream_commit": "907cde183368076a3bf97aa64f27d24c22504510",
     "content_hash": "sha256:b21cef14ccf881039df6ba46c35e593639db0b7b1b2f43702ec19ef5d878482d",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6851,
+    "stars_github": 6883,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:29:13.993Z",
+    "fetched_at": "2026-09-15T08:20:38.441Z",
     "first_seen_at": "2026-08-27T13:37:59.445Z",
-    "upstream_commit_at": "2026-09-13T06:59:39-07:00",
+    "upstream_commit_at": "2026-09-14T23:11:37-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:29:13.993Z",
+    "generated_at": "2026-09-15T08:20:38.441Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -119,40 +119,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会扮演审查协调器,审查小说文本的结构、角色、文字、设定问题,按 S1~S4 严重度给出证据和可执行修改建议,报告开头标明实际执行模式与 rubric 来源。",
-    "when": "当你说「/story-review」「审查一下」「帮我审一下」等时触发;未指定模式默认 full,agents 缺失或 spawn 失败时自动降级 solo。",
+    "what": "装上后 Claude 成为审查协调器:读你的小说正文与设定,找出结构、角色、文字、设定层面的问题,并给出可执行修改建议。报告开头会写明实际执行的模式、降级情况和所用 rubric。",
+    "when": "当你说「/story-review」、「审查一下」等触发,或要求审某个章节时接管。默认 full 模式并行调用多个 reviewer agent;agent 缺失、异常或调用失败时自动降级为 solo。",
     "say": [
       {
-        "text": "审查一下我最新改的那一章",
-        "note": "没写模式时按 full 执行"
+        "text": "/story-review full 审一下最近改的这几章",
+        "note": "并行跑四个审查视角,再综合成一份报告"
       },
       {
-        "text": "/story-review lean 审查第 12 到 15 章"
+        "text": "帮我审一下第 12 章,重点看设定一致性",
+        "note": "只审指定章节,不扩大到全书"
       },
       {
-        "text": "用番茄的 rubric 审查这几章",
-        "note": "按你指定的平台加载审查基准"
+        "text": "/story-review lean 只跑架构和一致性检查"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:b21cef14ccf881039df6ba46c35e593639db0b7b1b2f43702ec19ef5d878482d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:37:15.441Z",
+    "generated_at": "2026-09-15T08:29:46.687Z",
     "lint_pass": true,
-    "what_en": "Claude acts as a review coordinator: it reviews novel text for structure, character, prose and consistency problems, returns S1–S4 findings with evidence and concrete fixes, and prints the actual mode and rubric source at the top of the report.",
-    "when_en": "Triggers on \"/story-review\", \"/审查\", \"审查一下\", \"帮我审一下\"; with no mode given it defaults to full and falls back to solo when agents are missing or spawn fails.",
+    "what_en": "Once installed, Claude acts as a review coordinator: it reads your novel's text and settings, finds structure, character, prose and setting problems, and gives actionable fixes. The report opens with the mode actually run, any fallback, and the rubric used.",
+    "when_en": "Triggers when you say \"/story-review\" or \"review this\", or ask for a chapter review. Default is full mode, spawning several reviewer agents in parallel; if agents are missing, malformed or fail to spawn, it falls back to solo.",
     "say_en": [
       {
-        "text": "Review the chapter I just revised",
-        "note": "Uses full mode when no mode is given"
+        "text": "/story-review full — review the chapters I just edited",
+        "note": "Runs the reviewer agents in parallel, then merges one report"
       },
       {
-        "text": "/story-review lean chapters 12 to 15",
-        "note": "Only spawns story-architect and consistency-checker"
+        "text": "Review chapter 12, focus on setting consistency",
+        "note": "Reviews only the given chapter, not the whole book"
       },
       {
-        "text": "Review these chapters with the fanqie rubric",
-        "note": "Loads the rubric for that platform"
+        "text": "/story-review lean — just architect and consistency",
+        "note": "Uses only the story-architect and consistency-checker agents"
       }
     ]
   }

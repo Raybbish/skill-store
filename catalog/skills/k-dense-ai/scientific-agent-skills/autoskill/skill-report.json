@@ -5,7 +5,7 @@
     "name": "autoskill",
     "description": "Observe the user's screen via screenpipe, detect repeated research workflows, match them against existing scientific-agent-skills, and draft new skills (or composition recipes that chain existing ones) for the patterns not yet covered. Use when the user asks to analyze their recent work and propose skills based on what they actually do. Requires the screenpipe daemon (https://github.com/screenpipe/screenpipe) running locally on port 3030 — the skill has no other data source and will refuse to run if screenpipe is unreachable. All detection runs locally; only redacted cluster summaries reach the LLM.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/autoskill",
-    "upstream_commit": "0b2afe68a5f9379097ad815e028af664f1e222b7",
+    "upstream_commit": "330c8e764435a731eff571e3efdda70b363d0792",
     "content_hash": "sha256:7d018d21906ee00e56cc1aab2dfb5c969b46a4c938ee981513c5b1f288435f85",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 44825,
+    "stars_github": 44983,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:29.008Z",
+    "fetched_at": "2026-09-15T08:19:57.651Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-13T09:27:11-07:00",
+    "upstream_commit_at": "2026-09-14T09:27:37Z",
     "repo_skill_count": 166,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:29.008Z",
+    "generated_at": "2026-09-15T08:19:57.651Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -113,41 +113,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会读取本地 screenpipe 采集的屏幕记录,按你给的时间窗找出重复的工作流,和仓库里已有技能比对,生成「复用、组合、新技能」三类提案草稿目录,供你审阅后再提升为正式技能。",
-    "when": "当你要求分析最近几小时、一天或一周的工作并提出新技能,或找重复工作流的组合配方时触发。需要本地 screenpipe 守护进程在 3030 端口运行,否则拒绝执行。",
+    "what": "它按你给的时间窗口读取本机 screenpipe 记录的屏幕活动，把重复出现的工作流聚成簇，与仓库已有技能逐一比对，为没被覆盖的模式起草新技能或组合配方，输出到提案文件夹待你审阅。",
+    "when": "当你要求分析最近的工作并据此提出新技能时触发。需要本机 screenpipe 守护进程在 3030 端口运行，否则会拒绝运行；不做实时屏幕查询，也不处理一次性问题。",
     "say": [
       {
-        "text": "分析我最近 4 小时的工作,提出新技能",
-        "note": "先跑 doctor 检查依赖,再聚类比对"
+        "text": "分析我过去 4 小时的工作，列出还没被覆盖的流程"
       },
       {
-        "text": "看看我这周重复做的事,哪些现有技能还没覆盖",
-        "note": "命中已有技能时改出组合配方草稿"
+        "text": "先只跑聚类，把要分析的时间线打印给我看"
       },
       {
-        "text": "把 ~/.autoskill/proposed 里的提案提升为正式技能",
-        "note": "promote 到 skills/<name>/,不覆盖同名"
+        "text": "把我反复做的文献筛选流程起草成一个新技能",
+        "note": "生成草稿，审阅后再 promote"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:7d018d21906ee00e56cc1aab2dfb5c969b46a4c938ee981513c5b1f288435f85",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:34:51.146Z",
+    "generated_at": "2026-09-15T08:26:26.155Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude reads your local screenpipe capture, clusters repeated workflows in a time window, compares them with existing skills, and drafts reuse / compose / novel proposals in a staging folder for you to review and promote.",
-    "when_en": "Triggers when you ask it to analyze recent work and propose skills, or find composition recipes for repeated workflows. Needs the screenpipe daemon on localhost:3030, or it refuses to run.",
+    "what_en": "It reads your local screenpipe screen history for a given time window, clusters repeated workflows, compares them against the repo's existing skills, and drafts new skills or composition recipes into a proposals folder for review.",
+    "when_en": "Triggers when you ask it to analyze your recent work and propose skills from it. Requires the screenpipe daemon running locally on port 3030; it refuses to run otherwise, and is not for real-time screen queries.",
     "say_en": [
       {
-        "text": "Analyze my last 4 hours of work and propose new skills",
-        "note": "Runs doctor, then clusters and matches"
+        "text": "Analyze my last 4 hours and list workflows not covered yet",
+        "note": "Writes a report under ~/.autoskill/proposed/"
       },
       {
-        "text": "Show which repeated workflows existing skills don't cover",
-        "note": "Emits composition recipes when skills match"
+        "text": "Run clustering only and print the timeline for me first",
+        "note": "Same as --dry-run: no LLM, just plan.md"
       },
       {
-        "text": "Promote the proposals in ~/.autoskill/proposed to real skills",
-        "note": "Moves to skills/<name>/, no overwrite"
+        "text": "Draft a new skill from the literature screening I keep repeating",
+        "note": "Creates a draft you promote after review"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "visual-qa",
     "description": "Runs rigorous visual QA across web, terminal, and paginated surfaces with screenshot evidence and a verdict. Use for any UI build or change, or when asked whether a page, component, or TUI looks right.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/visual-qa",
-    "upstream_commit": "8d9ed07891a5693de10f099031f1492d675a6ebf",
+    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
     "content_hash": "sha256:1ad51c59e8046af2124e3c1f5abe4d0ca9618399343318dd8e4872e2fd9eb01c",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69024,
+    "stars_github": 69062,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:21.399Z",
+    "fetched_at": "2026-09-15T08:19:32.040Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-14T17:05:32+09:00",
+    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:21.399Z",
+    "generated_at": "2026-09-15T08:19:32.040Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -111,41 +111,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会对它构建或改动过的界面做视觉 QA：截取网页、终端 TUI 或分页文档的画面取证，用脚本比对，再派两个只读子代理复核，最后给出通过/返修/失败判定。",
-    "when": "当你构建或改动任意 UI、准备宣布完成之前，或询问某个页面/TUI 看起来对不对时触发；输出需匹配基线、怀疑出现回归时也用。",
+    "what": "每次改完界面，Claude 会截取真实渲染画面（网页、终端、分页 PDF），跑脚本给出差异、溢出、边框错位等数据，再派两个只读审查员复核，最后按页给出通过或返修的结论。",
+    "when": "每次构建或改动界面之后、宣布完成之前自动接管；当你问某个页面、组件或 TUI 看起来对不对时也会触发。纯后端、没有渲染输出的改动不适用。",
     "say": [
       {
-        "text": "帮我给这个页面做视觉 QA",
-        "note": "会截图取证并派两个子代理复核，给出判定"
+        "text": "帮我给这个页面做视觉 QA，和设计稿对比一下",
+        "note": "整页截图，逐页给结论"
       },
       {
-        "text": "这个 TUI 布局对不对，跑一下 visual-qa",
-        "note": "会捕获终端画面并检查宽度与边框"
+        "text": "这个终端界面有没有溢出或边框错位？",
+        "note": "跑真实终端截图和宽度检查"
       },
       {
-        "text": "把这份 PDF 每一页都截图检查排版",
-        "note": "逐页渲染成图片核对，不靠文本提取"
+        "text": "刚才改的那几个页面重新跑一遍视觉检查",
+        "note": "只重拍被改动的页面"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1ad51c59e8046af2124e3c1f5abe4d0ca9618399343318dd8e4872e2fd9eb01c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:34:11.307Z",
+    "generated_at": "2026-09-15T08:25:39.014Z",
     "lint_pass": true,
-    "what_en": "Claude visually QAs any UI it builds or changes: it captures screenshots of web pages, terminal TUIs, or paginated documents as evidence, runs script comparisons, sends two read-only subagent reviews, and returns a pass/revise/fail verdict.",
-    "when_en": "Triggers after you build or change any UI, before calling it done, or when asked whether a page, component, or TUI looks right; also when output must match a baseline or a regression is suspected.",
+    "what_en": "After any UI change, Claude captures real rendered screenshots (web, terminal, paginated PDF), runs scripts for diff, overflow and border data, sends them to two read-only reviewers, and returns a per-page pass or revise verdict.",
+    "when_en": "Triggers after you build or change any UI and before calling it done, or when you ask whether a page, component or TUI looks right. Skipped when there is no rendered surface.",
     "say_en": [
       {
-        "text": "Run visual QA on this page for me",
-        "note": "Captures screenshots, dispatches two reviewers, returns a verdict"
+        "text": "Run visual QA on this page and compare it with the mock",
+        "note": "Captures every page and gives a verdict"
       },
       {
-        "text": "Check this TUI layout with visual-qa",
-        "note": "Captures the terminal render, checks width and borders"
+        "text": "Does this terminal UI overflow or misalign its borders?",
+        "note": "Real pty capture plus width check"
       },
       {
-        "text": "Screenshot every page of this PDF to check layout",
-        "note": "Renders each page to an image instead of extracting text"
+        "text": "Re-run the visual check on the pages I just changed",
+        "note": "Only re-captures the touched pages"
       }
     ]
   }

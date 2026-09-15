@@ -5,7 +5,7 @@
     "name": "migrate-slack-agents",
     "description": "Migrate a classic single-bot Slack install to one provisioned Slack app per existing agent group while preserving agent identities, workspaces, memory, and wiring behavior — or record the operator's choice to stay on classic, which remains supported. Use when /update-nanoclaw surfaces the Slack agents requirement, or standalone any time later.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-slack-agents",
-    "upstream_commit": "3f9ed607b7e7a4872747295f75286f1c377d7c33",
+    "upstream_commit": "f5967d3c4126fa793304606041d77f50c4c912ac",
     "content_hash": "sha256:32825a9cabaea7cebcaad8a33ca20e7e7992e0044c34bf36beaac7758725de4b",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30750,
+    "stars_github": 30768,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-13T07:55:25.962Z",
+    "fetched_at": "2026-09-15T08:20:03.166Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-13T10:52:38+03:00",
+    "upstream_commit_at": "2026-09-15T08:59:50+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-13T07:55:25.962Z",
+    "generated_at": "2026-09-15T08:20:03.166Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它把经典的单机器人 Slack 安装，按每个已有 agent group 迁成各自独立的 slack-<slug> 机器人，保留 agent 身份、工作区、记忆与接线行为；也可以记录你选择继续用经典模式。",
-    "when": "当 /update-nanoclaw 提示出现 Slack agents 要求时触发，或之后随时单独运行。迁移是可选的，经典 Slack 部署仍受支持。",
+    "what": "把经典单机器人 Slack 安装改成每个已有 agent 组一个独立的 slack-<slug> 机器人,保留各组原有身份、工作区与记忆;也可以只记录操作者选择继续用 classic。全程由操作者确认、可中断后接着跑,不会新建 agent 组,也不改 agent 工作区。",
+    "when": "当 /update-nanoclaw 弹出 Slack agents 要求时,或之后任何时候单独运行 /migrate-slack-agents 时接管。",
     "say": [
       {
-        "text": "我选择继续用经典 Slack，请记录这个决定并完成更新要求",
-        "note": "不做改动，仅记录决定"
+        "text": "给我看 Slack 迁移的 dry-run 清单,先别动任何东西",
+        "note": "只出映射表,不改数据"
       },
       {
-        "text": "先别创建 Slack app，只盘点现有的 Slack agent group",
-        "note": "只读取经典状态，不修改数据"
+        "text": "我不迁移,继续用经典 Slack,把这个决定记下来",
+        "note": "不做改动,仅确认更新要求"
+      },
+      {
+        "text": "对 <组名> 跑 finish,slug 用 <slug>,房间先不建",
+        "note": "按记录创建或复用该组的应用"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:32825a9cabaea7cebcaad8a33ca20e7e7992e0044c34bf36beaac7758725de4b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-13T08:00:30.434Z",
+    "generated_at": "2026-09-15T08:28:11.654Z",
     "lint_pass": true,
-    "what_en": "Migrates a classic single-bot Slack install into one provisioned slack-<slug> bot per existing agent group, preserving identities, workspaces, memory and wiring, or records your choice to stay on classic.",
-    "when_en": "Triggered when /update-nanoclaw surfaces the Slack agents requirement, or run standalone later. Migration is optional; classic single-bot Slack stays supported.",
+    "what_en": "Turns a classic single-bot Slack install into one named slack-<slug> bot per existing agent group, preserving each agent's identity, workspace, and memory. Operator-guided and resumable; it never creates or edits agent groups.",
+    "when_en": "Triggers when /update-nanoclaw surfaces the Slack agents requirement, or when you run /migrate-slack-agents standalone later.",
     "say_en": [
       {
-        "text": "Run /migrate-slack-agents and show me the dry-run map first",
-        "note": "Lists groups, slugs and old rows before any change"
+        "text": "Show me the dry-run map of the Slack migration first",
+        "note": "Lists groups only; changes nothing"
       },
       {
-        "text": "I'll stay on classic Slack; record that decision and finish the update",
-        "note": "No changes made; requirement acknowledged"
+        "text": "I'll stay on classic Slack — record that decision",
+        "note": "No changes; just acks the update"
       },
       {
-        "text": "Don't create any Slack app yet; just inventory my Slack agent groups",
-        "note": "Read-only inventory of classic state"
+        "text": "Run finish for <group> with slug <slug>, no room yet",
+        "note": "Creates or reuses that group's app"
       }
     ]
   }

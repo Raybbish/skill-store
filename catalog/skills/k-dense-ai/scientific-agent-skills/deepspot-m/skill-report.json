@@ -5,7 +5,7 @@
     "name": "deepspot-m",
     "description": "Generate transcriptome-wide virtual spatial transcriptomics from H&E histology with DeepSpot-M. Use when you need spatial gene expression in log1p-CPM for 224x224 tiles at about 20x, want to query protein-coding genes by symbol instead of a fixed panel, or want to run prediction across a whole slide after tiling with histolab.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/deepspot-m",
-    "upstream_commit": "0b2afe68a5f9379097ad815e028af664f1e222b7",
+    "upstream_commit": "330c8e764435a731eff571e3efdda70b363d0792",
     "content_hash": "sha256:4bb725875a6cd163b398cbd077c5c45a808439240f2cf6ca084d730d5095c0b2",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 44825,
+    "stars_github": 44983,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:29.008Z",
+    "fetched_at": "2026-09-15T08:19:57.651Z",
     "first_seen_at": "2026-08-08T04:09:18.811Z",
-    "upstream_commit_at": "2026-09-13T09:27:11-07:00",
+    "upstream_commit_at": "2026-09-14T09:27:37Z",
     "repo_skill_count": 166,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:29.008Z",
+    "generated_at": "2026-09-15T08:19:57.651Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,37 +92,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能把 224x224 的 H&E 组织切片格点映射成空间基因表达值(log1p-CPM),支持按基因符号逐个查询;也能整张切片批量预测,输出「格点×基因」矩阵,可直接交给 AnnData。",
-    "when": "当你需要 224x224、约 20x 的 H&E 格点的空间基因表达,或想按符号查询约 19k 蛋白编码基因,或用 histolab 切块后跑整张切片预测时触发。",
+    "what": "Claude 会把 224x224 的 H&E 组织瓦片转成 log1p-CPM 的空间基因表达值；可按基因符号查询约 1.9 万个蛋白编码基因，输出与瓦片坐标对应的基因矩阵，并可直接装入 AnnData。",
+    "when": "当你需要约 20x、224x224 的 H&E 瓦片的空间基因表达，想按基因符号查询基因而不是固定 panel，或先用 histolab 切图再对整张切片预测时触发。",
     "say": [
       {
-        "text": "把这张切片用 histolab 切好的格子分批判测,拼成矩阵并接上坐标",
-        "note": "得到该切片的虚拟空间转录组图谱"
+        "text": "把 source 换成 prott5，再跑一遍这批瓦片",
+        "note": "换一种基因嵌入视图重新预测"
       },
       {
-        "text": "换 prott5 这个 source,把同一批切片再跑一遍",
-        "note": "对比不同基因嵌入来源的结果"
+        "text": "用 histolab 切好整张切片后批量预测并拼成 AnnData",
+        "note": "得到切片级虚拟空间转录组矩阵"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4bb725875a6cd163b398cbd077c5c45a808439240f2cf6ca084d730d5095c0b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:35:08.461Z",
+    "generated_at": "2026-09-15T08:26:42.353Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude maps 224x224 H&E histology tiles to spatial gene expression in log1p-CPM, querying genes by symbol, and can batch a whole slide into a tiles-by-genes matrix for AnnData.",
-    "when_en": "Use when you need log1p-CPM spatial expression for 224x224 tiles at about 20x, want to query protein-coding genes by symbol, or run prediction across a whole slide after histolab tiling.",
+    "what_en": "Claude turns 224x224 H&E tiles into spatial gene expression in log1p-CPM. You can query about 19k protein-coding genes by symbol; the output is a tiles-by-genes matrix that loads into AnnData.",
+    "when_en": "Use it when you need spatial expression for 224x224 tiles at about 20x, want to query genes by symbol instead of a fixed panel, or run whole-slide prediction after tiling with histolab.",
     "say_en": [
       {
-        "text": "With source scgpt, predict EPCAM and CD3D for this 224x224 tile",
-        "note": "Returns log1p-CPM values aligned to your gene list"
+        "text": "Predict EPCAM and CD3D for this 224x224 tile with DeepSpot-M",
+        "note": "Returns log1p-CPM values aligned with your gene list"
       },
       {
-        "text": "Batch-predict this slide's histolab tiles, then build the tiles-by-genes matrix",
-        "note": "Gives a virtual spatial transcriptomics map for the slide"
+        "text": "Re-run this batch of tiles with source=prott5",
+        "note": "Uses a different gene embedding view"
       },
       {
-        "text": "Rerun the same tiles with source prott5",
-        "note": "Compares a different gene embedding view"
+        "text": "Tile a whole slide with histolab, then batch predict into AnnData",
+        "note": "Builds a slide-level virtual ST matrix"
       }
     ]
   }

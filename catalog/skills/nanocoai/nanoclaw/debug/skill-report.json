@@ -5,7 +5,7 @@
     "name": "debug",
     "description": "Debug container agent issues. Use when things aren't working, container fails, authentication problems, or to understand how the container system works. Covers logs, session DBs, mounts, and common issues.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/debug",
-    "upstream_commit": "3f9ed607b7e7a4872747295f75286f1c377d7c33",
+    "upstream_commit": "f5967d3c4126fa793304606041d77f50c4c912ac",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30750,
+    "stars_github": 30768,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-13T07:55:25.962Z",
+    "fetched_at": "2026-09-15T08:20:03.166Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-13T10:52:38+03:00",
+    "upstream_commit_at": "2026-09-15T08:59:50+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-13T07:55:25.962Z",
+    "generated_at": "2026-09-15T08:20:03.166Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,40 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会按这套指南排查容器化 agent 的故障：查主机日志、会话数据库（inbound.db / outbound.db）、挂载配置和心跳文件，定位容器退出、消息丢失、认证失败等问题。",
-    "when": "当容器失败、消息没回复、出现认证问题时，或你想弄清容器系统如何运作时触发；它会先看 logs/nanoclaw.error.log 和会话 DB。",
+    "what": "Claude 会去读主机日志、会话数据库(inbound.db / outbound.db)、挂载与心跳文件,按排查流程判断容器为什么不回复、认证为什么报错、消息为什么丢失。",
+    "when": "当容器启动失败、认证出问题、消息发不出去,或你想弄清容器系统如何运作时接管。",
     "say": [
       {
-        "text": "帮我看下日志，机器人不回复了是什么原因"
+        "text": "容器起来了但没回复,帮我查一下日志",
+        "note": "会看 nanoclaw 日志与容器 stderr"
       },
       {
-        "text": "查一下这个会话的 inbound.db 有没有收到消息",
-        "note": "用 scripts/q.ts 查 messages_in 表"
+        "text": "消息没送到,查下这个会话的 outbound.db",
+        "note": "会查 messages_out 里的记录"
       },
       {
-        "text": "容器退出后没写回复，帮我排查",
-        "note": "会查 processing_ack 和容器 stderr"
+        "text": "接口报 401,看下这个 agent 的 secret 模式",
+        "note": "会查 onecli agents 配置"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-13T08:00:20.804Z",
+    "generated_at": "2026-09-15T08:27:57.822Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude follows this guide to debug containerized agent issues: it checks host logs, session DBs (inbound.db/outbound.db), mounts and heartbeat files to trace container exits, lost messages and auth failures.",
-    "when_en": "Triggered when containers fail, messages get no reply, or authentication problems appear, or when you want to understand how the container system works; it checks logs/nanoclaw.error.log and session DBs first.",
+    "what_en": "Claude reads host logs, session DBs (inbound.db/outbound.db), mount and heartbeat files to trace why a container fails to reply, why auth errors, or why messages are lost.",
+    "when_en": "Triggers when containers fail, authentication breaks, messages aren't delivered, or you want to understand how the container system works.",
     "say_en": [
       {
-        "text": "Check the logs — my bot stopped replying",
-        "note": "Looks at logs/nanoclaw.error.log first"
+        "text": "Container started but no reply — check the logs",
+        "note": "Reads nanoclaw logs and container stderr"
       },
       {
-        "text": "Did this session's inbound.db receive the message?",
-        "note": "Queries messages_in via scripts/q.ts"
+        "text": "Message wasn't delivered — query this session's outbound.db",
+        "note": "Inspects messages_out rows"
       },
       {
-        "text": "The container exited and wrote no reply — debug it",
-        "note": "Checks processing_ack and container stderr"
+        "text": "API returns 401 — check this agent's secret mode",
+        "note": "Runs onecli agents list / set-secret-mode"
       }
     ]
   }

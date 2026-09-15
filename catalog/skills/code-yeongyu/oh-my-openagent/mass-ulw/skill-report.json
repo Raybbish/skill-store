@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "8d9ed07891a5693de10f099031f1492d675a6ebf",
+    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
     "content_hash": "sha256:4fa67eafdbdf3087e175b9fb7aebd9201e8bcc9e95b5ace753be57ba1efd5cb4",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69024,
+    "stars_github": 69062,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:21.399Z",
+    "fetched_at": "2026-09-15T08:19:32.040Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-14T17:05:32+09:00",
+    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:21.399Z",
+    "generated_at": "2026-09-15T08:19:32.040Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会用 workflow 工具按依赖顺序驱动子任务:一次运行只覆盖一个阶段的依赖波次;节点按 category 分派,依赖清空后分波并行执行,已完成节点的缓存会被复用。单个失败节点可单独重试、追加指令或改动定义重跑。",
-    "when": "当你提到 mass-ulw、任务 DAG,或要求做存在真实依赖的分批并行任务(例如 C 需等 A、B 完成)时触发。运行由 ulw-loop 或 ulw-execute 管辖目标与验收。",
+    "what": "把有先后依赖的子任务编成任务图,按波次并行执行:上游节点完成才启动下游节点。单个节点失败可重试、追加指令或修订定义,已完成的节点复用缓存结果。运行有日志记录,会话中断后重启会接着跑。",
+    "when": "当你提到“mass-ulw”“任务 DAG”,或要做存在依赖的扇出工作(某些任务必须等其它任务先完成)时触发。",
     "say": [
       {
-        "text": "看看这个 DAG 现在跑到哪了,哪些节点失败了",
-        "note": "打开 /dag 详情视图"
+        "text": "用 mass-ulw 把这个任务拆成依赖图来跑",
+        "note": "会先读完规划文档,再定义并启动运行。"
       },
       {
-        "text": "只重试 lint 节点,提示词改成跳过 vendored 目录",
-        "note": "失败节点单独重跑一次"
+        "text": "对这个图的 lint 节点重试,并把指令改成跳过 vendored 目录",
+        "note": "只有该节点重新跑,已完成节点用缓存。"
+      },
+      {
+        "text": "打开 /dag 给我看这次运行各节点的状态",
+        "note": "显示节点状态、波次和失败情况。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4fa67eafdbdf3087e175b9fb7aebd9201e8bcc9e95b5ace753be57ba1efd5cb4",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:33:47.441Z",
+    "generated_at": "2026-09-15T08:25:14.434Z",
     "lint_pass": true,
-    "what_en": "It drives dependency-ordered child work via the workflow tool: one run per phase, nodes routed by category into parallel waves as dependencies clear, reusing finished nodes' cache. A bad node can be retried, steered, or amended.",
-    "when_en": "Triggers when you ask for mass-ulw, a task DAG, or staged fan-out work with real dependencies (C needs A and B first). ulw-loop or ulw-execute owns goals and acceptance.",
+    "what_en": "Builds dependency-ordered subtasks into a DAG run in parallel waves: a node starts after its dependsOn nodes finish. Failed nodes can be retried, steered, or amended; finished nodes reuse cached results. Runs are journaled and resume after a restart.",
+    "when_en": "Triggers when the user asks for mass-ulw, a task DAG, or fan-out work where some tasks must wait on others.",
     "say_en": [
       {
-        "text": "Use mass-ulw to define a DAG: audit, then rewrite, then verify",
-        "note": "Builds the graph and starts one run"
+        "text": "Run mass-ulw to split this job into a dependency graph",
+        "note": "It reads the planning reference before defining the graph."
       },
       {
-        "text": "Where is this DAG now, and which nodes failed?",
-        "note": "Opens the /dag detail view"
+        "text": "Retry the lint node of this DAG and change its prompt to skip vendored dirs",
+        "note": "Only that node re-runs; finished nodes reuse cache."
       },
       {
-        "text": "Retry only the lint node, and change its prompt to skip vendored dirs",
-        "note": "Re-runs that one node"
+        "text": "Open /dag and show me the node states of this run",
+        "note": "Shows node states, waves, and failures."
       }
     ]
   }

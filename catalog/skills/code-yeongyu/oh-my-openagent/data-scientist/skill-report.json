@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Processes and analyzes data with resident-kernel engines (DuckDB, Polars) and one-shot tools. Use for CSV/parquet/JSON analysis, group-by/join/aggregation, time series, distributions, cleaning, or plotting a dataset.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "8d9ed07891a5693de10f099031f1492d675a6ebf",
+    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69024,
+    "stars_github": 69062,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:21.399Z",
+    "fetched_at": "2026-09-15T08:19:32.040Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-09-14T17:05:32+09:00",
+    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:21.399Z",
+    "generated_at": "2026-09-15T08:19:32.040Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -105,41 +105,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会用 DuckDB、Polars 等常驻内核引擎处理你的数据文件,完成 CSV/parquet/JSON 的查询、分组、join、聚合、时间序列、清洗与绘图,并对重活报告行数和耗时。",
-    "when": "当你要求分析 CSV、parquet 或 JSON 数据集,做分组、join、聚合等 SQL 或 DataFrame 类操作,以及时间序列、清洗、绘图时触发。",
+    "what": "装上后 Claude 会用 DuckDB、Polars、numpy 等引擎分析 CSV/Parquet/JSON:做分组、join、聚合、时间序列与清洗,需要时画图。它会先探测文件大小和可用内存,再决定在内存加载、流式处理还是远程就地查询。",
+    "when": "当你要求分析 CSV、Parquet 或 JSON 数据,或需要分组、聚合等数据处理与画图时接管。",
     "say": [
       {
-        "text": "分析这个 CSV:按城市分组统计订单总额",
-        "note": "用 DuckDB 直接就地查询文件"
+        "text": "帮我分析 data.csv,按城市分组统计订单金额。",
+        "note": "用 DuckDB 直接查询文件,并报告行数与耗时。"
       },
       {
-        "text": "把这个 parquet 按月份聚合,再画出趋势图",
-        "note": "出图遵循技能的绘图规范"
+        "text": "算出这个 10GB parquet 的每日趋势,别全读进内存。",
+        "note": "超内存时走流式或让 DuckDB 落盘。"
       },
       {
-        "text": "这个 JSON 有多少行?各字段分布怎样?",
-        "note": "先探测行数再回答"
+        "text": "画一下这批数据的分布图。",
+        "note": "会先读可视化参考并做视觉检查。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:33:27.543Z",
+    "generated_at": "2026-09-15T08:24:58.459Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude analyzes your data files using DuckDB and Polars resident kernels plus one-shot tools: CSV/parquet/JSON queries, group-by, joins, aggregation, time series, cleaning and charts, reporting row counts and timing.",
-    "when_en": "Triggers when you ask for analysis of a CSV, parquet or JSON dataset: group-by, joins, aggregations, time series, distributions, cleaning or plotting.",
+    "what_en": "Claude analyzes CSV/Parquet/JSON data with DuckDB, Polars and numpy: group-by, joins, aggregation, time series and charts. It probes file size and free RAM first, then loads in memory, streams, or queries remotely in place.",
+    "when_en": "Triggers when you ask to analyze CSV, Parquet or JSON data, or need group-by, aggregation and plotting on a dataset.",
     "say_en": [
       {
-        "text": "Analyze this CSV: total order value grouped by city",
-        "note": "Queries the file in place with DuckDB"
+        "text": "Analyze data.csv and total order amounts grouped by city.",
+        "note": "Runs a direct DuckDB file query, reporting rows and time."
       },
       {
-        "text": "Aggregate this parquet by month and plot the trend",
-        "note": "Charts follow the visualization guide"
+        "text": "Compute the daily trend on this 10GB parquet without loading it all into memory.",
+        "note": "Streams or lets DuckDB spill past RAM."
       },
       {
-        "text": "How many rows are in this JSON, and how are fields distributed?",
-        "note": "Probes row count before answering"
+        "text": "Plot the distribution of this dataset.",
+        "note": "Reads the visualization reference and runs its visual check."
       }
     ]
   }

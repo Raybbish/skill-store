@@ -5,7 +5,7 @@
     "name": "opencode-qa",
     "description": "QA opencode itself, per case: verify the CLI/terminal (opencode run, db, serve, export), prove a specific plugin hook/action/event fired via the SSE event stream, smoke-test the TUI under tmux, and investigate sessions in opencode's SQLite DB by id, title/name, or message text. Ships tested helper scripts (each with a --self-test) plus per-domain references. Use whenever someone wants to QA, smoke-test, verify, or debug opencode's CLI, HTTP server, plugin hooks/events, or TUI, or to find/inspect opencode sessions in the database. Triggers: opencode qa, qa opencode, test opencode, verify opencode hook, opencode session db, find opencode session by id/name/text, opencode tui test, opencode server health, opencode event stream.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/opencode-qa",
-    "upstream_commit": "8d9ed07891a5693de10f099031f1492d675a6ebf",
+    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
     "content_hash": "sha256:9898450d51d458cd3583a040e0f19f1a6a5a1109053b8437afa92d088419bae5",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69024,
+    "stars_github": 69062,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:21.399Z",
+    "fetched_at": "2026-09-15T08:19:32.040Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-14T17:05:32+09:00",
+    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:21.399Z",
+    "generated_at": "2026-09-15T08:19:32.040Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -128,37 +128,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按用例对 opencode 本身做 QA:验证 CLI 命令、用 SSE 事件流证明插件钩子触发、在 tmux 下冒烟测试 TUI,并按 id、标题或消息文本在 SQLite 库中查会话。辅助脚本每个都带 --self-test。",
-    "when": "当你提到 “opencode qa”、“test opencode”、“opencode tui test” 等触发词,或想对 opencode 的 CLI、服务器、TUI 做 QA、冒烟测试、验证、调试时触发。",
+    "what": "它让 Claude 能测试 opencode 本身:核对 CLI 命令与 HTTP 服务器,用 SSE 事件流验证插件钩子触发,在 tmux 下冒烟测试 TUI,并按 id、标题或消息文本在 SQLite 数据库里查找会话。脚本都带 --self-test。",
+    "when": "当你想对 opencode 的 CLI、HTTP 服务器、TUI 等做 QA、冒烟测试或调试,或在数据库里按 id、标题、消息文本查找会话时触发。",
     "say": [
       {
-        "text": "用 opencode run 跑个 list files,检查 CLI 是否正常",
-        "note": "会以 JSON 逐行流式输出事件"
+        "text": "跑一下 server-smoke.sh,检查 opencode 服务器的健康状态",
+        "note": "在隔离沙箱里起服务器并核对 /global/health"
       },
       {
-        "text": "帮我按标题 “auth refactor” 查找 opencode 会话",
-        "note": "在 SQLite 库里查,最新优先"
+        "text": "用 db-session-by-name.sh 找标题里带 auth 的会话",
+        "note": "只读查询,按最新排序返回"
+      },
+      {
+        "text": "查一下 id 为 ses_xxx 的会话在数据库里的内容",
+        "note": "按 session id 直接读取该会话"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9898450d51d458cd3583a040e0f19f1a6a5a1109053b8437afa92d088419bae5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:33:47.492Z",
+    "generated_at": "2026-09-15T08:25:18.378Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude QAs opencode itself: verifies CLI commands, proves plugin hooks fire via the SSE event stream, smoke-tests the TUI under tmux, and looks up SQLite sessions by id, title, or message text. Scripts ship a --self-test.",
-    "when_en": "Triggers when you mention “opencode qa”, “test opencode”, “opencode tui test”, or want to QA, smoke-test, verify, or debug opencode's CLI, server, or TUI.",
+    "what_en": "It lets Claude QA opencode itself: check CLI commands and the HTTP server, prove plugin hooks fire via SSE events, smoke-test the TUI under tmux, and find sessions in the SQLite DB by id, title, or text.",
+    "when_en": "Use when you want to QA, smoke-test, or debug opencode's CLI, server, TUI, or hooks, or find sessions in the DB.",
     "say_en": [
       {
-        "text": "Run opencode run to list files and check the CLI",
-        "note": "Streams JSON events line by line"
+        "text": "Run server-smoke.sh to check opencode server health",
+        "note": "Starts an isolated server, checks /global/health"
       },
       {
-        "text": "Find opencode sessions by the title “auth refactor”",
-        "note": "Queries the SQLite DB, newest first"
+        "text": "Find sessions titled auth with db-session-by-name.sh",
+        "note": "Read-only, newest first"
       },
       {
-        "text": "Watch message.part.updated with sse-hook-probe",
-        "note": "Attaches to the server event stream"
+        "text": "Look up the session with id ses_xxx in the database",
+        "note": "Reads the session row by id"
       }
     ]
   }

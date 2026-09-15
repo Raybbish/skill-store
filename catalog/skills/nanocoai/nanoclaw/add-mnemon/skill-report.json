@@ -5,7 +5,7 @@
     "name": "add-mnemon",
     "description": "Add persistent graph-based memory via mnemon. Agents recall past context before responding and remember insights after each turn.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-mnemon",
-    "upstream_commit": "3f9ed607b7e7a4872747295f75286f1c377d7c33",
+    "upstream_commit": "f5967d3c4126fa793304606041d77f50c4c912ac",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30750,
+    "stars_github": 30768,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-13T07:55:25.962Z",
+    "fetched_at": "2026-09-15T08:20:03.166Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-13T10:52:38+03:00",
+    "upstream_commit_at": "2026-09-15T08:59:50+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-13T07:55:25.962Z",
+    "generated_at": "2026-09-15T08:20:03.166Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,39 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在容器里装上 mnemon 并注册 Claude Code 钩子:Claude 回应前会自动调出以往相关的上下文,每轮结束再存下新结论。记忆写入按 agent 分组的 .claude/ 目录,容器重启后仍在。",
-    "when": "在跑默认 Claude provider 的 agent 组上用(container.json 里 provider 缺失或为 claude)。若该组设了别的 provider,它不会调用 claude CLI,钩子也就不运行。",
+    "what": "为容器安装 mnemon 记忆组件,并在每次容器启动时注册 Claude Code hooks:回复前自动调出相关历史记忆,每轮结束后写入新见解。记忆存在 .claude 挂载目录中,容器重启后仍保留。",
+    "when": "只对运行默认 Claude provider 的 agent group 生效(container.json 里 provider 缺失或为 claude);换成其他 provider 时 hooks 不会运行。安装后每次容器启动自动执行。",
     "say": [
       {
-        "text": "帮我给这个 agent 组装上 mnemon 持久记忆"
+        "text": "把 mnemon 装进容器镜像里",
+        "note": "会在 Dockerfile 插入安装层并重建镜像"
       },
       {
-        "text": "确认 mnemon 钩子已经注册好了"
+        "text": "确认 mnemon hooks 有没有注册成功",
+        "note": "会查容器日志和 settings.json"
       },
       {
-        "text": "测试一下 mnemon 能不能想起上一次会话聊的内容",
-        "note": "新开会话引用旧内容,看它是否自动调出。"
+        "text": "上次我们聊的那个方案,还记得吗?",
+        "note": "新会话里 mnemon 应自动调出该上下文"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-13T08:00:05.780Z",
+    "generated_at": "2026-09-15T08:27:38.009Z",
     "lint_pass": true,
-    "what_en": "Installs mnemon in the agent container and registers Claude Code hooks: Claude recalls relevant past context before responding and stores new insights after each turn. Memory sits in the per-agent-group .claude/ mount.",
-    "when_en": "Use on agent groups running the default Claude provider (provider key absent or \"claude\"). Hooks only fire under --target claude-code, so groups with another provider don't run them.",
+    "what_en": "Installs mnemon into the container image and registers Claude Code hooks on each container start: relevant past context is surfaced before the agent responds, and new insights are stored after each turn. Memory lives in the .claude/ mount and survives restarts.",
+    "when_en": "Applies only to agent groups running the default Claude provider (provider key absent or \"claude\" in container.json); other providers never run the hooks. Setup runs automatically on each container start.",
     "say_en": [
       {
-        "text": "Install mnemon persistent memory for this agent group",
-        "note": "Runs pre-flight, edits Dockerfile and entrypoint, rebuilds the image."
+        "text": "Install mnemon into the container image.",
+        "note": "Adds the Dockerfile layer and rebuilds."
       },
       {
-        "text": "Confirm the mnemon hooks are registered",
-        "note": "Checks container logs and settings.json for mnemon."
+        "text": "Check whether the mnemon hooks are registered.",
+        "note": "Inspects container logs and settings.json."
       },
       {
-        "text": "Test whether mnemon recalls the earlier session",
-        "note": "Start a new session and reference old context."
+        "text": "Do you remember the plan we discussed last time?",
+        "note": "New session should recall that context automatically."
       }
     ]
   }

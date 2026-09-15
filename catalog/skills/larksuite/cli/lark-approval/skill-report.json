@@ -5,7 +5,7 @@
     "name": "lark-approval",
     "description": "飞书审批：查询和处理审批待办/已办/实例，搜索可发起审批定义、查看定义详情并发起原生审批实例。当用户要处理审批任务、查看审批实例、搜索或发起审批时使用。审批待办不是飞书任务；非审批类待办走 lark-task。不负责创建审批定义；三方审批定义不走原生提单。",
     "upstream": "https://github.com/larksuite/cli/tree/main/skills/lark-approval",
-    "upstream_commit": "c6315975730a2117c704d945ebc1677ae2160239",
+    "upstream_commit": "d5a32489b93050c88a21e54784593dd3effd452b",
     "content_hash": "sha256:31f5544e6d6567da8f74cc4ec5293a02f153af01cff2bba48ba0aff073254da6",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,9 +21,9 @@
   "signals": {
     "stars_github": null,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:27:39.188Z",
+    "fetched_at": "2026-09-15T08:18:45.520Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-09-14T15:56:10+08:00"
+    "upstream_commit_at": "2026-09-15T14:30:29+08:00"
   },
   "context_size": {
     "version": "1",
@@ -32,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:27:39.188Z",
+    "generated_at": "2026-09-15T08:18:45.520Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -116,39 +116,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能用 lark-cli 查你的飞书审批待办和已办、看审批实例的表单与进度,搜索可发起的审批定义并提交原生审批实例,也能同意、拒绝、转交、加签、退回、催办、撤回或抄送审批。",
-    "when": "当你提到审批待办、审批实例、审批定义等,或要求同意、拒绝、发起审批时触发;非审批类待办会交给 lark-task 处理。",
+    "what": "装上后 Claude 可通过 lark-cli 操作飞书审批：查待办和已办、看审批实例详情与进度，并代为同意、拒绝、转交、加签、退回、催办或撤回，也能搜索审批定义并发起原生审批实例。",
+    "when": "当你要处理审批待办/审批单据、查看审批实例，或搜索、发起审批时接管。审批待办不是飞书任务，非审批类待办走 lark-task。",
     "say": [
       {
-        "text": "查一下我的飞书审批待办"
+        "text": "帮我看看我有哪些审批待办",
+        "note": "会调 tasks query 拉待办列表"
       },
       {
-        "text": "同意这条审批,备注写“同意”"
+        "text": "把这条请假审批同意掉，意见写同意",
+        "note": "需先拿到 instance_code 和 task_id"
       },
       {
-        "text": "搜一下“请假”的审批定义,再帮我提交请假审批",
-        "note": "先搜索定义,再看详情并创建审批实例"
+        "text": "搜一下有没有报销类的审批可以发起",
+        "note": "返回可发起的审批定义"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:31f5544e6d6567da8f74cc4ec5293a02f153af01cff2bba48ba0aff073254da6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:35:30.653Z",
+    "generated_at": "2026-09-15T08:27:06.230Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude can query Lark approval to-dos, view instance details, search approval definitions and submit native instances, and approve, reject, transfer, roll back, cancel or CC.",
-    "when_en": "Triggers when you mention approval to-dos, approval instances or approval definitions, or ask to approve, reject or start an approval; non-approval to-dos go to lark-task.",
+    "what_en": "Claude uses lark-cli to work Lark Approval: list todo/done approval tasks, read instance details, approve, reject, transfer, add signers, roll back, remind or cancel, and search approval definitions to submit a native approval instance.",
+    "when_en": "Triggers when you ask to handle approval tasks, view an approval instance, or search and submit approvals. Approval todos are not Lark Tasks; non-approval todos belong to lark-task.",
     "say_en": [
       {
-        "text": "Check my Lark approval to-dos",
-        "note": "Lists to-dos with instance_code and task_id"
+        "text": "Show me my pending approval tasks",
+        "note": "Runs tasks query for the todo list"
       },
       {
-        "text": "Approve this one with the comment 'ok'",
-        "note": "Submits approve using instance_code + task_id"
+        "text": "Approve this leave request with the comment \"agree\"",
+        "note": "Needs instance_code and task_id first"
       },
       {
-        "text": "Search the 'leave' approval definition and submit a leave request",
-        "note": "Searches the definition, then creates an instance"
+        "text": "Search for a reimbursement approval I can submit",
+        "note": "Returns available approval definitions"
       }
     ]
   }
