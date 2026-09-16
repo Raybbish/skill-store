@@ -5,7 +5,7 @@
     "name": "x-search",
     "description": "MUST read before searching X/Twitter with the x_search tool. When xAI is connected: date-bound every time-sensitive query (from_date >= yesterday, widen to 7 days), scope trusted accounts with allowed_x_handles, phrase queries as latest/recent with since:/from:/filter: operators, split into 2-3 searches by account and by keyword, and reconcile against web_search. Triggers: X search, Twitter search, tweets, posts on X, what people are saying on X, x_search, social signal.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/src/components/x-search/skill",
-    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
+    "upstream_commit": "41255b6e448fb610fb45fa243fc3a45166c95ef6",
     "content_hash": "sha256:92b9df0211400eb17044e87437ad9d1d182fbb644d52783b1fef983ef43e54ba",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69062,
+    "stars_github": 69085,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:19:32.040Z",
+    "fetched_at": "2026-09-16T08:12:33.411Z",
     "first_seen_at": "2026-09-04T07:41:04.908Z",
-    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
-    "repo_skill_count": 50
+    "upstream_commit_at": "2026-09-16T16:52:23+09:00",
+    "repo_skill_count": 49
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:19:32.040Z",
+    "generated_at": "2026-09-16T08:12:33.411Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当 xAI 账号已连接时,Claude 会用 x_search 工具检索 X(推特)帖子:给时效性查询限定日期、限定可信账号,把查询拆成 2~3 次,并和网页搜索结果相互对照。",
-    "when": "当你提到「X 搜索」「推特搜索」「推文」等关键词,或想知道 X 上的人在说什么时触发;前提是已连接 xAI 账号,没连时会说明 x_search 不可用并改用 web_search。",
+    "what": "连接 xAI 账号后,Claude 能用 x_search 工具搜 X(Twitter)上的帖子:给时效性查询加日期范围,限定可信账号,把查询拆成 2-3 次,并与 web_search 对照后报告,每条结论附 x.com 链接。",
+    "when": "当你提到 “X search”、“Twitter search”、“tweets” 等关键词时触发;但只有连接了 xAI 账号、x_search 可用时才真正接管,否则会说明不可用并改用 web_search。",
     "say": [
       {
-        "text": "搜一下 X 上最近两天关于英伟达的帖子",
-        "note": "会自动限定日期并按账号、关键词分开搜"
+        "text": "用 x_search 查一下 X 上最近关于 NVDA 的讨论",
+        "note": "会拆成账号与关键词两三次搜索并加日期"
       },
       {
-        "text": "看看 @growth_papa 昨天发了什么",
-        "note": "按你点名的可信账号限定搜索范围"
-      },
-      {
-        "text": "搜 X 上关于这条新闻的反应,再和网页搜索对一下",
-        "note": "会同时跑网页搜索并指出两者是否一致"
+        "text": "把这条推文的回复和引用也抓下来:<x.com 链接>",
+        "note": "触发 thread-fetch 那一趟查询"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:92b9df0211400eb17044e87437ad9d1d182fbb644d52783b1fef983ef43e54ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:25:46.264Z",
+    "generated_at": "2026-09-16T08:19:05.597Z",
     "lint_pass": true,
-    "what_en": "When an xAI account is connected, Claude uses the x_search tool to search X (Twitter) posts: it date-bounds time-sensitive queries, limits them to trusted handles, splits them into 2-3 searches, and reconciles results against web_search.",
-    "when_en": "Triggers when you mention X search, Twitter search or tweets, or ask what people are saying on X. Needs a connected xAI account; otherwise Claude says x_search is unavailable and uses web_search.",
+    "what_en": "With an xAI account connected, Claude can use x_search to search X posts, date-bound time-sensitive queries, scope trusted accounts, split into 2-3 passes, and reconcile with web_search, citing x.com links.",
+    "when_en": "Triggers when you mention X search, Twitter search or tweets, but only takes over with an xAI account connected and x_search available; otherwise it says so and falls back to web_search.",
     "say_en": [
       {
-        "text": "Search X for posts about Nvidia from the last two days",
-        "note": "Date-bounds and splits the searches"
+        "text": "Use x_search to find recent X posts about NVDA",
+        "note": "splits into account and keyword passes with dates"
       },
       {
-        "text": "What did @growth_papa post yesterday?",
-        "note": "Scopes the search to trusted handles"
+        "text": "Only search the accounts growth_papa and aleabitoreddit",
+        "note": "passes them as allowed_x_handles"
       },
       {
-        "text": "Search X for reaction to this news and check it against web search",
-        "note": "Also runs web_search and flags mismatches"
+        "text": "Fetch the replies and quotes for this post: <x.com URL>",
+        "note": "runs the thread-fetch pass"
       }
     ]
   }

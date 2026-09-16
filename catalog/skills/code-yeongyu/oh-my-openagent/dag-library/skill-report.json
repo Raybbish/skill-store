@@ -5,7 +5,7 @@
     "name": "dag-library",
     "description": "Stores a DAG definition once and re-runs it by name, instead of pasting the definition into every run. Use when the user wants to save a DAG, run a saved one, or schedule the same multi-agent graph repeatedly.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/dag-library",
-    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
+    "upstream_commit": "41255b6e448fb610fb45fa243fc3a45166c95ef6",
     "content_hash": "sha256:3de8a258d19e94b9956dac7592c68c965456a4011e3c56a6bfb6cca439a128b7",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69062,
+    "stars_github": 69085,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:19:32.040Z",
+    "fetched_at": "2026-09-16T08:12:33.411Z",
     "first_seen_at": "2026-08-27T13:37:06.727Z",
-    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
-    "repo_skill_count": 50
+    "upstream_commit_at": "2026-09-16T16:52:23+09:00",
+    "repo_skill_count": 49
   },
   "context_size": {
     "version": "1",
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:19:32.040Z",
+    "generated_at": "2026-09-16T08:12:33.411Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,40 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "把一份 DAG 定义存成命名 JSON 文件（如 nightly-audit.json），之后按名字加载并重新运行，不用每次粘贴定义。加载时会替换 {{key}}、{{date}}、{{datetime}} 占位符，并默认给 key 加 UTC 时间戳，让每次调用都是新运行。",
-    "when": "当你想保存一份 DAG、按名字运行已保存的 DAG，或反复调度同一个多代理图时触发；想从零写新图要先读 mass-ulw。",
+    "what": "把 DAG 定义存成 <name>.json 放进库目录,之后用名字加载和运行,不用每次重贴定义。加载时自动轮换 key(默认加时间戳后缀),并填充 {{key}}、{{date}} 等占位符。",
+    "when": "当你想保存一个 DAG、运行已保存的 DAG,或反复调度同一张多智能体图时触发。",
     "say": [
       {
-        "text": "把这份 DAG 存成 nightly-audit"
+        "text": "把当前这张图存成 nightly-audit",
+        "note": "写入 $HOME/.omo/dags 并试跑一次"
       },
       {
         "text": "运行已保存的 nightly-audit",
-        "note": "key 自动加 UTC 时间戳，跑一次新运行"
+        "note": "默认轮换 key,得到一次全新运行"
       },
       {
-        "text": "用后缀 20260818 运行 nightly-audit",
-        "note": "同后缀复用旧运行，不会重复跑"
+        "text": "用 suffix 20260818 启动 nightly-audit",
+        "note": "同后缀复用同一 run,便于幂等恢复"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3de8a258d19e94b9956dac7592c68c965456a4011e3c56a6bfb6cca439a128b7",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:24:54.861Z",
+    "generated_at": "2026-09-16T08:18:21.697Z",
     "lint_pass": true,
-    "what_en": "Stores a DAG definition as a named JSON file (e.g. nightly-audit.json), then loads and re-runs it by name instead of pasting the definition each time. On load it fills {{key}}, {{date}}, {{datetime}} placeholders and by default appends a UTC timestamp to the key so every call is a fresh run.",
-    "when_en": "Triggers when you want to save a DAG, run a saved one by name, or repeatedly schedule the same multi-agent graph. To author a brand-new graph, read mass-ulw first.",
+    "what_en": "Saves a DAG definition as <name>.json in a library dir, then loads and runs it by name instead of re-pasting it. Keys rotate on load (timestamp suffix by default) and {{key}}, {{date}}, {{datetime}} placeholders are filled in.",
+    "when_en": "Use it when the user wants to save a DAG, run a saved one, or schedule the same multi-agent graph repeatedly.",
     "say_en": [
       {
-        "text": "Save this DAG as nightly-audit",
-        "note": "Writes ~/.omo/dags/nightly-audit.json and runs it once"
+        "text": "Save the current graph as nightly-audit",
+        "note": "Writes it to $HOME/.omo/dags and runs it once"
       },
       {
         "text": "Run the saved nightly-audit",
-        "note": "Key gets a UTC timestamp, so it runs fresh"
+        "note": "Rotates the key by default for a fresh run"
       },
       {
-        "text": "Run nightly-audit with suffix 20260818",
-        "note": "Same suffix reuses the old run, no re-run"
+        "text": "Start nightly-audit with suffix 20260818",
+        "note": "Same suffix reuses the run for idempotent recovery"
       }
     ]
   }

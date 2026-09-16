@@ -5,7 +5,7 @@
     "name": "doc-parse",
     "description": "将 PDF/PPT/Excel/Word 等多格式文档解析为结构化 Markdown，并输出元数据与解析置信度，作为 RAG 与四色卡片的数据底座。",
     "upstream": "https://github.com/anbeime/skill/tree/main/antinet-agentteams/skills/doc-parse",
-    "upstream_commit": "dd03c08b49484ffb782c17d0c1e41165bb7c247a",
+    "upstream_commit": "877252229c201be299e6ce7141106aab32ea9c28",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "license": "none(all-rights-reserved)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6723,
+    "stars_github": 6781,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:20:43.552Z",
+    "fetched_at": "2026-09-16T08:13:20.516Z",
     "first_seen_at": "2026-09-02T07:32:35.252Z",
-    "upstream_commit_at": "2026-09-15T07:19:31Z",
+    "upstream_commit_at": "2026-09-16T07:21:04Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:20:43.552Z",
+    "generated_at": "2026-09-16T08:13:20.516Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它能把 PDF、PPT、Excel、Word 等文档读成结构化 Markdown，并附上标题、页数、表格数等元数据、0–1 的解析置信度，以及最终生效的解析器名称。",
-    "when": "当你把已通过安全扫描的文档文件交给它时，由密卷房 Worker 调用；解析器按 MinerU、PyMuPDF、pdfplumber 等顺序依次降级尝试。",
+    "what": "把 PDF、PPT、Excel、Word 等文档转成结构化 Markdown，并输出标题、页数、表格数等元数据与 0–1 解析置信度。",
+    "when": "当你把已通过安全扫描的文档交给它解析时触发；解析器按 MinerU、PyMuPDF、pdfplumber 三级依次降级尝试。",
     "say": [
       {
-        "text": "把这个 PDF 解析成结构化 Markdown",
-        "note": "输出正文、元数据与 0–1 置信度"
+        "text": "把这份 PDF 解析成结构化 Markdown，并告诉我置信度。",
+        "note": "返回 markdown、元数据与 0–1 置信度。"
       },
       {
-        "text": "解析这份 Excel，并给出页数、表格数和作者",
-        "note": "附带元数据与最终生效的解析器"
+        "text": "解析这个 Excel 里的表格，输出 Markdown。",
+        "note": "表格数会写进元数据。"
       },
       {
-        "text": "三级解析都失败的话，直接标记人工介入",
-        "note": "不输出残缺结果，回传 BLOCKED"
+        "text": "如果解析失败就降级重试，最后告诉我用了哪个解析器。",
+        "note": "fallback_used 会注明最终解析器。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:24:40.176Z",
+    "generated_at": "2026-09-16T08:18:04.958Z",
     "lint_pass": true,
-    "what_en": "It turns PDF, PPT, Excel, Word and other documents into structured Markdown, plus metadata such as title, pages and tables, a 0–1 parse confidence score, and the name of the parser that finally ran.",
-    "when_en": "It runs when you hand it a file that already passed security scan, called by the Mijuanfang Worker; parsers fall back in order — MinerU, PyMuPDF, pdfplumber and more.",
+    "what_en": "Turns PDF, PPT, Excel, Word and other documents into structured Markdown, returning metadata (title, page count, table count) and a 0-1 parse confidence score.",
+    "when_en": "Triggers when a document that passed security scanning is handed over for parsing; parsers fall back in three tiers: MinerU, PyMuPDF, then pdfplumber.",
     "say_en": [
       {
-        "text": "Parse this PDF into structured Markdown",
-        "note": "Returns body text, metadata and 0–1 confidence"
+        "text": "Parse this PDF into structured Markdown and tell me the confidence score.",
+        "note": "Returns markdown, metadata and a 0-1 confidence."
       },
       {
-        "text": "Parse this Excel and give page, table and author metadata",
-        "note": "Includes the parser that finally ran"
+        "text": "Parse the tables in this Excel file and output Markdown.",
+        "note": "Table count lands in the metadata."
       },
       {
-        "text": "If all three parsers fail, mark it for human review",
-        "note": "No partial output; returns BLOCKED"
+        "text": "If parsing fails, fall back and tell me which parser was used.",
+        "note": "fallback_used reports the final parser."
       }
     ]
   }

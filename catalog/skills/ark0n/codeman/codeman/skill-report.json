@@ -5,7 +5,7 @@
     "name": "codeman",
     "description": "Drive Codeman, the session manager this agent is running inside, over its HTTP API: list sessions, start worker sessions, send them prompts, block until they finish (wait / wait-output / send-and-wait), read their output, and clean up; where available, message claude workers directly (Claude Code cross-session messaging). Use when asked to orchestrate or parallelize work across Codeman sessions, watch another session, or start and manage workers. Only usable inside a Codeman-managed session (CODEMAN_MUX=1); refuse to act otherwise.",
     "upstream": "https://github.com/Ark0N/Codeman/tree/master/skills/codeman",
-    "upstream_commit": "88e3faa456cdbc23f33b9b78d8c9a73479f74d3a",
+    "upstream_commit": "bd286bf502c9c9dfa8e9be90eeed6ce55e895d1e",
     "content_hash": "sha256:797dc01c5425c6687bc09985f5cf16f619c73564eb02cdff361f3ddd6a320efb",
     "license": "MIT",
     "hosting": "indexed",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 755,
+    "stars_github": 758,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:22:11.157Z",
+    "fetched_at": "2026-09-16T08:14:22.121Z",
     "first_seen_at": "2026-09-15T08:22:11.157Z",
-    "upstream_commit_at": "2026-09-15T00:07:19+02:00",
+    "upstream_commit_at": "2026-09-15T19:05:59+02:00",
     "repo_skill_count": 1
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:22:11.157Z",
+    "generated_at": "2026-09-16T08:14:22.121Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,41 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会通过 Codeman 的 HTTP API 管理本机上的其他会话：列出会话、启动 worker 会话、给它们发提示、阻塞等待其结束、读取输出并清理。",
-    "when": "只在 Codeman 管理的会话内可用（CODEMAN_MUX=1），否则直接拒绝执行；当你要求跨会话并行编排、监视另一会话，或启动并管理 worker 时触发。",
+    "what": "让它通过 Codeman 的 HTTP API 管理其他会话：列出会话、启动 worker、发提示词、等它跑完、读输出、清理，还能直接给 claude worker 发消息。",
+    "when": "只在你所处的会话由 Codeman 管理（CODEMAN_MUX=1）时可用，否则它会拒绝执行。当你要求跨会话并行编排、盯另一个会话，或启动并管理 worker 时触发。",
     "say": [
       {
-        "text": "启动两个 worker 会话分别做这两件事，完成后把输出给我",
-        "note": "它会新建会话、派活并等待结果"
+        "text": "列出当前所有 Codeman 会话，看看哪些还在跑",
+        "note": "返回会话清单和状态"
       },
       {
-        "text": "看看我另一个会话现在跑到哪了，把它最新的输出读出来",
-        "note": "读取目标会话的终端输出"
+        "text": "启动两个 worker 会话分别跑这两个任务，都跑完再汇总",
+        "note": "它会等待每个 worker 结束"
       },
       {
-        "text": "这个 worker 用完就删掉",
-        "note": "带自身会话保护地删除会话"
+        "text": "把这段提示词发给那个 worker，等它结束再读输出给我",
+        "note": "发送后阻塞到该轮结束"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:797dc01c5425c6687bc09985f5cf16f619c73564eb02cdff361f3ddd6a320efb",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:24:53.317Z",
+    "generated_at": "2026-09-16T08:18:16.429Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude can drive Codeman's HTTP API from inside its session: list sessions, start worker sessions, send them prompts, block until they finish, read their output, and clean up.",
-    "when_en": "Only works inside a Codeman-managed session (CODEMAN_MUX=1); otherwise it refuses. Triggers when asked to parallelize work across sessions, watch another session, or start and manage workers.",
+    "what_en": "Lets it drive Codeman's HTTP API from inside a managed session: list sessions, start worker sessions, send them prompts, block until they finish, read their output, clean up, and message claude workers directly.",
+    "when_en": "Triggers when asked to orchestrate or parallelize work across Codeman sessions, watch another session, or manage workers. Only usable inside a Codeman-managed session (CODEMAN_MUX=1); refuses otherwise.",
     "say_en": [
       {
-        "text": "Start two worker sessions for these two tasks and give me their output when done",
-        "note": "It creates the sessions, tasks them and waits"
+        "text": "List all current Codeman sessions and show which are still running",
+        "note": "Returns the session list and status"
       },
       {
-        "text": "Check where my other session is now and read its latest output",
-        "note": "Reads the target session's terminal output"
+        "text": "Start two worker sessions for these two tasks and summarize when both finish",
+        "note": "It blocks until each worker ends"
       },
       {
-        "text": "Delete that worker session once it's done",
-        "note": "Deletes it with self-session protection"
+        "text": "Send this prompt to that worker, wait for it to finish, then read me its output",
+        "note": "Blocks until that turn ends"
       }
     ]
   }

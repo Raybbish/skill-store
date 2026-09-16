@@ -100,41 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会当协调者，围绕一个有评测器的产物（代码、训练配方、数据流程、提示词等）反复做实验与评估，把研究状态记在假设树上，只把通过独立测试评测器的改动并进最佳版本。",
-    "when": "当你要求反复优化某个产物、跑很多轮实验，或担心过拟合开发集时触发，即使你从没提过 “Arbor”。若只需一次性修复或无评测器，则不适用。",
+    "what": "Claude 会自主跑多轮实验来改进你指定的产物:把研究状态存进一棵假设树,派子代理在隔离的 git worktree 里各测一个假设,只有通过留出测试评估器的改动才合并成新版本。",
+    "when": "当你要反复实验来优化某个具体产物(如提高模型评测分、改进 agent harness、跑 Kaggle 式优化),或描述「跑实验—评估」的重复循环时接管;用户没说“Arbor”也触发。",
     "say": [
       {
-        "text": "帮我提高这个搜索 harness 的准确率，跑多轮实验但别过拟合",
-        "note": "它会先和你确认目标、开发评测器与测试评测器"
+        "text": "帮我把这个模型的评测分提上去,用 arbor 跑一轮优化",
+        "note": "会先确认目标、开发与测试评估器再开始搜索"
       },
       {
-        "text": "把我模型的 eval 分数刷上去，同时守住 held-out 测试集",
-        "note": "每轮实验在独立 git worktree 里执行"
+        "text": "改进这个 agent harness 的通过率,目标设为最大化准确率",
+        "note": "假设记进树,最好版本留在某个分支上"
       },
       {
-        "text": "对这些改进思路做分支探索，只留下通过测试门槛的那个",
-        "note": "被淘汰的分支会记录原因，作为后续约束"
+        "text": "并行测这几个假设,只把通过测试门槛的那个合并",
+        "note": "各假设在独立 worktree 跑;只有过测试门槛的才合并"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0e5fc8f4b16bf37d229b60ae48a90b942376d2656b0bce6e800ee5cb1ad718da",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:26:22.843Z",
-    "lint_pass": false,
-    "what_en": "Once installed, Claude acts as the coordinator and runs repeated experiment-and-evaluate cycles on an artifact, keeping research state in a hypothesis tree and merging only changes that pass a held-out test evaluator.",
-    "when_en": "Triggers when you ask to iteratively improve an artifact over many experiments, or worry about overfitting the dev set, even if you never say \"Arbor\".",
+    "generated_at": "2026-09-16T08:19:49.766Z",
+    "lint_pass": true,
+    "what_en": "Claude runs an autonomous optimization loop on an artifact: it stores research state in a hypothesis tree, sends subagents to test one hypothesis each in git worktrees, and merges a change only if it passes a held-out test evaluator.",
+    "when_en": "It takes over when you want to iteratively improve a concrete artifact under a scorer — e.g. raise a model's eval score, improve an agent harness, or run a Kaggle-style task.",
     "say_en": [
       {
-        "text": "Run many experiment rounds to raise my harness's accuracy, without overfitting",
-        "note": "It first pins down the objective and dev/test evaluators"
+        "text": "Help me raise this model's eval score — run an arbor optimization",
+        "note": "It pins down the objective, dev and test evaluators first"
       },
       {
-        "text": "Get my model's eval score up while keeping the held-out test set honest",
-        "note": "Each round runs in an isolated git worktree"
+        "text": "Improve this agent harness's pass rate; set the objective to maximize accuracy",
+        "note": "Hypotheses go in a tree; the best artifact stays on a branch"
       },
       {
-        "text": "Branch out over competing ideas and keep only the one that passes the test gate",
-        "note": "Pruned branches record why, as later constraints"
+        "text": "Test these hypotheses in parallel worktrees, then merge the one that passes",
+        "note": "Each runs in its own worktree; only test-gate winners merge"
       }
     ]
   }

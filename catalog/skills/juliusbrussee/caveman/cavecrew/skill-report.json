@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "When to delegate to `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit) or `cavecrew-reviewer` (diff review) instead of working inline or using `Explore`. Their output is compressed, so main context lasts longer.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "4df4b03ba538751131d24415c59a1fad0d8c2c18",
+    "upstream_commit": "ed37ab132393899c129bbeef2b9743ff3af19c68",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 302000,
-    "fetched_at": "2026-09-15T08:22:42.901Z",
+    "installs_skills_sh": 304300,
+    "fetched_at": "2026-09-16T08:14:39.906Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-14T21:00:33-07:00"
+    "upstream_commit_at": "2026-09-15T19:02:54+02:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:22:42.901Z",
+    "generated_at": "2026-09-16T08:14:39.906Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,40 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把三类活派给子代理：定位代码、改 1~2 个文件、审查 diff，分别由 cavecrew-investigator、builder、reviewer 负责。它们返回的结果是压缩过的，主上下文更省。",
-    "when": "当你让它找某段代码在哪、改 1~2 个文件、或审查一次改动时，会派给对应子代理；答案你已知的一行问题仍由主线程直接回答。",
+    "what": "装上后,Claude 会把「定位代码、改 1-2 个文件、审 diff」派给三个子代理(investigator / builder / reviewer),它们返回压缩的结构化结果而非大段文字,主上下文更省。",
+    "when": "当你要定位代码位置、做 1-2 个文件的小改动,或审查 diff 时,会分别由对应的子代理接管。",
     "say": [
       {
-        "text": "帮我找出 handleLogin 在哪定义、谁调用了它"
+        "text": "用 cavecrew-investigator 找出 foo 在哪定义、谁调用它",
+        "note": "返回「路径:行号 — 符号」清单"
       },
       {
-        "text": "把 src/auth.ts 第 42 行的超时从 30 改成 60",
-        "note": "派给 builder，改完会回读校验"
-      },
-      {
-        "text": "审查当前分支的 diff 有没有 bug",
-        "note": "派给 reviewer，按文件和行号列问题"
+        "text": "用 cavecrew-reviewer 审一下当前 diff 有没有 bug",
+        "note": "按文件→行号排序列出问题"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:26:09.681Z",
+    "generated_at": "2026-09-16T08:19:30.626Z",
     "lint_pass": true,
-    "what_en": "Claude routes three kinds of work to subagents: locating code, editing 1-2 files, and reviewing a diff, handled by cavecrew-investigator, builder, and reviewer. Their replies are compressed, so your main context lasts longer.",
-    "when_en": "Triggers when you ask where code lives, request a 1-2 file edit, or want a diff reviewed; these go to the matching subagent. One-line answers you already know stay in the main thread.",
+    "what_en": "Claude delegates locate-code, small 1-2 file edits, and diff review to three subagents (investigator / builder / reviewer). They return compressed structured results instead of prose, so the main context lasts longer.",
+    "when_en": "Triggers when you need to locate code, make a small 1-2 file edit, or review a diff; each case goes to its matching subagent.",
     "say_en": [
       {
-        "text": "Find where handleLogin is defined and who calls it",
-        "note": "Goes to investigator; returns a path:line list"
+        "text": "Use cavecrew-investigator to find where foo is defined and who calls it",
+        "note": "Returns a path:line list"
       },
       {
-        "text": "In src/auth.ts, change the timeout on line 42 from 30 to 60",
-        "note": "Goes to builder; it re-reads to verify"
+        "text": "Change src/a.ts:42 to return null with cavecrew-builder",
+        "note": "Makes that edit, then re-reads to verify"
       },
       {
-        "text": "Review the current branch diff for bugs",
-        "note": "Goes to reviewer; findings sorted by file and line"
+        "text": "Use cavecrew-reviewer to check the current diff for bugs",
+        "note": "Lists findings sorted file to line"
       }
     ]
   }

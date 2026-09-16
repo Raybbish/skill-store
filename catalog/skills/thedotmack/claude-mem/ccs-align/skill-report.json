@@ -5,7 +5,7 @@
     "name": "ccs-align",
     "description": "Run the CCS Align seat's hourly breathing cycle — prove the local claude-mem worker is healthy, pull needle observations through search → timeline → get_observations, land them in a seat-owned middle cache via atomic grab → append → filter exclude-marks → replace, manage exclude marks, and walk house → project → seat rules to detect conflicts (SHADOW_HOUSE, DENY_ALLOW, DRIFT, CLOCK_HEADER) with an append-only rules-report.md. Use when asked to run CCS Align, breathe the alignment seat, refresh the middle cache, exclude or restore an observation, walk rules, check rules conflicts, or check the Worker Watch board.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/ccs-align",
-    "upstream_commit": "40be934a846cca6d2038f1d9800428a4f4d5136f",
+    "upstream_commit": "dcfc44221deabc228b0698a0012f87ed2fe6bbe7",
     "content_hash": "sha256:7f2aff609d892a949cb7dcb81a6f7c9070dbc6060e2a9b7fc312052940b725fa",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 93816,
+    "stars_github": 94003,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:15.056Z",
+    "fetched_at": "2026-09-16T08:12:28.616Z",
     "first_seen_at": "2026-09-09T07:46:20.369Z",
-    "upstream_commit_at": "2026-09-13T02:42:19-07:00",
+    "upstream_commit_at": "2026-09-15T18:00:28-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:15.056Z",
+    "generated_at": "2026-09-16T08:12:28.616Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,37 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "每小时替你跑一次 CCS Align：先确认本地 claude-mem worker 在运行，再把最近的 needle 观察抓进座位自己的 middle.jsonl 缓存，可按标记排除或恢复某条记录，每 6 小时走一遍规则并追加 rules-report.md。",
-    "when": "当你要求运行 CCS Align 的呼吸循环——刷新 middle 缓存、排除或恢复观察、走查规则等——时触发，以原文的 use when 为准。",
+    "what": "每小时跑一次 CCS Align 席位循环:先确认本地 claude-mem worker 健康,再按 search→timeline→get_observations 拉取决策等针状观察,写入该席位自己的 middle.jsonl 中间缓存,并管理排除标记。",
+    "when": "当你要求运行 CCS Align、刷新中间缓存,或排除/恢复某条观察时触发;每第 6 小时还会走查 house→project→seat 规则并追加 rules-report.md。",
     "say": [
       {
-        "text": "把观察 12345 标记为排除，理由 manual",
-        "note": "编译缓存不再含它，日记仍保留"
+        "text": "跑一遍 CCS Align 的每小时循环",
+        "note": "先查 worker 健康,再刷新中间缓存"
       },
       {
-        "text": "走一遍 house→project→seat 规则，看有没有冲突",
-        "note": "结果追加到 rules-report.md"
+        "text": "把观察 12345 排除掉,理由是 manual",
+        "note": "重建后该条不再出现在 middle.jsonl"
+      },
+      {
+        "text": "走查一下规则冲突,看看有没有 SHADOW_HOUSE",
+        "note": "结果追加写入 rules-report.md"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:7f2aff609d892a949cb7dcb81a6f7c9070dbc6060e2a9b7fc312052940b725fa",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:35:48.741Z",
+    "generated_at": "2026-09-16T08:21:03.101Z",
     "lint_pass": true,
-    "what_en": "Each hour it proves the local claude-mem worker is healthy, pulls needle observations into a seat-owned middle.jsonl cache, lets you exclude or restore an observation, and every 6th hour appends a rules-report.md.",
-    "when_en": "Triggers when you ask to run CCS Align, breathe the alignment seat, refresh the middle cache, or exclude/restore an observation, walk rules, or check the Worker Watch board.",
+    "what_en": "Each hour Claude runs the CCS Align cycle: it checks the local claude-mem worker is healthy, pulls needle observations via search → timeline → get_observations, and lands them in a seat-owned middle.jsonl cache with exclude marks.",
+    "when_en": "Triggers when you ask to run CCS Align, refresh the middle cache, or exclude or restore an observation; every 6th hour it also walks house → project → seat rules and writes rules-report.md.",
     "say_en": [
       {
-        "text": "Run a CCS Align breathing cycle and cache the latest needle observations.",
-        "note": "Checks worker health first."
+        "text": "Run the hourly CCS Align cycle",
+        "note": "Checks worker health, then refreshes the cache"
       },
       {
-        "text": "Exclude observation 12345 with reason manual.",
-        "note": "Drops from the compiled cache, not the diary."
+        "text": "Exclude observation 12345 with reason manual",
+        "note": "It drops from middle.jsonl on rebuild"
       },
       {
-        "text": "Walk house → project → seat rules and report conflicts.",
-        "note": "Appends to rules-report.md."
+        "text": "Walk the rules and look for SHADOW_HOUSE",
+        "note": "Appends to rules-report.md"
       }
     ]
   }

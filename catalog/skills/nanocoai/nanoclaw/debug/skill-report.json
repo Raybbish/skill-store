@@ -5,7 +5,7 @@
     "name": "debug",
     "description": "Debug container agent issues. Use when things aren't working, container fails, authentication problems, or to understand how the container system works. Covers logs, session DBs, mounts, and common issues.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/debug",
-    "upstream_commit": "f5967d3c4126fa793304606041d77f50c4c912ac",
+    "upstream_commit": "65b69ba11c7dcff81e876a49bf9cb879e5b50bfe",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30768,
+    "stars_github": 30779,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:20:03.166Z",
+    "fetched_at": "2026-09-16T08:12:48.935Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-15T08:59:50+02:00",
+    "upstream_commit_at": "2026-09-16T08:57:12+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:20:03.166Z",
+    "generated_at": "2026-09-16T08:12:48.935Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会去读主机日志、会话数据库(inbound.db / outbound.db)、挂载与心跳文件,按排查流程判断容器为什么不回复、认证为什么报错、消息为什么丢失。",
-    "when": "当容器启动失败、认证出问题、消息发不出去,或你想弄清容器系统如何运作时接管。",
+    "what": "装上后,Claude 会按这份指南帮你排查容器化 agent 的执行问题:定位主机与安装日志、查会话数据库里的消息流向、核对挂载配置,并对照常见故障原因。",
+    "when": "当机器人不回复、容器启动即退出,或出现认证错误时触发。",
     "say": [
       {
-        "text": "容器起来了但没回复,帮我查一下日志",
-        "note": "会看 nanoclaw 日志与容器 stderr"
+        "text": "机器人不回复了,帮我查一下日志和出站消息",
+        "note": "会先看错误日志与 outbound.db"
       },
       {
-        "text": "消息没送到,查下这个会话的 outbound.db",
-        "note": "会查 messages_out 里的记录"
+        "text": "查一下这个会话的 inbound.db,消息到底有没有到容器",
+        "note": "会列出最近的 messages_in 记录"
       },
       {
-        "text": "接口报 401,看下这个 agent 的 secret 模式",
-        "note": "会查 onecli agents 配置"
+        "text": "容器一启动就退出,看看 stderr 和退出码"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:27:57.822Z",
+    "generated_at": "2026-09-16T08:20:39.202Z",
     "lint_pass": true,
-    "what_en": "Claude reads host logs, session DBs (inbound.db/outbound.db), mount and heartbeat files to trace why a container fails to reply, why auth errors, or why messages are lost.",
-    "when_en": "Triggers when containers fail, authentication breaks, messages aren't delivered, or you want to understand how the container system works.",
+    "what_en": "Installs a debugging guide for the containerized agent: where host and setup logs live, how to read the inbound/outbound session DBs, mount targets, and common failure causes.",
+    "when_en": "Triggers when the bot stops replying, a container exits right away, or authentication fails.",
     "say_en": [
       {
-        "text": "Container started but no reply — check the logs",
-        "note": "Reads nanoclaw logs and container stderr"
+        "text": "The bot stopped replying — check the logs and messages_out for me.",
+        "note": "Starts with the error log and the outbound DB."
       },
       {
-        "text": "Message wasn't delivered — query this session's outbound.db",
-        "note": "Inspects messages_out rows"
+        "text": "Check whether my message actually reached the container in inbound.db.",
+        "note": "Lists recent messages_in rows."
       },
       {
-        "text": "API returns 401 — check this agent's secret mode",
-        "note": "Runs onecli agents list / set-secret-mode"
+        "text": "The container exits right away on start — look at stderr and the exit code.",
+        "note": "Needs LOG_LEVEL=debug for streamed stderr."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "neon-postgres",
     "description": "Guides and best practices for working with Lakebase Postgres, the database behind Neon. Covers setup, connection methods and drivers, pooled vs direct connections, branching, schema migrations, autoscaling, scale-to-zero, instant restore, read replicas, connection pooling, IP allow lists, and logical replication. Also covers Lakebase Search: semantic vector search, full-text search with BM25 ranking, and hybrid search. Use when users ask about \"Lakebase Postgres\", \"Neon setup\", \"connect to Neon\", \"Neon project\", \"DATABASE_URL\", \"serverless Postgres\", \"Neon CLI\", \"neon\", \"Neon MCP\", \"Neon Auth\", \"@neondatabase/serverless\", \"@neondatabase/neon-js\", \"scale to zero\", \"Neon autoscaling\", \"Neon read replica\", \"Neon connection pooling\", \"schema migrations\", \"database troubleshooting\", \"Postgres performance\", \"neon inspect db\", \"semantic search\", \"vector search\", \"full-text search\", \"BM25\", or \"hybrid search\".",
     "upstream": "https://github.com/neondatabase/agent-skills/tree/main/skills/neon-postgres",
-    "upstream_commit": "2e0da3a1653bcdd227565ac14bb3e9e453a8b854",
+    "upstream_commit": "dcddbf2395a8ea6f6d958c58fc5d15c0583c0801",
     "content_hash": "sha256:acaafc5941328777778806839d413a091f87a77277ce46c2b83da7d5ed464de2",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 145500,
-    "fetched_at": "2026-09-08T07:45:34.123Z",
+    "installs_skills_sh": 165400,
+    "fetched_at": "2026-09-16T08:15:03.109Z",
     "first_seen_at": "2026-08-30T08:54:30.137Z",
-    "upstream_commit_at": "2026-09-04T10:39:10-07:00"
+    "upstream_commit_at": "2026-09-15T17:09:40-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-08T07:45:34.123Z",
+    "generated_at": "2026-09-16T08:15:03.109Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,40 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，当用户问到 Neon 或 Lakebase Postgres 相关问题时，Claude 会按技能指引给出建库、连接、迁移、扩缩容等操作建议，并可用 Neon CLI 或 MCP 执行诊断检查与分支管理。",
-    "when": "当用户提到“Lakebase Postgres”“Neon setup”“DATABASE_URL”等词，或询问连接、迁移、性能诊断、搜索等功能时触发。",
+    "what": "Claude 会按 Lakebase/Neon 的规范帮你建项目和分支、取连接串写进 .env 的 DATABASE_URL、选连接方式和驱动、管理 schema 迁移，并跑数据库排查与性能检查。",
+    "when": "当你提到「Neon」「DATABASE_URL」「scale to zero」等关键词，或要连接 Neon 数据库、做迁移与性能排查时接管。",
     "say": [
       {
-        "text": "帮我用 Neon CLI 建一个分支，用来测试这次 schema 迁移。",
-        "note": "Claude 会调用 CLI 建分支并给出迁移步骤。"
+        "text": "帮我在 Neon 上建新项目，把连接串写进 .env",
+        "note": "会建项目并存 DATABASE_URL"
       },
       {
-        "text": "用 neon inspect db 看看哪些表占的存储最大。"
+        "text": "这个迁移该用 pooled 还是 direct 连接串？",
+        "note": "会按用途给出连接类型建议"
       },
       {
-        "text": "分析这条 SQL 的本地文件缓存命中情况。",
-        "note": "Claude 会加上 FILECACHE 选项执行只读诊断。"
+        "text": "跑 neon inspect db 看哪张表最占空间",
+        "note": "会调用 table-sizes 等只读检查"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:acaafc5941328777778806839d413a091f87a77277ce46c2b83da7d5ed464de2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-08T08:17:45.500Z",
+    "generated_at": "2026-09-16T08:20:50.629Z",
     "lint_pass": true,
-    "what_en": "After installation, when users ask about Neon or Lakebase Postgres, Claude follows this skill to advise on database setup, connections, migrations, scaling, and can run diagnostics or branch management via Neon CLI or MCP.",
-    "when_en": "Triggered when users mention terms like \"Lakebase Postgres\", \"Neon setup\", \"DATABASE_URL\", or ask about connections, migrations, performance diagnostics, or search.",
+    "what_en": "Claude follows Lakebase/Neon conventions to create projects and branches, pull the connection string into DATABASE_URL, pick connection type and driver, manage schema migrations as code, and run Neon's read-only performance checks.",
+    "when_en": "Triggers when you mention \"Neon\", \"DATABASE_URL\", \"scale to zero\" and similar terms, or need to connect to Neon, run migrations, or troubleshoot Postgres performance.",
     "say_en": [
       {
-        "text": "Create a branch with Neon CLI to test this schema migration.",
-        "note": "Claude will create a branch via CLI and suggest migration steps."
+        "text": "Create a new Neon project and put the connection string in .env",
+        "note": "Creates project, stores DATABASE_URL"
       },
       {
-        "text": "Run neon inspect db to see which tables consume most storage.",
-        "note": "Claude will run table-sizes and explain results."
+        "text": "Should this migration use a pooled or direct connection string?",
+        "note": "Advises on connection type"
       },
       {
-        "text": "Analyze the local file cache hit for this SQL.",
-        "note": "Claude will add FILECACHE and run a read-only explain."
+        "text": "Run neon inspect db to see which table uses the most storage",
+        "note": "Runs table-sizes and similar read-only checks"
       }
     ]
   }

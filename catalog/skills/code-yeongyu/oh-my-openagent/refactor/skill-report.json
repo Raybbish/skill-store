@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Guides a refactor, cleanup, or restructure with the right decomposition. Use when the user asks to refactor, simplify, extract, or modernize code.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
+    "upstream_commit": "41255b6e448fb610fb45fa243fc3a45166c95ef6",
     "content_hash": "sha256:f0070b178b0a3c8c2f9e29955ce6fc9dc9a21e42940290ca887a9502a5009d5c",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69062,
+    "stars_github": 69085,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:19:32.040Z",
+    "fetched_at": "2026-09-16T08:12:33.411Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
-    "repo_skill_count": 50
+    "upstream_commit_at": "2026-09-16T16:52:23+09:00",
+    "repo_skill_count": 49
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:19:32.040Z",
+    "generated_at": "2026-09-16T08:12:33.411Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会先确认重构目标，再建代码地图、评估测试覆盖、生成分步计划，用 LSP 与 AST 工具逐步改写，每步跑测试验证，最后做整体回归检查。",
-    "when": "当你要求重构、简化、提取或现代化代码时触发；若目标含糊（比如只说「清理一下」）或范围不明，它会先反问具体目标再动手。",
+    "what": "装上后 Claude 会按 /refactor 流程走:先确认重构意图、扫描代码与依赖、评估测试覆盖,再生成分步计划逐步改动,每步都用 LSP 检查和跑测试验证。",
+    "when": "当你要求重构、简化、提取或现代化代码时触发;需要给出重构目标,含糊的「清理一下」它会先反问。",
     "say": [
       {
-        "text": "/refactor src/auth/handler.ts",
-        "note": "先建代码地图和测试覆盖评估，再分步重构"
-      },
-      {
-        "text": "把 src/utils 里的校验逻辑提取成独立模块",
-        "note": "按明确变换请求走完整流程"
+        "text": "/refactor 把校验逻辑提取到独立模块",
+        "note": "先建代码地图与分步计划再动手"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f0070b178b0a3c8c2f9e29955ce6fc9dc9a21e42940290ca887a9502a5009d5c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:25:19.257Z",
+    "generated_at": "2026-09-16T08:18:43.224Z",
     "lint_pass": true,
-    "what_en": "After install, Claude confirms the refactor goal, builds a codemap, checks test coverage, generates a step-by-step plan, edits with LSP and AST-grep, runs tests after each step, and ends with a full regression check.",
-    "when_en": "Triggers when you ask to refactor, simplify, extract, or modernize code. If the target or scope is unclear, it asks a clarifying question first.",
+    "what_en": "Installs the /refactor command: Claude confirms your intent, maps the codebase and its test coverage, plans atomic steps, then refactors with LSP and AST-grep, running tests after each change.",
+    "when_en": "Triggers when you ask to refactor, simplify, extract, or modernize code. You must name a target; vague \"clean this up\" requests get clarifying questions first.",
     "say_en": [
       {
-        "text": "/refactor src/auth/handler.ts",
-        "note": "Maps code and test coverage, then refactors step by step"
+        "text": "/refactor src/auth/handler.ts --scope=file",
+        "note": "Confirms intent, then touches only this file"
       },
       {
-        "text": "/refactor \"AuthService class\" --scope=module --strategy=safe",
-        "note": "Limits scope to the module, conservative strategy"
+        "text": "/refactor extract validation logic into its own module",
+        "note": "Builds a codemap and step plan first"
       },
       {
-        "text": "Extract the validation logic in src/utils into its own module",
-        "note": "Treated as a clear transformation request"
+        "text": "/refactor AuthService class --strategy=aggressive",
+        "note": "Allows wider changes, still needs coverage"
       }
     ]
   }

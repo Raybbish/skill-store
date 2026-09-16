@@ -5,7 +5,7 @@
     "name": "add-mnemon",
     "description": "Add persistent graph-based memory via mnemon. Agents recall past context before responding and remember insights after each turn.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-mnemon",
-    "upstream_commit": "f5967d3c4126fa793304606041d77f50c4c912ac",
+    "upstream_commit": "65b69ba11c7dcff81e876a49bf9cb879e5b50bfe",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30768,
+    "stars_github": 30779,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:20:03.166Z",
+    "fetched_at": "2026-09-16T08:12:48.935Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-15T08:59:50+02:00",
+    "upstream_commit_at": "2026-09-16T08:57:12+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:20:03.166Z",
+    "generated_at": "2026-09-16T08:12:48.935Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,41 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "为容器安装 mnemon 记忆组件,并在每次容器启动时注册 Claude Code hooks:回复前自动调出相关历史记忆,每轮结束后写入新见解。记忆存在 .claude 挂载目录中,容器重启后仍保留。",
-    "when": "只对运行默认 Claude provider 的 agent group 生效(container.json 里 provider 缺失或为 claude);换成其他 provider 时 hooks 不会运行。安装后每次容器启动自动执行。",
+    "what": "在容器里装好 mnemon,并在每次容器启动时注册 Claude Code 钩子:Claude 回复前会自动带出相关旧记忆,每轮对话后把新要点写进记忆。记忆存在该 agent 组的 .claude/ 挂载里,容器重启后仍在。",
+    "when": "仅在该 agent 组使用默认 Claude provider 时生效,容器一启动就自动注册钩子;若该组指定了别的 provider(如 opencode),钩子不会运行。",
     "say": [
       {
-        "text": "把 mnemon 装进容器镜像里",
-        "note": "会在 Dockerfile 插入安装层并重建镜像"
+        "text": "还记得我们上次讨论的那个方案吗?",
+        "note": "它会自动带出相关旧记忆,不用你复述"
       },
       {
-        "text": "确认 mnemon hooks 有没有注册成功",
-        "note": "会查容器日志和 settings.json"
+        "text": "把这次结论记下来,下次接着聊",
+        "note": "每轮结束后写入记忆,存进 .claude/ 挂载"
       },
       {
-        "text": "上次我们聊的那个方案,还记得吗?",
-        "note": "新会话里 mnemon 应自动调出该上下文"
+        "text": "能查一下我们之前定的那组配置参数吗?",
+        "note": "从过往记忆里检索并给出上下文"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:27:38.009Z",
+    "generated_at": "2026-09-16T08:20:21.686Z",
     "lint_pass": true,
-    "what_en": "Installs mnemon into the container image and registers Claude Code hooks on each container start: relevant past context is surfaced before the agent responds, and new insights are stored after each turn. Memory lives in the .claude/ mount and survives restarts.",
-    "when_en": "Applies only to agent groups running the default Claude provider (provider key absent or \"claude\" in container.json); other providers never run the hooks. Setup runs automatically on each container start.",
+    "what_en": "Installs mnemon in the agent container and registers Claude Code hooks on each start: Claude recalls relevant past context before replying and saves new insights after every turn. Memory persists in the per-agent-group .claude/ mount.",
+    "when_en": "Only works for agent groups running the default Claude provider; hooks register on container start. If a group sets another provider, e.g. opencode, the hooks do not run.",
     "say_en": [
       {
-        "text": "Install mnemon into the container image.",
-        "note": "Adds the Dockerfile layer and rebuilds."
-      },
-      {
-        "text": "Check whether the mnemon hooks are registered.",
-        "note": "Inspects container logs and settings.json."
-      },
-      {
         "text": "Do you remember the plan we discussed last time?",
-        "note": "New session should recall that context automatically."
+        "note": "It surfaces the relevant past memory for you"
+      },
+      {
+        "text": "Save these conclusions so we can continue next time",
+        "note": "Insights are written to memory after each turn"
+      },
+      {
+        "text": "Can you look up the config values we set earlier?",
+        "note": "It retrieves them from stored memory"
       }
     ]
   }

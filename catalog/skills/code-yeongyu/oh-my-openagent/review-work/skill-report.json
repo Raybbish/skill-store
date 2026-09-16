@@ -5,7 +5,7 @@
     "name": "review-work",
     "description": "Post-implementation gate review: run manual QA on the real surface yourself, then launch ONE gate reviewer (never a panel) to audit goal, constraints, code quality, security, missed context, and QA evidence. Use before a PR handoff or when the user explicitly asks to review completed work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/review-work",
-    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
+    "upstream_commit": "41255b6e448fb610fb45fa243fc3a45166c95ef6",
     "content_hash": "sha256:d72fa63d5bc4b5cb646f8be4b82baa961c1b8787a6214d8dcb189666b05d1a92",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69062,
+    "stars_github": 69085,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:19:32.040Z",
+    "fetched_at": "2026-09-16T08:12:33.411Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
-    "repo_skill_count": 50
+    "upstream_commit_at": "2026-09-16T16:52:23+09:00",
+    "repo_skill_count": 49
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:19:32.040Z",
+    "generated_at": "2026-09-16T08:12:33.411Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 先自己在真实界面上做手动 QA(命令、预期、实测、证据),再启动一个 gate reviewer 子代理,对照目标、约束、代码质量、安全、遗漏上下文和 QA 证据审查;QA 无失败行且返回 APPROVE 才算通过。",
-    "when": "在 PR 交接之前,或你明确要求审查已完成的工作时触发。",
+    "what": "Claude 会先在真实界面上亲自做手动 QA,再启动唯一一个 gate reviewer 子代理,对照目标、约束、安全等项与 QA 证据审计整个改动,最后给出 APPROVE 或 REVIEW FAILED。",
+    "when": "在 PR 交付前,或用户明确要求审查已完成的工作时触发。只要 QA 矩阵出现失败行,审查即在此结束并报 REVIEW FAILED,不再派 gate reviewer。",
     "say": [
       {
-        "text": "对我刚做完的改动跑一次 gate review",
-        "note": "先手动 QA,再派一个审查代理"
+        "text": "帮我 review 一下这次改动,做门禁审查",
+        "note": "先做手动 QA,再派一个 gate reviewer"
       },
       {
-        "text": "交接 PR 前帮我审查这个分支",
-        "note": "核对目标、约束和 QA 证据"
+        "text": "用 review-work 审查这个分支,准备交付 PR"
       },
       {
-        "text": "修复后只复审这次的增量",
-        "note": "重新派一个只覆盖增量的审查代理"
+        "text": "对这份 diff 做 gate review,只用一个 reviewer",
+        "note": "不会开评审团"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d72fa63d5bc4b5cb646f8be4b82baa961c1b8787a6214d8dcb189666b05d1a92",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:25:28.603Z",
+    "generated_at": "2026-09-16T08:18:52.579Z",
     "lint_pass": true,
-    "what_en": "Claude runs manual QA on the real surface (commands, expected vs observed, evidence), then spawns one gate reviewer to audit goal, constraints, quality, security, missed context, and QA evidence. PASS needs no failing QA row plus APPROVE.",
-    "when_en": "Triggers before a PR handoff, or when the user explicitly asks to review completed work.",
+    "what_en": "Claude first runs hands-on manual QA on the real surface itself, then launches one gate reviewer sub-agent to audit the change against goal, constraints, code, security, and QA evidence. Output: a QA matrix and APPROVE or REVIEW FAILED.",
+    "when_en": "Triggers before a PR handoff, or when the user explicitly asks to review completed work. Any failing QA row ends the review as REVIEW FAILED, with no gate reviewer spawned.",
     "say_en": [
       {
-        "text": "Run a gate review on the changes I just finished.",
-        "note": "Manual QA first, then one reviewer agent."
+        "text": "Review this change as a gate review",
+        "note": "Runs manual QA, then one gate reviewer"
       },
       {
-        "text": "Review this branch before I hand off the PR.",
-        "note": "Checks goal, constraints, and QA evidence."
+        "text": "Use review-work on this branch before the PR handoff",
+        "note": "Returns APPROVE or REVIEW FAILED"
       },
       {
-        "text": "Re-review only the delta after my fixes.",
-        "note": "A fresh reviewer scoped to the delta."
+        "text": "Gate-review this diff with a single reviewer",
+        "note": "No review panel is spawned"
       }
     ]
   }

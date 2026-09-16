@@ -5,7 +5,7 @@
     "name": "pre-publish-review",
     "description": "Nuclear-grade 12-agent pre-publish release gate. Runs /get-unpublished-changes to detect all changes since last npm release, spawns up to 10 ultrabrain agents for deep per-change analysis, invokes /review-work (orchestrator manual QA plus one gate reviewer) for holistic review, and 1 oracle for overall release synthesis. Runs ONLY when the user explicitly asks for a pre-publish review — a plain publish/release request MUST NOT trigger this; /publish ships directly. Triggers: 'pre-publish review', 'review before publish', 'release review', 'pre-release review', 'ready to publish?', 'can I publish?', 'pre-publish', 'safe to publish', 'publishing review', 'pre-publish check'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/pre-publish-review",
-    "upstream_commit": "b71e6bab3e42236a99ce694e52af3940d509ee9d",
+    "upstream_commit": "41255b6e448fb610fb45fa243fc3a45166c95ef6",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69062,
+    "stars_github": 69085,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:19:32.040Z",
+    "fetched_at": "2026-09-16T08:12:33.411Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-15T16:27:50+09:00",
-    "repo_skill_count": 50
+    "upstream_commit_at": "2026-09-16T16:52:23+09:00",
+    "repo_skill_count": 49
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:19:32.040Z",
+    "generated_at": "2026-09-16T08:12:33.411Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,42 +89,25 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "只在你明确要求发布前审查时,先跑 /get-unpublished-changes 找出上次发布后的改动,并行启动最多 10 个 ultrabrain 逐组分析、1 个整体审查和 1 个 oracle 综合评估,给出各层版本建议与待修问题。",
-    "when": "只有你明确要求发布前审查时才触发,例如说「pre-publish review」、「release review」等关键词;直接说发布/发版不会触发,由 /publish 直接发布。",
+    "what": "当你明确要求发布前审查时,Claude 先运行 /get-unpublished-changes 列出上次 npm 发布以来的改动,再并行启动最多 10 个 ultrabrain 逐个改动组深入分析,加上 /review-work 整体审查和 1 个 oracle 做发布综合,最后汇总结论。",
+    "when": "仅当你明确要求发布前审查时才运行,例如说出 “pre-publish review”、“review before publish”、“release review” 等;普通的发布/发版请求不会触发它,那会直接走 /publish。",
     "say": [
       {
-        "text": "帮我做一次发布前审查",
-        "note": "先运行 /get-unpublished-changes"
+        "text": "帮我做一次 pre-publish review"
       },
       {
-        "text": "这些改动可以发布吗?",
-        "note": "多 agent 分层审查后给出发布风险结论"
+        "text": "发布前审一下这次改动,看看能不能发",
+        "note": "返回各改动组结论与发布综合评估"
       },
       {
-        "text": "跑 pre-release review,并给出各发布层版本号建议",
-        "note": "输出三层的 patch/minor/major 建议"
+        "text": "做发布前审查,重点看有没有破坏性变更",
+        "note": "oracle 会列出破坏性变更与版本号建议"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:25:27.247Z",
-    "lint_pass": true,
-    "what_en": "Only when you explicitly ask for a pre-publish review: it runs /get-unpublished-changes, then launches up to 10 ultrabrain agents per change group, a holistic review, and an oracle synthesis, returning version bumps and blockers.",
-    "when_en": "Triggers only when you explicitly ask for a pre-publish review, e.g. \"pre-publish review\" or \"release review\"; a plain publish request does not trigger it — /publish ships directly.",
-    "say_en": [
-      {
-        "text": "Run a pre-publish review for me",
-        "note": "Runs /get-unpublished-changes first"
-      },
-      {
-        "text": "Is it safe to publish these changes?",
-        "note": "Layered agent review returns a release-risk verdict"
-      },
-      {
-        "text": "Run a pre-release review with per-layer version bump advice",
-        "note": "Outputs patch/minor/major advice for all three layers"
-      }
-    ]
+    "generated_at": "2026-09-16T08:18:42.124Z",
+    "lint_pass": true
   }
 }

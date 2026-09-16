@@ -5,7 +5,7 @@
     "name": "azure-kubernetes",
     "description": "Plan, create, and configure production-ready Azure Kubernetes Service (AKS) clusters. Covers Day-0 checklist, SKU selection (Automatic vs Standard), networking options (private API server, Azure CNI Overlay, egress configuration), security, and operations (autoscaling, upgrade strategy, cost analysis). WHEN: create AKS environment, provision AKS, enable AKS observability, design AKS networking, choose AKS SKU, secure AKS, optimize AKS, AKS spot nodes, AKS cluster-autoscaler, rightsize AKS pod, pod rightsizing, over-provisioned AKS pod, pod resource requests and limits, Vertical Pod Autoscaler, VPA recommendations.",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/azure-kubernetes",
-    "upstream_commit": "4ed7ff0cabdfbdf76a15359dc7896f9daac495bc",
+    "upstream_commit": "c5edd031e7edc73cb383f23012bb707cd74d764f",
     "content_hash": "sha256:57d4d9b332a9a8895684622bae5797e17c5238035cf9d03f3007c84aa5c0ad27",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 408600,
-    "fetched_at": "2026-09-15T08:22:19.731Z",
+    "installs_skills_sh": 411000,
+    "fetched_at": "2026-09-16T08:14:27.800Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-14T09:32:38-07:00"
+    "upstream_commit_at": "2026-09-15T10:02:37-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:22:19.731Z",
+    "generated_at": "2026-09-16T08:14:27.800Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -133,37 +133,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按你的需求产出一份推荐的 AKS 集群配置,并区分 Day-0 决策(网络、API server 等后续难改)与 Day-1 功能(建好后再启用),同时记录每项选择的原因。",
-    "when": "当你要新建 AKS 集群、规划生产集群配置或设计 AKS 网络时触发;若要往已有集群部署应用,则改用 app-deploy 子技能。",
+    "what": "装上后,Claude 会根据你的需求产出一份推荐的 AKS 集群配置,并把创建后难改的 Day-0 决策(网络、API server 访问)与创建后可再开启的 Day-1 功能分开说明。",
+    "when": "当你要求创建 AKS 集群、设计 AKS 网络,或选择 AKS SKU 等任务时触发;也可以只索取一份 Day-0 检查清单。",
     "say": [
       {
-        "text": "帮我规划一个生产用的 AKS 集群,列出 Day-0 决策清单",
-        "note": "会产出推荐配置并区分 Day-0/Day-1"
+        "text": "帮我规划一个生产环境的 AKS 集群配置",
+        "note": "会先确认区域、规模和网络需求"
       },
       {
-        "text": "我的 AKS 该选 Azure CNI Overlay 还是 VNet 可路由?",
-        "note": "会对比两种 Pod IP 方案并给建议"
+        "text": "给我一份 AKS 集群的 Day-0 检查清单",
+        "note": "重点列创建后难改的决策"
+      },
+      {
+        "text": "我的 AKS Pod 资源申请开太大,怎么调?",
+        "note": "会读取 Pod Rightsizing 参考文件"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:57d4d9b332a9a8895684622bae5797e17c5238035cf9d03f3007c84aa5c0ad27",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:27:11.062Z",
+    "generated_at": "2026-09-16T08:19:55.808Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude produces a recommended AKS cluster configuration from your requirements, separating Day-0 decisions (networking, API server) from Day-1 features, and documents the rationale.",
-    "when_en": "Triggers when you create an AKS cluster, plan a production cluster configuration, or design AKS networking. To deploy an app to an existing cluster, use the app-deploy sub-skill instead.",
+    "what_en": "Once installed, Claude produces a recommended AKS cluster configuration from your requirements, separating hard-to-change Day-0 decisions (networking, API server access) from Day-1 features you can enable later.",
+    "when_en": "Triggers when you ask to create an AKS cluster, design AKS networking, or choose an AKS SKU, or when you want a Day-0 checklist for cluster setup.",
     "say_en": [
       {
-        "text": "Plan a production AKS cluster and give me the Day-0 checklist",
-        "note": "Returns a recommended config split by Day-0/Day-1"
+        "text": "Plan a production AKS cluster configuration for me",
+        "note": "It asks about region, scale and networking first"
       },
       {
-        "text": "Should my AKS use Azure CNI Overlay or VNet-routable pod IPs?",
-        "note": "Compares both pod IP models and advises"
+        "text": "Give me a Day-0 checklist for an AKS cluster",
+        "note": "Focuses on decisions that are hard to change later"
       },
       {
-        "text": "These pods' CPU/memory requests look too high—help me rightsize",
-        "note": "Loads the pod rightsizing reference file"
+        "text": "My AKS pods request far more resources than they use",
+        "note": "Loads the Pod Rightsizing reference file"
       }
     ]
   }
