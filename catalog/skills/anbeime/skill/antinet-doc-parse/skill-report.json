@@ -5,7 +5,7 @@
     "name": "antinet-doc-parse",
     "description": "软件开发工程师与数据科学家在构建RAG系统时，当需处理PDF/Word/Excel等多格式复杂文档，用此技能可自动触发三级解析降级，一键输出高置信度结构化Markdown与元数据，免去繁琐清洗，直接夯实企业知识库数据底座！",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-doc-parse",
-    "upstream_commit": "90571b73ce5100c715db8b80890165f699485d59",
+    "upstream_commit": "dd03c08b49484ffb782c17d0c1e41165bb7c247a",
     "content_hash": "sha256:1787090c147d5fd2bbe5337c47aac78a15002fa80812ae1aeaa00a415454096e",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 5887,
+    "stars_github": 6723,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:49:27.472Z",
+    "fetched_at": "2026-09-15T08:20:43.552Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-08-28T13:54:19Z",
-    "repo_skill_count": 77,
+    "upstream_commit_at": "2026-09-15T07:19:31Z",
+    "repo_skill_count": 84,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:49:27.472Z",
+    "generated_at": "2026-09-15T08:20:43.552Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,5 +86,44 @@
     "model": "deepseek-v4-flash",
     "generated_at": "2026-08-27T13:43:59.241Z",
     "lint_pass": true
+  },
+  "howto": {
+    "what": "收到已通过安全扫描的文件时，Claude 会把它解析成结构化 Markdown，附标题、页数、表格数等元数据和 0–1 置信度，并说明最终生效的解析器；解析器失败会自动逐级降级。",
+    "when": "由密卷房 Worker 在收到已通过安全扫描的文件时调用，依次尝试 MinerU、PyMuPDF、pdfplumber 三级解析；三级全失败则标记人工介入，不输出残缺结果。",
+    "say": [
+      {
+        "text": "把这份 PDF 解析成结构化 Markdown",
+        "note": "返回正文、元数据和置信度"
+      },
+      {
+        "text": "只解析 PDF 和 Word 格式的文件",
+        "note": "白名单外的格式不处理"
+      },
+      {
+        "text": "这次解析用的是哪个解析器？置信度多少？",
+        "note": "对应 fallback_used 与 confidence"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:1787090c147d5fd2bbe5337c47aac78a15002fa80812ae1aeaa00a415454096e",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-15T08:24:22.727Z",
+    "lint_pass": true,
+    "what_en": "Given a file that already passed security scan, Claude parses it into structured Markdown with metadata (title, pages, tables), a 0–1 confidence score, and the parser that ran, falling back through MinerU, PyMuPDF, then pdfplumber.",
+    "when_en": "Called by the Mijuanfang Worker when it gets a file that passed security scan. If all three parsers fail, the result is flagged for manual review; no partial output.",
+    "say_en": [
+      {
+        "text": "Parse this PDF into structured Markdown.",
+        "note": "Returns body, metadata and confidence."
+      },
+      {
+        "text": "Only parse PDF and Word files.",
+        "note": "Formats outside the whitelist are skipped."
+      },
+      {
+        "text": "Which parser ran, and what's the confidence?",
+        "note": "Reports fallback_used and confidence."
+      }
+    ]
   }
 }
