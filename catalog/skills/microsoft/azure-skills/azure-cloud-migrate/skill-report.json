@@ -5,7 +5,7 @@
     "name": "azure-cloud-migrate",
     "description": "Assess and migrate cross-cloud workloads to Azure with reports and code conversion. Supports Lambda→Functions, Beanstalk/Heroku/App Engine→App Service, Fargate/Kubernetes/Cloud Run/Spring Boot→Container Apps. WHEN: migrate Lambda to Functions, AWS to Azure, migrate Beanstalk, migrate Heroku, migrate App Engine, Cloud Run migration, Fargate to ACA, ECS/Kubernetes/GKE/EKS to Container Apps, Spring Boot to Container Apps, cross-cloud migration.",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/azure-cloud-migrate",
-    "upstream_commit": "c5edd031e7edc73cb383f23012bb707cd74d764f",
+    "upstream_commit": "abaf74ac8f62fbe9f83d7ccb2bd991dca929a4da",
     "content_hash": "sha256:2f7f5e903100c60964253587d0325f2c0722ed5d223f1f63681a949c44e84b82",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 515400,
-    "fetched_at": "2026-09-16T08:14:27.800Z",
+    "installs_skills_sh": 517700,
+    "fetched_at": "2026-09-17T08:20:43.615Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-09-15T10:02:37-07:00"
+    "upstream_commit_at": "2026-09-16T09:45:05-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-16T08:14:27.800Z",
+    "generated_at": "2026-09-17T08:20:43.615Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -134,37 +134,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会把现有云上服务评估一遍,产出迁移评估报告,再按场景把代码和配置改写成 Azure 版本,结果放在工作区下新建的 `<工作区名>-azure/` 目录,并维护 migration-status.md 记录进度。",
-    "when": "当你要做跨云迁移时触发,例如把 Lambda 迁到 Azure Functions、Heroku 迁到 App Service、Kubernetes 迁到 Container Apps 等;原文要求按阶段顺序执行,不跳过。",
+    "what": "装上后,它会先分析你的跨云工作负载、生成评估报告,再把代码和配置转成对应的 Azure 服务。输出写在项目根目录下的 `<项目名>-azure/` 里,源目录不会被改动。",
+    "when": "当你要把 AWS Lambda、Kubernetes 等平台的现有负载迁到 Azure 时触发,或直接说「迁移到 Azure」。它会先生成评估报告,再开始代码迁移。",
     "say": [
       {
-        "text": "帮我把这个 AWS Lambda 项目迁移到 Azure Functions",
-        "note": "先生成评估报告,再转换代码"
+        "text": "帮我把这个 Lambda 函数迁移到 Azure Functions",
+        "note": "先生成评估报告,再转代码"
       },
       {
-        "text": "评估一下我的 Heroku 应用迁到 App Service 要改哪些地方",
-        "note": "先出评估,不动源代码"
+        "text": "评估一下这个 Heroku 应用迁到 App Service 要改什么",
+        "note": "评估报告写到新建的 -azure/ 目录"
+      },
+      {
+        "text": "把这次迁移的进度记到 migration-status.md",
+        "note": "按步骤更新进度文件"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2f7f5e903100c60964253587d0325f2c0722ed5d223f1f63681a949c44e84b82",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-16T08:19:52.898Z",
+    "generated_at": "2026-09-17T08:25:57.177Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude assesses your existing cloud workload, writes a migration assessment report, then converts code and config into Azure equivalents under a new <workspace-name>-azure/ folder, tracking progress in migration-status.md.",
-    "when_en": "Triggers when you ask for a cross-cloud migration, e.g. Lambda to Functions, Heroku to App Service, or Kubernetes to Container Apps. Phases run in order and are not skipped.",
+    "what_en": "It analyzes your cross-cloud workload, produces an assessment report, then converts code and config to the matching Azure service. Output goes to `<workspace>-azure/` at the workspace root; the source is never modified.",
+    "when_en": "Triggers when you migrate existing workloads such as AWS Lambda, Kubernetes, or Heroku to Azure. An assessment is generated before any code migration.",
     "say_en": [
       {
-        "text": "Migrate this AWS Lambda project to Azure Functions",
+        "text": "Migrate this Lambda function to Azure Functions",
         "note": "Assessment report first, then code conversion"
       },
       {
-        "text": "Assess what my Heroku app needs for App Service",
-        "note": "Assessment only, source stays untouched"
+        "text": "Assess what changes moving this Heroku app to App Service needs",
+        "note": "Writes the assessment into a new -azure/ directory"
       },
       {
-        "text": "Migrate this Kubernetes service to Azure Container Apps",
-        "note": "Then asks: test locally or deploy"
+        "text": "Track this migration in migration-status.md",
+        "note": "Updates the progress file step by step"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "debug",
     "description": "Debug container agent issues. Use when things aren't working, container fails, authentication problems, or to understand how the container system works. Covers logs, session DBs, mounts, and common issues.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/debug",
-    "upstream_commit": "65b69ba11c7dcff81e876a49bf9cb879e5b50bfe",
+    "upstream_commit": "6e5008fee8c24d6c20180906523bbdf9494b72a7",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30779,
+    "stars_github": 30791,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-16T08:12:48.935Z",
+    "fetched_at": "2026-09-17T08:19:06.427Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-16T08:57:12+03:00",
+    "upstream_commit_at": "2026-09-16T14:37:10+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-16T08:12:48.935Z",
+    "generated_at": "2026-09-17T08:19:06.427Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,40 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按这份指南帮你排查容器化 agent 的执行问题:定位主机与安装日志、查会话数据库里的消息流向、核对挂载配置,并对照常见故障原因。",
-    "when": "当机器人不回复、容器启动即退出,或出现认证错误时触发。",
+    "what": "装上后,Claude 按此指南排查 NanoClaw 容器代理故障:查主机日志、两个会话数据库、挂载与心跳,定位消息未送达、容器立即退出、鉴权失败等问题。",
+    "when": "当容器不工作、容器失败或鉴权出问题时触发,也用于了解容器系统的运作方式。",
     "say": [
       {
-        "text": "机器人不回复了,帮我查一下日志和出站消息",
-        "note": "会先看错误日志与 outbound.db"
+        "text": "机器人不回复了,帮我查日志和会话数据库",
+        "note": "会先看主机错误日志与会话 DB"
       },
       {
-        "text": "查一下这个会话的 inbound.db,消息到底有没有到容器",
-        "note": "会列出最近的 messages_in 记录"
+        "text": "容器一启动就退出、没有回复,帮我排查",
+        "note": "会查容器退出码和 streamed stderr"
       },
       {
-        "text": "容器一启动就退出,看看 stderr 和退出码"
+        "text": "OneCLI 网关连不上,检查 127.0.0.1:10254",
+        "note": "会确认网关是否可达"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-16T08:20:39.202Z",
+    "generated_at": "2026-09-17T08:26:45.413Z",
     "lint_pass": true,
-    "what_en": "Installs a debugging guide for the containerized agent: where host and setup logs live, how to read the inbound/outbound session DBs, mount targets, and common failure causes.",
-    "when_en": "Triggers when the bot stops replying, a container exits right away, or authentication fails.",
+    "what_en": "Once installed, Claude follows this guide to debug NanoClaw container agent issues: reading host logs, the two session DBs, mounts, and heartbeats to locate undelivered messages, containers that exit immediately, and auth failures.",
+    "when_en": "Triggers when things aren't working, a container fails, auth problems appear, or you want to understand how the container system works.",
     "say_en": [
       {
-        "text": "The bot stopped replying — check the logs and messages_out for me.",
-        "note": "Starts with the error log and the outbound DB."
+        "text": "The bot stopped replying, check the logs and session DBs",
+        "note": "Starts with the host error log and session DBs"
       },
       {
-        "text": "Check whether my message actually reached the container in inbound.db.",
-        "note": "Lists recent messages_in rows."
+        "text": "The container exits immediately with no reply, help me debug",
+        "note": "Checks exit code and streamed stderr"
       },
       {
-        "text": "The container exits right away on start — look at stderr and the exit code.",
-        "note": "Needs LOG_LEVEL=debug for streamed stderr."
+        "text": "The OneCLI gateway seems unreachable, check 127.0.0.1:10254",
+        "note": "Confirms the gateway is up"
       }
     ]
   }

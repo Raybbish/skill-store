@@ -5,7 +5,7 @@
     "name": "host-observer",
     "description": "Use this when fulfilling claude-mem observer jobs on Grok Bot: reply only skip_summary or one full observation XML, never prose.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-grok-bot/skills/host-observer",
-    "upstream_commit": "dcfc44221deabc228b0698a0012f87ed2fe6bbe7",
+    "upstream_commit": "d8bc9755e74915e5c3b999181e10a67c889bce2a",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94003,
+    "stars_github": 94079,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-16T08:12:28.616Z",
+    "fetched_at": "2026-09-17T08:18:46.692Z",
     "first_seen_at": "2026-09-03T07:38:50.068Z",
-    "upstream_commit_at": "2026-09-15T18:00:28-07:00",
+    "upstream_commit_at": "2026-09-16T12:26:51-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-16T08:12:28.616Z",
+    "generated_at": "2026-09-17T08:18:46.692Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,40 +86,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在 claude-mem 的观察者任务里,Claude 只回两种内容:没有可留内容时回 skip_summary 标签,完成可检索单元时回一条 observation XML(含标题、4–10 条带路径的事实和叙述),不写散文。",
-    "when": "当 claude-mem 的观察者任务交给它时(claude-mem 生成循环、Grok Bot 上的 observer job 等),由它接管这次回复。",
+    "what": "Claude 在 claude-mem 的生成循环里只回 XML:空闲或没有工具结果时回 skip_summary,完成可搜索单元时回一条 observation(真实标题、4–10 条带路径的事实),结果写进 outbox/{id}.txt 或作为 chat-completions 正文返回。",
+    "when": "当它作为 claude-mem 的观察者模型处理收件箱任务,或需要把 XML 作为 chat-completions 正文返回时接管;空闲、初始化、没有工具结果时走 skip_summary。",
     "say": [
       {
-        "text": "跑一遍这个 observer 任务,别写散文。"
+        "text": "这条任务没有工具结果,回 skip_summary reason=noise",
+        "note": "只回该标签,不写散文"
       },
       {
-        "text": "这个搜索单元请生成 observation,标题别用工具名。",
-        "note": "会产出含 4–10 条带路径事实的 XML。"
+        "text": "把这个可搜索单元写成一条 observation,带 4–10 条事实和路径",
+        "note": "只输出一段 XML"
       },
       {
-        "text": "没有实质内容就直接 skip_summary。",
-        "note": "返回 reason 为 noise 的空结果。"
+        "text": "结果写到 outbox/{id}.txt,不要直接 POST 保存接口",
+        "note": "除最后手段外不调 /api/memory/save"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-16T08:21:12.204Z",
+    "generated_at": "2026-09-17T08:27:17.777Z",
     "lint_pass": true,
-    "what_en": "Inside claude-mem observer jobs, Claude replies with only one of two things: a skip_summary tag when nothing is worth keeping, or one observation XML with a real title, 4-10 facts with paths and a narrative. It never writes prose.",
-    "when_en": "Triggers when a claude-mem observer job (claude-mem generator loop, an observer job on Grok Bot, etc.) is handed to it; it then takes over the reply.",
+    "what_en": "Inside claude-mem's generator loop, Claude replies with XML only: skip_summary when idle or with no tool results, or one observation (real title, 4–10 facts with paths). Output goes to outbox/{id}.txt or the chat-completions body.",
+    "when_en": "Triggers when it acts as the claude-mem observer handling inbox jobs, or returns the XML as the chat-completions body; idle, init, or no tool results go to skip_summary.",
     "say_en": [
       {
-        "text": "Run this observer job and reply without prose.",
-        "note": "It returns only skip_summary or one observation XML."
+        "text": "No tool results for this job — reply skip_summary reason=noise",
+        "note": "Returns that tag, no prose"
       },
       {
-        "text": "Produce an observation for this searchable unit, no tool-name titles.",
-        "note": "Outputs XML with 4-10 facts and paths."
+        "text": "Write this searchable unit as one observation with 4–10 facts and paths",
+        "note": "One XML block only"
       },
       {
-        "text": "If there is nothing real, just skip_summary.",
-        "note": "Returns an empty noise result."
+        "text": "Write the result to outbox/{id}.txt, don't POST the save endpoint",
+        "note": "Avoid /api/memory/save"
       }
     ]
   }

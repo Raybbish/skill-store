@@ -5,7 +5,7 @@
     "name": "visual-qa",
     "description": "Runs rigorous visual QA across web, terminal, and paginated surfaces with screenshot evidence and a verdict. Use for any UI build or change, or when asked whether a page, component, or TUI looks right.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/visual-qa",
-    "upstream_commit": "41255b6e448fb610fb45fa243fc3a45166c95ef6",
+    "upstream_commit": "ceb3cce0bff4d4de6213e0066ee630b2534c9f73",
     "content_hash": "sha256:1ad51c59e8046af2124e3c1f5abe4d0ca9618399343318dd8e4872e2fd9eb01c",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69085,
+    "stars_github": 69129,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-16T08:12:33.411Z",
+    "fetched_at": "2026-09-17T08:18:51.682Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-16T16:52:23+09:00",
+    "upstream_commit_at": "2026-09-17T16:55:57+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-16T08:12:33.411Z",
+    "generated_at": "2026-09-17T08:18:51.682Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -111,41 +111,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "对渲染出来的界面做视觉 QA:先截图取证、跑脚本得到 diff 比例和溢出行等数字,再派两个只读评审子代理并行审查,最后合成一个通过/退回/失败的判定。",
-    "when": "在构建或改动 UI 之后、宣布完成之前触发;当输出要匹配 mock、基线或设计意图,或怀疑有回归、CJK 文本截断、终端布局溢出时。",
+    "what": "装上后,Claude 在构建或改动 UI 后会截图取证、跑脚本对比,再并行派两个只读审查子代理,综合出一条好/坏结论。覆盖网页、终端 TUI 和分页文档。",
+    "when": "在你构建或修改任何 UI 之后触发,或当你问某个页面、组件、TUI 看起来对不对时;没有渲染界面的纯后端或库逻辑会跳过。",
     "say": [
       {
-        "text": "给这个页面跑一次 visual QA,给我判定和截图证据",
-        "note": "先截图跑 image-diff,再派两个评审"
+        "text": "帮我对这个页面做 visual QA,给我截图和结论",
+        "note": "会截图、跑 diff,再派两个只读审查子代理出结论"
       },
       {
-        "text": "拿这份 Figma 参考图对比现在的实现,逐页截图",
-        "note": "每个参考页面和视口都要对比"
+        "text": "这个 TUI 的边框有没有断、宽度有没有溢出?",
+        "note": "对终端截图跑 tui-check,看宽度、溢出与边框对齐"
       },
       {
-        "text": "这个 TUI 在 120 列下会溢出吗?跑一下 tui-check",
-        "note": "返回最大宽度和溢出行的 JSON"
+        "text": "这版和 mock 图差多少?",
+        "note": "跑 image-diff,给出相似度分数与热点区域"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1ad51c59e8046af2124e3c1f5abe4d0ca9618399343318dd8e4872e2fd9eb01c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-16T08:19:01.797Z",
+    "generated_at": "2026-09-17T08:24:59.592Z",
     "lint_pass": true,
-    "what_en": "Does visual QA on a rendered UI: captures screenshots and script evidence (diff ratio, overflow lines), dispatches two read-only reviewers in parallel, then returns one PASS/REVISE/FAIL verdict.",
-    "when_en": "Runs after any UI build or change, before calling it done; when output must match a mock, baseline, or stated intent, or you suspect a regression, CJK clipping, or terminal overflow.",
+    "what_en": "After you build or change a UI, Claude captures screenshot evidence, runs the diff or width-check script, dispatches two read-only reviewer subagents in parallel, and synthesizes one good/bad verdict. Covers web, TUI, and paginated documents.",
+    "when_en": "Triggers after any UI build or change, or when you ask whether a page, component, or TUI looks right. Skips pure backend or library logic with no rendered surface.",
     "say_en": [
       {
-        "text": "Run visual QA on this page and give me a verdict with screenshot evidence",
-        "note": "captures, diffs, then two reviewers"
+        "text": "Run visual QA on this page and give me the screenshots and verdict.",
+        "note": "Captures, diffs, and dispatches two reviewers."
       },
       {
-        "text": "Compare the current build against this Figma reference, page by page",
-        "note": "every reference page and viewport is compared"
+        "text": "Does this TUI have broken borders or width overflow?",
+        "note": "Runs tui-check on the terminal capture."
       },
       {
-        "text": "Will this TUI overflow at 120 columns? Run tui-check",
-        "note": "returns max width and overflow lines"
+        "text": "How far is this build from the mock?",
+        "note": "image-diff returns a similarity score and hotspots."
       }
     ]
   }

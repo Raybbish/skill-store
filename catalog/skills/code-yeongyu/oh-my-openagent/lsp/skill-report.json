@@ -5,7 +5,7 @@
     "name": "lsp",
     "description": "Use when Codex needs language-server diagnostics, definitions, references, symbols, or rename safety checks in the current workspace.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/lsp/skills/lsp",
-    "upstream_commit": "41255b6e448fb610fb45fa243fc3a45166c95ef6",
+    "upstream_commit": "ceb3cce0bff4d4de6213e0066ee630b2534c9f73",
     "content_hash": "sha256:46143f2cc0b6cbf136b8c819f2cc0da8dc1d86e21430b1992f4596c956cceefd",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69085,
+    "stars_github": 69129,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-16T08:12:33.411Z",
+    "fetched_at": "2026-09-17T08:18:51.682Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-16T16:52:23+09:00",
+    "upstream_commit_at": "2026-09-17T16:55:57+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-16T08:12:33.411Z",
+    "generated_at": "2026-09-17T08:18:51.682Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会通过 lsp 系列工具调用语言服务器:检查某个文件或目录的诊断结果、定位符号定义、查找符号引用、查看文档或工作区符号,并校验和执行重命名。",
-    "when": "当你在当前工作区需要语言服务器的诊断、定义跳转或引用查找等能力时触发。若诊断提示缺少语言服务器,先查 lsp.status。",
+    "what": "装上后 Claude 可通过 lsp 工具调用语言服务器：检查文件或目录的诊断报错、跳转到符号定义、查找工作区引用、检查重命名是否安全等，产出的是这些工具返回的诊断与符号信息。",
+    "when": "当 Claude 在当前工作区需要语言服务器能力（诊断、定义、引用等），或做重命名安全检查时触发。若诊断提示缺少语言服务器，应先调用 lsp.status 查看。",
     "say": [
       {
-        "text": "用 lsp 检查这个文件有没有报错",
-        "note": "返回该文件的诊断信息"
+        "text": "用 lsp 检查 src/index.ts 的报错"
       },
       {
-        "text": "找到这个符号在哪里定义的",
-        "note": "返回定义所在文件、行、列"
+        "text": "找出 foo 这个函数在整个工作区的引用",
+        "note": "走 lsp.find_references"
       },
       {
-        "text": "把这个符号重命名成新名字,先看是否可行",
-        "note": "先校验重命名有效性,再应用修改"
+        "text": "把这个文件里的 Bar 重命名为 Baz"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:46143f2cc0b6cbf136b8c819f2cc0da8dc1d86e21430b1992f4596c956cceefd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-16T08:18:36.937Z",
+    "generated_at": "2026-09-17T08:24:29.285Z",
     "lint_pass": true,
-    "what_en": "Claude can call the lsp tools to query a language server: check diagnostics for a file or directory, jump to a symbol definition, find references, inspect symbols, and validate or apply renames in the workspace.",
-    "when_en": "Triggers when you need language-server diagnostics, definitions, references, symbols, or rename safety checks in the current workspace. If a server is missing, check lsp.status first.",
+    "what_en": "With this skill Claude can call the lsp tools to query language servers: check diagnostics for a file or directory, go to a definition, find workspace references, inspect symbols, and verify a rename is safe before applying it.",
+    "when_en": "Triggers when Claude needs language-server diagnostics, definitions, references, or rename safety checks in the workspace. If a language server is missing, use lsp.status first.",
     "say_en": [
       {
-        "text": "Run lsp diagnostics on this file",
-        "note": "Returns diagnostics for that file"
+        "text": "Use lsp to check diagnostics for src/index.ts",
+        "note": "Runs lsp.diagnostics; filter by severity."
       },
       {
-        "text": "Find where this symbol is defined",
-        "note": "Returns file, line, and character"
+        "text": "Find all references of the function foo across the workspace",
+        "note": "Uses lsp.find_references."
       },
       {
-        "text": "Check if renaming this symbol is valid",
-        "note": "Validates the rename, then applies it"
+        "text": "Rename Bar to Baz in this file",
+        "note": "Runs lsp.prepare_rename, then lsp.rename."
       }
     ]
   }

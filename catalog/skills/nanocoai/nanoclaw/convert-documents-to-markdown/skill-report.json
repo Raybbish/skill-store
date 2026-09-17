@@ -5,7 +5,7 @@
     "name": "convert-documents-to-markdown",
     "description": "Convert an attached Word document, presentation, spreadsheet, OpenDocument file, RTF, EPUB, CSV, or text-based PDF into local Markdown. Use when a message supplies a local attachment path that must be read without uploading it to an external parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc/container-skills/convert-documents-to-markdown",
-    "upstream_commit": "65b69ba11c7dcff81e876a49bf9cb879e5b50bfe",
+    "upstream_commit": "6e5008fee8c24d6c20180906523bbdf9494b72a7",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30779,
+    "stars_github": 30791,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-16T08:12:48.935Z",
+    "fetched_at": "2026-09-17T08:19:06.427Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-16T08:57:12+03:00",
+    "upstream_commit_at": "2026-09-16T14:37:10+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-16T08:12:48.935Z",
+    "generated_at": "2026-09-17T08:19:06.427Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,37 +86,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会把消息里给出的本机附件路径中的文档（Word、演示文稿、表格、PDF 等）在本地转成 Markdown，并打印出生成文件的路径。转换全程在本地容器内完成，不上传到外部解析服务。",
-    "when": "当消息提供了本机附件路径，需要读取它而不上传给外部解析服务时触发；扫描版、纯图片 PDF 不支持。",
+    "what": "把消息里附带的本地文档（Word、演示、表格、PDF、EPUB 等）在本地容器内转成 Markdown 文件，并把生成的文件路径返回给你，不会上传到外部解析服务。",
+    "when": "当消息给出一个本地附件路径、需要读取其中内容时，它接管转换；路径须是本地文件，扫描版和纯图片 PDF 不支持。",
     "say": [
       {
-        "text": "把这个 xlsx 转成 Markdown 再帮我看数据",
-        "note": "表格格式可能有损失，不能当作权威表格做计算"
+        "text": "把 inbox 里的 report.docx 转成 Markdown",
+        "note": "本地转换，返回生成的 .md 路径"
       },
       {
-        "text": "这份 PDF 是扫描件，能转吗？",
-        "note": "纯图片 PDF 需要 OCR，本技能不支持"
+        "text": "这份 CSV 从 stdin 转，格式指定为 csv",
+        "note": "用于读取通过管道传入的 CSV"
+      },
+      {
+        "text": "只读转换结果里的表格部分，别全塞进上下文",
+        "note": "只取相关段落，节省上下文"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-16T08:20:35.878Z",
+    "generated_at": "2026-09-17T08:26:43.691Z",
     "lint_pass": true,
-    "what_en": "After install, Claude converts a local attachment path you supply (Word, slides, spreadsheet, OpenDocument, RTF, EPUB, CSV, text-based PDF) into Markdown inside the agent container and prints the output file path.",
-    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser. Scanned or image-only PDFs are unsupported.",
+    "what_en": "It converts a local attached document (Word, slides, spreadsheets, PDF, EPUB, etc.) into a Markdown file inside the agent container and returns the generated path; nothing is uploaded to an external parser.",
+    "when_en": "Triggers when a message supplies a local attachment path whose contents must be read. Scanned and image-only PDFs are unsupported.",
     "say_en": [
       {
-        "text": "Convert /workspace/inbox/msg/report.docx to Markdown",
-        "note": "Writes a .md file under /workspace/agent/converted"
+        "text": "Convert report.docx from the inbox to Markdown",
+        "note": "Runs locally and returns the generated .md path"
       },
       {
-        "text": "Turn this xlsx into Markdown and look at the data",
-        "note": "Spreadsheet formatting may be lossy"
+        "text": "Convert this CSV from stdin, format set to csv",
+        "note": "For reading CSV piped in as input"
       },
       {
-        "text": "This PDF is a scan; can you convert it?",
-        "note": "Image-only PDFs need OCR; unsupported"
+        "text": "Only read the table sections of the converted output",
+        "note": "Keeps the context small"
       }
     ]
   }

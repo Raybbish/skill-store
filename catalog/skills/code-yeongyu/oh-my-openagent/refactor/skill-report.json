@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Guides a refactor, cleanup, or restructure with the right decomposition. Use when the user asks to refactor, simplify, extract, or modernize code.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "41255b6e448fb610fb45fa243fc3a45166c95ef6",
+    "upstream_commit": "ceb3cce0bff4d4de6213e0066ee630b2534c9f73",
     "content_hash": "sha256:f0070b178b0a3c8c2f9e29955ce6fc9dc9a21e42940290ca887a9502a5009d5c",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69085,
+    "stars_github": 69129,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-16T08:12:33.411Z",
+    "fetched_at": "2026-09-17T08:18:51.682Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-16T16:52:23+09:00",
+    "upstream_commit_at": "2026-09-17T16:55:57+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-16T08:12:33.411Z",
+    "generated_at": "2026-09-17T08:18:51.682Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,33 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会按 /refactor 流程走:先确认重构意图、扫描代码与依赖、评估测试覆盖,再生成分步计划逐步改动,每步都用 LSP 检查和跑测试验证。",
-    "when": "当你要求重构、简化、提取或现代化代码时触发;需要给出重构目标,含糊的「清理一下」它会先反问。",
+    "what": "输入 /refactor 后,会按六个阶段推进重构:先确认目标和范围、并行探查代码库、绘制依赖图、评估测试覆盖、生成分步计划,再逐步改写,每步后跑测试与类型检查。",
+    "when": "当你说要重构、简化、提取等代码改动时触发,也可手动运行 /refactor <重构目标>;若测试覆盖不足会先暂停询问。",
     "say": [
       {
-        "text": "/refactor 把校验逻辑提取到独立模块",
-        "note": "先建代码地图与分步计划再动手"
+        "text": "帮我重构 src/auth/handler.ts,范围就限这个文件",
+        "note": "默认按 file 范围和 safe 策略开始分析"
+      },
+      {
+        "text": "把验证逻辑抽成独立模块,策略用 aggressive",
+        "note": "允许更大的改动范围"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f0070b178b0a3c8c2f9e29955ce6fc9dc9a21e42940290ca887a9502a5009d5c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-16T08:18:43.224Z",
+    "generated_at": "2026-09-17T08:24:37.358Z",
     "lint_pass": true,
-    "what_en": "Installs the /refactor command: Claude confirms your intent, maps the codebase and its test coverage, plans atomic steps, then refactors with LSP and AST-grep, running tests after each change.",
-    "when_en": "Triggers when you ask to refactor, simplify, extract, or modernize code. You must name a target; vague \"clean this up\" requests get clarifying questions first.",
+    "what_en": "Runs a six-phase refactor: intent check, parallel codebase exploration, dependency codemap, test-coverage assessment, a step-by-step plan, then edits verified by tests and type checks after each step.",
+    "when_en": "Triggers when you ask to refactor, simplify, extract or modernize code, or when you run /refactor <target>; it pauses and asks first if test coverage is low.",
     "say_en": [
       {
-        "text": "/refactor src/auth/handler.ts --scope=file",
-        "note": "Confirms intent, then touches only this file"
+        "text": "Refactor src/auth/handler.ts, scope limited to that file",
+        "note": "Starts with file scope and safe strategy"
       },
       {
-        "text": "/refactor extract validation logic into its own module",
-        "note": "Builds a codemap and step plan first"
+        "text": "/refactor \"AuthService class\" --scope=module",
+        "note": "Refactors that symbol at module scope"
       },
       {
-        "text": "/refactor AuthService class --strategy=aggressive",
-        "note": "Allows wider changes, still needs coverage"
+        "text": "Extract the validation logic into its own module, aggressive strategy",
+        "note": "Allows broader changes"
       }
     ]
   }

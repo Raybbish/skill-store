@@ -5,7 +5,7 @@
     "name": "ulw-loop",
     "description": "A goal-like loop that decomposes work into systematic, evidence-bound ultrawork steps. Use when the user wants a goal loop or durable, checkpointed execution.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/ulw-loop/skills/ulw-loop",
-    "upstream_commit": "41255b6e448fb610fb45fa243fc3a45166c95ef6",
+    "upstream_commit": "ceb3cce0bff4d4de6213e0066ee630b2534c9f73",
     "content_hash": "sha256:f84aafb7f3aba4c9afbbcbf653633266bc906b0ed957d7333f7fccef6f5586f8",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69085,
+    "stars_github": 69129,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-16T08:12:33.411Z",
+    "fetched_at": "2026-09-17T08:18:51.682Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-16T16:52:23+09:00",
+    "upstream_commit_at": "2026-09-17T16:55:57+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-16T08:12:33.411Z",
+    "generated_at": "2026-09-17T08:18:51.682Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,37 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它把目标拆成一串超细步骤,先注册目标、把每步同步进实时清单,并给每条成功标准配来自真实界面(终端、HTTP、浏览器等)的可观察证据;中断后先读回目标与记录再接着跑,不从零重来。",
-    "when": "当你说 “ulw-loop” 或 “ulw”,或要求可长期断点续跑的目标循环、带证据的工作(如手动 QA)时触发。",
+    "what": "它把任务拆成一条条绑定可观察证据的超细步骤,用 ulw-loop CLI 在 .omo/ulw-loop 下登记目标并同步进度,把代码修改、测试和 QA 派给子代理执行,中断后能按检查点接着跑。",
+    "when": "当你要求 ulw-loop、可长期续跑的目标执行或带检查点的长任务时接管;任务涉及代码改动、测试或提交时按完整流程走。",
     "say": [
       {
-        "text": "用 ulw-loop 帮我开一个目标循环,把这件事拆成一步步带证据的步骤",
-        "note": "先注册目标,再逐步执行并记录证据。"
+        "text": "用 ulw-loop 做这件事,先按 define-goal 注册目标",
+        "note": "先建目标再动手,这一步不跳过"
       },
       {
-        "text": "用 ulw-loop status 看看现在的目标进度和检查点",
-        "note": "读回目标、ledger 与当前状态。"
+        "text": "把这个任务拆成原子步骤,每步都要可观察的证据",
+        "note": "步骤会同步进 update_plan,只有一条在进行"
+      },
+      {
+        "text": "带上原来的 session-id,恢复上次的 ulw-loop 运行继续",
+        "note": "先读目标与账本,不重新规划"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f84aafb7f3aba4c9afbbcbf653633266bc906b0ed957d7333f7fccef6f5586f8",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-16T08:19:05.971Z",
+    "generated_at": "2026-09-17T08:24:54.572Z",
     "lint_pass": true,
-    "what_en": "It splits the goal into ultra-granular steps, keeps a live checklist, and ties each success criterion to real-surface evidence (terminal, HTTP, browser). Goals registered up front; after context loss it resumes from goals and ledger.",
-    "when_en": "Fires when you say “ulw-loop” or “ulw”, or ask for a goal loop, durable checkpointed execution, or evidence-led work such as manual QA.",
+    "what_en": "It splits work into ultra-granular, evidence-bound steps, keeps goal and progress state in the ulw-loop CLI under .omo/ulw-loop, delegates code edits, tests and QA to subagents, and resumes from checkpoints.",
+    "when_en": "Triggers when you ask for ulw-loop, durable goal execution, or a checkpointed long-running task; code edits, tests or commits follow the full workflow.",
     "say_en": [
       {
-        "text": "Use ulw-loop to open a goal loop and split this into evidence-bound steps",
-        "note": "Goals are registered first, then steps run with evidence."
+        "text": "Do this with ulw-loop, registering the goal per define-goal first",
+        "note": "Goals come before any implementation"
       },
       {
-        "text": "Run ulw-loop and register the goal and success criteria via define-goal first",
-        "note": "Goal creation is never skipped."
+        "text": "Break this into atomic steps, each with observable evidence",
+        "note": "Steps mirror the live update_plan checklist"
       },
       {
-        "text": "Check ulw-loop status for current goal progress and checkpoints",
-        "note": "Reads back goals, ledger and current state."
+        "text": "Resume the previous ulw-loop run with its original session-id",
+        "note": "Re-reads brief, goals and ledger first"
       }
     ]
   }
