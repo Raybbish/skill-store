@@ -5,7 +5,7 @@
     "name": "add-rtk",
     "description": "Install rtk token-compression proxy into agent containers. Routes Bash tool calls through rtk for 60–90% token savings on dev commands (git, cargo, pytest, docker, kubectl, etc.).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-rtk",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "65b69ba11c7dcff81e876a49bf9cb879e5b50bfe",
     "content_hash": "sha256:2d794ab4db2bf9ef8982e33e03b2fadb8ef70ea63e033599111fc938314accc6",
     "license": "MIT",
     "hosting": "mirrored",
@@ -24,12 +24,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30779,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-16T08:12:48.935Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-16T08:57:12+03:00",
+    "repo_skill_count": 61,
     "bulk_source": true
   },
   "context_size": {
@@ -39,7 +39,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-16T08:12:48.935Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -95,41 +95,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 执行 Bash 命令时会被自动转发给 rtk 代理,压缩令牌消耗;对 git、cargo、pytest 等开发命令可节省 60–90% 令牌。",
-    "when": "当 Claude 要运行 Bash 工具命令(如 git、cargo、pytest 等)时会自动触发。",
+    "what": "安装 rtk 代理并接入 Claude Code 的 PreToolUse 钩子后,Claude 的每次 Bash 命令都会自动经 rtk 过滤,在 git、cargo、pytest 等开发命令上省 60–90% token,无需在 CLAUDE.md 里写指令。",
+    "when": "当你要把 rtk 装进 agent 容器或某个 agent group 时,按它的步骤做安装、挂载和钩子写入;之后该组里跑 git、cargo、pytest 等 Bash 命令会被 PreToolUse 钩子接管。",
     "say": [
       {
-        "text": "运行 git status",
-        "note": "该命令会通过 rtk 代理执行,节省令牌。"
+        "text": "把 rtk 装进我的 agent 容器",
+        "note": "会执行安装、挂载与钩子写入。"
       },
       {
-        "text": "跑一遍 pytest 测试",
-        "note": "同样由 rtk 处理,减少令牌用量。"
+        "text": "给 ag-xxx 这个组的 Bash 加上 rtk 钩子"
       },
       {
-        "text": "执行 docker ps 查看容器",
-        "note": "Bash 调用会被 rtk 自动拦截。"
+        "text": "跑一下 git status,看 rtk 有没有拦截",
+        "note": "之后可用 rtk gain 查看节省量。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2d794ab4db2bf9ef8982e33e03b2fadb8ef70ea63e033599111fc938314accc6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:06:09.894Z",
+    "generated_at": "2026-09-16T08:20:29.464Z",
     "lint_pass": true,
-    "what_en": "After installation, every Bash command run by Claude is automatically routed through the rtk proxy, compressing token usage; on dev commands like git, cargo, pytest it can save 60–90% tokens.",
-    "when_en": "Triggered automatically whenever Claude is about to run a Bash tool command (such as git, cargo, pytest, etc.).",
+    "what_en": "After install, every Bash tool call goes through the rtk proxy via the PreToolUse hook in the agent group's settings.json, saving 60–90% tokens on dev commands like git, cargo, pytest. No CLAUDE.md instructions needed.",
+    "when_en": "Triggers when you ask to install rtk into an agent container or group; its PreToolUse hook then intercepts every Bash call, covering commands such as git, cargo or pytest.",
     "say_en": [
       {
-        "text": "Run git status",
-        "note": "The command goes through the rtk proxy to save tokens."
+        "text": "Install rtk into my agent container",
+        "note": "Runs the install, mount and hook steps."
       },
       {
-        "text": "Run pytest tests",
-        "note": "Handled by rtk, reducing token usage."
+        "text": "Add the rtk Bash hook to group ag-xxx",
+        "note": "Writes the PreToolUse entry in settings.json."
       },
       {
-        "text": "Run docker ps",
-        "note": "Bash calls are intercepted by rtk."
+        "text": "Run git status and see if rtk intercepts it",
+        "note": "Then run rtk gain to check savings."
       }
     ]
   }
