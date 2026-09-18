@@ -5,7 +5,7 @@
     "name": "pre-publish-review",
     "description": "Nuclear-grade 12-agent pre-publish release gate. Runs /get-unpublished-changes to detect all changes since last npm release, spawns up to 10 ultrabrain agents for deep per-change analysis, invokes /review-work (orchestrator manual QA plus one gate reviewer) for holistic review, and 1 oracle for overall release synthesis. Runs ONLY when the user explicitly asks for a pre-publish review — a plain publish/release request MUST NOT trigger this; /publish ships directly. Triggers: 'pre-publish review', 'review before publish', 'release review', 'pre-release review', 'ready to publish?', 'can I publish?', 'pre-publish', 'safe to publish', 'publishing review', 'pre-publish check'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/pre-publish-review",
-    "upstream_commit": "ceb3cce0bff4d4de6213e0066ee630b2534c9f73",
+    "upstream_commit": "796dd7dfdaedb9a9142402aec1a63a98e6e933f6",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69129,
+    "stars_github": 69175,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-17T08:18:51.682Z",
+    "fetched_at": "2026-09-18T07:53:23.971Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-17T16:55:57+09:00",
+    "upstream_commit_at": "2026-09-18T14:58:28+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-17T08:18:51.682Z",
+    "generated_at": "2026-09-18T07:53:23.971Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,42 +89,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它先跑 /get-unpublished-changes 列出上次 npm 以来的改动，再启动最多 10 个 ultrabrain agent 逐组审查，最后由 /review-work 与 1 个 oracle 做整体审查与风险评估。",
-    "when": "只有你明确要求发布前审查（如说「pre-publish review」）才触发；单纯说 publish 或 release 不会触发，会直接发布。",
+    "what": "触发后先跑 /get-unpublished-changes 列出上次 npm 发布以来的全部改动,再并行启动最多 10 个 ultrabrain 逐个改动组深挖、1 个 /review-work 做整体评审、1 个 oracle 做发布总结,最后汇总各发布层的版本号建议与阻断问题。",
+    "when": "只有你明确要求发布前评审时才触发;普通 publish/release 请求不会触发,它直接由 /publish 发布。触发词如「pre-publish review」「release review」「can I publish?」等。",
     "say": [
       {
-        "text": "帮我跑一次 pre-publish review",
-        "note": "先列出未发布改动，再分组深审。"
+        "text": "帮我做一次 pre-publish review",
+        "note": "会先检测未发布改动,再启动多层评审"
       },
       {
-        "text": "这次改动能安全发到 npm 吗？发布前审一下",
-        "note": "最后给出发布风险结论与版本号建议。"
+        "text": "这次改动可以做 release review 吗?",
+        "note": "产出各发布层版本号建议与阻断问题"
       },
       {
-        "text": "帮我做一次 pre-release review",
-        "note": "逐组审查后会做整体审查。"
+        "text": "先跑 pre-publish check,看看能否发布",
+        "note": "由 oracle 给出发布风险判定"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:24:47.923Z",
-    "lint_pass": true,
-    "what_en": "When you explicitly ask for a pre-publish review, it runs /get-unpublished-changes to list changes since the last npm release, spawns up to 10 ultrabrain agents plus /review-work and 1 oracle to review them and summarize release risk.",
-    "when_en": "Runs only when you explicitly ask for a pre-publish review, such as 'pre-publish review', 'release review' etc.; a plain publish or release request does not trigger it — /publish ships directly.",
-    "say_en": [
-      {
-        "text": "Run a pre-publish review for me.",
-        "note": "Lists unpublished changes, then reviews them."
-      },
-      {
-        "text": "Is this safe to publish to npm? Review it first.",
-        "note": "Ends with a release-risk verdict."
-      },
-      {
-        "text": "Do a pre-release review of my changes.",
-        "note": "Per-group review, then holistic review."
-      }
-    ]
+    "generated_at": "2026-09-18T07:59:30.751Z",
+    "lint_pass": true
   }
 }

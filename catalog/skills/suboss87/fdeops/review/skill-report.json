@@ -5,8 +5,8 @@
     "name": "review",
     "description": "Review a proposed customer code change against its intended outcome and operational risks. Use for a diff or PR review; report evidence and actionable findings.",
     "upstream": "https://github.com/suboss87/FDEOps/tree/Main/skills/review",
-    "upstream_commit": "ff20d75ae93c64b8550753c256e0a5b00b468a38",
-    "content_hash": "sha256:f037a7c1c4d24b9ccc3a34f038a74626805dc8bc8771c13513bb9388324bfb0c",
+    "upstream_commit": "f164dc7e2a782ee9d07dff05535568ecd51bc5f7",
+    "content_hash": "sha256:7262c41d9e808517194f32ae63f4a3d7b005669e3448b5d7b83742a842138552",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 797,
+    "stars_github": 825,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-17T08:20:31.266Z",
+    "fetched_at": "2026-09-18T07:55:43.094Z",
     "first_seen_at": "2026-09-17T08:20:31.266Z",
-    "upstream_commit_at": "2026-09-17T13:46:45+05:30",
+    "upstream_commit_at": "2026-09-18T10:34:11+05:30",
     "repo_skill_count": 36
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-17T08:20:31.266Z",
+    "generated_at": "2026-09-18T07:55:43.094Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -61,6 +61,7 @@
         "files": [
           ".fde-generated.json",
           "SKILL.md",
+          "agents/openai.yaml",
           "references/build.md",
           "references/debug.md",
           "references/eval-pack.md",
@@ -71,71 +72,70 @@
           "references/task-context.md",
           "references/verification.md"
         ],
-        "text_files": 11,
-        "bytes": 46875,
-        "chars": 46867,
-        "tokens": 9209
+        "text_files": 12,
+        "bytes": 47373,
+        "chars": 47365,
+        "tokens": 9296
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "把代码改动对照预期目标和运行风险过一遍,给出带证据的可执行结论",
+    "tagline": "对照预期目标与运行风险审读代码改动,给出有证据、可落地的审查结论",
     "scene_tags": [
-      "上线前评审",
-      "pr检查",
-      "变更风险评估"
+      "代码评审",
+      "合并前把关",
+      "上线前检查"
     ],
-    "fit_line": "适合你,如果合并前想把改动风险看清、并留下书面结论",
-    "tagline_en": "Check a code change against its goal and operational risks, with evidence.",
+    "fit_line": "适合你,如果每次有人提交代码改动,都需要先弄清它是否达到预期、会不会带来运行风险",
     "scene_tags_en": [
-      "pre-merge review",
-      "PR check",
-      "change risk"
+      "code review",
+      "pre-merge check",
+      "pre-release audit"
     ],
-    "fit_line_en": "For you if you want risks surfaced before merging a change.",
+    "fit_line_en": "For you if every incoming diff needs a risk-and-intent check before it ships",
     "source": "llm",
-    "content_hash": "sha256:f037a7c1c4d24b9ccc3a34f038a74626805dc8bc8771c13513bb9388324bfb0c",
+    "content_hash": "sha256:7262c41d9e808517194f32ae63f4a3d7b005669e3448b5d7b83742a842138552",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:23:19.120Z",
+    "generated_at": "2026-09-18T07:58:15.254Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会审查客户提交的代码改动(diff 或 PR),对照预期结果与运维风险,给出带证据、可执行的发现。它直接基于你提供的上下文工作,不需要初始化。",
-    "when": "当你需要审查某个 diff 或 PR 时触发。若由 @fde 调用,则复用它当前的脱敏数据包与范围,不重新做设置、探索或已答过的问题。",
+    "what": "装上后,Claude 会审查一份提交的客户代码改动(diff 或 PR),对照它想达成的预期结果和运行风险,给出证据和可执行的发现。它直接从你提供的上下文入手,不需要初始化或建工作目录。",
+    "when": "当你要审查一份 diff 或 PR 时触发。若被 @fde 调用,则复用其当前的脱敏数据包与范围,不重启设置、不重复已答过的问题。",
     "say": [
       {
-        "text": "帮我审一下这个 PR 的改动",
-        "note": "会对照预期结果给出带证据的发现"
+        "text": "审查这个 PR,对照它的预期结果列出风险",
+        "note": "输出证据和可执行的发现"
       },
       {
-        "text": "这个 diff 有哪些运维风险?",
-        "note": "会区分实现、验证、部署与验收"
+        "text": "这是客户代码的 diff,帮我看看运行风险",
+        "note": "基于你提供的上下文分析"
       },
       {
-        "text": "审这个改动,并列出未运行的检查",
-        "note": "缺能力或未跑的检查会如实说明"
+        "text": "没跑过的检查请如实标注,别当成已验证",
+        "note": "缺失能力会照实报告"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:f037a7c1c4d24b9ccc3a34f038a74626805dc8bc8771c13513bb9388324bfb0c",
+    "content_hash": "sha256:7262c41d9e808517194f32ae63f4a3d7b005669e3448b5d7b83742a842138552",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:28:33.280Z",
+    "generated_at": "2026-09-18T08:02:17.434Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude reviews a customer code change (a diff or PR) against its intended outcome and operational risks, reporting evidence-backed, actionable findings. It works from the context you supply and needs no setup.",
-    "when_en": "Triggers when you need a diff or PR reviewed. If called by @fde, it reuses that run's sanitized packet and scope instead of restarting setup, discovery, or already answered questions.",
+    "what_en": "Reviews a proposed customer code change (a diff or PR) against its intended outcome and operational risks, reporting evidence and actionable findings. It works from the supplied context; no initialization or engagement folder is needed.",
+    "when_en": "Triggers when you supply a diff or PR for review. If called by @fde, it reuses that sanitized packet and scope instead of restarting setup or re-asking answered questions.",
     "say_en": [
       {
-        "text": "Review this PR's changes for me",
-        "note": "Reports evidence-backed findings against the intended outcome"
+        "text": "Review this PR against its intended outcome and list the risks.",
+        "note": "Reports evidence and actionable findings."
       },
       {
-        "text": "What operational risks does this diff carry?",
-        "note": "Separates implementation, verification, deployment, acceptance"
+        "text": "Here's the customer diff — check it for operational risks.",
+        "note": "Analyzes the context you supplied."
       },
       {
-        "text": "Review this change and list unrun checks",
-        "note": "Missing capabilities are reported honestly"
+        "text": "Flag checks that weren't run instead of treating them as verified.",
+        "note": "Missing capability gets reported."
       }
     ]
   }

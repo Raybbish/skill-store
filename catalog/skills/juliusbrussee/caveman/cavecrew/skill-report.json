@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "When to delegate to `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit) or `cavecrew-reviewer` (diff review) instead of working inline or using `Explore`. Their output is compressed, so main context lasts longer.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "c2906c626be1d703b04e203d9f804a263e87f4ef",
+    "upstream_commit": "542442bab314973709f95b85b1ac0b3f6f5b5dc6",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 306600,
-    "fetched_at": "2026-09-17T08:20:59.649Z",
+    "installs_skills_sh": 308800,
+    "fetched_at": "2026-09-18T07:56:25.823Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-16T15:28:13-07:00"
+    "upstream_commit_at": "2026-09-17T18:46:32+02:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-17T08:20:59.649Z",
+    "generated_at": "2026-09-18T07:56:25.823Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,38 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会把「定位代码」「改 1-2 个文件」「审查 diff」这三类活交给三个 cavecrew 子代理去做。它们返回的是压缩过的结构化结果，所以主对话的上下文消耗更少、能撑更久。",
-    "when": "当你要查某处定义或调用位置、做 ≤2 个文件的小改动、或审查 diff 时，会交给对应子代理；跨多文件重构、想要详细分析或只要一句话答案时，留在主线程。",
+    "what": "装上后,Claude 在查找代码、改 1-2 个文件、审查 diff 这类活儿上会交给 cavecrew 子代理去做。子代理返回的工具结果是压缩过的,主上下文占用更小,一次会话里能多用几轮。",
+    "when": "当你要定位代码、做范围明确的小改动(≤2 个文件)、或审查 diff 时,会委派给对应的 cavecrew 子代理;想要架构建议、大范围重构或深度评审则不用它。",
     "say": [
       {
-        "text": "帮我找一下 parseConfig 在哪定义、哪些地方调用它"
+        "text": "用 cavecrew-investigator 找一下 X 在哪定义、谁调用了它",
+        "note": "返回路径加行号的清单"
       },
       {
-        "text": "把 src/api.ts:42 改成用新的 client，只改这一个文件"
+        "text": "让 cavecrew-builder 把这两个文件里的 Y 改掉",
+        "note": "只做 2 个文件以内的手术式编辑"
       },
       {
-        "text": "审查当前分支的 diff，只看 bug"
+        "text": "用 cavecrew-reviewer 审一下这次的 diff",
+        "note": "只报问题,不给架构意见"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:25:27.635Z",
+    "generated_at": "2026-09-18T08:00:11.461Z",
     "lint_pass": true,
-    "what_en": "After installing, Claude delegates locating code, 1-2 file edits, and diff reviews to three cavecrew subagents. Their tool results are compressed, so main context shrinks per delegation and lasts longer.",
-    "when_en": "Use it to locate a definition or caller, make a small edit within 1-2 files, or review a diff. For multi-file refactors or prose-style analysis, stay on the main thread.",
+    "what_en": "Once installed, Claude delegates code lookup, small edits, and diff review to cavecrew subagents. Their tool results return compressed, so the main context shrinks per delegation and lasts longer across a session.",
+    "when_en": "Triggers when Claude needs to locate code, make a surgical edit in 1-2 files, or review a diff. For architecture suggestions, deep review, or 3+ file refactors it stays on the main thread.",
     "say_en": [
       {
-        "text": "Find where parseConfig is defined and every place it's called.",
-        "note": "Spawns cavecrew-investigator; returns a path:line list"
+        "text": "Use cavecrew-investigator to find where X is defined and what calls it",
+        "note": "Returns a path:line list of sites"
       },
       {
-        "text": "Change src/api.ts:42 to use the new client; just this one file.",
-        "note": "Hands off to cavecrew-builder with a verified summary"
+        "text": "Have cavecrew-builder change Y in these two files",
+        "note": "Edits at most 2 files"
       },
       {
-        "text": "Review the current branch diff for bugs only.",
-        "note": "cavecrew-reviewer returns findings sorted by line"
+        "text": "Run cavecrew-reviewer on this diff",
+        "note": "Findings only, no architecture opinions"
       }
     ]
   }

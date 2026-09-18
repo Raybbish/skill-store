@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Processes and analyzes data with resident-kernel engines (DuckDB, Polars) and one-shot tools. Use for CSV/parquet/JSON analysis, group-by/join/aggregation, time series, distributions, cleaning, or plotting a dataset.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "ceb3cce0bff4d4de6213e0066ee630b2534c9f73",
+    "upstream_commit": "796dd7dfdaedb9a9142402aec1a63a98e6e933f6",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69129,
+    "stars_github": 69175,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-17T08:18:51.682Z",
+    "fetched_at": "2026-09-18T07:53:23.971Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-09-17T16:55:57+09:00",
+    "upstream_commit_at": "2026-09-18T14:58:28+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-17T08:18:51.682Z",
+    "generated_at": "2026-09-18T07:53:23.971Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -105,41 +105,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会用 DuckDB、Polars、numpy 在常驻内核里直接查询 CSV、Parquet、JSON,做分组、连接、聚合、时间序列和清洗,并按需画图。它先决定计算放在内存、流式还是远程,再给出答案,重活会报告行数与耗时。",
-    "when": "当你要求分析 CSV、Parquet、JSON 数据集,做分组聚合或画图等数据问题时接管;没有内核或 REPL 环境时改走 CLI 脚本。",
+    "what": "Claude 会先判断计算该在哪执行(内存、原地或远程),再用 DuckDB、Polars 等常驻内核引擎分析 CSV/Parquet/JSON 数据,回答分组、连接、聚合等问题,并报告行数与耗时,也不使用 pandas。",
+    "when": "当你要求分析 CSV/Parquet/JSON 数据,或做分组、连接、聚合等操作时触发;没有内核的终端环境也有 CLI 方式兜底。",
     "say": [
       {
-        "text": "分析这份 sales.csv,按月汇总销售额并报告耗时",
-        "note": "会先探测文件与内存再执行"
+        "text": "先用 DuckDB 直接查询 data.csv,按地区汇总销售额",
+        "note": "会返回汇总结果、行数与耗时"
       },
       {
-        "text": "把 data.parquet 按地区求均值,再画个分布图",
-        "note": "画图前按可视化参考执行质检"
+        "text": "把这份数据清洗一下,再画一张趋势图",
+        "note": "绘图前先读可视化参考并做视觉检查"
       },
       {
-        "text": "合并 orders.json 和 users.csv,找出没下过单的用户",
-        "note": "用 DuckDB 就地连接两个文件"
+        "text": "这个文件比内存大,用 Polars 流式处理它",
+        "note": "会限制内存并流式查询,不整份载入"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:24:15.777Z",
+    "generated_at": "2026-09-18T07:59:18.802Z",
     "lint_pass": true,
-    "what_en": "Claude analyzes CSV, Parquet, and JSON with DuckDB, Polars, and numpy in a resident kernel: joins, aggregation, time series, cleaning, charts. It decides where the computation runs first, then reports row counts and timing.",
-    "when_en": "Triggers when you ask for analysis of a CSV, Parquet, or JSON dataset, group-by/aggregation, or a chart; with no kernel or REPL it falls back to a CLI script.",
+    "what_en": "Claude decides where computation runs (memory, in place, or remote), then analyzes CSV/Parquet/JSON with engines like DuckDB and Polars — group-by, joins, time series — reporting row counts and timing. No pandas, no extra charts.",
+    "when_en": "Triggers when you ask to analyze CSV/Parquet/JSON data or do group-by, joins, aggregation and similar work; a CLI fallback covers harnesses without a kernel.",
     "say_en": [
       {
-        "text": "Analyze sales.csv: monthly revenue totals with timing",
-        "note": "Probes file and memory before running"
+        "text": "Query data.csv with DuckDB and sum sales by region",
+        "note": "Returns the totals with row counts and timing"
       },
       {
-        "text": "Group data.parquet by region, average values, plot the distribution",
-        "note": "Runs the visualization QA step"
+        "text": "Clean this dataset, then plot a trend chart",
+        "note": "Reads the visualization guide and does a visual check first"
       },
       {
-        "text": "Join orders.json with users.csv to find users who never ordered",
-        "note": "Joins both files in place with DuckDB"
+        "text": "This file is bigger than RAM — process it with Polars streaming",
+        "note": "Caps memory and streams instead of loading it all"
       }
     ]
   }

@@ -16,9 +16,10 @@ documented commands, then record results and deviations. Start with
 `references/deep-learning-experiment-principles.md` when scientific meaning or
 experiment details are at stake.
 
-The deterministic entrypoint is `scripts/orchestrate_repro.py`. It includes a
-self-contained `_bundled/` runtime, so this skill works when installed alone;
+For first-use problems, run `scripts/doctor.py` with the intended Python (read-only; optional `--repo` and `--require-module`).
+The deterministic entrypoint is `scripts/orchestrate_repro.py` with a self-contained `_bundled/` runtime, so this skill works when installed alone;
 separately installed companion skills remain optional reusable entrypoints.
+Use the entrypoint and `--help` for routine runs; inspect its implementation when a concrete blocker or safety question requires it.
 Executed commands persist lifecycle state, append-only events, and full streamed
 stdout/stderr under `repro_outputs/_runtime/<run_id>/`. A `CANCEL` file in the
 active run directory requests process-tree cancellation.
@@ -63,12 +64,12 @@ narrow reproduction-critical gap.
 5. Run `analyze-project` only when structure, insertion points, or suspicious
    implementation patterns need read-only clarification.
 6. Use `minimal-run-and-audit` for documented inference, evaluation, smoke, or sanity execution. Keep direct execution as the default; native shell syntax requires explicit review and authorization.
-7. Use `run-train` instead when the selected trusted target is training startup,
-   short-run verification, full kickoff, or resume.
+7. Use `run-train` instead when the selected trusted target is training startup, short-run verification, full kickoff, or resume.
 8. Pause for human review before fuller training claims or any change that could
    alter dataset, split, checkpoint, preprocessing, metric, loss, model
    semantics, or result interpretation.
 9. Award `result-match` only when explicit expected metrics are compared under a recorded tolerance; observed metrics alone prove execution, not reproduction. Then write the standardized outputs and a concise final note in the user's language when practical.
+10. Once the requested target and evidence checks are complete, return the bounded result and stop. Optional stages and further README commands are not automatic follow-up work.
 
 ## Patch Boundary
 
@@ -125,6 +126,5 @@ Use the templates under `assets/` and the field rules in `references/output-spec
 - Load `references/research-safety-principles.md` before protocol-sensitive
   decisions.
 - Load `references/patch-policy.md` before modifying repository files.
-- Keep specialized logic in sub-skills, scripts, templates, or references rather
-  than expanding this entrypoint.
+- Keep specialized logic in sub-skills, scripts, templates, or references rather than expanding this entrypoint.
 

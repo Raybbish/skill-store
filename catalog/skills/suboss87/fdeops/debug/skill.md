@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Investigate and repair a reproducible failure in a customer integration or application. Use for diagnosis and regression prevention; follow incident authority for live mitigation.
+description: Investigate a failure, regression or incorrect result in an integration or application, even before it can be reproduced. Use for diagnosis and repair; follow incident authority for live mitigation.
 ---
 
 # debug
@@ -9,7 +9,7 @@ description: Investigate and repair a reproducible failure in a customer integra
 
 ## Purpose
 
-Investigate and repair a reproducible failure in a customer integration or application. Use for diagnosis and regression prevention; follow incident authority for live mitigation.
+Investigate a failure, regression or incorrect result in an integration or application, even before it can be reproduced. Use for diagnosis and repair; follow incident authority for live mitigation.
 
 Before investigating or acting:
 1. Read [the task context contract](references/task-context.md).

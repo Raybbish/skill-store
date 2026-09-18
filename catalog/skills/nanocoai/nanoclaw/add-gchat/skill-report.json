@@ -5,7 +5,7 @@
     "name": "add-gchat",
     "description": "Add Google Chat channel integration via Chat SDK.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-gchat",
-    "upstream_commit": "6e5008fee8c24d6c20180906523bbdf9494b72a7",
+    "upstream_commit": "7902716b5b930215dbee4f56b8fb5b938d40468d",
     "content_hash": "sha256:9bfb24b30ec8b07e85d6a5ad2c205cc1b1fdb6795dbec96e9070d55c731aa326",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30791,
+    "stars_github": 30796,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-17T08:19:06.427Z",
+    "fetched_at": "2026-09-18T07:53:41.787Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-16T14:37:10+02:00",
+    "upstream_commit_at": "2026-09-17T19:26:51+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-17T08:19:06.427Z",
+    "generated_at": "2026-09-18T07:53:41.787Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,33 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给 NanoClaw 加上 Google Chat 渠道:从 channels 分支复制 gchat 适配器和它的注册测试到 src/channels/,在渠道入口追加一行注册 import,安装固定版本依赖包,然后构建并跑那条注册测试。",
-    "when": "当你要求给 NanoClaw 接入 Google Chat 渠道时触发;流程走完会提示回到 /setup,否则运行 /manage-channels 把该渠道接到某个 agent group。",
+    "what": "Claude 会把 Google Chat 适配器及其注册测试从 channels 分支复制进 src/channels/，追加一行自注册 import，装上 @chat-adapter/gchat@4.29.0，然后构建并跑一条集成测试。整个技能可重复执行。",
+    "when": "当你想给项目接入 Google Chat 渠道时触发，比如提到 “add gchat”、要求添加 Google Chat 集成，或让排查 Google Chat 收不到消息的问题。",
     "say": [
       {
-        "text": "帮我把 Google Chat 渠道加到 NanoClaw 里",
-        "note": "执行 Apply 各步并跑注册测试"
+        "text": "帮我加上 Google Chat 渠道集成",
+        "note": "会复制适配器、注册并安装依赖"
+      },
+      {
+        "text": "跑一下 gchat-registration 测试看注册成没成",
+        "note": "验证注册表里确实有 gchat"
+      },
+      {
+        "text": "Google Chat 里发的消息收不到，帮我排查",
+        "note": "按排查清单查 webhook 与凭证"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9bfb24b30ec8b07e85d6a5ad2c205cc1b1fdb6795dbec96e9070d55c731aa326",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:26:18.264Z",
+    "generated_at": "2026-09-18T08:00:53.711Z",
     "lint_pass": true,
-    "what_en": "Adds a Google Chat channel to NanoClaw: copies the gchat adapter and its registration test from the channels branch into src/channels/, appends a one-line registration import to the channel barrel, installs a pinned adapter package, then builds and runs the registration test.",
-    "when_en": "Triggers when you ask to add a Google Chat channel to NanoClaw. After it finishes, return to /setup if you're mid-setup; otherwise run /manage-channels to wire the channel to an agent group.",
+    "what_en": "Copies the Google Chat adapter and its registration test from the channels branch into src/channels/, appends the self-registration import, installs @chat-adapter/gchat@4.29.0, then builds and runs that one integration test. Re-running is safe.",
+    "when_en": "Use when you want to add Google Chat as a channel, e.g. saying “add gchat”, asking for Google Chat integration, or troubleshooting messages that never arrive.",
     "say_en": [
       {
-        "text": "Add the Google Chat channel to NanoClaw",
-        "note": "Runs the Apply steps and the registration test"
+        "text": "Add the Google Chat channel to my project",
+        "note": "Copies the adapter, registers it, installs deps"
       },
       {
-        "text": "Run src/channels/gchat-registration.test.ts",
-        "note": "Red means the import or the dependency drifted"
+        "text": "Run the gchat-registration test to check it registered",
+        "note": "Asserts the registry contains gchat"
       },
       {
-        "text": "Use /manage-channels to wire gchat to an agent group",
-        "note": "Binds the channel to one agent group"
+        "text": "Messages in my Google Chat space never arrive, help",
+        "note": "Walks the troubleshooting checklist"
       }
     ]
   }

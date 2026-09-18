@@ -5,7 +5,7 @@
     "name": "add-clidash",
     "description": "Add clidash — a zero-dependency, read-only web dashboard that derives its tabs and tables at runtime from any CLI that lists resources as JSON. Ships pre-wired for NanoClaw's ncl CLI (agent groups, sessions, channels, users, roles), plus message-activity charts, a log tail, and a read-only file viewer for group skills/CLAUDE.md/profiles.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-clidash",
-    "upstream_commit": "6e5008fee8c24d6c20180906523bbdf9494b72a7",
+    "upstream_commit": "7902716b5b930215dbee4f56b8fb5b938d40468d",
     "content_hash": "sha256:a976d52294f919ccb339c712066f7e7a8aaa4b68cad2c4671eb2180387c7b51c",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30791,
+    "stars_github": 30796,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-17T08:19:06.427Z",
+    "fetched_at": "2026-09-18T07:53:41.787Z",
     "first_seen_at": "2026-07-06T18:39:20+08:00",
-    "upstream_commit_at": "2026-09-16T14:37:10+02:00",
+    "upstream_commit_at": "2026-09-17T19:26:51+02:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-17T08:19:06.427Z",
+    "generated_at": "2026-09-18T07:53:41.787Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -122,41 +122,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后 Claude 会把一个只读网页面板复制到 tools/clidash 并生成配置,运行后在浏览器打开 127.0.0.1:4690:每个 CLI 资源一个标签页,并带 Agents 概览、活动图表、日志和文件查看。",
-    "when": "当你要求添加 clidash,或给 ncl 这类能输出 JSON 的 CLI 做一个只读网页面板时触发;默认只绑定 127.0.0.1,需 Node ≥ 22.5。",
+    "what": "装上后 Claude 会把 clidash 复制进 tools/clidash、生成配置、跑测试,并启动本地只读网页仪表盘。它按任何能列出 JSON 资源的 CLI 自动生成标签页与表格,另带消息活动图表、日志尾部、只读文件查看。",
+    "when": "当你想给能输出 JSON 资源的 CLI(如 NanoClaw 的 ncl)加一个本地只读仪表盘,或执行 /add-clidash 时触发。",
     "say": [
       {
-        "text": "把 clidash 装到 tools/clidash 并跑起来",
-        "note": "会复制目录、生成配置,再启动 127.0.0.1:4690"
+        "text": "把 clidash 装好并启动,然后告诉我访问地址。"
       },
       {
-        "text": "在配置里加一个 docker 的 CLI,用 jsonlines 输出",
-        "note": "只改配置文件,不动任何代码"
+        "text": "确认 ncl 的资源发现是否成功。",
+        "note": "会用 curl 请求 /api/clis"
       },
       {
-        "text": "把 BIND 改成我的 tailnet 地址,让我从别的设备访问",
-        "note": "原文提醒:绝不能绑公网接口"
+        "text": "把 clidash 配成开机自启的用户服务。",
+        "note": "会生成 systemd 用户单元并启用"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a976d52294f919ccb339c712066f7e7a8aaa4b68cad2c4671eb2180387c7b51c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:26:11.167Z",
+    "generated_at": "2026-09-18T08:00:52.809Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude copies a read-only web dashboard into tools/clidash and writes its config; you open 127.0.0.1:4690 and get one tab per CLI resource, plus Agents overview, activity charts, logs and a file viewer.",
-    "when_en": "Triggers when you ask to add clidash, or to give a JSON-listing CLI like ncl a read-only web dashboard. It binds 127.0.0.1 by default and needs Node 22.5+.",
+    "what_en": "Once installed, Claude copies clidash into tools/clidash, creates its config, and starts a local read-only dashboard. It builds tabs and tables from any CLI that lists resources as JSON, plus activity charts, a log tail, and a file viewer.",
+    "when_en": "Triggers when you want a local read-only dashboard for a CLI that lists JSON resources, such as NanoClaw's ncl, or run /add-clidash.",
     "say_en": [
       {
-        "text": "Install clidash into tools/clidash and run it",
-        "note": "Copies files, creates the config, serves 127.0.0.1:4690"
+        "text": "Install clidash and start it, then tell me the URL.",
+        "note": "Copies files, creates config, serves 127.0.0.1:4690"
       },
       {
-        "text": "Add a docker CLI entry using jsonlines output",
-        "note": "Config-only change, no code edits"
+        "text": "Check whether ncl resource discovery worked.",
+        "note": "Runs curl against /api/clis"
       },
       {
-        "text": "Set BIND to my tailnet IP so I can reach it elsewhere",
-        "note": "The skill says never bind a public interface"
+        "text": "Set clidash up as a user service that starts on boot.",
+        "note": "Writes a systemd user unit and enables it"
       }
     ]
   }

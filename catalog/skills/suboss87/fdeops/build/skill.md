@@ -1,6 +1,6 @@
 ---
 name: build
-description: Implement a scoped customer-facing software change in the existing repository and verify its behavior. Use for delivery work with an understood outcome, not incident response.
+description: Implement a scoped software change for a customer and verify its behavior. Use for delivery work with an understood outcome, not incident response.
 ---
 
 # build
@@ -9,7 +9,7 @@ description: Implement a scoped customer-facing software change in the existing 
 
 ## Purpose
 
-Implement a scoped customer-facing software change in the existing repository and verify its behavior. Use for delivery work with an understood outcome, not incident response.
+Implement a scoped software change for a customer and verify its behavior. Use for delivery work with an understood outcome, not incident response.
 
 Before investigating or acting:
 1. Read [the task context contract](references/task-context.md).

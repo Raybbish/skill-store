@@ -5,7 +5,7 @@
     "name": "antinet-doc-parse",
     "description": "软件开发工程师与数据科学家在构建RAG系统时，当需处理PDF/Word/Excel等多格式复杂文档，用此技能可自动触发三级解析降级，一键输出高置信度结构化Markdown与元数据，免去繁琐清洗，直接夯实企业知识库数据底座！",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-doc-parse",
-    "upstream_commit": "a7826cc3a1ce1395f42e22c21f8514330ef5bc64",
+    "upstream_commit": "f21302e204d513d09763ebb291704eb9a2aaa34f",
     "content_hash": "sha256:1787090c147d5fd2bbe5337c47aac78a15002fa80812ae1aeaa00a415454096e",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6834,
+    "stars_github": 6891,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-17T08:19:37.393Z",
+    "fetched_at": "2026-09-18T07:54:24.526Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-09-17T07:16:27Z",
+    "upstream_commit_at": "2026-09-18T07:08:57Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-17T08:19:37.393Z",
+    "generated_at": "2026-09-18T07:54:24.526Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,37 +88,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把已过安全扫描的 PDF、Word、Excel 等文档依次用三级解析器转成结构化 Markdown，并给出元数据、置信度和实际生效的解析器名；三级都失败则不输出残缺结果，改标记人工介入。",
-    "when": "当你在搭建 RAG 系统、需要处理 PDF、Word、Excel 等复杂文档时，或密卷房 Worker 收到已通过安全扫描的文件时接管。",
+    "what": "装上后,当你给它一份已通过安全扫描的文档,它会依次用 MinerU、PyMuPDF 等三级解析器尝试,输出结构化 Markdown、元数据、置信度和实际生效的解析器名称;三级都失败则标记人工介入,不返回残缺结果。",
+    "when": "当密卷房 Worker 收到已通过安全扫描的本地文件时调用;你在构建 RAG 索引、企业知识库或做合同结构化时,都可以走这条解析入口。",
     "say": [
       {
-        "text": "这个合同的表格和作者元信息也一起提取出来",
-        "note": "输出含页数、表格数、作者等元数据"
+        "text": "帮我解析这份 PDF,输出结构化 Markdown 和置信度"
       },
       {
-        "text": "解析这个 Word 文件，并告诉我用了哪一档解析器",
-        "note": "会返回实际生效的解析器名"
+        "text": "这份 Word 文档最后用了哪个解析器?置信度多少?"
+      },
+      {
+        "text": "三级解析都失败的话,直接标记人工介入,别给我残缺结果",
+        "note": "失败时回传 BLOCKED"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1787090c147d5fd2bbe5337c47aac78a15002fa80812ae1aeaa00a415454096e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:23:40.197Z",
+    "generated_at": "2026-09-18T07:58:43.193Z",
     "lint_pass": true,
-    "what_en": "Claude turns security-scanned PDF, Word and Excel files into Markdown via three parsers tried in order, returning metadata, a 0–1 confidence score and the parser used. If all fail, it flags human review rather than partial output.",
-    "when_en": "Triggers when you build a RAG system or need to parse complex PDF, Word or Excel documents, or when the Mijuanfang Worker receives a file that passed the security scan.",
+    "what_en": "Given a scanned-safe file, Claude tries three parsers (MinerU, PyMuPDF, pdfplumber) and outputs structured Markdown, metadata, confidence and the parser used; if all three fail, it flags manual intervention, not partial output.",
+    "when_en": "Triggered when the Mijuanfang Worker receives a file that passed the security scan; also used when building RAG indexes, enterprise knowledge bases or contract structuring.",
     "say_en": [
       {
-        "text": "Parse this PDF with antinet-doc-parse and give me Markdown plus confidence",
-        "note": "Tries the three parsers in order and returns the result"
+        "text": "Parse this PDF for me and output structured Markdown with confidence.",
+        "note": "Returns markdown, metadata and confidence."
       },
       {
-        "text": "Also extract the table and author metadata from this contract",
-        "note": "Output includes page count, table count and author"
+        "text": "Which parser did this Word file end up using, and what's the confidence?",
+        "note": "Maps to fallback_used and confidence."
       },
       {
-        "text": "Parse this Word file and tell me which parser tier was used",
-        "note": "Returns the fallback_used parser name"
+        "text": "If all three parsers fail, mark manual intervention, no partial results.",
+        "note": "Returns BLOCKED instead."
       }
     ]
   }
