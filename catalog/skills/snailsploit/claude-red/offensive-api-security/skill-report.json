@@ -5,7 +5,7 @@
     "name": "offensive-api-security",
     "description": "Comprehensive API security testing methodology covering REST, gRPC, and WebSocket attack surfaces. Addresses the full OWASP API Security Top 10 2023 including BOLA/IDOR, broken authentication, excessive data exposure, rate limiting bypass, BFLA, mass assignment, SSRF, and security misconfiguration. Includes REST-specific attacks such as HTTP verb tampering, content-type switching, and parameter pollution. Covers gRPC exploitation through protobuf interception, reflection API enumeration, and metadata injection. Addresses WebSocket vulnerabilities including origin bypass, message injection, and cross-site WebSocket hijacking. Provides tooling guidance for Burp Suite, Postman, grpcurl, websocat, and mitmproxy. Each technique includes detection signatures and defensive indicators so you understand what artifacts your testing leaves behind. Designed for authorized penetration testing engagements against API-driven architectures.",
     "upstream": "https://github.com/SnailSploit/Claude-Red/tree/main/Skills/api/offensive-api-security",
-    "upstream_commit": "a14d10d5d5effd48ea315ae04c8b46396ef23754",
+    "upstream_commit": "24d7968bab4b883e7f13477afe0fd91f2df3b722",
     "content_hash": "sha256:6cbbd55a3b45c354ca74ad75151437a697a9f7eb7c8155d8130a88f596b13078",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 2980,
+    "stars_github": 2999,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:38:24.263Z",
+    "fetched_at": "2026-08-30T08:52:15.720Z",
     "first_seen_at": "2026-08-27T13:38:24.263Z",
-    "upstream_commit_at": "2026-08-27T08:45:09+03:00",
+    "upstream_commit_at": "2026-08-29T19:31:36+03:00",
     "repo_skill_count": 78,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:38:24.263Z",
+    "generated_at": "2026-08-30T08:52:15.720Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会指导你按十步流程对 REST、gRPC、WebSocket 接口做授权安全测试,覆盖 OWASP 2023 十大 API 风险,并给出 curl、grpcurl、websocat 等工具的具体命令及检测特征。",
-    "when": "当你提出 API 安全测试、渗透测试或排查越权、SSRF 等具体漏洞时触发。",
+    "what": "装上后,Claude 会按照流程对 API 进行安全测试:先摸清接口和认证方式,再针对 REST、gRPC、WebSocket 三种类型尝试越权、参数篡改、注入等攻击,并输出发现的问题与复现步骤。",
+    "when": "当用户要求对 API 进行安全测试/渗透测试,或针对越权、注入等具体漏洞做排查时触发;需有书面授权。",
     "say": [
       {
-        "text": "帮我测试这个 API 是否存在越权漏洞(BOLA/IDOR)",
-        "note": "Claude 会给出替换对象 ID 的测试步骤和命令。"
+        "text": "帮我测试这个 REST API 是否存在越权访问(BOLA/IDOR)。",
+        "note": "Claude 会按流程替换对象标识符进行测试。"
       },
       {
-        "text": "用 grpcurl 枚举这个 gRPC 服务的接口",
-        "note": "Claude 会提供反射枚举和请求构造方法。"
+        "text": "用 websocat 检查这个 WebSocket 的 Origin 校验。",
+        "note": "Claude 会给出对应命令并解释结果。"
       },
       {
-        "text": "检查 WebSocket 是否有跨站劫持风险",
-        "note": "Claude 会指导 Origin 校验和消息注入测试。"
+        "text": "用 grpcurl 枚举目标 gRPC 服务的接口。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:6cbbd55a3b45c354ca74ad75151437a697a9f7eb7c8155d8130a88f596b13078",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:51:22.272Z",
+    "generated_at": "2026-08-30T09:18:53.853Z",
     "lint_pass": true,
-    "what_en": "After install, Claude guides authorized API security testing: 10-step workflow over REST, gRPC, WebSocket; covers OWASP Top 10 2023; offers curl/grpcurl/websocat commands and detection signatures.",
-    "when_en": "Triggered when you ask to perform API security testing, penetration testing, or investigate specific vulnerabilities like IDOR, SSRF, or WebSocket hijacking.",
+    "what_en": "After installation, Claude guides authorized API security assessments by mapping endpoints and auth, then testing REST, gRPC, and WebSocket surfaces for OWASP Top 10 issues like BOLA, mass assignment, SSRF, and CSWSH, reporting findings with repro steps.",
+    "when_en": "Triggers when the user requests an API security assessment, penetration test, or vulnerability check (e.g., IDOR, injection, rate limiting) against an API-driven application, assuming authorization and scope.",
     "say_en": [
       {
-        "text": "Help me test this API for IDOR/BOLA vulnerabilities.",
-        "note": "Claude will give steps and commands to swap object IDs."
+        "text": "Test this REST API for BOLA/IDOR by swapping object IDs.",
+        "note": "Claude will craft and run identifier substitution tests."
       },
       {
-        "text": "Use grpcurl to enumerate interfaces of this gRPC service.",
-        "note": "Claude will provide reflection enumeration and request crafting."
+        "text": "Use websocat to check Origin validation on this WebSocket endpoint.",
+        "note": "Claude will provide commands and interpret results."
       },
       {
-        "text": "Check if my WebSocket is vulnerable to cross-site hijacking.",
-        "note": "Claude will guide Origin validation and message injection tests."
+        "text": "Enumerate gRPC methods on the service using reflection.",
+        "note": "Claude will show grpcurl commands and guide analysis."
       }
     ]
   }

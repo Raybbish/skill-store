@@ -5,7 +5,7 @@
     "name": "offensive-container-escape",
     "description": "Container escape and breakout techniques targeting Docker, containerd, and Podman runtimes. Covers privileged container breakout via host filesystem mount and nsenter, Docker socket abuse through /var/run/docker.sock, Linux capability exploitation including CAP_SYS_ADMIN, CAP_SYS_PTRACE, and CAP_NET_ADMIN, cgroup v1 notify_on_release escape, runc CVEs such as CVE-2019-5736 and CVE-2024-21626 Leaky Vessels, kernel exploits from within containers, and Dockerfile misconfigurations like --privileged and host namespace sharing. Includes enumeration with capsh, amicontained, deepce, CDK, and nsenter. Maps to MITRE ATT&CK T1611 Escape to Host. Use this skill when the engagement scope includes container breakout, Docker escape, container privilege escalation, host access from container, or when you land inside a containerized environment and need to reach the underlying host.",
     "upstream": "https://github.com/SnailSploit/Claude-Red/tree/main/Skills/container/offensive-container-escape",
-    "upstream_commit": "a14d10d5d5effd48ea315ae04c8b46396ef23754",
+    "upstream_commit": "24d7968bab4b883e7f13477afe0fd91f2df3b722",
     "content_hash": "sha256:ab3e61010de4190a69ecdc5b9539eada40d057cccd01f77d27cd4c8ab2f1c106",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 2980,
+    "stars_github": 2999,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:38:24.263Z",
+    "fetched_at": "2026-08-30T08:52:15.720Z",
     "first_seen_at": "2026-08-27T13:38:24.263Z",
-    "upstream_commit_at": "2026-08-27T08:45:09+03:00",
+    "upstream_commit_at": "2026-08-29T19:31:36+03:00",
     "repo_skill_count": 78,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:38:24.263Z",
+    "generated_at": "2026-08-30T08:52:15.720Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,35 +91,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当用户说明自己在容器(一种虚拟隔离环境)里、想逃到宿主机时,Claude会先扫描容器弱点(如特权模式、开放Docker接口、危险权限),再按步骤执行逃逸,并验证是否拿到宿主机访问权。",
-    "when": "当任务涉及容器逃逸、Docker逃逸、容器提权等场景,或用户已进入容器环境需要访问宿主机时触发。",
+    "what": "装好后,Claude 会在你身陷容器时指导你检测环境、枚举能力与挂载、识别逃逸向量(如特权容器、Docker 套接字、危险 capability、cgroup 漏洞、runc CVE),并给出对应逃逸命令与验证宿主访问的步骤。",
+    "when": "当任务涉及容器逃逸、Docker 逃逸或需从容器访问宿主机,或你已进入容器环境想突破到宿主机时触发。",
     "say": [
       {
-        "text": "我这个容器是特权模式,能帮我逃到宿主机吗?"
+        "text": "我在一个容器里,帮我想办法逃逸到宿主机。",
+        "note": "Claude 会按检测-枚举-利用流程给你操作步骤。"
       },
       {
-        "text": "容器里挂了Docker.sock,我该怎么利用它访问宿主机?"
+        "text": "当前容器挂载了 /var/run/docker.sock,怎么用?"
+      },
+      {
+        "text": "帮我检查这个容器的 capability 有没有可利用的。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ab3e61010de4190a69ecdc5b9539eada40d057cccd01f77d27cd4c8ab2f1c106",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:52:17.393Z",
+    "generated_at": "2026-08-30T09:18:44.390Z",
     "lint_pass": true,
-    "what_en": "When a user asks to break out of a container to the host, Claude scans for weak points (privileged mode, exposed Docker socket, dangerous capabilities), runs matching escape steps, and verifies host access.",
-    "when_en": "Triggers when the task involves container escape, Docker escape, container privilege escalation, or when the user has landed inside a containerized environment and needs host access.",
+    "what_en": "After installation, Claude guides you through detecting your container environment, enumerating capabilities/mounts, identifying escape vectors (privileged mode, Docker socket, dangerous capabilities, cgroup bugs, runc CVEs), and executing breakout steps plus host-access validation.",
+    "when_en": "Triggers when the task involves container breakout, Docker escape, or host access from a container, or when you're inside a containerized environment and need to reach the underlying host.",
     "say_en": [
       {
-        "text": "My container is privileged; can you help me escape to the host?",
-        "note": "Claude will guide host filesystem mounting or nsenter."
+        "text": "I'm in a container. Help me escape to the host.",
+        "note": "Claude will walk through detect-enumerate-exploit steps."
       },
       {
-        "text": "The Docker socket is mounted inside; how do I use it to access the host?",
-        "note": "Claude shows API steps to mount host root and read files."
+        "text": "The container has /var/run/docker.sock mounted. How do I use it?",
+        "note": "It shows creating a privileged container via Docker API to read host files."
       },
       {
-        "text": "Check my container's Linux capabilities and see if I can escalate to the host.",
-        "note": "Claude decodes caps with capsh and suggests escape paths."
+        "text": "Check if this container's capabilities are exploitable.",
+        "note": "It decodes CapEff and flags risks like CAP_SYS_ADMIN."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "add-mnemon",
     "description": "Add persistent graph-based memory via mnemon. Agents recall past context before responding and remember insights after each turn.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-mnemon",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "6e5008fee8c24d6c20180906523bbdf9494b72a7",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30791,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-17T08:19:06.427Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-16T14:37:10+02:00",
+    "repo_skill_count": 61,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-17T08:19:06.427Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,41 +94,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude在每次回答前会先回想相关的过往对话,并在每轮结束后把新的要点存入记忆。这些记忆按智能体工作区分开保存,容器重启后依然存在。",
-    "when": "当智能体使用默认的Claude提供商时,每次容器启动会启用记忆功能,之后Claude在每次回应前调取相关记忆,每轮后保存新内容。",
+    "what": "容器镜像会装上 mnemon,Claude Code 在每次回应前自动调出相关历史记忆,每轮结束后再写入新要点。记忆存在该 agent 组的 .claude/ 目录里,重启容器后仍然保留。",
+    "when": "当你把该技能应用到运行默认 Claude provider 的 agent 组时使用;若组的 provider 设为 opencode 等其他值,hooks 不会运行。想给 agent 加上跨会话的持久记忆时也用它。",
     "say": [
       {
-        "text": "你还记得我之前提过的那个客户需求吗?",
-        "note": "Claude会检索相关记忆并回应。"
+        "text": "给这个 agent 组装上 mnemon,让它记住之前的对话。"
       },
       {
-        "text": "请记住这个数据:本月销售额为100万。",
-        "note": "这条信息会被存入长期记忆。"
+        "text": "重启后 agent 不记得之前的对话了,帮我排查 mnemon。",
+        "note": "检查 MNEMON_DATA_DIR 是否指向挂载路径"
       },
       {
-        "text": "结合我们过去的讨论,给我一些建议。",
-        "note": "Claude会基于已有记忆生成回答。"
+        "text": "把某个 agent 的 mnemon 记忆全部重置掉。",
+        "note": "停容器后删除宿主路径下的 mnemon/ 目录"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:426c03a907a8b289a5c5ca51508713b436ecb5f265ca88ab89df7cbf6d377e2b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:05:54.043Z",
+    "generated_at": "2026-09-17T08:26:29.078Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude recalls relevant past conversations before responding and stores new insights after each turn. Memory is kept per agent group in the .claude mount and survives container restarts.",
-    "when_en": "Triggered when the agent group uses the default Claude provider (no 'provider' key or 'provider':'claude'). On each container start, hooks fire before responding and after each turn.",
+    "what_en": "Installs mnemon into the agent container image. Claude Code hooks recall past memory before each response and store new insights after every turn; memory lives in the per-agent-group .claude/ mount and survives restarts.",
+    "when_en": "Use it on agent groups running the default Claude provider; mnemon hooks only fire under --target claude-code. Groups set to another provider, such as opencode, never run the hooks.",
     "say_en": [
       {
-        "text": "Do you remember the client requirement I mentioned earlier?",
-        "note": "Claude will retrieve relevant memory and respond."
+        "text": "Install mnemon on this agent group so it remembers earlier conversations.",
+        "note": "Edit the Dockerfile and entrypoint, then rebuild the image"
       },
       {
-        "text": "Please remember this data: monthly sales are 1 million.",
-        "note": "This will be saved to long-term memory."
+        "text": "The agent forgot earlier turns after a restart — help me debug mnemon.",
+        "note": "Check that MNEMON_DATA_DIR points to a mounted path"
       },
       {
-        "text": "Based on our past discussions, give me some advice.",
-        "note": "Claude will answer using existing memory."
+        "text": "Reset all mnemon memory for one agent.",
+        "note": "Stop the container, then delete mnemon/ on the host path"
       }
     ]
   }
