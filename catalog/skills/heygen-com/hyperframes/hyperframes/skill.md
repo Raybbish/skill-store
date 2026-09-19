@@ -14,7 +14,7 @@ description: >
 
 # HyperFrames entry point
 
-HyperFrames **renders video from HTML** — a composition is an HTML file whose DOM declares timing with `data-*` attributes, whose animation runtime is seekable, and whose media playback is owned by the framework. The full authoring contract lives in `/hyperframes-core`; read it before writing composition HTML.
+HyperFrames **renders video from HTML** — a composition is an HTML file whose DOM declares timing with `data-*` attributes, whose animation runtime is seekable, and whose media playback is owned by the framework. The full authoring contract lives in `/hyperframes-core`; read it before writing composition HTML. Brief, storyboard, review, production, dispatch, and frame-worker contracts live in this skill's `references/`.
 
 ## 1. Start from project state
 
@@ -66,7 +66,7 @@ Before finalizing the route, read `references/routes/<workflow>.md` — one smal
 - An explicitly short motion graphic may use a URL, tweet, article, or screenshot as source material. A generic "make a video from this site" request is `/product-launch-video`.
 - Existing footage with captions routes to `/embedded-captions`; footage with designed information cards routes to `/talking-head-recut`. Retiming, reordering, recoloring, reframing, or remixing footage is a custom edit and falls through to `/general-video`.
 - A music file selects `/music-to-video` only when its beat grid drives the piece. Music used as a bed does not override the subject-matched route.
-- "I want a storyboard" changes the review process, not the workflow. With no other routing signal, use `/general-video`. A confirmed sketched board may itself be the requested deliverable; the review loop defines that stop point.
+- "I want a storyboard" changes the review process, not the workflow. With no other routing signal, use `/general-video`. A confirmed sketched `storyboard.html` may itself be the requested deliverable; the review loop defines that stop point.
 - Specialized narrative workflows support up to about 3 minutes and are strongest around 30–90s. Route a clearly longer piece to `/general-video`. Length never overrides an explicit port, deck, caption, overlay, or music-driven deliverable.
 
 ## 3. Route once, then leave
@@ -85,28 +85,30 @@ Use the bare name without `/`. If the command fails, surface the error; do not r
 
 ## 5. Load domain skills on demand
 
-| Need                                                                                                                | Skill                    |
-| ------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| Composition structure, timing attributes, tracks, variables, determinism                                            | `/hyperframes-core`      |
-| Motion rules, scene blueprints, transitions, runtime adapters                                                       | `/hyperframes-animation` |
-| Seek-safe GSAP, CSS, Anime.js, WAAPI, FLIP, paths, masks, SVG, 3D keyframes, or `hyperframes keyframes` diagnostics | `/hyperframes-keyframes` |
-| Design specs, concept, palette, typography, narration, beat planning                                                | `/hyperframes-creative`  |
-| Images, icons, logos, audio, captions, grades, LUTs, reusable media                                                 | `/media-use`             |
-| Voiceover carve, audio effect chains, automation envelopes, or one chain/fader across several tracks (submix bus)   | `/hyperframes-audio`     |
-| Init, lint, check, snapshots, compare, batch render, Studio, render, publish, or diagnostics                        | `/hyperframes-cli`       |
-| Registry blocks and components                                                                                      | `/hyperframes-registry`  |
-| Figma assets, tokens, components, or storyboard frames as reconstructed motion                                      | `/figma`                 |
+| Need                                                                                                                                        | Skill                    |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| Composition structure, timing attributes, tracks, variables, determinism                                                                    | `/hyperframes-core`      |
+| Motion rules, scene blueprints, transitions, runtime adapters                                                                               | `/hyperframes-animation` |
+| Seek-safe GSAP, CSS, Anime.js, WAAPI, FLIP, paths, masks, SVG, 3D keyframes, or `hyperframes keyframes` diagnostics                         | `/hyperframes-keyframes` |
+| Design specs, concept, palette, typography, narration, beat planning                                                                        | `/hyperframes-creative`  |
+| Images, icons, logos, audio, captions, grades, LUTs, reusable media                                                                         | `/media-use`             |
+| Voiceover carve, audio effect chains, automation envelopes, or one chain/fader across several tracks (submix bus)                           | `/hyperframes-audio`     |
+| Init, lint, check, snapshots, compare, batch render, Studio, render, publish, or diagnostics                                                | `/hyperframes-cli`       |
+| Registry blocks and components                                                                                                              | `/hyperframes-registry`  |
+| A named look, effect, treatment, or transition — CRT scanlines, glitch, film grain, shimmer sweep, confetti burst — BEFORE hand-building it | `/hyperframes-registry`  |
+| Figma assets, tokens, components, or storyboard frames as reconstructed motion                                                              | `/figma`                 |
 
 Creator edit phrases are cross-domain requests. Load every skill named in the matching row:
 
-| Creator request                                                                                                | Required domains                                                                                                                                                                  |
-| -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| “cut this footage”, hard cut, trim, splice, reorder, or use a source range                                     | `/general-video` + `/hyperframes-core`; core owns `data-start`, `data-duration`, `data-media-start`, and track layout.                                                            |
-| zoom in here, punch-in / punch-out, smooth multi-state zoom or reframe, Ken Burns, or camera move              | `/general-video` + `/hyperframes-core` + `/hyperframes-keyframes`; animate the inner visual/crop wrapper, not the timed clip.                                                     |
-| match cut or whip pan camera transition                                                                        | `/general-video` + `/hyperframes-animation` + `/hyperframes-keyframes` + `/hyperframes-registry`; search/install a transition primitive before hand-authoring.                    |
-| fade, crossfade, track gain/volume, automation, duck/carve, audio effects, or one effect across several tracks | `/general-video` + `/hyperframes-core` + `/hyperframes-audio`; core places clips, audio mixes placed tracks — including a submix bus over a group of them.                        |
-| picture and sound edits that combine cuts with camera motion or mixing                                         | `/general-video` + `/hyperframes-core` + `/hyperframes-keyframes` when there is visual motion + `/hyperframes-audio` when sound is faded, mixed, ducked, automated, or processed. |
-| source or generate media, or preprocess an unsupported speed ramp/mid-source freeze                            | `/media-use`; sourcing/generation/preprocessing only, never placed-track mixing.                                                                                                  |
+| Creator request                                                                                                    | Required domains                                                                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| “cut this footage”, hard cut, trim, splice, reorder, or use a source range                                         | `/general-video` + `/hyperframes-core`; core owns `data-start`, `data-duration`, `data-media-start`, and track layout.                                                            |
+| zoom in here, punch-in / punch-out, smooth multi-state zoom or reframe, Ken Burns, or camera move                  | `/general-video` + `/hyperframes-core` + `/hyperframes-keyframes`; animate the inner visual/crop wrapper, not the timed clip.                                                     |
+| match cut or whip pan camera transition                                                                            | `/general-video` + `/hyperframes-animation` + `/hyperframes-keyframes` + `/hyperframes-registry`; search/install a transition primitive before hand-authoring.                    |
+| fade, crossfade, track gain/volume, automation, duck/carve, audio effects, or one effect across several tracks     | `/general-video` + `/hyperframes-core` + `/hyperframes-audio`; core places clips, audio mixes placed tracks — including a submix bus over a group of them.                        |
+| picture and sound edits that combine cuts with camera motion or mixing                                             | `/general-video` + `/hyperframes-core` + `/hyperframes-keyframes` when there is visual motion + `/hyperframes-audio` when sound is faded, mixed, ducked, automated, or processed. |
+| lay out a project so it reads well in Studio: caption track, tracks per element kind, sub-compositions, safe zones | `/hyperframes-studio` + `/hyperframes-core`; studio owns the layout conventions, core owns each edit.                                                                             |
+| source or generate media, or preprocess an unsupported speed ramp/mid-source freeze                                | `/media-use`; sourcing/generation/preprocessing only, never placed-track mixing.                                                                                                  |
 
 Constant `data-playback-rate` is render-safe for picture and pitch-preserved
 sound. It does not make source speed ramps keyframeable; preprocess ramps.
