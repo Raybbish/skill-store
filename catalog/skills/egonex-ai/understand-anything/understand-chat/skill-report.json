@@ -5,7 +5,7 @@
     "name": "understand-chat",
     "description": "Use when you need to ask questions about a codebase or understand code using a knowledge graph",
     "upstream": "https://github.com/Egonex-AI/Understand-Anything/tree/main/understand-anything-plugin/skills/understand-chat",
-    "upstream_commit": "ba450c43425f3de6d43daf76526950ad8ca93536",
+    "upstream_commit": "6df3065f1d8ddc2ce3615314d1d493f36d6b1c80",
     "content_hash": "sha256:15b5def8d9bdc468904686768c41f01f5d57dc616a3142c82e55348c8e4f4f2e",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 80705,
+    "stars_github": 82080,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:02.458Z",
+    "fetched_at": "2026-09-12T07:35:53.312Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-26T02:38:15-04:00",
+    "upstream_commit_at": "2026-09-12T13:31:43+08:00",
     "repo_skill_count": 9
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:02.458Z",
+    "generated_at": "2026-09-12T07:35:53.312Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后,Claude 会用项目里的知识图谱文件回答代码库问题:先查项目信息,再按关键词搜索节点、连接关系和分层,最后给出指向具体文件/函数的答案。",
-    "when": "当你提出关于当前代码库的问题,且项目里有 `.understand-anything/knowledge-graph.json` 时触发;若没有该文件,会提示先运行 `/understand`。",
+    "what": "当你就代码库提问时，Claude 会读取项目里的知识图谱文件 `.understand-anything/knowledge-graph.json`，先搜出相关节点，再找相连的边和所属分层，只用相关子图作答，并指到具体文件、函数和依赖关系。",
+    "when": "当你想就代码库提问，或调用 `/understand-chat` 并传入查询时。若项目里没有知识图谱文件，它会提示你先运行 `/understand`。",
     "say": [
       {
-        "text": "这个函数被哪些地方调用了?",
-        "note": "会沿 calls/imports 边查上游引用。"
+        "text": "这个项目里用户登录是怎么实现的？",
+        "note": "它会去知识图谱里找相关节点和依赖"
       },
       {
-        "text": "项目架构分哪几层?",
-        "note": "读取 layers 和节点归属来回答。"
+        "text": "/understand-chat 订单模块依赖哪些服务？",
+        "note": "返回匹配节点周围的 1 跳子图"
       },
       {
-        "text": "该模块依赖哪些文件?",
-        "note": "按 depends_on/imports 关系列出下游依赖。"
+        "text": "数据库配置写在哪些文件里？",
+        "note": "它按配置类节点和所属分层查找"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:15b5def8d9bdc468904686768c41f01f5d57dc616a3142c82e55348c8e4f4f2e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:25:32.845Z",
+    "generated_at": "2026-09-12T07:41:05.902Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude answers codebase questions using the project's knowledge graph file: it first reads project metadata, then searches relevant nodes, edges, and layers by keyword, and finally gives answers pointing to specific files/functions.",
-    "when_en": "Triggered when you ask about the current codebase and `.understand-anything/knowledge-graph.json` exists; if absent, it asks you to run `/understand` first.",
+    "what_en": "When you ask about a codebase, Claude reads the knowledge graph at `.understand-anything/knowledge-graph.json`, greps matching nodes, follows their edges and layers, and answers from that subgraph with concrete files, functions and dependencies.",
+    "when_en": "Use it when you want to ask questions about a codebase or call `/understand-chat` with a query. If no knowledge graph file exists, it tells you to run `/understand` first.",
     "say_en": [
       {
-        "text": "Which functions call this one?",
-        "note": "Traces upstream references via calls/imports edges."
+        "text": "How is user login implemented in this project?",
+        "note": "It finds related nodes and dependencies in the graph"
       },
       {
-        "text": "What layers is the project architecture split into?",
-        "note": "Reads layers and node memberships."
+        "text": "/understand-chat which services does the order module depend on?",
+        "note": "Returns the 1-hop subgraph around the matches"
       },
       {
-        "text": "What files does this module depend on?",
-        "note": "Lists downstream dependencies via depends_on/imports."
+        "text": "Which files hold the database config?",
+        "note": "It greps config nodes and their layers"
       }
     ]
   }

@@ -3,10 +3,10 @@
   "meta": {
     "id": "code-yeongyu/oh-my-openagent/ultrawork",
     "name": "ultrawork",
-    "description": "Binding ultrawork mode directive for omo on Codex. When a prompt contains ultrawork or ulw, the omo UserPromptSubmit hook injects a short bootstrap that points at this file. Read the whole file and follow every rule in it for the rest of the task.",
-    "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/ultrawork/skills/ultrawork",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
-    "content_hash": "sha256:5221fc05fbbb199c4ff84cd91d17d4e106bb47cf8be7dbce126dd5065902b7d2",
+    "description": "The binding ultrawork-mode directive. This file IS the directive; read it only when ultrawork mode is requested and the directive is not already in the conversation.",
+    "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/ultrawork",
+    "upstream_commit": "796dd7dfdaedb9a9142402aec1a63a98e6e933f6",
+    "content_hash": "sha256:47b299d6e0d58ee20f4d2dd12f08b24803825c3d2ea52d1bb1f170c51040c6f1",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
     "category": "uncategorized",
@@ -14,20 +14,17 @@
     "publisher": "code-yeongyu",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": [
-      "agent-ops"
-    ]
+    "tags": []
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 69175,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-18T07:53:23.971Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
-    "bulk_source": true
+    "upstream_commit_at": "2026-09-18T14:58:28+09:00",
+    "repo_skill_count": 49
   },
   "context_size": {
     "version": "1",
@@ -36,93 +33,95 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-18T07:53:23.971Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 27724,
-        "chars": 27578,
-        "tokens": 5973
+        "bytes": 32655,
+        "chars": 32489,
+        "tokens": 7234
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 27724,
-        "chars": 27578,
-        "tokens": 5973
+        "bytes": 32655,
+        "chars": 32489,
+        "tokens": 7234
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 27724,
-        "chars": 27578,
-        "tokens": 5973
+        "bytes": 32655,
+        "chars": 32489,
+        "tokens": 7234
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "触发智能体的特殊工作模式,加载预先设定的规则",
+    "tagline": "按预设规则切换助手的工作模式,让它照你设定的方式执行任务",
     "scene_tags": [
-      "长任务",
-      "模式切换"
+      "工作模式切换",
+      "自定义指令",
+      "任务规则设置"
     ],
-    "fit_line": "适合你,如果你用 Codex 且希望它遵守你的自定义工作规则",
-    "tagline_en": "Trigger a special agent mode and load its predefined rules",
+    "fit_line": "适合你,如果想让助手用一套固定指令改变自己的工作方式",
+    "tagline_en": "Switch the assistant into a preset work mode so it runs tasks your way",
     "scene_tags_en": [
-      "long tasks",
-      "mode switching"
+      "work mode switch",
+      "custom directives",
+      "task rules"
     ],
-    "fit_line_en": "For you if you use Codex and want it to follow your custom working rules.",
+    "fit_line_en": "For you if you want the assistant to change how it works via a fixed set of directives",
     "source": "llm",
-    "content_hash": "sha256:5221fc05fbbb199c4ff84cd91d17d4e106bb47cf8be7dbce126dd5065902b7d2",
+    "content_hash": "sha256:47b299d6e0d58ee20f4d2dd12f08b24803825c3d2ea52d1bb1f170c51040c6f1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T13:49:14.038Z",
+    "generated_at": "2026-09-14T08:32:36.898Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "当你说“ultrawork”或“ulw”，AI进入严谨模式：先显示“ULTRAWORK MODE ENABLED!”，再先写失败测试后实现，最后真实环境验证并清理。",
-    "when": "当提示中包含“ultrawork”或“ulw”时触发。",
+    "what": "装上后 Claude 会按 ultrawork 模式干活：本轮第一条可见输出固定是 ULTRAWORK MODE ENABLED!，随后登记目标、开一个临时记事本记录计划与待办，并用真实环境验证（如 curl、浏览器、终端）留下证据。",
+    "when": "当你明确要求进入 ultrawork 模式、且当前对话里还没有这份指令时触发；它会读取本文件并接管本次会话的执行流程。",
     "say": [
       {
-        "text": "用ultrawork模式完成这个任务。",
-        "note": "AI会进入严谨模式并按流程工作。"
+        "text": "进入 ultrawork 模式，帮我修这个 bug",
+        "note": "首行会输出 ULTRAWORK MODE ENABLED!"
       },
       {
-        "text": "ulw，帮我写一个函数并测试。",
-        "note": "会先写失败测试再实现。"
+        "text": "用 ultrawork 模式重构这个模块",
+        "note": "它会定级 LIGHT 或 HEAVY 并写计划"
       },
       {
-        "text": "请以ultrawork方式修复这个bug。",
-        "note": "会捕获证据证明修复有效。"
+        "text": "ultrawork 模式：先跑真实浏览器验证再改页面",
+        "note": "会截图留证再动下一处"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:5221fc05fbbb199c4ff84cd91d17d4e106bb47cf8be7dbce126dd5065902b7d2",
+    "content_hash": "sha256:47b299d6e0d58ee20f4d2dd12f08b24803825c3d2ea52d1bb1f170c51040c6f1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:59:21.314Z",
+    "generated_at": "2026-09-18T07:59:43.558Z",
     "lint_pass": true,
-    "what_en": "When you say 'ultrawork' or 'ulw', the AI enters a rigorous mode: it first prints 'ULTRAWORK MODE ENABLED!', then writes failing tests before implementing, and finally verifies and cleans up on the real surface.",
-    "when_en": "Triggered when the prompt contains 'ultrawork' or 'ulw'.",
+    "what_en": "Claude runs in ultrawork mode: the first visible line is exactly ULTRAWORK MODE ENABLED!, then it registers a goal, opens a temp notepad for plan and todos, and proves work with real-surface evidence (curl, browser, terminal).",
+    "when_en": "Triggers when you explicitly ask for ultrawork mode and the directive is not already in the conversation; it then takes over this session's execution flow.",
     "say_en": [
       {
-        "text": "Complete this task in ultrawork mode.",
-        "note": "The AI enters rigorous mode and follows the workflow."
+        "text": "Enter ultrawork mode and fix this bug",
+        "note": "First line will be ULTRAWORK MODE ENABLED!"
       },
       {
-        "text": "ulw, write a function and verify it.",
-        "note": "It writes failing tests first, then implements."
+        "text": "Refactor this module in ultrawork mode",
+        "note": "It picks LIGHT or HEAVY and writes a plan"
       },
       {
-        "text": "Fix this bug with ultrawork.",
-        "note": "It captures evidence to prove the fix."
+        "text": "Ultrawork mode: verify the page in a real browser first",
+        "note": "Screenshots are captured before the next change"
       }
     ]
   }
