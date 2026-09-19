@@ -5,7 +5,7 @@
     "name": "mem-setup",
     "description": "This skill should be used when the user asks to \"set up claude-mem\", \"pair claude-mem\", \"connect cmem\", \"add my cmem key\", \"set up cloud sync in Cowork\", or provides cmem.ai Connect values (sync token, user id, SyncHub URL) for this plugin. Configures the claude-mem-cowork plugin credentials.\n",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/cowork/skills/mem-setup",
-    "upstream_commit": "d8bc9755e74915e5c3b999181e10a67c889bce2a",
+    "upstream_commit": "adce0fdfaf1cd46646bbd0b22ae74cbd460ed787",
     "content_hash": "sha256:70efb8c424a948390986e59b98ef980f8d6156f655a2c2d1fb89aab1290ef907",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94079,
+    "stars_github": 94227,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-17T08:18:46.692Z",
+    "fetched_at": "2026-09-19T07:44:41.972Z",
     "first_seen_at": "2026-08-27T13:37:00.249Z",
-    "upstream_commit_at": "2026-09-16T12:26:51-07:00",
+    "upstream_commit_at": "2026-09-18T22:48:14-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-17T08:18:46.692Z",
+    "generated_at": "2026-09-19T07:44:41.972Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "帮你把 cmem.ai 的 sync token、user id、SyncHub URL 写进 claude-mem 插件配置，让 hooks 能捕获并注入记忆。它会从你粘贴的 Connect 信息里提取这三个值，写好后跑一次状态检查并只报告打码结果。",
-    "when": "当你要求「set up claude-mem」「connect cmem」，或直接粘贴 cmem.ai 的 Connect 凭据时接管，配置这个插件的凭据。",
+    "what": "把你自己的 cmem.ai 凭据(同步令牌、user id、SyncHub URL)写进 claude-mem-cowork 插件的 config.json,让 hooks 能捕获和注入记忆;可选也写入本地 ~/.claude-mem/settings.json,并用脱敏输出验证配置是否生效。",
+    "when": "当你说要设置或配对 claude-mem、连接 cmem、添加 cmem key、在 Cowork 里设置云同步,或直接提供 cmem.ai Connect 里的同步令牌、user id、SyncHub URL 时触发。",
     "say": [
       {
-        "text": "帮我设置 claude-mem，这是我的 cmem Connect 信息",
-        "note": "提取三个值并写入插件 config.json"
+        "text": "帮我配置 claude-mem,这是 cmem 同步令牌:cm_xxx",
+        "note": "令牌会被写进 config.json,不会回显"
       },
       {
-        "text": "我的 sync token 是 cm_xxx，帮我配上",
-        "note": "缺其他两项时会先问你要 token"
+        "text": "把 cmem.ai Connect 里的三个值写进 claude-mem 配置",
+        "note": "缺少的会向你追问"
       },
       {
-        "text": "帮我让这次配对永久生效",
-        "note": "把插件目录打包成 .plugin 交给你重装"
+        "text": "跑下 cmem-hook status,看凭据配好没有",
+        "note": "返回脱敏状态,MISSING 说明没写进去"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:70efb8c424a948390986e59b98ef980f8d6156f655a2c2d1fb89aab1290ef907",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:27:24.584Z",
+    "generated_at": "2026-09-19T07:51:17.730Z",
     "lint_pass": true,
-    "what_en": "Writes your cmem.ai sync token, user id and SyncHub URL into the claude-mem plugin config so its hooks can capture and inject memory. It extracts those three values from the Connect info you paste, then runs a status check and reports only the masked output.",
-    "when_en": "Takes over when you ask to \"set up claude-mem\", \"connect cmem\", or paste your cmem.ai Connect credentials, and configures this plugin's credentials.",
+    "what_en": "Sets cmem.ai credentials (sync token, user id, SyncHub URL) in the claude-mem-cowork plugin's config.json so hooks can capture and inject memory. Optionally also writes them to ~/.claude-mem/settings.json and verifies with a masked status check.",
+    "when_en": "Triggers when you ask to set up or pair claude-mem, connect cmem, add your cmem key, or provide cmem.ai Connect values (sync token, user id, SyncHub URL).",
     "say_en": [
       {
-        "text": "Set up claude-mem, here is my cmem Connect info",
-        "note": "Extracts the values into the plugin config.json"
+        "text": "Set up claude-mem for me, here is my cmem sync token: cm_xxx",
+        "note": "Token goes into config.json, never echoed"
       },
       {
-        "text": "My sync token is cm_xxx, configure it for me",
-        "note": "Asks for the token if others are missing"
+        "text": "Write the three cmem.ai Connect values into my claude-mem config",
+        "note": "Missing values are asked for"
       },
       {
-        "text": "Make this pairing permanent for me",
-        "note": "Zips the plugin as a .plugin for reinstall"
+        "text": "Run cmem-hook status and check my credentials",
+        "note": "Masked output; MISSING means the write failed"
       }
     ]
   }

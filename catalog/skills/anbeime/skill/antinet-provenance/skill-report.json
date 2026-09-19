@@ -5,7 +5,7 @@
     "name": "antinet-provenance",
     "description": "软件开发工程师与信息安全分析师在构建多智能体系统时，当需全链路可观测与安全审计，请用此技能。它自动收集操作日志，生成可追溯证据链与向量索引，开箱即用实现系统审计与精准回放，让Agent运行安全透明。",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-provenance",
-    "upstream_commit": "f21302e204d513d09763ebb291704eb9a2aaa34f",
+    "upstream_commit": "67ef50190b84d736cd32ff8024a3d1c524a9738e",
     "content_hash": "sha256:71561e23fc88df84618d34173374c7ef88309305b05002be17fe6c88aed6f022",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6891,
+    "stars_github": 6941,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-18T07:54:24.526Z",
+    "fetched_at": "2026-09-19T07:45:27.234Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-09-18T07:08:57Z",
+    "upstream_commit_at": "2026-09-19T07:06:38Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:54:24.526Z",
+    "generated_at": "2026-09-19T07:45:27.234Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会记录每次分发、扫描、解析与卡片生成事件，按 trace_id 串成可追溯证据链并写入向量索引，同时提供按 trace_id、时间窗、官署维度的检索接口。",
-    "when": "当你构建多智能体系统、需要全链路可观测与安全审计时触发；各官署在关键操作节点调用，或经事件总线异步推送时写入证据链。",
+    "what": "在关键操作节点记录每一次分发、扫描、解析等事件,产出按 trace_id 串联的证据链和向量索引,并提供按 trace_id、时间窗、官署检索的接口;产物写入 provenance 目录。",
+    "when": "构建多智能体系统、需要全链路可观测与安全审计时使用;由各官署在分发、扫描、解析等关键操作节点调用,或经事件总线异步推送。",
     "say": [
       {
-        "text": "跑一下 provenance 阶段，把全链路事件写进证据链",
-        "note": "执行 run_stage(\"provenance\")"
+        "text": "运行 provenance 阶段,把这次多 Agent 会话的证据链写出来"
       },
       {
-        "text": "按 trace_id 查这次分发的证据链",
-        "note": "返回该 trace_id 的证据链"
+        "text": "按 trace_id 检索这次任务的历史证据",
+        "note": "返回串联好的证据链"
       },
       {
-        "text": "给我最近一小时军机处的操作事件",
-        "note": "按时间窗和官署维度检索"
+        "text": "向量库写失败了,先把事件缓存到本地 SQLite,之后再补写",
+        "note": "走失败处理分支,不阻塞主流程"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:71561e23fc88df84618d34173374c7ef88309305b05002be17fe6c88aed6f022",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T07:58:40.924Z",
+    "generated_at": "2026-09-19T07:48:55.107Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude records every dispatch, scan, parse and card-generation event, chains them into a traceable evidence chain by trace_id, writes a vector index, and offers a query API by trace_id, time window or agency.",
-    "when_en": "Triggered when you build multi-agent systems needing end-to-end observability and security audit; each agency writes to the chain at key operation points or via an async event bus.",
+    "what_en": "Records each dispatch, scan and parse event at key nodes, producing a trace_id-linked evidence chain and vector index plus a query API by trace_id, time window or agency; outputs go to the provenance directory.",
+    "when_en": "When building multi-agent systems that need end-to-end observability and security audit; agencies call it at key nodes such as dispatch, scan and parse, or push events via the bus.",
     "say_en": [
       {
-        "text": "Run the provenance stage and write the full event chain to the evidence log",
-        "note": "Runs run_stage(\"provenance\")"
+        "text": "Run the provenance stage to write the evidence chain for this session",
+        "note": "Runs run_provenance.py; outputs to the provenance dir"
       },
       {
-        "text": "Query the evidence chain for this trace_id",
-        "note": "Returns the chain for that trace_id"
+        "text": "Query history for this task by trace_id",
+        "note": "Returns the linked evidence chain"
       },
       {
-        "text": "Show me agency events from the last hour",
-        "note": "Searches by time window and agency"
+        "text": "Vector write failed, cache events in local SQLite and backfill later",
+        "note": "Uses the failure path, not blocking the main flow"
       }
     ]
   }

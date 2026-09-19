@@ -5,7 +5,7 @@
     "name": "claude-mem-install",
     "description": "Use this when setting up claude-mem on Grok Bot: local worker plus CMEM Pro observer (default), optional host-login observer, or remote cmem.ai. No Cursor required.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-grok-bot/skills/install",
-    "upstream_commit": "d8bc9755e74915e5c3b999181e10a67c889bce2a",
+    "upstream_commit": "adce0fdfaf1cd46646bbd0b22ae74cbd460ed787",
     "content_hash": "sha256:0d629c91ea68cd0ffb6e71bf0651fe262f683f471500bc8f521185f30b7445a0",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94079,
+    "stars_github": 94227,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-17T08:18:46.692Z",
+    "fetched_at": "2026-09-19T07:44:41.972Z",
     "first_seen_at": "2026-09-03T07:38:50.068Z",
-    "upstream_commit_at": "2026-09-16T12:26:51-07:00",
+    "upstream_commit_at": "2026-09-18T22:48:14-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-17T08:18:46.692Z",
+    "generated_at": "2026-09-19T07:44:41.972Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,36 +89,28 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在 Grok Bot 上装好 claude-mem 后,你在开始真实任务时它会注入 session_start_context,并把观测记录写入记忆日志文件;默认走本地 worker 加 CMEM Pro 观测,不依赖 Cursor。",
-    "when": "当你要在 Grok Bot 上配置 claude-mem 时触发;默认是本地 worker 加 CMEM Pro,也可显式选择 host-login 观测或远程 cmem.ai。",
-    "say": [
-      {
-        "text": "帮我在 Grok Bot 上安装 claude-mem,用默认配置"
-      },
-      {
-        "text": "用 host-login 观测模式安装,加上 --provider host",
-        "note": "走回环 shim,需显式选择"
-      }
-    ],
+    "what": "在 Grok Bot 上装好 claude-mem 后,本机会跑一个 worker(默认 127.0.0.1)为每个 agent 监听对话转录,并在真实任务开始时经 MCP 注入记忆上下文,同时把实时 INDEX 写进 memory log。不需要 Cursor。",
+    "when": "当你要在 Grok Bot 上安装 claude-mem 时触发:默认是本地 worker 加 CMEM Pro observer,也可选 host-login observer 或远程 cmem.ai。原文写明不需要 Cursor。",
+    "say": [],
     "source": "llm",
     "content_hash": "sha256:0d629c91ea68cd0ffb6e71bf0651fe262f683f471500bc8f521185f30b7445a0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:27:13.678Z",
-    "lint_pass": true,
-    "what_en": "After installing claude-mem on Grok Bot, it injects session_start_context when a real task begins and writes observations into a memory log file. The default path is a local worker plus CMEM Pro observer; Cursor is not required.",
-    "when_en": "Triggers when you set up claude-mem on Grok Bot. Default is a local worker with a CMEM Pro observer; you can opt into the host-login observer or a remote cmem.ai worker.",
+    "generated_at": "2026-09-19T07:51:08.547Z",
+    "lint_pass": false,
+    "what_en": "After installing claude-mem on Grok Bot, a local worker (default 127.0.0.1) watches each agent transcript, injects memory context via MCP when a real task starts, and writes a live INDEX into the memory log. No Cursor required.",
+    "when_en": "Triggers when you set up claude-mem on Grok Bot: the default local worker plus CMEM Pro observer, an optional host-login observer, or remote cmem.ai. Cursor is not required.",
     "say_en": [
       {
-        "text": "Install claude-mem on Grok Bot with the default settings.",
-        "note": "Runs npx claude-mem install --ide grok-bot"
+        "text": "Install claude-mem on Grok Bot with the default CMEM Pro observer",
+        "note": "Starts the local worker; no --provider flag"
       },
       {
-        "text": "Install in host-login observer mode: add --provider host.",
-        "note": "Uses the loopback shim; opt-in only."
+        "text": "Install with --provider host to use the host-login observer",
+        "note": "Explicit opt-in loopback shim"
       },
       {
-        "text": "Switch to a remote worker with --runtime server at https://cmem.ai",
-        "note": "Installs remote MCP claude-mem-remote."
+        "text": "Install a remote setup with --runtime server at https://cmem.ai",
+        "note": "Set CLAUDE_MEM_MCP_TOKEN first"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "orca-cli",
     "description": "Operate Orca-managed worktrees, folder contexts, terminals, repos, automations, artifacts, skill sharing, worktree comments, and Orca's embedded browser through the `orca` CLI. Use when the user says \"$orca-cli\", \"Orca worktree\", \"child worktree\", \"spawn codex/claude in a worktree\", \"read/wait/send Orca terminal\", \"handoff\" / \"handover\" / \"give this to another agent\", \"Orca browser\", \"orca artifacts\", or \"share skills\". Prefer it over raw git worktree, ad hoc PTYs, or Computer Use when Orca state is involved. Use Computer Use only when a visible window needs GUI control that a CLI, filesystem, or API cannot do.",
     "upstream": "https://github.com/stablyai/orca/tree/main/skills/orca-cli",
-    "upstream_commit": "01a33bc427c0c4c786909831362f0b3183ee82e2",
+    "upstream_commit": "58de75acf85fb2fbc625f92b1725c33a73cb4c84",
     "content_hash": "sha256:7aac4ff9ed7743df607b6f7bea7cf60dda9645b5f4f5d61b68e4366418d3fa07",
     "license": "MIT",
     "hosting": "indexed",
@@ -23,10 +23,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 237500,
-    "fetched_at": "2026-09-18T07:56:55.476Z",
+    "installs_skills_sh": 239600,
+    "fetched_at": "2026-09-19T07:47:03.861Z",
     "first_seen_at": "2026-08-08T04:12:29.204Z",
-    "upstream_commit_at": "2026-09-18T00:53:09-07:00"
+    "upstream_commit_at": "2026-09-19T00:46:40-07:00"
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:56:55.476Z",
+    "generated_at": "2026-09-19T07:47:03.861Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会先确定本次会话该用哪个 orca 可执行文件，读取与版本匹配的指南，再据此操作 Orca 管理的工作树、终端、仓库、浏览器、技能共享等。",
-    "when": "当你说出 “$orca-cli”，或提到 “Orca worktree”、“handoff” 等关键词，或任务涉及 Orca 状态时触发。",
+    "what": "Claude 会改用 `orca` CLI 来操作 Orca 管理的工作树、终端、仓库、产物和内置浏览器:先确定本会话该用哪个可执行文件,再拉取版本匹配的指南,然后执行命令;命令失败时报告原始错误并停下。",
+    "when": "当你说 \"$orca-cli\"、\"Orca worktree\"、\"handoff\" 等,或要在 worktree 里启动 codex/claude、读写 Orca 终端时触发;涉及 Orca 状态时优先用它,而非原生 git worktree。",
     "say": [
       {
-        "text": "帮我用 orca-cli 在一个工作树里启动 claude",
-        "note": "先选定可执行文件，再载入指南"
+        "text": "用 orca 开一个子 worktree,并在里面启动 codex",
+        "note": "会先解析本会话的可执行文件"
+      },
+      {
+        "text": "读一下 Orca 终端最近的输出",
+        "note": "会先加载版本匹配的指南"
       },
       {
         "text": "把这个任务 handoff 给另一个 agent",
-        "note": "通过 orca CLI 完成交接"
-      },
-      {
-        "text": "读取当前 Orca 终端的输出",
-        "note": "Orca 未运行会先启动"
+        "note": "走 Orca 的交接入口"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:7aac4ff9ed7743df607b6f7bea7cf60dda9645b5f4f5d61b68e4366418d3fa07",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T08:01:39.454Z",
+    "generated_at": "2026-09-19T07:51:03.742Z",
     "lint_pass": true,
-    "what_en": "Claude resolves the Orca executable for this session, loads the version-matched guide, then uses it to operate Orca-managed worktrees, terminals, repos, browser, artifacts and skill sharing.",
-    "when_en": "Triggers when you say \"$orca-cli\" or mention \"Orca worktree\", \"handoff\" and similar keywords, or when the task involves Orca state.",
+    "what_en": "Claude switches to the `orca` CLI to operate Orca-managed worktrees, terminals, repos, artifacts and Orca's embedded browser: it resolves the executable for the session, loads the version-matched guide, then runs commands and stops on errors.",
+    "when_en": "Triggers on \"$orca-cli\", \"Orca worktree\", \"handoff\", or when spawning codex/claude in a worktree or reading Orca terminals; preferred over raw git worktree whenever Orca state is involved.",
     "say_en": [
       {
-        "text": "Use orca-cli to spawn claude in a worktree",
-        "note": "Resolves the CLI, then loads the guide"
+        "text": "Open a child worktree with orca and start codex inside it",
+        "note": "Resolves the session's executable first"
+      },
+      {
+        "text": "Read the latest output from the Orca terminal",
+        "note": "Loads the version-matched guide first"
       },
       {
         "text": "Hand this task off to another agent",
-        "note": "Runs the handoff through the orca CLI"
-      },
-      {
-        "text": "Read the output of the current Orca terminal",
-        "note": "Starts Orca first if it isn't running"
+        "note": "Uses Orca's handoff entry point"
       }
     ]
   }

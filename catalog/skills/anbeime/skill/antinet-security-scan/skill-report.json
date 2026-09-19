@@ -5,7 +5,7 @@
     "name": "antinet-security-scan",
     "description": "信息安全分析师与软件开发工程师在搭建文档处理流水线时，当需要拦截违规文件或外部URL，请挂载此技能作为强制前置安检，自动输出 pass/reject 判定与详细合规扫描报告，一键守住零信任安全底线。",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-security-scan",
-    "upstream_commit": "f21302e204d513d09763ebb291704eb9a2aaa34f",
+    "upstream_commit": "67ef50190b84d736cd32ff8024a3d1c524a9738e",
     "content_hash": "sha256:15de872114718ffe2823927dbb646cf3b9b9a2cc4decd00acb650a53daa823aa",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6891,
+    "stars_github": 6941,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-18T07:54:24.526Z",
+    "fetched_at": "2026-09-19T07:45:27.234Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-09-18T07:08:57Z",
+    "upstream_commit_at": "2026-09-19T07:06:38Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:54:24.526Z",
+    "generated_at": "2026-09-19T07:45:27.234Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,37 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,任何文件或外部 URL 进入文档处理流水线前会先过一道安检:输出 pass 或 reject 判定,附命中黑名单项、许可状态与风险等级的扫描报告,并生成 trace_id 留痕。",
-    "when": "当本地文件(PDF/PPT/Excel/Word/图片)或外部 URL 进入文档处理系统、需要拦截违规来源时,由锦衣卫 Worker 调用,作为流水线的第一道闸门。",
+    "what": "在文档进入系统前做第一道安检：对本地文件或外部 URL 做合规扫描，输出 pass/reject 判定、扫描报告和 trace_id 追踪号，供留痕。",
+    "when": "当文档处理流水线收到文件或 URL、需要在进入系统前拦截违规内容时触发，作为强制前置安检。",
     "say": [
       {
-        "text": "这个外部 URL 合规吗,先解析域名再判定",
-        "note": "命中黑名单则判 reject"
+        "text": "扫描这个文件，返回 pass 还是 reject",
+        "note": "输出判定、扫描报告和 trace_id"
       },
       {
-        "text": "扫描服务连不上时不要放行,直接拒绝并告警",
-        "note": "零信任底线,不降级放行"
+        "text": "检查这个外部 URL 的域名是否命中黑名单",
+        "note": "命中则拒绝并写入留痕"
+      },
+      {
+        "text": "用 policy_ref 换一套合规规则重新扫描",
+        "note": "按给定策略集重跑安检"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:15de872114718ffe2823927dbb646cf3b9b9a2cc4decd00acb650a53daa823aa",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T07:58:39.143Z",
+    "generated_at": "2026-09-19T07:48:54.823Z",
     "lint_pass": true,
-    "what_en": "Once installed, files or external URLs pass a security check before entering a document pipeline: it outputs a pass/reject verdict with a report (blacklist hits, license status, risk level) and a trace_id.",
-    "when_en": "Triggered when a local file (PDF/PPT/Excel/Word/image) or external URL enters a document system and needs blocking of non-compliant sources; called by the Jinyiwei Worker as the pipeline's first gate.",
+    "what_en": "Acts as the first security gate at the document entrance: scans a local file or external URL and outputs a pass/reject verdict, a scan report, and a trace_id for provenance.",
+    "when_en": "Triggered when a document pipeline receives a file or URL and needs to block non-compliant content before it enters the system, as a mandatory pre-check.",
     "say_en": [
       {
-        "text": "Scan /path/a.pdf and give me a pass or reject verdict",
-        "note": "Returns verdict, report and trace_id"
+        "text": "Scan this file and return pass or reject",
+        "note": "Outputs verdict, report, trace_id"
       },
       {
-        "text": "Is this external URL compliant? Resolve the domain first",
-        "note": "Blacklisted domains are rejected"
+        "text": "Check whether this external URL's domain is blacklisted",
+        "note": "Rejects and logs on a match"
       },
       {
-        "text": "If the scan service is down, reject and alert, never pass",
-        "note": "Zero-trust: no degraded pass-through"
+        "text": "Re-run the scan with a different policy_ref",
+        "note": "Uses the given policy set"
       }
     ]
   }

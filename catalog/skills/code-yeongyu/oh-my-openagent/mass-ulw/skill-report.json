@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "796dd7dfdaedb9a9142402aec1a63a98e6e933f6",
+    "upstream_commit": "496dcce68d62f223c37895e3792f6d5f65920769",
     "content_hash": "sha256:5e66855769bc690bf4e57dd58dafeed2477b988c5124ef84d7ff3723b1c3e4ab",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69175,
+    "stars_github": 69196,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-18T07:53:23.971Z",
+    "fetched_at": "2026-09-19T07:44:46.530Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-18T14:58:28+09:00",
+    "upstream_commit_at": "2026-09-19T14:35:58+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:53:23.971Z",
+    "generated_at": "2026-09-19T07:44:46.530Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "把任务拆成有依赖关系的节点图,一个阶段跑一次 workflow,节点按依赖分批执行;单个节点失败可重试、发指令或改定义,已完成节点保留结果。",
-    "when": "当你要求 mass-ulw、说明任务之间存在依赖(DAG),或要做部分任务需等待其他任务完成的并行拆分时触发。",
+    "what": "把有先后依赖的多个任务编成一张任务图,按依赖分波派给子代理执行,一个阶段一次运行;某个节点失败或跑偏时可只重试、续传或改写那一个节点,已完成节点的结果会复用。",
+    "when": "当你提到 mass-ulw、任务 DAG,或需要「某些任务必须先完成、另一些才能开始」的多代理工作时触发接管。",
     "say": [
       {
-        "text": "用 mass-ulw 把这次改动拆成有依赖的节点图并跑起来",
-        "note": "先读规划文档再定义并启动一个阶段的运行"
+        "text": "用 mass-ulw 把这次重构拆成任务图跑起来",
+        "note": "会先读规划文档,再定义并启动运行"
       },
       {
-        "text": "重试任务图里失败的那个节点,只重跑它",
-        "note": "已完成的节点复用缓存结果"
+        "text": "重试 rewrite 这个节点,顺便改一下它的指令",
+        "note": "只给该节点一次新尝试,已完成节点不动"
       },
       {
-        "text": "改一下这个节点的定义再跑,只影响它和下游",
-        "note": "未变化的已完成节点不重跑"
+        "text": "run_stub_1 里的 verify 跑偏了,发消息把它拉回范围",
+        "note": "给单个子节点发消息,运行中直接纠偏"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5e66855769bc690bf4e57dd58dafeed2477b988c5124ef84d7ff3723b1c3e4ab",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T07:59:29.470Z",
+    "generated_at": "2026-09-19T07:49:34.394Z",
     "lint_pass": true,
-    "what_en": "Turns your request into a dependency-ordered node graph and drives it through the workflow tool, one run per phase; nodes run in waves, and failed nodes can be retried or steered individually while finished nodes keep their results.",
-    "when_en": "Triggers when you ask for mass-ulw, describe a task DAG, or need fan-out work where some tasks must wait on others to finish.",
+    "what_en": "Turns a dependency-ordered job into a task graph and drives its nodes through child agents in dependency-ordered waves, one run per phase. A failed or drifting node can be retried, steered, or amended; finished nodes keep their cached results.",
+    "when_en": "Triggers when you ask for mass-ulw, a task DAG, or fan-out work where some tasks must wait on others.",
     "say_en": [
       {
-        "text": "Use mass-ulw to turn this change into a dependency graph and run it.",
-        "note": "Reads planning docs, then defines and starts one phase's run."
+        "text": "Use mass-ulw to run this refactor as a task graph",
+        "note": "Reads the planning doc, then defines and starts the run"
       },
       {
-        "text": "Retry the failed node in that task graph, only that one.",
-        "note": "Completed nodes reuse their cached results."
+        "text": "Retry the rewrite node and edit its prompt while you're at it",
+        "note": "Fresh attempt for that one node only"
       },
       {
-        "text": "Amend that node's definition and re-run only what changed.",
-        "note": "Only it and its dependents re-run."
+        "text": "verify in run_stub_1 drifted - send it a scope correction",
+        "note": "Messages one child node; steers it mid-run"
       }
     ]
   }

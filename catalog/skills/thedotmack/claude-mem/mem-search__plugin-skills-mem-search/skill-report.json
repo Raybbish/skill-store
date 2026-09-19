@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Search claude-mem's persistent cross-session memory database. Use when user asks \"did we already solve this?\", \"how did we do X last time?\", or needs work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/mem-search",
-    "upstream_commit": "d8bc9755e74915e5c3b999181e10a67c889bce2a",
+    "upstream_commit": "adce0fdfaf1cd46646bbd0b22ae74cbd460ed787",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94079,
+    "stars_github": 94227,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-17T08:18:46.692Z",
+    "fetched_at": "2026-09-19T07:44:41.972Z",
     "first_seen_at": "2026-08-28T14:48:34.339Z",
-    "upstream_commit_at": "2026-09-16T12:26:51-07:00",
+    "upstream_commit_at": "2026-09-18T22:48:14-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-17T08:18:46.692Z",
+    "generated_at": "2026-09-19T07:44:41.972Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会去查 claude-mem 保存的跨会话记忆库,按「搜索索引 → 看时间线 → 只取相关条目的完整详情」的顺序回答上次做过什么,只在必要时才读工具原始输入输出。",
-    "when": "当你问「这个问题以前解决过吗」「上次是怎么做 X 的」,或需要之前会话的工作内容时触发,而不是聊当前对话。",
+    "what": "装上后 Claude 会在你问过去会话的事时,去查 claude-mem 的跨会话记忆库并作答。它走分层流程:搜索索引 → 时间线看上下文 → 取指定条目详情 →(很少用到)取原始工具记录,先过滤再取全文以省 token。",
+    "when": "当你问的是过去会话(不是当前对话)时触发,比如「这个是不是已经修过」「上次 X 怎么做的」「上周发生了什么」之类的问题。",
     "say": [
       {
-        "text": "上次我们是怎么解决认证问题的?",
-        "note": "先返回带 ID 的搜索结果表"
+        "text": "上周那个登录问题我们修好了吗?",
+        "note": "会先搜索索引,再按时间线给出上下文"
       },
       {
-        "text": "搜一下 my-project 里最近的 bugfix 记录",
-        "note": "只给索引列表,不拉全文"
+        "text": "上次认证是怎么做的?",
+        "note": "先搜索,再取相关条目的完整详情"
       },
       {
-        "text": "把 11131 前后各 3 条时间线调出来",
-        "note": "看该条目周边的上下文"
+        "text": "把 #11131 这条的完整详情取出来",
+        "note": "返回该条观察的完整记录"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:27:25.310Z",
+    "generated_at": "2026-09-19T07:51:17.396Z",
     "lint_pass": true,
-    "what_en": "Claude searches claude-mem's cross-session memory: it runs a search index, checks the timeline, then fetches full details for chosen IDs, and only rarely pulls raw tool input/output.",
-    "when_en": "Triggers when you ask about previous sessions — e.g. \"did we already fix this?\" or \"how did we solve X last time?\" — or when work from earlier sessions is needed.",
+    "what_en": "Claude searches claude-mem's cross-session memory database when you ask about past sessions. It uses a layered flow — search index, timeline, fetch details, rarely raw tool I/O — filtering before fetching to save tokens.",
+    "when_en": "Triggered when you ask about previous sessions, not the current conversation — e.g. \"did we already fix this?\", \"how did we solve X last time?\", or \"what happened last week?\".",
     "say_en": [
       {
-        "text": "How did we fix the auth issue last time?",
-        "note": "Returns a search results table with IDs"
+        "text": "Did we already fix the login issue last week?",
+        "note": "Searches the index, then shows timeline context"
       },
       {
-        "text": "Search my-project for recent bugfix records",
-        "note": "Returns an index list, no full details"
+        "text": "How did we set up authentication last time?",
+        "note": "Searches, then fetches matching observations"
       },
       {
-        "text": "Show the timeline around observation 11131",
-        "note": "Shows context before and after it"
+        "text": "Fetch full details for observation 11131",
+        "note": "Returns that observation's complete record"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "entra-agent-id",
     "description": "Provision Microsoft Entra Agent Identity Blueprints, BlueprintPrincipals, and per-instance Agent Identities via Microsoft Graph, and configure OAuth 2.0 token exchange (fmi_path, OBO, cross-tenant) including the Microsoft Entra SDK for AgentID sidecar. USE FOR: Agent Identity Blueprint, BlueprintPrincipal, agent OAuth, fmi_path token exchange, agent OBO, Workload Identity Federation for agents, polyglot agent auth, Microsoft.Identity.Web.AgentIdentities. DO NOT USE FOR: standard Entra app registration (use entra-app-registration), Microsoft Foundry agent authoring (use microsoft-foundry).",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/entra-agent-id",
-    "upstream_commit": "c4ca7f055dd12732ecb0c89d5f9b0df6c377f4d0",
+    "upstream_commit": "f8fac821eca9fe691b618f55313b376cb563d5dd",
     "content_hash": "sha256:be90faaed4c3e92d39244a61babe7a7bbddf4b2553c12ef8a461a21c1c6f97c6",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 308700,
-    "fetched_at": "2026-09-18T07:56:01.164Z",
+    "installs_skills_sh": 310200,
+    "fetched_at": "2026-09-19T07:46:39.216Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-17T09:40:38-07:00"
+    "upstream_commit_at": "2026-09-18T10:41:14-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:56:01.164Z",
+    "generated_at": "2026-09-19T07:46:39.216Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -99,38 +99,28 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它通过 Microsoft Graph 帮你创建 Entra Agent Identity 的 Blueprint、BlueprintPrincipal 和每个实例的 Agent Identity,并配置 fmi_path、OBO、跨租户等 OAuth 2.0 令牌交换及按实例授权的权限。",
-    "when": "当你需要创建 Agent Identity Blueprint、每个实例的 Agent Identity,或配置 fmi_path 等令牌交换、排查 AADSTS 类报错时接管;标准 Entra 应用注册与 Foundry 智能体不做。",
-    "say": [
-      {
-        "text": "帮我创建一个 Agent Identity Blueprint"
-      },
-      {
-        "text": "在这个 Blueprint 下新建一个 Agent Identity"
-      },
-      {
-        "text": "帮我配置 fmi_path 两步令牌交换"
-      }
-    ],
+    "what": "它会用 Microsoft Graph 为 AI Agent 创建 Entra 身份:先建 Blueprint 和 BlueprintPrincipal,再为每个 Agent 实例建独立身份并授予权限,还配置 fmi_path、OBO、跨租户的 OAuth 2.0 令牌交换与凭据。",
+    "when": "当你提到 Agent Identity Blueprint、fmi_path 令牌交换、agent OBO 等关键词,或要为 AI Agent 配置 OAuth 身份、凭据与权限时接管。标准 Entra 应用注册不归它管。",
+    "say": [],
     "source": "llm",
     "content_hash": "sha256:be90faaed4c3e92d39244a61babe7a7bbddf4b2553c12ef8a461a21c1c6f97c6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T08:00:43.165Z",
-    "lint_pass": true,
-    "what_en": "It provisions Entra Agent Identity Blueprints, BlueprintPrincipals and per-instance Agent Identities via Microsoft Graph, and configures OAuth 2.0 token exchange (fmi_path, OBO, cross-tenant) plus per-Agent-Identity permission grants.",
-    "when_en": "Use when you need to create an Agent Identity Blueprint or per-instance Agent Identities, configure fmi_path token exchange, or fix AADSTS errors. Standard Entra app registration is out of scope.",
+    "generated_at": "2026-09-19T07:50:44.537Z",
+    "lint_pass": false,
+    "what_en": "It uses Microsoft Graph to create Entra identities for AI agents: a Blueprint and BlueprintPrincipal, then an Agent Identity per instance, with per-identity permission grants and OAuth 2.0 token exchange (fmi_path, OBO, cross-tenant).",
+    "when_en": "Triggers when you mention Agent Identity Blueprint, fmi_path or agent OBO, or need agent OAuth identities, credentials and per-identity permissions. Standard Entra app registration is out of scope.",
     "say_en": [
       {
-        "text": "Create an Agent Identity Blueprint for me.",
-        "note": "Creates the application object via Microsoft Graph"
+        "text": "Create an Agent Identity Blueprint and its BlueprintPrincipal for me.",
+        "note": "Both are created via Microsoft Graph."
       },
       {
-        "text": "Create a new Agent Identity under this Blueprint.",
-        "note": "Needs an existing BlueprintPrincipal, else a 400 error"
+        "text": "Grant User.Read.All app permission to my-agent-instance-1.",
+        "note": "Grant is scoped to that Agent Identity."
       },
       {
-        "text": "Set up the two-step fmi_path token exchange.",
-        "note": "Use client_credentials with /.default in both steps"
+        "text": "Set up cross-tenant fmi_path token exchange; step 1 targets the home tenant.",
+        "note": "Avoids AADSTS700211."
       }
     ]
   }

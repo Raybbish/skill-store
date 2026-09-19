@@ -5,7 +5,7 @@
     "name": "pre-publish-review",
     "description": "Nuclear-grade 12-agent pre-publish release gate. Runs /get-unpublished-changes to detect all changes since last npm release, spawns up to 10 ultrabrain agents for deep per-change analysis, invokes /review-work (orchestrator manual QA plus one gate reviewer) for holistic review, and 1 oracle for overall release synthesis. Runs ONLY when the user explicitly asks for a pre-publish review — a plain publish/release request MUST NOT trigger this; /publish ships directly. Triggers: 'pre-publish review', 'review before publish', 'release review', 'pre-release review', 'ready to publish?', 'can I publish?', 'pre-publish', 'safe to publish', 'publishing review', 'pre-publish check'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/pre-publish-review",
-    "upstream_commit": "796dd7dfdaedb9a9142402aec1a63a98e6e933f6",
+    "upstream_commit": "496dcce68d62f223c37895e3792f6d5f65920769",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69175,
+    "stars_github": 69196,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-18T07:53:23.971Z",
+    "fetched_at": "2026-09-19T07:44:46.530Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-18T14:58:28+09:00",
+    "upstream_commit_at": "2026-09-19T14:35:58+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:53:23.971Z",
+    "generated_at": "2026-09-19T07:44:46.530Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,26 +89,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "触发后先跑 /get-unpublished-changes 列出上次 npm 发布以来的全部改动,再并行启动最多 10 个 ultrabrain 逐个改动组深挖、1 个 /review-work 做整体评审、1 个 oracle 做发布总结,最后汇总各发布层的版本号建议与阻断问题。",
-    "when": "只有你明确要求发布前评审时才触发;普通 publish/release 请求不会触发,它直接由 /publish 发布。触发词如「pre-publish review」「release review」「can I publish?」等。",
+    "what": "先运行 /get-unpublished-changes 找出上次 npm 发布以来的改动并分组,最多 10 个 ultrabrain agent 逐个深挖,再经 /review-work 整体评审,最后 1 个 oracle 汇总发布就绪度、版本号建议和破坏性变更。",
+    "when": "只在你明确要求做发布前评审时触发,例如「pre-publish review」「release review」等;普通发布请求不触发,/publish 会直接发布。",
     "say": [
       {
-        "text": "帮我做一次 pre-publish review",
-        "note": "会先检测未发布改动,再启动多层评审"
+        "text": "跑一次 pre-publish review",
+        "note": "启动 12 个 agent 做发布前评审"
       },
       {
-        "text": "这次改动可以做 release review 吗?",
-        "note": "产出各发布层版本号建议与阻断问题"
+        "text": "发布前帮我评审一下这次的改动",
+        "note": "先检测未发布改动再分层评审"
       },
       {
-        "text": "先跑 pre-publish check,看看能否发布",
-        "note": "由 oracle 给出发布风险判定"
+        "text": "现在可以发布了吗?",
+        "note": "走评审流程,不会直接发布"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T07:59:30.751Z",
-    "lint_pass": true
+    "generated_at": "2026-09-19T07:49:36.335Z",
+    "lint_pass": true,
+    "what_en": "Runs /get-unpublished-changes, groups the changes, has up to 10 ultrabrain agents analyze each group, runs a /review-work holistic review, then one oracle synthesizes release readiness, version bump and breaking changes.",
+    "when_en": "Triggers only when you explicitly ask for a pre-publish review, e.g. \"pre-publish review\", \"release review\". A plain publish or release request does not trigger it — /publish ships directly.",
+    "say_en": [
+      {
+        "text": "Run a pre-publish review.",
+        "note": "Spawns 12 agents to review before release."
+      },
+      {
+        "text": "Review the current changes before I publish.",
+        "note": "Detects unpublished changes, then reviews by layer."
+      },
+      {
+        "text": "Can I publish?",
+        "note": "Goes through the review gate, not a direct publish."
+      }
+    ]
   }
 }
