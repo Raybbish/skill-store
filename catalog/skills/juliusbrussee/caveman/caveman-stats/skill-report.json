@@ -3,10 +3,10 @@
   "meta": {
     "id": "juliusbrussee/caveman/caveman-stats",
     "name": "caveman-stats",
-    "description": "Show real token usage and estimated savings for the current session. Reads directly from the Claude Code session log — no AI estimation. Triggers on /caveman-stats. Output is injected by the mode-tracker hook; the model itself does not compute the numbers.\n",
+    "description": "Show recorded output and cache-read token usage and mode attribution for the current Claude Code session, or locate the host's native usage report. Trigger: /caveman-stats.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/caveman-stats",
-    "upstream_commit": "17f9f2ec2377b0bfe16b52ee03a462e7f0a02bc8",
-    "content_hash": "sha256:fe09df9954fb22a538bc95613b00630fbfc7ac53f3cdeaa110815fcbebfd1f3c",
+    "upstream_commit": "542442bab314973709f95b85b1ac0b3f6f5b5dc6",
+    "content_hash": "sha256:448e107d12f49bd3adc5e332b6c8c5153e3f01e685cc037365aa29acf367b13c",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -15,7 +15,6 @@
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "cli",
       "monitoring"
     ]
   },
@@ -23,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 271200,
-    "fetched_at": "2026-08-28T14:50:35.090Z",
+    "installs_skills_sh": 308100,
+    "fetched_at": "2026-09-18T07:56:25.823Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-08-25T18:17:28+02:00"
+    "upstream_commit_at": "2026-09-17T18:46:32+02:00"
   },
   "context_size": {
     "version": "1",
@@ -35,25 +34,25 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:50:35.090Z",
+    "generated_at": "2026-09-18T07:56:25.823Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 1152,
-        "chars": 1146,
-        "tokens": 249
+        "bytes": 1964,
+        "chars": 1964,
+        "tokens": 419
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 1152,
-        "chars": 1146,
-        "tokens": 249
+        "bytes": 1964,
+        "chars": 1964,
+        "tokens": 419
       },
       "package_total_text": {
         "files": [
@@ -61,68 +60,70 @@
           "SKILL.md"
         ],
         "text_files": 2,
-        "bytes": 3259,
-        "chars": 3231,
-        "tokens": 716
+        "bytes": 4487,
+        "chars": 4341,
+        "tokens": 923
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "实时查看本次会话的token用量和节省成本",
+    "tagline": "查看当前会话的输出与缓存读取 token 用量及模式归属",
     "scene_tags": [
+      "用量查看",
       "成本核算",
-      "用量统计"
+      "会话复盘"
     ],
-    "fit_line": "适合你,如果想实时掌握当前会话的token用量与成本节省。",
-    "tagline_en": "See real token usage and estimated savings for the current session.",
+    "fit_line": "适合你,如果想弄清这次会话到底消耗了多少 token。",
+    "tagline_en": "Check token and cache-read usage and mode attribution for the current session",
     "scene_tags_en": [
+      "usage check",
       "cost tracking",
-      "usage stats"
+      "session review"
     ],
-    "fit_line_en": "For you if you want to keep an eye on how many tokens your session uses and how much it saves.",
+    "fit_line_en": "For you if you want to know how many tokens this session actually used",
     "source": "llm",
-    "content_hash": "sha256:fe09df9954fb22a538bc95613b00630fbfc7ac53f3cdeaa110815fcbebfd1f3c",
+    "content_hash": "sha256:448e107d12f49bd3adc5e332b6c8c5153e3f01e685cc037365aa29acf367b13c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-04T05:52:23.621Z",
+    "generated_at": "2026-09-15T08:23:43.716Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "输入 /caveman-stats 后,会显示当前会话的真实 token 使用量和估算节省(直接从会话日志读取,非 AI 估算),以及规则开销和净节省;当净节省为负时,会明确说明并建议关闭该功能。",
-    "when": "当你在对话中输入 /caveman-stats 时触发统计显示。没有其他触发条件。",
+    "what": "在 Claude Code 里敲 /caveman-stats,它会把当前会话记录的输出 token、缓存读取 token、响应次数和模式归属,原样打印在代码块里,不自行重算。在 Gemini CLI 里则会引导你用 /stats model 或 /stats session。",
+    "when": "当你输入 /caveman-stats 时触发。在 Gemini CLI 中它会改为引导你使用 /stats model 或 /stats session;其他宿主若有原生用量报告就用它,没有则回复当前会话用量不可用。",
     "say": [
       {
         "text": "/caveman-stats",
-        "note": "显示当前会话的真实 token 用量和节省估算。"
+        "note": "打印当前会话的 token 用量报告"
       },
       {
-        "text": "运行 /caveman-stats 看看统计",
-        "note": "触发同一命令,返回开销与净节省明细。"
+        "text": "/caveman-stats --all",
+        "note": "按会话汇总各自最近记录的输出量"
       },
       {
-        "text": "查一下 /caveman-stats 的节省情况",
-        "note": "会返回净节省;若为负会建议关闭 caveman。"
+        "text": "/caveman-stats --since 7d",
+        "note": "汇总最近 7 天的记录输出量"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:fe09df9954fb22a538bc95613b00630fbfc7ac53f3cdeaa110815fcbebfd1f3c",
+    "content_hash": "sha256:448e107d12f49bd3adc5e332b6c8c5153e3f01e685cc037365aa29acf367b13c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:03:56.873Z",
+    "generated_at": "2026-09-18T08:00:18.410Z",
     "lint_pass": true,
-    "what_en": "On /caveman-stats, it shows real token usage and estimated savings for the session (from the session log, not AI-estimated), plus rule overhead and net. If net is negative, it says so and suggests disabling caveman.",
-    "when_en": "Triggers when the user types /caveman-stats. The hook injects the output; the model does not compute numbers.",
+    "what_en": "In Claude Code, /caveman-stats prints the session's recorded output and cache-read tokens, response counts and mode attribution verbatim in a code block. In Gemini CLI it points you to /stats model or /stats session.",
+    "when_en": "Triggers when you type /caveman-stats. In Gemini CLI it instead points to /stats model or /stats session; other hosts use a native usage report if available, else it says session usage is unavailable.",
     "say_en": [
       {
         "text": "/caveman-stats",
-        "note": "Shows real token usage and savings for this session."
+        "note": "Prints this session's token usage report"
       },
       {
-        "text": "Run /caveman-stats for stats",
-        "note": "Same command; returns overhead and net details."
+        "text": "/caveman-stats --all",
+        "note": "Aggregates the latest recorded output count per session"
       },
       {
-        "text": "Check savings via /caveman-stats",
-        "note": "Returns net savings; suggests disabling caveman if negative."
+        "text": "/caveman-stats --since 7d",
+        "note": "Aggregates latest output count per session over 7 days"
       }
     ]
   }

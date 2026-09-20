@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "64d89819ef1fde81712630f8e5d798be9e4e8867",
+    "upstream_commit": "496dcce68d62f223c37895e3792f6d5f65920769",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,13 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 68470,
+    "stars_github": 69196,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:38.475Z",
+    "fetched_at": "2026-09-19T07:44:46.530Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-28T16:17:39+09:00",
-    "repo_skill_count": 52,
-    "bulk_source": true
+    "upstream_commit_at": "2026-09-19T14:35:58+09:00",
+    "repo_skill_count": 49
   },
   "context_size": {
     "version": "1",
@@ -36,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:38.475Z",
+    "generated_at": "2026-09-19T07:44:46.530Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，代码编辑会触发注释检查。若有警告，Claude 会停下，要求修复或解释被标记的注释，然后才继续。非编辑操作忽略，检查器缺失则无输出。",
-    "when": "在 Claude 成功完成 apply_patch、write、edit 等编辑操作后自动触发。非编辑操作不触发。",
+    "what": "编辑类工具(apply_patch、write、edit 等)调用成功后,插件会通过 PostToolUse 钩子运行 comment-checker。发现注释问题时,Codex 会收到阻塞性反馈,需先修正或解释被标记的注释再继续。插件不对外暴露 MCP 工具。",
+    "when": "当 Codex 在编辑类工具调用成功后收到 comment-checker 的警告反馈时触发,需要理解或回应这类反馈。非编辑类工具被该插件忽略。",
     "say": [
       {
-        "text": "修复被标记的注释。",
-        "note": "Claude 会修改该注释以通过检查。"
+        "text": "刚收到的 comment-checker 警告是什么原因?",
+        "note": "它会说明被标记的注释"
       },
       {
-        "text": "解释为何这条注释被警告。",
-        "note": "Claude 会分析并说明原因。"
+        "text": "把 comment-checker 标记的注释改掉。",
+        "note": "Codex 会先修正再继续"
       },
       {
-        "text": "修复后继续下一步。",
-        "note": "Claude 修复后恢复执行。"
+        "text": "解释这条注释为什么被警告,先别改代码。",
+        "note": "给出解释而不改动"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T14:56:58.187Z",
+    "generated_at": "2026-09-19T07:49:18.397Z",
     "lint_pass": true,
-    "what_en": "After successful edit-like actions, Claude runs a comment check. Warnings block progress until Claude fixes or explains the flagged comment. Non-edit tools are ignored; missing checker binaries cause no output.",
-    "when_en": "Triggered after successful edit calls such as apply_patch, write, edit, etc. Non-edit tools are ignored.",
+    "what_en": "After successful edit-like calls (apply_patch, write, edit), a PostToolUse hook runs comment-checker. If it warns about comments, Codex gets blocking feedback and should fix or explain the flagged comment before continuing. No MCP tool is exposed.",
+    "when_en": "When Codex receives comment-checker warning feedback after a successful edit-like tool call, or needs to understand and respond to it. Non-edit tools are ignored.",
     "say_en": [
       {
-        "text": "Fix the flagged comment.",
-        "note": "Claude updates the comment to satisfy the checker."
+        "text": "What caused the comment-checker warning I just got?",
+        "note": "It explains the flagged comment"
       },
       {
-        "text": "Explain why this comment is flagged.",
-        "note": "Claude analyzes and gives the reason."
+        "text": "Fix the comments comment-checker flagged.",
+        "note": "Codex fixes them before continuing"
       },
       {
-        "text": "Fix it and continue.",
-        "note": "Claude then resumes the workflow."
+        "text": "Explain the flagged comment without editing code.",
+        "note": "You get an explanation, no edits"
       }
     ]
   }
