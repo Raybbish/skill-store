@@ -5,7 +5,7 @@
     "name": "verify",
     "description": "Drive an engine app headlessly in a pty, record a video of the whole verification, and open a summary page (video + timeline + checks) with pixel open.",
     "upstream": "https://github.com/zenbu-labs/terminal-browser/tree/main/.claude/skills/verify",
-    "upstream_commit": "6d682348f4af469b56fa0fd8331b4eb967030893",
+    "upstream_commit": "22704b2abf7d5c14bc438759449b2ffc21fe06f0",
     "content_hash": "sha256:9a02dcc097236470219a17bbf80c9d2f965bd6270a490971ba2201b4af434ff9",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 3075,
+    "stars_github": 3143,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-18T07:54:41.075Z",
+    "fetched_at": "2026-09-20T08:13:48.246Z",
     "first_seen_at": "2026-08-12T04:45:42.727Z",
-    "upstream_commit_at": "2026-09-17T04:32:32-04:00",
+    "upstream_commit_at": "2026-09-19T18:13:39-04:00",
     "repo_skill_count": 1
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:54:41.075Z",
+    "generated_at": "2026-09-20T08:13:48.246Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,37 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会用 tools/verify-recorder 里的 Driver/Recorder，在 pty 里无头驱动你的引擎应用，把每一帧录成视频，记录检查项和命名截图，最后生成含视频、可点击时间线和检查表的 summary.html 页面。",
-    "when": "当你要求验证某个通过 kitty graphics protocol 渲染的引擎应用时接管——它不需要真实终端，可指定窗口尺寸与像素坐标，并断言帧变化或解码后的像素颜色。",
+    "what": "Claude 会为引擎应用写一个驱动脚本，在伪终端里无头运行它，边跑边录下每一帧、叠加点击波纹和说明字幕，编码成视频，并生成含时间线、检查表和截图的汇总页，最后用 pixel open 打开。",
+    "when": "当你需要验证某个引擎应用的实际表现（如点击、滚动、键盘输入）时接管，走带录制的验证流程，而不是只导出 PNG 的一次性 pty 脚本。",
     "say": [
       {
-        "text": "验证这个引擎应用的点击命中，检查项要用真实断言",
-        "note": "检查结果显示为 pass/fail 表格"
+        "text": "写个 verify 驱动脚本，验证滚轮滚动时光标不跑偏",
+        "note": "会录制全程并生成视频与检查表"
       },
       {
-        "text": "跑一次验证，结束后打开 summary.html",
-        "note": "会打印 run 目录和 summary 路径"
+        "text": "把这次验证的汇总页面打开",
+        "note": "用 pixel open 打开 summary.html"
+      },
+      {
+        "text": "加一条断言：滚动后画面发生了重绘",
+        "note": "断言结果会显示在汇总页的检查表中"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9a02dcc097236470219a17bbf80c9d2f965bd6270a490971ba2201b4af434ff9",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T08:01:45.094Z",
+    "generated_at": "2026-09-20T08:18:58.698Z",
     "lint_pass": true,
-    "what_en": "Claude drives your engine app headlessly in a pty via tools/verify-recorder, records every frame to a video, logs checks and named stills, and produces a summary.html with video, clickable timeline, and checks table.",
-    "when_en": "Use it when you want to verify an engine app that renders via the kitty graphics protocol; it needs no real terminal and can assert on frame deltas or decoded pixel colors.",
+    "what_en": "Claude writes a driver script to run an engine app headlessly in a pty, records every frame with input captions, encodes a video, and builds a summary page with timeline, checks and stills, then opens it with pixel open.",
+    "when_en": "Takes over when you need to verify how an engine app behaves on click, scroll or key input; it runs the recorder-based flow instead of one-off pty scripts that only dump PNGs.",
     "say_en": [
       {
-        "text": "Write a verify script for wheel scrolling, then pixel open the summary",
-        "note": "Records a video and a timeline summary page"
+        "text": "Write a verify driver script for wheel scrolling",
+        "note": "Records the run and builds the summary"
       },
       {
-        "text": "Verify click hit-testing in this engine app with real assertions",
-        "note": "Checks show up as a pass/fail table"
+        "text": "Open the summary page for this run",
+        "note": "Opens summary.html via pixel open"
       },
       {
-        "text": "Run the verification and open summary.html when it finishes",
-        "note": "Prints the run dir and summary path"
+        "text": "Add a check that the screen redrew after scrolling",
+        "note": "Result shows in the checks table"
       }
     ]
   }

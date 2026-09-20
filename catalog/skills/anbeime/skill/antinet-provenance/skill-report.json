@@ -5,7 +5,7 @@
     "name": "antinet-provenance",
     "description": "软件开发工程师与信息安全分析师在构建多智能体系统时，当需全链路可观测与安全审计，请用此技能。它自动收集操作日志，生成可追溯证据链与向量索引，开箱即用实现系统审计与精准回放，让Agent运行安全透明。",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-provenance",
-    "upstream_commit": "67ef50190b84d736cd32ff8024a3d1c524a9738e",
+    "upstream_commit": "a3a902299206ff8f4f7b99c350b93c4b76d89311",
     "content_hash": "sha256:71561e23fc88df84618d34173374c7ef88309305b05002be17fe6c88aed6f022",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6941,
+    "stars_github": 6985,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-19T07:45:27.234Z",
+    "fetched_at": "2026-09-20T08:13:34.435Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-09-19T07:06:38Z",
+    "upstream_commit_at": "2026-09-20T07:31:33Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-19T07:45:27.234Z",
+    "generated_at": "2026-09-20T08:13:34.435Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,40 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在关键操作节点记录每一次分发、扫描、解析等事件,产出按 trace_id 串联的证据链和向量索引,并提供按 trace_id、时间窗、官署检索的接口;产物写入 provenance 目录。",
-    "when": "构建多智能体系统、需要全链路可观测与安全审计时使用;由各官署在分发、扫描、解析等关键操作节点调用,或经事件总线异步推送。",
+    "what": "装上后，各官署在关键操作节点写入事件，技能自动生成按 trace_id 串联的证据链和向量索引，并提供按条件检索历史证据的接口，支撑审计面板与回滚定位。",
+    "when": "当构建多智能体系统、需要全链路可观测与安全审计时使用，或由各官署在关键操作节点调用、通过事件总线异步推送事件时接管。",
     "say": [
       {
-        "text": "运行 provenance 阶段,把这次多 Agent 会话的证据链写出来"
+        "text": "把这次 trace_id 的完整证据链检索出来",
+        "note": "返回按 trace_id 串联的证据链"
       },
       {
-        "text": "按 trace_id 检索这次任务的历史证据",
-        "note": "返回串联好的证据链"
+        "text": "记一条事件：官署=军机处，动作=派发",
+        "note": "写入证据链并生成向量索引条目"
       },
       {
-        "text": "向量库写失败了,先把事件缓存到本地 SQLite,之后再补写",
-        "note": "走失败处理分支,不阻塞主流程"
+        "text": "按时间窗检索最近的审计记录",
+        "note": "检索超时会返回上次快照并标注 stale"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:71561e23fc88df84618d34173374c7ef88309305b05002be17fe6c88aed6f022",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-19T07:48:55.107Z",
+    "generated_at": "2026-09-20T08:16:33.782Z",
     "lint_pass": true,
-    "what_en": "Records each dispatch, scan and parse event at key nodes, producing a trace_id-linked evidence chain and vector index plus a query API by trace_id, time window or agency; outputs go to the provenance directory.",
-    "when_en": "When building multi-agent systems that need end-to-end observability and security audit; agencies call it at key nodes such as dispatch, scan and parse, or push events via the bus.",
+    "what_en": "Once installed, it collects events at each agency's key operations, producing a trace_id-linked evidence chain and vector index entries, plus a query interface for audit panels and rollback pinpointing.",
+    "when_en": "Use when building multi-agent systems that need end-to-end observability and security auditing, or when agencies call it at key operation points or push events over an event bus.",
     "say_en": [
       {
-        "text": "Run the provenance stage to write the evidence chain for this session",
-        "note": "Runs run_provenance.py; outputs to the provenance dir"
+        "text": "Retrieve the full evidence chain for this trace_id",
+        "note": "Returns the chain linked by trace_id"
       },
       {
-        "text": "Query history for this task by trace_id",
-        "note": "Returns the linked evidence chain"
+        "text": "Log an event: actor=Junjichu, action=dispatch",
+        "note": "Writes it to the evidence chain and vector index"
       },
       {
-        "text": "Vector write failed, cache events in local SQLite and backfill later",
-        "note": "Uses the failure path, not blocking the main flow"
+        "text": "Query recent audit records by time window",
+        "note": "On timeout returns the last snapshot, marked stale"
       }
     ]
   }

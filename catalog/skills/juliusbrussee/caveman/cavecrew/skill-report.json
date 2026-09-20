@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "When to delegate to `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit) or `cavecrew-reviewer` (diff review) instead of working inline or using `Explore`. Their output is compressed, so main context lasts longer.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "542442bab314973709f95b85b1ac0b3f6f5b5dc6",
+    "upstream_commit": "3ee70a102609e550bd2e68004bf5990a9341c851",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 308800,
-    "fetched_at": "2026-09-18T07:56:25.823Z",
+    "installs_skills_sh": 311900,
+    "fetched_at": "2026-09-20T08:15:16.018Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-17T18:46:32+02:00"
+    "upstream_commit_at": "2026-09-19T19:37:16-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:56:25.823Z",
+    "generated_at": "2026-09-20T08:15:16.018Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 在查找代码、改 1-2 个文件、审查 diff 这类活儿上会交给 cavecrew 子代理去做。子代理返回的工具结果是压缩过的,主上下文占用更小,一次会话里能多用几轮。",
-    "when": "当你要定位代码、做范围明确的小改动(≤2 个文件)、或审查 diff 时,会委派给对应的 cavecrew 子代理;想要架构建议、大范围重构或深度评审则不用它。",
+    "what": "装上后,Claude 会把任务交给三个子代理之一:cavecrew-investigator 定位代码、cavecrew-builder 改 1~2 个文件、cavecrew-reviewer 审 diff。它们只回结构化短结果,主上下文占用更少。",
+    "when": "当你要查代码在哪、做小范围改动或审 diff 时,会转给对应子代理;新功能、3 个以上文件、跨文件重构则留在主线程,或用原生 Explore / Code Reviewer。",
     "say": [
       {
-        "text": "用 cavecrew-investigator 找一下 X 在哪定义、谁调用了它",
-        "note": "返回路径加行号的清单"
+        "text": "帮我找到 parseConfig 定义在哪、谁调用了它",
+        "note": "返回 路径:行号 + 符号 的清单"
       },
       {
-        "text": "让 cavecrew-builder 把这两个文件里的 Y 改掉",
-        "note": "只做 2 个文件以内的手术式编辑"
+        "text": "把 src/a.ts 第 20 行这个判断改成提前返回",
+        "note": "回一行改动摘要和校验结果"
       },
       {
-        "text": "用 cavecrew-reviewer 审一下这次的 diff",
-        "note": "只报问题,不给架构意见"
+        "text": "审查我当前的 diff,找出 bug",
+        "note": "按文件行号给出分级问题列表"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T08:00:11.461Z",
+    "generated_at": "2026-09-20T08:18:11.233Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude delegates code lookup, small edits, and diff review to cavecrew subagents. Their tool results return compressed, so the main context shrinks per delegation and lasts longer across a session.",
-    "when_en": "Triggers when Claude needs to locate code, make a surgical edit in 1-2 files, or review a diff. For architecture suggestions, deep review, or 3+ file refactors it stays on the main thread.",
+    "what_en": "Claude routes work to one of three subagents: cavecrew-investigator locates code, cavecrew-builder edits 1-2 files, cavecrew-reviewer reviews a diff. They return only compressed structured output, so main context shrinks per delegation.",
+    "when_en": "Use it when locating code, making a small edit, or reviewing a diff; for new features, 3+ files, or cross-cutting refactors stay in the main thread or use vanilla Explore / Code Reviewer.",
     "say_en": [
       {
-        "text": "Use cavecrew-investigator to find where X is defined and what calls it",
-        "note": "Returns a path:line list of sites"
+        "text": "Find where parseConfig is defined and who calls it",
+        "note": "Returns path:line + symbol list"
       },
       {
-        "text": "Have cavecrew-builder change Y in these two files",
-        "note": "Edits at most 2 files"
+        "text": "In src/a.ts line 20, make this check return early",
+        "note": "Returns a one-line change plus verify result"
       },
       {
-        "text": "Run cavecrew-reviewer on this diff",
-        "note": "Findings only, no architecture opinions"
+        "text": "Review my current diff and find bugs",
+        "note": "Returns graded findings by file:line"
       }
     ]
   }

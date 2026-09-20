@@ -99,28 +99,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会用 Microsoft Graph 为 AI Agent 创建 Entra 身份:先建 Blueprint 和 BlueprintPrincipal,再为每个 Agent 实例建独立身份并授予权限,还配置 fmi_path、OBO、跨租户的 OAuth 2.0 令牌交换与凭据。",
-    "when": "当你提到 Agent Identity Blueprint、fmi_path 令牌交换、agent OBO 等关键词,或要为 AI Agent 配置 OAuth 身份、凭据与权限时接管。标准 Entra 应用注册不归它管。",
-    "say": [],
+    "what": "装上后,Claude 会用 Microsoft Graph 创建 Agent Identity Blueprint、BlueprintPrincipal,以及每个 agent 实例单独的 Agent Identity,并配置 fmi_path、OBO、跨租户等 OAuth 2.0 令牌交换。",
+    "when": "当你提到 Agent Identity Blueprint、agent OBO、fmi_path 等关键词,或要为 AI agent 实例配置身份与权限时触发;普通 Entra 应用注册不归它管。",
+    "say": [
+      {
+        "text": "帮我排查 AADSTS700211 报错",
+        "note": "会检查跨租户父令牌指向的租户"
+      }
+    ],
     "source": "llm",
     "content_hash": "sha256:be90faaed4c3e92d39244a61babe7a7bbddf4b2553c12ef8a461a21c1c6f97c6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-19T07:50:44.537Z",
-    "lint_pass": false,
-    "what_en": "It uses Microsoft Graph to create Entra identities for AI agents: a Blueprint and BlueprintPrincipal, then an Agent Identity per instance, with per-identity permission grants and OAuth 2.0 token exchange (fmi_path, OBO, cross-tenant).",
-    "when_en": "Triggers when you mention Agent Identity Blueprint, fmi_path or agent OBO, or need agent OAuth identities, credentials and per-identity permissions. Standard Entra app registration is out of scope.",
+    "generated_at": "2026-09-20T08:18:27.252Z",
+    "lint_pass": true,
+    "what_en": "Once installed, Claude provisions Microsoft Entra Agent Identity Blueprints, BlueprintPrincipals and per-instance Agent Identities via Microsoft Graph, and configures OAuth 2.0 token exchange (fmi_path, OBO, cross-tenant).",
+    "when_en": "Triggers when you mention Agent Identity Blueprint, agent OBO, fmi_path, or need identities and permissions for AI agent instances. Standard Entra app registration is out of scope.",
     "say_en": [
       {
-        "text": "Create an Agent Identity Blueprint and its BlueprintPrincipal for me.",
-        "note": "Both are created via Microsoft Graph."
+        "text": "Create an Agent Identity Blueprint and its BlueprintPrincipal",
+        "note": "Runs the two Graph calls in order"
       },
       {
-        "text": "Grant User.Read.All app permission to my-agent-instance-1.",
-        "note": "Grant is scoped to that Agent Identity."
+        "text": "Create an Agent Identity for my-agent-1 and grant it User.Read.All",
+        "note": "Grants are scoped per Agent Identity"
       },
       {
-        "text": "Set up cross-tenant fmi_path token exchange; step 1 targets the home tenant.",
-        "note": "Avoids AADSTS700211."
+        "text": "Help me diagnose error AADSTS700211",
+        "note": "Checks the cross-tenant parent token tenant"
       }
     ]
   }

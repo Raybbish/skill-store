@@ -5,7 +5,7 @@
     "name": "doc-parse",
     "description": "将 PDF/PPT/Excel/Word 等多格式文档解析为结构化 Markdown，并输出元数据与解析置信度，作为 RAG 与四色卡片的数据底座。",
     "upstream": "https://github.com/anbeime/skill/tree/main/antinet-agentteams/skills/doc-parse",
-    "upstream_commit": "67ef50190b84d736cd32ff8024a3d1c524a9738e",
+    "upstream_commit": "a3a902299206ff8f4f7b99c350b93c4b76d89311",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "license": "none(all-rights-reserved)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6941,
+    "stars_github": 6985,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-19T07:45:27.234Z",
+    "fetched_at": "2026-09-20T08:13:34.435Z",
     "first_seen_at": "2026-09-02T07:32:35.252Z",
-    "upstream_commit_at": "2026-09-19T07:06:38Z",
+    "upstream_commit_at": "2026-09-20T07:31:33Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-19T07:45:27.234Z",
+    "generated_at": "2026-09-20T08:13:34.435Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "把 PDF、PPT、Excel、Word 等文档解析成结构化 Markdown，同时给出标题、页数等元数据、0–1 的解析置信度，以及实际生效的解析器名称。",
-    "when": "当密卷房 Worker 收到已通过安全扫描的文件时被调用；也可直接运行 scripts/run_doc_parse.py 触发。",
+    "what": "装上后，Claude 会把 PDF、PPT、Excel、Word 等文档解析成结构化 Markdown，同时给出标题、页数等元数据、0–1 的解析置信度，以及实际生效的解析器名称。",
+    "when": "在收到已通过 security-scan 的本地文件时调用；主解析器失败会自动降级到下一档，三级全部失败则标记人工介入。",
     "say": [
       {
-        "text": "把这份 PDF 解析成 Markdown，并给出置信度",
-        "note": "输出正文、元数据与实际生效的解析器"
+        "text": "把这个 PDF 解析成结构化 Markdown，并给出置信度",
+        "note": "返回正文、元数据与置信度"
       },
       {
-        "text": "解析这个 Excel，告诉我表格数和解析置信度",
-        "note": "来自 metadata 与 confidence 字段"
+        "text": "这份 Excel 转成 Markdown，附上表格数和作者",
+        "note": "输出元数据与生效的 fallback 解析器"
       },
       {
-        "text": "这份文件要人工介入吗？解析器试到哪一档",
-        "note": "三级全失败会回传 BLOCKED 并标记人工介入"
+        "text": "解析这份 Word 合同，标出低置信度的部分",
+        "note": "低置信度块会被单独标记"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-19T07:49:09.639Z",
+    "generated_at": "2026-09-20T08:16:48.815Z",
     "lint_pass": true,
-    "what_en": "Turns PDF, PPT, Excel, Word and other documents into structured Markdown, and returns metadata such as title and page count, a 0–1 parsing confidence, and the name of the parser that finally ran.",
-    "when_en": "Runs when the Mijuanfang Worker receives a file that already passed the security scan; you can also trigger it directly by running scripts/run_doc_parse.py.",
+    "what_en": "After install, Claude parses PDF, PPT, Excel, Word and other files into structured Markdown, returning metadata, a 0-1 confidence score and the name of the parser used.",
+    "when_en": "Triggered when a local file that passed security-scan arrives; if the main parser fails, it falls back to the next one, and after three failures the file is marked for manual review.",
     "say_en": [
       {
-        "text": "Parse this PDF into Markdown and give me the confidence score",
-        "note": "Returns body, metadata and the parser used"
+        "text": "Parse this PDF into structured Markdown and give me a confidence score",
+        "note": "Returns text, metadata and confidence"
       },
       {
-        "text": "Parse this Excel file; report table count and parsing confidence",
-        "note": "From the metadata and confidence fields"
+        "text": "Turn this Excel file into Markdown with table count and author",
+        "note": "Also reports the fallback parser used"
       },
       {
-        "text": "Does this file need manual review, and which parser tier ran?",
-        "note": "Three failed tiers return BLOCKED and mark manual review"
+        "text": "Parse this Word contract and flag the low-confidence parts",
+        "note": "Low-confidence blocks are marked separately"
       }
     ]
   }
