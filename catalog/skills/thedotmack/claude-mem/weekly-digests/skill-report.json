@@ -5,7 +5,7 @@
     "name": "weekly-digests",
     "description": "Generate a serial week-by-week narrative digest of a project's full claude-mem timeline. Splits the timeline into per-ISO-week files, then runs one consecutive subagent per week — each receiving the prior week's carry-forward block — to produce one chapter per ISO week of data. Use when asked for \"weekly digests\", \"week-by-week story\", \"serial timeline\", or \"narrative chapters\" of a project's history.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/weekly-digests",
-    "upstream_commit": "866a0ca3b34cddd8aa4c5fba72b9ad2b3a5621fe",
+    "upstream_commit": "adce0fdfaf1cd46646bbd0b22ae74cbd460ed787",
     "content_hash": "sha256:e3907281e044e35fb39d7ef7f2af9186dffcabbd809edec7b698f0752d4ea677",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 92056,
+    "stars_github": 94227,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:00.249Z",
+    "fetched_at": "2026-09-19T07:44:41.972Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-26T09:56:07-07:00",
-    "repo_skill_count": 22
+    "upstream_commit_at": "2026-09-18T22:48:14-07:00",
+    "repo_skill_count": 27
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:00.249Z",
+    "generated_at": "2026-09-19T07:44:41.972Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "把项目的历史记录(保存在 claude-mem 里)按自然周拆开,并为每一周生成一章连续叙事,最终产出多章“周报式”故事文档。",
-    "when": "当用户要求生成“每周摘要”“周更故事”“连续时间线”或某个项目的“叙事章节”时触发。",
+    "what": "把项目在 claude-mem 里的完整时间线按 ISO 周拆成文件,再逐周串行调用子代理,每周产出一章叙事摘要;每章承接上一周的 carry-forward 块,最后一章改写「Where We Are」。文件按周编号重命名排序。",
+    "when": "当你要求「weekly digests」「week-by-week story」「serial timeline」等,或想逐周续写项目历史章节时触发;若只想要一份单篇长报告,则用 timeline-report。",
     "say": [
       {
-        "text": "给这个项目生成每周摘要,从头到尾。",
-        "note": "会按周拆时间线并逐章写出叙事。"
+        "text": "给这个项目做每周摘要,从第一周写到最近一周"
       },
       {
-        "text": "按周讲讲这个项目的连续故事。",
-        "note": "每周一章,章节之间会承接上一章的结尾。"
+        "text": "用逐周故事的形式讲一下这个项目的开发历史",
+        "note": "每周一章,后一章承接上一周的 carry-forward"
       },
       {
-        "text": "为 [项目名] 做叙事章节,按周划分。",
-        "note": "先探测项目名,再按 ISO 周生成章节。"
+        "text": "接着上一周继续写这个项目的时间线故事",
+        "note": "从上一周的 carry-forward 块往下续写"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e3907281e044e35fb39d7ef7f2af9186dffcabbd809edec7b698f0752d4ea677",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:49:29.784Z",
+    "generated_at": "2026-09-19T07:51:25.496Z",
     "lint_pass": true,
-    "what_en": "Splits a project's claude-mem timeline into ISO-week files and produces one narrative chapter per week, chained by a carry-forward block so the story stays continuous.",
-    "when_en": "Triggered when the user asks for weekly digests, week-by-week stories, serial timelines, or narrative chapters of a project's history.",
+    "what_en": "Splits a project's claude-mem timeline into per-ISO-week files, then runs subagents one week at a time, one narrative chapter per week. Each chapter inherits the prior week's carry-forward block; the last chapter writes 'Where We Are'.",
+    "when_en": "Triggers when the user asks for 'weekly digests', 'week-by-week story', 'serial timeline' or similar; use timeline-report instead if they want a single long report.",
     "say_en": [
       {
-        "text": "Generate weekly digests for this project, from start to finish.",
-        "note": "Splits the timeline and writes narrative chapters."
+        "text": "Make weekly digests for this project, from the first week to the latest.",
+        "note": "Writes one chapter per ISO week into docs/timeline-weeks"
       },
       {
-        "text": "Tell the project's story week by week.",
-        "note": "Each week becomes a chapter that continues from the last."
+        "text": "Tell this project's history as a week-by-week serial story.",
+        "note": "Each chapter carries forward the prior week"
       },
       {
-        "text": "Make serial narrative chapters for [Project], grouped by week.",
-        "note": "Detects the project and drives the weekly pipeline."
+        "text": "Continue the timeline story from the last week.",
+        "note": "Picks up the carry-forward chain"
       }
     ]
   }
