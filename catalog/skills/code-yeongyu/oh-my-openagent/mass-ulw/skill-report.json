@@ -5,8 +5,8 @@
     "name": "mass-ulw",
     "description": "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "4ec2cdf65c0f4e9b36146e3ad1e8dff13ce3849b",
-    "content_hash": "sha256:5e66855769bc690bf4e57dd58dafeed2477b988c5124ef84d7ff3723b1c3e4ab",
+    "upstream_commit": "6379f7ea5e2e07dbc2b162b677e098eb94c311ff",
+    "content_hash": "sha256:48c4c3e9110f06ad214f1455cfb88bbf0329f97b25b6834c3ae2126da7a7c895",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
     "category": "dev",
@@ -15,18 +15,18 @@
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "automation",
-      "agent-ops"
+      "agent-ops",
+      "automation"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69214,
+    "stars_github": 69241,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-20T08:12:48.170Z",
+    "fetched_at": "2026-09-21T08:29:54.071Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-20T16:44:26+09:00",
+    "upstream_commit_at": "2026-09-21T17:11:23+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-20T08:12:48.170Z",
+    "generated_at": "2026-09-21T08:29:54.071Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -53,9 +53,9 @@
           "references/planning.md"
         ],
         "text_files": 2,
-        "bytes": 32492,
-        "chars": 32492,
-        "tokens": 7510
+        "bytes": 32848,
+        "chars": 32848,
+        "tokens": 7588
       },
       "package_total_text": {
         "files": [
@@ -63,70 +63,71 @@
           "references/planning.md"
         ],
         "text_files": 2,
-        "bytes": 32492,
-        "chars": 32492,
-        "tokens": 7510
+        "bytes": 32848,
+        "chars": 32848,
+        "tokens": 7588
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "把互相依赖的一批任务按阶段依次跑完,失败自动重试接管",
+    "tagline": "调度一批互相依赖的子任务,按阶段依次执行,失败自动重试补救",
     "scene_tags": [
-      "批量任务",
-      "流程编排",
-      "失败重试"
+      "批量任务分发",
+      "依赖排序",
+      "失败重试",
+      "多阶段执行"
     ],
-    "fit_line": "适合你,如果有一堆有先后依赖的任务需要按顺序自动跑完",
-    "tagline_en": "Run a batch of dependency-ordered tasks phase by phase, retrying failures automatically",
+    "fit_line": "适合你,如果要让一大批有先后依赖的任务分成多个子任务按序跑完",
     "scene_tags_en": [
-      "batch tasks",
-      "task orchestration",
-      "failure retry"
+      "batch task fan-out",
+      "dependency ordering",
+      "failure retry",
+      "multi-phase runs"
     ],
-    "fit_line_en": "For you if a set of tasks with dependencies must run automatically in order",
+    "fit_line_en": "For you if you must fan out many interdependent tasks across child workers in order",
     "source": "llm",
-    "content_hash": "sha256:5e66855769bc690bf4e57dd58dafeed2477b988c5124ef84d7ff3723b1c3e4ab",
+    "content_hash": "sha256:48c4c3e9110f06ad214f1455cfb88bbf0329f97b25b6834c3ae2126da7a7c895",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-17T08:22:12.625Z",
+    "generated_at": "2026-09-21T08:33:42.547Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "把有依赖关系的多任务拆成一张节点图:每个节点有自己的提示词和类别,按依赖分批并行执行,完成情况要凭证据核验,不是节点报完就算完。一次运行只覆盖一个阶段;某个节点失败可单独重试、发消息或改定义重跑,已完成节点的结果会保留。",
-    "when": "当你提到 “mass-ulw”、“DAG” 等关键词,或需要让某些任务等前置任务完成后才执行时触发。完全独立的任务用普通并行更简单。",
+    "what": "装上后 Claude 会把有依赖关系的任务组成 DAG,在 eval 单元里用 workflow 工具按相位分波启动运行,并按需对单个节点做 retry / send / amend 恢复。",
+    "when": "当你要求 mass-ulw、任务 DAG,或存在先后依赖的 fan-out 工作时触发;完全独立的并行任务用普通 task 更简单。",
     "say": [
       {
-        "text": "用 mass-ulw 把这批任务排成有依赖的图并跑起来",
-        "note": "会先读规划文档,再定义节点图"
+        "text": "用 mass-ulw 把审计、重写、校验按依赖顺序跑起来",
+        "note": "定义并启动一个 run,按波次执行"
       },
       {
-        "text": "重试 verify 节点,并把提示词改成只检查链接",
-        "note": "只重跑该节点及其下游"
+        "text": "重试这个 run 里失败的 lint 节点,顺便改一下它的提示词",
+        "note": "只重跑该节点,已完成节点复用结果"
       },
       {
-        "text": "给正在跑的 rewrite 节点发消息:只改 docs/ 下的文件",
-        "note": "运行中给该节点纠偏"
+        "text": "给正在跑的那个节点发消息,让它别写超出范围的文件",
+        "note": "消息发给单个子节点,不重启整个 run"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:5e66855769bc690bf4e57dd58dafeed2477b988c5124ef84d7ff3723b1c3e4ab",
+    "content_hash": "sha256:48c4c3e9110f06ad214f1455cfb88bbf0329f97b25b6834c3ae2126da7a7c895",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-20T08:17:20.645Z",
+    "generated_at": "2026-09-21T08:35:10.298Z",
     "lint_pass": true,
-    "what_en": "Turns dependent multi-task requests into a node graph: nodes run in waves as dependencies clear, completion must be proven by evidence, and one run covers one phase. Failed nodes can be retried, steered, or amended.",
-    "when_en": "Triggered when you mention mass-ulw, a DAG, or fan-out work where some tasks must wait on others. Fully independent tasks are simpler with plain parallel task spawns.",
+    "what_en": "Claude groups dependent tasks into a DAG and runs it through the workflow tool inside an eval cell, one phase per run, with retry/send/amend to recover single nodes.",
+    "when_en": "Triggered when you ask for mass-ulw, a task DAG, or fan-out work with real dependencies; fully independent workers are simpler with plain task spawns.",
     "say_en": [
       {
-        "text": "Use mass-ulw to turn these tasks into a dependency graph and run it",
-        "note": "Reads the planning doc, then defines the nodes"
+        "text": "Run the audit, rewrite, and verify nodes as a mass-ulw DAG",
+        "note": "defines and starts one run in waves"
       },
       {
-        "text": "Retry the verify node and change its prompt to only check links",
-        "note": "Only that node and its dependents re-run"
+        "text": "Retry the failed lint node in this run and edit its prompt",
+        "note": "only that node reruns; completed nodes are reused"
       },
       {
-        "text": "Send the running rewrite node: only edit files under docs/",
-        "note": "Steers that child mid-run"
+        "text": "Send a message telling the running node to stay in scope",
+        "note": "steers one child without restarting the run"
       }
     ]
   }

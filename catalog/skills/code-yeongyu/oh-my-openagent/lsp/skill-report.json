@@ -5,7 +5,7 @@
     "name": "lsp",
     "description": "Use when Codex needs language-server diagnostics, definitions, references, symbols, or rename safety checks in the current workspace.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/lsp/skills/lsp",
-    "upstream_commit": "4ec2cdf65c0f4e9b36146e3ad1e8dff13ce3849b",
+    "upstream_commit": "6379f7ea5e2e07dbc2b162b677e098eb94c311ff",
     "content_hash": "sha256:46143f2cc0b6cbf136b8c819f2cc0da8dc1d86e21430b1992f4596c956cceefd",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69214,
+    "stars_github": 69241,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-20T08:12:48.170Z",
+    "fetched_at": "2026-09-21T08:29:54.071Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-20T16:44:26+09:00",
+    "upstream_commit_at": "2026-09-21T17:11:23+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-20T08:12:48.170Z",
+    "generated_at": "2026-09-21T08:29:54.071Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,40 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 能通过 lsp 系列工具在当前工作区查代码:检查某个文件或目录的诊断报错、跳转到定义、查找符号引用、查看符号列表,以及在重命名前检查有效性、再执行重命名。",
-    "when": "当当前工作区需要语言服务器的诊断、定义、引用等信息,或要做重命名安全检查时,Claude 会调用 lsp 工具接管。",
+    "what": "装上后,Claude 会通过 MCP 工具调用语言服务器:查看语言服务器状态、检查文件或目录的诊断错误、跳转符号定义、查找引用、列出符号,以及校验并执行重命名。",
+    "when": "当 Codex 在当前工作区需要语言服务器诊断、定义、引用等能力时触发;若诊断提示缺少语言服务器,先用 lsp.status 排查。",
     "say": [
       {
-        "text": "用 lsp.status 看看当前配置了哪些语言服务器",
-        "note": "会列出已配置、已安装、缺失、停用的服务器"
+        "text": "看看 src/index.ts 有没有报错",
+        "note": "调用 lsp.diagnostics 返回该文件的诊断结果"
       },
       {
-        "text": "帮我检查 src/index.ts 的 LSP 诊断,只看 error"
+        "text": "跑一下 lsp.status,看有没有缺的语言服务器",
+        "note": "列出已配置、已安装、缺失的语言服务器"
       },
       {
-        "text": "查找 getUser 这个符号在工作区里的所有引用",
-        "note": "在工作区范围内搜索该符号的用法"
+        "text": "找出 foo 在项目里都被哪些地方引用了",
+        "note": "用 lsp.find_references 返回引用位置"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:46143f2cc0b6cbf136b8c819f2cc0da8dc1d86e21430b1992f4596c956cceefd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-20T08:17:19.949Z",
+    "generated_at": "2026-09-21T08:35:08.706Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude can use the lsp tools on the current workspace: check a file or directory for diagnostics, jump to a definition, find symbol references, list symbols, and validate a rename before applying it.",
-    "when_en": "Triggers when the current workspace needs language-server diagnostics, definitions, references and similar data, or a rename safety check; Claude then calls the lsp tools.",
+    "what_en": "Once installed, Claude can call the LSP MCP tools: check language server status, run file or directory diagnostics, jump to definitions, find references, list symbols, and check or apply workspace renames.",
+    "when_en": "Triggered when Codex needs language-server diagnostics, definitions, references, symbols, or rename safety checks in the current workspace; if a server is missing, run lsp.status first.",
     "say_en": [
       {
-        "text": "Run lsp.status to see which language servers are configured",
-        "note": "Lists configured, installed, missing and disabled servers"
+        "text": "Check whether src/index.ts has any errors",
+        "note": "Runs lsp.diagnostics for that file"
       },
       {
-        "text": "Check LSP diagnostics for src/index.ts, errors only",
-        "note": "Calls diagnostics with severity error"
+        "text": "Run lsp.status to see missing language servers",
+        "note": "Lists configured, installed and missing servers"
       },
       {
-        "text": "Find all references of the symbol getUser in the workspace",
-        "note": "Searches workspace-wide usages"
+        "text": "Find where foo is referenced across the workspace",
+        "note": "Uses lsp.find_references to return the locations"
       }
     ]
   }

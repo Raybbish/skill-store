@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "Handles git work: atomic commits, rebase, squash, blame, bisect, reflog, and history questions. Use whenever a task needs a commit or a git-history investigation; skip for ordinary code edits.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "4ec2cdf65c0f4e9b36146e3ad1e8dff13ce3849b",
+    "upstream_commit": "6379f7ea5e2e07dbc2b162b677e098eb94c311ff",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69214,
+    "stars_github": 69241,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-20T08:12:48.170Z",
+    "fetched_at": "2026-09-21T08:29:54.071Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-20T16:44:26+09:00",
+    "upstream_commit_at": "2026-09-21T17:11:23+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-20T08:12:48.170Z",
+    "generated_at": "2026-09-21T08:29:54.071Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会先读仓库状态再动手：把你的改动按逻辑拆成一个个提交、改写分支历史，或查清某行代码何时、被谁、为何改动，并附上具体命令与提交哈希作为依据。",
-    "when": "当你要求提交改动、整理分支历史（rebase、squash 等）或调查某处 Git 历史时触发；普通代码编辑不会用到它。",
+    "what": "当你提出 Git 请求时,它先判定是提交、改写历史、查历史还是只看状态,再按流程操作:提交按仓库既有风格拆成原子提交,查历史用 log/blame/bisect 等并给出命令与哈希证据。没明确要求就不提交、不改写、不删除。",
+    "when": "当你要求做提交,或要查某行/某段代码的改动来源(blame、bisect、reflog)时接管;普通写代码不触发。",
     "say": [
       {
-        "text": "把当前改动按逻辑拆成几个原子提交",
-        "note": "会先看 diff，再逐个提交并报告哈希"
+        "text": "帮我把当前改动拆成几个原子提交",
+        "note": "先看 diff 和最近提交风格再分组"
       },
       {
-        "text": "这行代码是谁最后改的？用 blame 查一下",
-        "note": "回答里给出提交哈希、作者和行号证据"
+        "text": "这行代码是谁什么时候改的?",
+        "note": "用 blame 查并给出哈希和行号"
       },
       {
-        "text": "找出引入这个 bug 的第一个提交",
-        "note": "用 bisect，需要一条能判断好坏的命令"
+        "text": "把这两个小修改合并进上一个提交",
+        "note": "用 fixup 加 autosquash,可能先跟你确认"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-20T08:17:10.212Z",
+    "generated_at": "2026-09-21T08:35:02.696Z",
     "lint_pass": true,
-    "what_en": "Claude reads the repo state first, then splits your changes into logical commits, rewrites branch history, or answers when, by whom and why a line changed—citing commits and commands.",
-    "when_en": "Triggers whenever you ask for a commit, a history rewrite (rebase, squash), or a git-history investigation; ordinary code edits don't use it.",
+    "what_en": "It sorts each Git request into commit, rewrite, history lookup, or status-only, then follows that flow: commits split into atomic groups in the repo's own style; history answers cite commands and hashes. It won't commit or rewrite unless asked.",
+    "when_en": "It takes over when you ask for a commit, or for who/when a line or string changed (blame, bisect, reflog). Plain code edits don't trigger it.",
     "say_en": [
       {
         "text": "Split my current changes into a few atomic commits",
-        "note": "Reads the diff first, then commits each group"
+        "note": "Checks the diff and recent message style first"
       },
       {
-        "text": "Who last changed this line? Check with blame",
-        "note": "Answers with commit hash, author and line evidence"
+        "text": "Who changed this line and when?",
+        "note": "Runs blame and cites the hash and line"
       },
       {
-        "text": "Find the first commit that introduced this bug",
-        "note": "Uses bisect; needs a pass/fail command"
+        "text": "Squash these two tweaks into the previous commit",
+        "note": "Uses fixup plus autosquash; may confirm first"
       }
     ]
   }
