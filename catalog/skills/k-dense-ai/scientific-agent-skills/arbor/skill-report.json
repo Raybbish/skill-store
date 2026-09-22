@@ -5,7 +5,7 @@
     "name": "arbor",
     "description": "Autonomously improve a real artifact (code, training recipe, agent harness, data pipeline, prompt) against an objective and an evaluator, using Hypothesis Tree Refinement (HTR) from the Arbor paper. Use this whenever someone wants to iteratively optimize something over many experiments without overfitting — e.g. \"get my model's eval score up\", \"improve this agent/harness\", \"tune this pipeline\", \"beat the baseline on this benchmark\", \"run a search over approaches and keep the best\", \"do an MLE-bench / Kaggle-style optimization\", or any long-horizon \"make this artifact better and don't just memorize the dev set\" task. Trigger it even when the user doesn't say \"Arbor\" or \"hypothesis tree\" but describes repeated experiment-and-evaluate loops, branching exploration of competing ideas, or worries about a dev/test gap. Runs Claude itself as the coordinator with subagent executors in isolated git worktrees; for the standalone `arbor` CLI tool see references/arbor-upstream.md.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arbor",
-    "upstream_commit": "330c8e764435a731eff571e3efdda70b363d0792",
+    "upstream_commit": "49c6e97775eaa18ba791bebe23162a70ae601c18",
     "content_hash": "sha256:0e5fc8f4b16bf37d229b60ae48a90b942376d2656b0bce6e800ee5cb1ad718da",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 44983,
+    "stars_github": 46007,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:19:57.651Z",
+    "fetched_at": "2026-09-22T08:10:53.237Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-14T09:27:37Z",
+    "upstream_commit_at": "2026-09-21T09:27:49Z",
     "repo_skill_count": 166,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:19:57.651Z",
+    "generated_at": "2026-09-22T08:10:53.237Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,42 +100,26 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会自主跑多轮实验来改进你指定的产物:把研究状态存进一棵假设树,派子代理在隔离的 git worktree 里各测一个假设,只有通过留出测试评估器的改动才合并成新版本。",
-    "when": "当你要反复实验来优化某个具体产物(如提高模型评测分、改进 agent harness、跑 Kaggle 式优化),或描述「跑实验—评估」的重复循环时接管;用户没说“Arbor”也触发。",
+    "what": "装上后,Claude 会自主地针对一个可修改的产物(代码、训练配方、agent 框架、数据管线等)反复实验并评估,把假设与结论记进一棵假设树,用留出的测试评估器决定是否采纳改动,最后交出最佳版本和过程记录。",
+    "when": "当你要用大量实验迭代优化某个产物、又不想过拟合时触发;描述反复的「实验—评估」循环、分支尝试竞争方案,或担心 dev/test 差距时也会接管,即使你没提 Arbor。",
     "say": [
       {
-        "text": "帮我把这个模型的评测分提上去,用 arbor 跑一轮优化",
-        "note": "会先确认目标、开发与测试评估器再开始搜索"
+        "text": "用 arbor 把这个评测分数提上去,并用单独 test 评估把关",
+        "note": "先建立目标与 dev/test 评估器,再开始循环"
       },
       {
-        "text": "改进这个 agent harness 的通过率,目标设为最大化准确率",
-        "note": "假设记进树,最好版本留在某个分支上"
+        "text": "帮我优化这个 agent harness,跑到基准上超过 baseline",
+        "note": "每个候选假设在独立 git worktree 里跑实验"
       },
       {
-        "text": "并行测这几个假设,只把通过测试门槛的那个合并",
-        "note": "各假设在独立 worktree 跑;只有过测试门槛的才合并"
+        "text": "调这个数据合成/过滤管线,想做多轮实验别过拟合 dev",
+        "note": "洞见上传到树里,失败的假设被剪掉并记原因"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0e5fc8f4b16bf37d229b60ae48a90b942376d2656b0bce6e800ee5cb1ad718da",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-16T08:19:49.766Z",
-    "lint_pass": true,
-    "what_en": "Claude runs an autonomous optimization loop on an artifact: it stores research state in a hypothesis tree, sends subagents to test one hypothesis each in git worktrees, and merges a change only if it passes a held-out test evaluator.",
-    "when_en": "It takes over when you want to iteratively improve a concrete artifact under a scorer — e.g. raise a model's eval score, improve an agent harness, or run a Kaggle-style task.",
-    "say_en": [
-      {
-        "text": "Help me raise this model's eval score — run an arbor optimization",
-        "note": "It pins down the objective, dev and test evaluators first"
-      },
-      {
-        "text": "Improve this agent harness's pass rate; set the objective to maximize accuracy",
-        "note": "Hypotheses go in a tree; the best artifact stays on a branch"
-      },
-      {
-        "text": "Test these hypotheses in parallel worktrees, then merge the one that passes",
-        "note": "Each runs in its own worktree; only test-gate winners merge"
-      }
-    ]
+    "generated_at": "2026-09-22T08:17:40.231Z",
+    "lint_pass": false
   }
 }

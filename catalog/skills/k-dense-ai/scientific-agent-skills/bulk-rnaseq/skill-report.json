@@ -5,7 +5,7 @@
     "name": "bulk-rnaseq",
     "description": "End-to-end bulk RNA-seq orchestrator — takes raw FASTQ reads through QC and trimming (FastQC, fastp/Trim Galore), alignment and quantification (STAR, Salmon, featureCounts), assembles a gene-level counts matrix, then hands off to differential expression (pydeseq2), pathway/GSEA enrichment (pathway-enrichment), and publication figures (scientific-visualization). Use whenever the user has bulk RNA-seq reads or quant output and wants a complete, reproducible differential-expression workflow — e.g. \"analyze my RNA-seq\", \"FASTQ to DESeq2\", \"run nf-core/rnaseq\", \"STAR/Salmon quantification\", \"build a counts matrix for DESeq2\", or \"go from reads to differentially expressed genes and enriched pathways\". Routes between an nf-core/rnaseq (Nextflow) path and a standalone STAR/Salmon path, and covers experimental design, strandedness, and QC gates. For single-cell RNA-seq use the scanpy skill instead.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/bulk-rnaseq",
-    "upstream_commit": "330c8e764435a731eff571e3efdda70b363d0792",
+    "upstream_commit": "49c6e97775eaa18ba791bebe23162a70ae601c18",
     "content_hash": "sha256:d310183cec9ada3e7100ce642d6946a00f06e70a97040b580afac197ff18b107",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 44983,
+    "stars_github": 46007,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:19:57.651Z",
+    "fetched_at": "2026-09-22T08:10:53.237Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-14T09:27:37Z",
+    "upstream_commit_at": "2026-09-21T09:27:49Z",
     "repo_skill_count": 166,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:19:57.651Z",
+    "generated_at": "2026-09-22T08:10:53.237Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,37 +100,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会把你的 bulk RNA-seq 原始 FASTQ 走完质控、修剪、比对定量,生成基因层面计数矩阵,再交给差异表达、富集和作图环节。",
-    "when": "当你提到「analyze my RNA-seq」「FASTQ to DESeq2」等,或手上有 bulk RNA-seq reads、定量输出想做差异表达流程时触发。",
+    "what": "它把原始 FASTQ 读段经质控、去接头、比对定量,汇总成基因计数矩阵,再接着做差异表达、通路富集和图表;沿途会核对实验设计与 QC。",
+    "when": "当你提到“分析我的 RNA-seq”、“FASTQ 到 DESeq2”等说法,或要跑 nf-core/rnaseq、构建 DESeq2 计数矩阵等任务时接手。单细胞数据改用 scanpy。",
     "say": [
       {
-        "text": "帮我把这批 FASTQ 跑完整的 RNA-seq 差异表达流程",
-        "note": "会先校验样本表再逐步推进"
-      },
-      {
-        "text": "用 Salmon 定量结果给我生成 DESeq2 能用的计数矩阵",
-        "note": "输出 counts.csv 和 metadata 模板"
+        "text": "帮我把这批 FASTQ 一路分析到差异表达基因和富集通路",
+        "note": "走上游两条路径之一。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:d310183cec9ada3e7100ce642d6946a00f06e70a97040b580afac197ff18b107",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:26:31.027Z",
+    "generated_at": "2026-09-22T08:17:45.100Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude runs bulk RNA-seq FASTQ reads through QC, trimming, alignment/quantification, builds a gene-level counts matrix, then hands off to differential expression, enrichment and figures.",
-    "when_en": "Triggers when you mention \"analyze my RNA-seq\" or \"FASTQ to DESeq2\", or have bulk RNA-seq reads/quant output and want a differential-expression workflow.",
+    "what_en": "It takes raw FASTQ reads through QC, trimming, alignment and quantification into a gene-level counts matrix, then hands off to differential expression, pathway enrichment and figures, checking design and QC along the way.",
+    "when_en": "Use it when you say things like “analyze my RNA-seq” or “FASTQ to DESeq2”, or want to run nf-core/rnaseq, build a DESeq2 counts matrix, etc. For single-cell data use scanpy.",
     "say_en": [
       {
-        "text": "Run the full bulk RNA-seq differential-expression workflow on my FASTQ files",
-        "note": "Validates the samplesheet first, then runs stages"
+        "text": "Analyze my FASTQ reads all the way to DEGs and enriched pathways",
+        "note": "Runs one of the two upstream paths."
       },
       {
-        "text": "Build a DESeq2-ready counts matrix from my Salmon quant output",
-        "note": "Writes counts.csv and a metadata template"
+        "text": "Run nf-core/rnaseq on my RNA-seq samples and give me the MultiQC report",
+        "note": "Path A; needs Nextflow and a container engine."
       },
       {
-        "text": "Run nf-core/rnaseq with my samplesheet.csv and GRCh38",
-        "note": "Takes the Path A Nextflow route"
+        "text": "Turn my Salmon quant output into a DESeq2-ready counts matrix",
+        "note": "Writes counts.csv plus a metadata template."
       }
     ]
   }

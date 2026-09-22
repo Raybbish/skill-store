@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Use this when the user asks to search memory, \"did we already solve this?\", \"how did we do X last time?\", or wants work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-cursor/skills/mem-search",
-    "upstream_commit": "4e98d977cc6d9c4fe18c60d4956d948f57e7a1f6",
+    "upstream_commit": "4520de9e0f8d6cdc20597520e383d8b51d93137f",
     "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94369,
+    "stars_github": 94436,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-21T08:29:48.432Z",
+    "fetched_at": "2026-09-22T08:10:36.350Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-20T11:13:07-07:00",
+    "upstream_commit_at": "2026-09-21T16:27:32-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-21T08:29:48.432Z",
+    "generated_at": "2026-09-22T08:10:36.350Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它可以搜索 claude-mem 的跨会话记忆库:先返回带 ID 的结果索引,再用时间线查看某条记录前后的上下文,最后只拉取你挑中的记录的完整内容。",
-    "when": "当你问起之前会话的事,比如「这个之前修过吗」「上次怎么解决的」等,就会触发。",
+    "what": "Claude 会去查 claude-mem 保存的跨会话记忆库:先用 search 拿到带 ID 的索引,再用 timeline 看某条记录前后的上下文,最后只对筛出来的 ID 用 get_observations 取完整记录。",
+    "when": "当问题指向以前的会话、而不是当前对话时触发,例如“这个我们之前修过吗”“上次 X 是怎么做的”等。",
     "say": [
       {
-        "text": "上次我们是怎么解决登录超时的?",
-        "note": "会先返回相关记录的索引表。"
+        "text": "这个报错我们之前解决过吗?",
+        "note": "先搜索索引,再按需取详情"
       },
       {
-        "text": "搜一下 auth 相关的 bugfix 记录",
-        "note": "按类型和关键词过滤历史记录。"
+        "text": "上周这个项目都改了什么?",
+        "note": "按日期范围搜索观察记录"
       },
       {
-        "text": "把 #11131 和 #10942 的完整内容取出来",
-        "note": "一次请求批量取回完整记录。"
+        "text": "用 /knowledge-agent 总结一下认证相关的历史",
+        "note": "生成可追问的语料并对话式回答"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-21T08:36:31.711Z",
+    "generated_at": "2026-09-22T08:18:54.984Z",
     "lint_pass": true,
-    "what_en": "It searches claude-mem's cross-session memory: first returns an index of results with IDs, then shows timeline context around one, then fetches full details only for the records you pick.",
-    "when_en": "Triggers when you ask about previous sessions, e.g. \"did we already fix this?\" or \"how did we solve X last time?\"",
+    "what_en": "Claude searches claude-mem's cross-session memory: search returns an index with IDs, timeline shows context around a record, then get_observations fetches full details only for the filtered IDs.",
+    "when_en": "Triggers when the question is about previous sessions, not the current conversation, e.g. \"did we already fix this?\" or \"how did we do X last time?\"",
     "say_en": [
       {
-        "text": "How did we solve the login timeout last time?",
-        "note": "Returns a list of matching records first."
+        "text": "Did we already solve this error?",
+        "note": "Searches the index, then fetches details only as needed"
       },
       {
-        "text": "Search bugfix records about auth",
-        "note": "Filters past records by type and keyword."
+        "text": "What changed in this project last week?",
+        "note": "Searches observations by date range"
       },
       {
-        "text": "Fetch full details for #11131 and #10942",
-        "note": "Pulls complete records in one request."
+        "text": "Use /knowledge-agent to summarize our auth history",
+        "note": "Builds a queryable corpus and answers conversationally"
       }
     ]
   }

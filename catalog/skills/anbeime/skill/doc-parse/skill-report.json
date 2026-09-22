@@ -5,7 +5,7 @@
     "name": "doc-parse",
     "description": "将 PDF/PPT/Excel/Word 等多格式文档解析为结构化 Markdown，并输出元数据与解析置信度，作为 RAG 与四色卡片的数据底座。",
     "upstream": "https://github.com/anbeime/skill/tree/main/antinet-agentteams/skills/doc-parse",
-    "upstream_commit": "6a9e6826b5f7899933c89df9e97596ccefb7203a",
+    "upstream_commit": "8a079b767dfc6760aeac5e45b7ca8abeca5eb8b9",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "license": "none(all-rights-reserved)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 7034,
+    "stars_github": 7082,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-21T08:30:49.877Z",
+    "fetched_at": "2026-09-22T08:11:32.349Z",
     "first_seen_at": "2026-09-02T07:32:35.252Z",
-    "upstream_commit_at": "2026-09-21T07:42:52Z",
+    "upstream_commit_at": "2026-09-22T07:25:08Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-21T08:30:49.877Z",
+    "generated_at": "2026-09-22T08:11:32.349Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "收到已通过安全扫描的文件后，Claude 会把它解析成结构化 Markdown，并给出标题、页数、表格数等元数据、0–1 的解析置信度，以及最终生效的解析器名称。",
-    "when": "当密卷房 Worker 收到已通过 security-scan 的文件、需要转成机器可读文本时接管；可指定格式白名单（如 PDF、PPT、Excel 等），默认全格式。",
+    "what": "你给出文件路径后，它把 PDF、Word、Excel 等多格式文档解析成结构化 Markdown，并附上标题、页数、表格数等元数据与 0–1 的解析置信度。",
+    "when": "当密卷房 Worker 收到已通过安全扫描的文件时被调用；主解析器失败会自动降级到下一档解析器。",
     "say": [
       {
-        "text": "把这个 PDF 解析成结构化 Markdown",
-        "note": "返回正文、元数据与置信度"
+        "text": "帮我解析这份 PDF，输出结构化 Markdown 和置信度"
       },
       {
-        "text": "解析这份 Excel，把解析置信度一起给我",
-        "note": "三级解析器依次尝试"
+        "text": "这个 Word 文档的页数和表格数是多少？",
+        "note": "从 metadata 中读取"
       },
       {
-        "text": "只按 Word 格式解析这个文件",
-        "note": "指定格式白名单，默认全格式"
+        "text": "解析失败时用的是哪个兜底解析器？",
+        "note": "回传 fallback_used 字段"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-21T08:34:40.867Z",
+    "generated_at": "2026-09-22T08:15:51.205Z",
     "lint_pass": true,
-    "what_en": "After a file passes security-scan, Claude parses it into structured Markdown and returns metadata such as title, page count and table count, a 0–1 parse confidence, and the name of the parser that finally ran.",
-    "when_en": "It takes over when the Mijuanfang Worker receives a file that already passed security-scan and needs it turned into machine-readable text; a format whitelist can be given, defaulting to all formats.",
+    "what_en": "Given a file path, it parses PDF, Word, Excel and other documents into structured Markdown, plus metadata like title, page count and table count, and a 0–1 parse confidence score.",
+    "when_en": "Runs when the 密卷房 Worker receives a file that already passed security-scan; if the main parser fails it drops to the next parser automatically.",
     "say_en": [
       {
-        "text": "Parse this PDF into structured Markdown",
-        "note": "Returns body, metadata and confidence"
+        "text": "Parse this PDF and output structured Markdown with confidence",
+        "note": "Returns markdown, metadata and confidence"
       },
       {
-        "text": "Parse this Excel and give the parse confidence too",
-        "note": "Tries the three parsers in order"
+        "text": "How many pages and tables does this Word file have?",
+        "note": "Read from metadata"
       },
       {
-        "text": "Parse this file as Word only",
-        "note": "Sets the format whitelist"
+        "text": "Which fallback parser was used if parsing failed?",
+        "note": "Reports fallback_used"
       }
     ]
   }

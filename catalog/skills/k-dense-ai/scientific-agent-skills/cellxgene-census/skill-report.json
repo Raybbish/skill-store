@@ -5,7 +5,7 @@
     "name": "cellxgene-census",
     "description": "Query the CZ CELLxGENE Census programmatically for versioned public single-cell and spatial transcriptomics data. Use when you need population-scale cell metadata, gene expression slices, Census summary counts, source H5AD URIs/downloads, embeddings, spatial Census data, or reference atlas comparisons across organisms, tissues, diseases, assays, and cell types. For analyzing your own local single-cell data use scanpy, anndata, or scvi-tools.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/cellxgene-census",
-    "upstream_commit": "330c8e764435a731eff571e3efdda70b363d0792",
+    "upstream_commit": "49c6e97775eaa18ba791bebe23162a70ae601c18",
     "content_hash": "sha256:8c472b62e539c601064e7e309ed3efed7ace7f659b62f96164a119f3087d2ef0",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 44983,
+    "stars_github": 46007,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:19:57.651Z",
+    "fetched_at": "2026-09-22T08:10:53.237Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-14T09:27:37Z",
+    "upstream_commit_at": "2026-09-21T09:27:49Z",
     "repo_skill_count": 166,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:19:57.651Z",
+    "generated_at": "2026-09-22T08:10:53.237Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,37 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能用 Python 查询 CZ CELLxGENE Census 的公开单细胞与空间转录组数据:按细胞类型、组织、疾病等条件取细胞元数据和基因表达,查看数据集清单与汇总计数,并产出 AnnData 供后续分析。",
-    "when": "当你需要群体规模的细胞元数据、基因表达切片或参考图谱比较等 Census 数据时触发;若要分析自己的本地单细胞数据,则应改用 scanpy、anndata 或 scvi-tools。",
+    "what": "Claude 会用 Python 查询 CZ CELLxGENE Census 的公开单细胞与空间转录组数据:按细胞类型、组织、疾病筛出细胞元数据和基因表达切片,也能取数据集清单、汇总计数、H5AD 下载地址、嵌入和空间数据。",
+    "when": "当你需要群体规模的细胞元数据、基因表达切片、汇总计数等 Census 数据,或做跨组织、跨物种的参考图谱比较时触发;分析本地单细胞数据应改用 scanpy 等工具。",
     "say": [
       {
-        "text": "帮我查 Census 里肺组织的 B 细胞,只要原始数据,给我 AnnData",
-        "note": "会按条件调用 get_anndata 返回表达数据。"
+        "text": "查一下 Census 里脑组织的细胞类型有哪些",
+        "note": "返回去重后的细胞类型列表"
       },
       {
-        "text": "统计一下 Census 2025-11-08 版里各组织的细胞数量",
-        "note": "读取 summary_cell_counts 的汇总计数。"
+        "text": "取肺组织 B 细胞的 CD19、CD4 表达数据",
+        "note": "返回可直接分析的 AnnData 对象"
+      },
+      {
+        "text": "内存不够,用分块方式算 FOXP2 的平均表达",
+        "note": "按批次迭代,不整体载入"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:8c472b62e539c601064e7e309ed3efed7ace7f659b62f96164a119f3087d2ef0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:26:32.472Z",
+    "generated_at": "2026-09-22T08:17:44.219Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude can query the public CZ CELLxGENE Census from Python: pull cell metadata and gene expression slices by cell type, tissue or disease, list datasets and summary counts, and return AnnData for further analysis.",
-    "when_en": "Use it when you need population-scale cell metadata, gene expression slices, or reference atlas comparisons from the Census; for your own local single-cell data, use scanpy, anndata, or scvi-tools.",
+    "what_en": "Claude queries the public CZ CELLxGENE Census via Python: filtering cell metadata and gene expression slices by cell type, tissue, or disease, plus dataset lists, summary counts, H5AD download URIs, embeddings, and spatial data.",
+    "when_en": "Triggers when you need population-scale cell metadata, expression slices, or Census summary counts, or reference atlas comparisons; for local single-cell data use scanpy, anndata, or scvi-tools.",
     "say_en": [
       {
-        "text": "Pull lung B cells from the Census for me, primary data only, as AnnData",
-        "note": "Calls get_anndata with your filters."
+        "text": "List the cell types found in brain tissue in the Census",
+        "note": "Returns deduplicated cell type names"
       },
       {
-        "text": "Count cells per tissue in Census version 2025-11-08",
-        "note": "Reads summary_cell_counts."
+        "text": "Pull CD19 and CD4 expression for lung B cells",
+        "note": "Returns an AnnData object"
       },
       {
-        "text": "Fetch Census brain neurons, then run a scanpy UMAP",
-        "note": "Returns AnnData, then scanpy steps."
+        "text": "Compute mean FOXP2 expression in chunks, RAM is limited",
+        "note": "Iterates in batches instead of loading all"
       }
     ]
   }

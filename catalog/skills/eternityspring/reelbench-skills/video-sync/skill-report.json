@@ -1,0 +1,138 @@
+{
+  "schema_version": "2",
+  "meta": {
+    "id": "eternityspring/reelbench-skills/video-sync",
+    "name": "video-sync",
+    "description": "把拉片数据和原片合成一条**能直接看的视频**：一边是画面，一边是这一镜的分镜信息\n（镜号、起止、时长、景别、类别、运镜、画面描述、台词），**镜头切了信息跟着切**，\n镜头表自动滚动并高亮当前这一镜。\n版式只看原片的宽高比：**横版 / 方版 → 画面在上、信息在下；竖版 → 画面在左、信息在右**，\n画面永远原样缩放，不裁不拉。\n镜头表**随播放滚动**：切点处滚一小段把当前镜头带到锚点、随后停住，高亮条同步滑过去。\n实现上只截三张图（底板 + 铺开的长图 ×2），滚动与高亮由 ffmpeg 按时间裁窗，\n**布局全在 scripts/panel.css 里，改它就能改版式**，不用碰脚本。\n吃 video-shots 产出的 shots.json（有 frames/ 就把关键帧当缩略图用）。\n零 npm 依赖，用 ffmpeg 合成、无头浏览器渲面板。\nUse when asked to 导出视频、合成视频、分镜视频、带分镜信息的视频、解说版视频、\nvideo with shot info、annotated shot video。\n",
+    "upstream": "https://github.com/eternityspring/reelbench-skills/tree/main/skills/video-sync",
+    "upstream_commit": "1b51af897b6a57556b85dfe96e0427e231b4b613",
+    "content_hash": "sha256:392c06216f2e3e715eb3f0694cae96b0a5a56ea6af2889da28f638554a32ee08",
+    "license": "Apache-2.0",
+    "hosting": "indexed",
+    "category": "media",
+    "version": "1.0.0",
+    "publisher": "eternityspring",
+    "publisher_verified": false,
+    "duplicate_of": null,
+    "tags": []
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "signals": {
+    "stars_github": 813,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-09-22T08:12:44.368Z",
+    "first_seen_at": "2026-09-22T08:12:44.368Z",
+    "upstream_commit_at": "2026-09-21T16:12:42+08:00",
+    "repo_skill_count": 3
+  },
+  "context_size": {
+    "version": "1",
+    "counter": {
+      "id": "static-mixed-estimate-v1.1",
+      "method": "heuristic",
+      "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
+    },
+    "generated_at": "2026-09-22T08:12:44.368Z",
+    "scopes": {
+      "activation_core": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 7623,
+        "chars": 4110,
+        "tokens": 2335
+      },
+      "activation_with_declared_refs": {
+        "files": [
+          "SKILL.md",
+          "scripts/panel.css"
+        ],
+        "text_files": 2,
+        "bytes": 14596,
+        "chars": 9748,
+        "tokens": 4273
+      },
+      "package_total_text": {
+        "files": [
+          "README.en.md",
+          "README.md",
+          "SKILL.md",
+          "references/layout.md",
+          "references/panel-style.md",
+          "scripts/panel.css",
+          "scripts/panel.html",
+          "scripts/selftest.mjs",
+          "scripts/video-sync.mjs"
+        ],
+        "text_files": 9,
+        "bytes": 93605,
+        "chars": 72248,
+        "tokens": 26425
+      }
+    }
+  },
+  "eval": null,
+  "copy": {
+    "tagline": "把分镜数据和原片合成一条画面旁带镜头信息、随播放自动滚动高亮的视频",
+    "scene_tags": [
+      "分镜视频",
+      "拉片复盘",
+      "视频导出",
+      "镜头表对位"
+    ],
+    "fit_line": "适合你,如果手上已有拉片数据和原片,想得到一条能直接播放的分镜对照视频",
+    "tagline_en": "Merge shot data and source footage into one video that tracks the current shot.",
+    "scene_tags_en": [
+      "shot breakdown video",
+      "footage review",
+      "video export"
+    ],
+    "fit_line_en": "For you if you already have shot data and footage and want a viewable annotated cut.",
+    "source": "llm",
+    "content_hash": "sha256:392c06216f2e3e715eb3f0694cae96b0a5a56ea6af2889da28f638554a32ee08",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-22T08:14:13.451Z",
+    "lint_pass": true
+  },
+  "howto": {
+    "what": "把 video-shots 产出的 shots.json 和原片合成一条带分镜信息的视频：一边是画面，一边是当前镜头的镜号、景别、运镜、台词等信息。镜头切了信息跟着切，镜头表自动滚动并高亮当前这一镜。",
+    "when": "当你说「导出视频」「分镜视频」「带分镜信息的视频」等，或要求做带分镜信息的视频时触发。需先有 shots.json 和与它对应的原片。",
+    "say": [
+      {
+        "text": "用 shots.json 和这条片子合成一条分镜视频",
+        "note": "先跑 plan 看版式和输出尺寸"
+      },
+      {
+        "text": "这条片子太小，面板读不清，把画面区放大 2 倍再合成",
+        "note": "即加 --scale 2"
+      },
+      {
+        "text": "合成完抽 5、30、60 秒三帧，核对镜号和高亮行",
+        "note": "原文要求这步不能跳"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:392c06216f2e3e715eb3f0694cae96b0a5a56ea6af2889da28f638554a32ee08",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-22T08:19:24.294Z",
+    "lint_pass": true,
+    "what_en": "Combines a shots.json (from video-shots) and the source clip into one video: the picture on one side, the current shot's info on the other. Info switches at each cut; the shot list scrolls and highlights the current shot.",
+    "when_en": "Use when asked to export or compose a video, make a shot-breakdown or annotated shot video, etc. Needs an existing shots.json and its matching source clip.",
+    "say_en": [
+      {
+        "text": "Compose a shot-info video from shots.json and this clip",
+        "note": "Runs plan first for layout and size"
+      },
+      {
+        "text": "The clip is small and the panel unreadable — scale up 2x, then compose",
+        "note": "Adds --scale 2"
+      },
+      {
+        "text": "After composing, pull frames at 5, 30 and 60s and check the shot numbers",
+        "note": "Verification step; the doc says do not skip"
+      }
+    ]
+  }
+}

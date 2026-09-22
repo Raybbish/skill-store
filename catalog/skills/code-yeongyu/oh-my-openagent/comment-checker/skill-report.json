@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "6379f7ea5e2e07dbc2b162b677e098eb94c311ff",
+    "upstream_commit": "7f6be0c60f93180d6a6ad969f4fdb58a5b59cfd4",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69241,
+    "stars_github": 69279,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-21T08:29:54.071Z",
+    "fetched_at": "2026-09-22T08:10:41.719Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-21T17:11:23+09:00",
+    "upstream_commit_at": "2026-09-22T17:08:24+09:00",
     "repo_skill_count": 49
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-21T08:29:54.071Z",
+    "generated_at": "2026-09-22T08:10:41.719Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，编辑类操作（apply_patch、write、edit 等）成功后会触发钩子；若 comment-checker 报出警告，Codex 会收到阻塞性反馈，须先修正或解释被标记的注释再继续。",
-    "when": "每次 apply_patch、write、edit 等编辑类工具成功调用后触发；非编辑类工具不触发，检查器程序缺失时无输出。",
+    "what": "装上后，每次编辑类调用成功后会自动跑一次注释检查；如果检查器报警，Claude 会收到阻断性反馈，需要先修正或解释被标记的注释再往下做。",
+    "when": "在 apply_patch、write、edit 等编辑类调用成功之后触发；非编辑类工具不触发，缺少检查器程序时也不产生输出。",
     "say": [
       {
-        "text": "这条注释警告是什么意思？",
-        "note": "Codex 会解释被标记的注释"
+        "text": "刚才注释检查报警了，先把那条被标记的注释修好",
+        "note": "会被当作阻断性反馈处理"
       },
       {
-        "text": "改掉被标记的注释，然后继续。",
-        "note": "Codex 修正注释后再往下走"
+        "text": "解释一下这条注释为什么被 comment-checker 标记",
+        "note": "按反馈给出解释而非直接改动"
       },
       {
-        "text": "说明为什么这条注释被标记，我不改。",
-        "note": "Codex 给出解释后继续"
+        "text": "这条注释保持原样，说明为什么可以不改",
+        "note": "Codex 会说明理由再继续"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-21T08:34:52.432Z",
+    "generated_at": "2026-09-22T08:16:21.056Z",
     "lint_pass": true,
-    "what_en": "After install, successful edit-like calls (apply_patch, write, edit, etc.) fire a hook; if comment-checker warns, Codex gets blocking feedback and must fix or explain the flagged comment before continuing.",
-    "when_en": "Fires after each successful apply_patch, write, edit, or similar edit-like call; non-edit tools are ignored, and a missing checker binary produces no output.",
+    "what_en": "Once installed, a successful edit-style call triggers a comment check; if comment-checker warns, Codex gets blocking feedback and should fix or explain the flagged comment before moving on.",
+    "when_en": "Runs after a successful edit-style call (apply_patch, write, edit, etc.) when the checker reports a warning; non-edit tools are ignored and a missing checker binary emits no output.",
     "say_en": [
       {
-        "text": "What does this comment warning mean?",
-        "note": "Codex explains the flagged comment"
+        "text": "The comment check just warned - fix the flagged comment first",
+        "note": "Treated as blocking feedback"
       },
       {
-        "text": "Fix the flagged comment, then continue.",
-        "note": "Codex edits the comment and moves on"
+        "text": "Explain why comment-checker flagged this comment",
+        "note": "Codex explains instead of editing"
       },
       {
-        "text": "Explain why this comment was flagged; I won't change it.",
-        "note": "Codex explains, then continues"
+        "text": "Leave this comment as is and explain why",
+        "note": "Codex gives a reason, then continues"
       }
     ]
   }

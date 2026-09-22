@@ -5,7 +5,7 @@
     "name": "genomic-intelligence",
     "description": "Predict regulatory features, gene structure, and expression directly from DNA sequence using Genomic Intelligence's hosted transformer DNA language models — no local GPU or model weights. Six tasks over a REST API and a hosted MCP server (keyless public demo): promoter regions, splice donor/acceptor sites, enhancer activity, chromatin state, sequence-to-expression (log TPM), and de-novo gene annotation, plus a composite find-genes-then-predict-expression workflow. Use when the user has a gene symbol, a genomic region, or a DNA/FASTA sequence and wants any of these predictions, mentions Genomic Intelligence, genomicintelligence.ai, api.genomicintelligence.ai, or mcp.genomicintelligence.ai.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/genomic-intelligence",
-    "upstream_commit": "330c8e764435a731eff571e3efdda70b363d0792",
+    "upstream_commit": "49c6e97775eaa18ba791bebe23162a70ae601c18",
     "content_hash": "sha256:41d2283c53a274ed22fc01fbf196bc7a28966b4d236b3d3bd0f567538aef7873",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 44983,
+    "stars_github": 46007,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-15T08:19:57.651Z",
+    "fetched_at": "2026-09-22T08:10:53.237Z",
     "first_seen_at": "2026-07-26T05:55:43.975Z",
-    "upstream_commit_at": "2026-09-14T09:27:37Z",
+    "upstream_commit_at": "2026-09-21T09:27:49Z",
     "repo_skill_count": 166,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-15T08:19:57.651Z",
+    "generated_at": "2026-09-22T08:10:53.237Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -99,41 +99,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把基因符号、基因组区域或 DNA 序列交给 Genomic Intelligence 的云端模型，返回启动子、剪接位点、增强子活性等六类预测，本地无需 GPU 或模型权重。",
-    "when": "当你有基因符号、基因组区域或 DNA/FASTA 序列并想要这类预测，或提到 Genomic Intelligence、genomicintelligence.ai 等关键词时触发。",
+    "what": "把基因符号、基因组区域或 DNA/FASTA 序列发给 Genomic Intelligence 的云端 DNA 模型,取回启动子、剪接位点、增强子活性、染色质状态、表达量(log TPM)、基因注释等结构化预测;本地不跑模型权重,无需 GPU。",
+    "when": "当你给出基因符号、基因组区域或 DNA/FASTA 序列并想要上述任一预测,或提到 “Genomic Intelligence”、“genomicintelligence.ai” 等名称时触发。",
     "say": [
       {
-        "text": "给这段 TP53 区域跑一次启动子预测",
-        "note": "返回启动子区域，可设 threshold"
+        "text": "帮我找出这段序列里的启动子区域",
+        "note": "调用 promoter 任务,返回启动子区段"
       },
       {
-        "text": "对这段 FASTA 序列预测剪接供体/受体位点",
-        "note": "可只选 donor 或 acceptor"
+        "text": "预测这段序列的剪接供体和受体位点",
+        "note": "调用 splice 任务,按转录方向提交"
       },
       {
-        "text": "预测 HBB 在 K562 细胞里的表达量（log TPM）",
-        "note": "需 9,198 bp TSS 窗口和 description"
+        "text": "以 K562 细胞预测这段序列的表达量(log TPM)",
+        "note": "expression 任务需给细胞类型描述"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:41d2283c53a274ed22fc01fbf196bc7a28966b4d236b3d3bd0f567538aef7873",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-15T08:27:02.449Z",
+    "generated_at": "2026-09-22T08:18:09.791Z",
     "lint_pass": true,
-    "what_en": "Claude sends a gene symbol, genomic region, or DNA/FASTA sequence to Genomic Intelligence's hosted DNA models and returns predictions like promoters, splice sites, and enhancer activity. No local GPU or model weights.",
-    "when_en": "Triggers when you have a gene symbol, genomic region, or DNA/FASTA sequence and want these predictions, or mention Genomic Intelligence, genomicintelligence.ai, etc.",
+    "what_en": "Sends a gene symbol, region, or DNA/FASTA sequence to Genomic Intelligence's hosted DNA models, returning promoter, splice, enhancer, chromatin, expression (log TPM), and gene annotation predictions. Nothing runs locally.",
+    "when_en": "Triggers when you have a gene symbol, genomic region, or DNA/FASTA sequence and want any of these predictions, or mention Genomic Intelligence, genomicintelligence.ai, or its MCP/API hosts.",
     "say_en": [
       {
-        "text": "Run a promoter prediction on this TP53 region",
-        "note": "Returns promoter regions; threshold option"
+        "text": "Find the promoter regions in this sequence",
+        "note": "Runs the promoter task and returns regions"
       },
       {
-        "text": "Predict splice donor/acceptor sites for this FASTA sequence",
-        "note": "site_types can pick donor or acceptor"
+        "text": "Predict splice donor and acceptor sites in this sequence",
+        "note": "Runs the splice task; feed transcript orientation"
       },
       {
-        "text": "Predict expression (log TPM) for HBB in K562 cells",
-        "note": "Needs a 9,198 bp TSS window plus description"
+        "text": "Predict expression for this sequence in K562 cells as log TPM",
+        "note": "expression task needs a cell-type description"
       }
     ]
   }

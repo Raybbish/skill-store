@@ -5,7 +5,7 @@
     "name": "security-audit",
     "description": "Deep security audit covering OWASP Top 10, authentication, authorization, data protection, dependency vulnerabilities, and secrets scanning. Delegates to the Centinela (QA) agent.",
     "upstream": "https://github.com/davepoon/buildwithclaude/tree/main/plugins/agent-triforce/skills/security-audit",
-    "upstream_commit": "79b3820d2f5891ce1c9e01b25fa8bcd3f903e47c",
+    "upstream_commit": "bbb2a94bb06ea150c03091ce18c9908037ef4fcc",
     "content_hash": "sha256:af1315d34ff070412f6dd7e8077ab79dfb9726b6b0c787f1bef9b8daca99ecfe",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 3503,
+    "stars_github": 3515,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-21T08:31:05.450Z",
+    "fetched_at": "2026-09-22T08:11:44.355Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-21T15:22:20+10:00",
+    "upstream_commit_at": "2026-09-22T11:34:00+10:00",
     "repo_skill_count": 379,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-21T08:31:05.450Z",
+    "generated_at": "2026-09-22T08:11:44.355Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会调用 Centinela(QA) agent 做深度安全审计,检查 OWASP Top 10、认证授权、硬编码密钥、依赖 CVE 等,给出结论并把报告写入 docs/reviews/ 目录。",
-    "when": "在发布前、涉及认证授权或数据处理的重大改动之后、新增依赖或外部集成等时机触发,也可用于定期复查代码库。",
+    "what": "Claude 会调用 Centinela(QA) agent 执行安全审计：检查 OWASP Top 10、硬编码密钥和依赖 CVE，输出报告到 docs/reviews/，并给出通过或不通过的结论。",
+    "when": "在发布前验证安全状况、改动涉及认证/授权或数据处理之后，或做周期性安全审查时触发；不指定范围时默认审计整个 src/ 目录。",
     "say": [
       {
-        "text": "对整个 src/ 跑一次安全审计",
-        "note": "不指定范围时默认审计整个 src/ 目录"
+        "text": "/security-audit",
+        "note": "不指定范围时审计整个 src/ 目录"
       },
       {
-        "text": "审计 src/auth/ 和 src/api/ 这两个目录",
-        "note": "只审计指定目录,报告存到 docs/reviews/"
+        "text": "/security-audit src/auth/ src/api/",
+        "note": "只审计这两个目录"
       },
       {
-        "text": "扫一下代码里的硬编码密钥和依赖漏洞",
-        "note": "它只记录问题,不会自动修改代码"
+        "text": "审计一下 src/payments/ 的密钥和依赖漏洞",
+        "note": "报告写到 docs/reviews/ 下"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:af1315d34ff070412f6dd7e8077ab79dfb9726b6b0c787f1bef9b8daca99ecfe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-21T08:35:37.713Z",
+    "generated_at": "2026-09-22T08:17:05.249Z",
     "lint_pass": true,
-    "what_en": "After install, Claude runs a deep security audit via the Centinela (QA) agent: OWASP Top 10, auth, secrets, dependency CVEs, then issues a verdict and writes the report to docs/reviews/.",
-    "when_en": "Triggered before a release, after significant changes touching auth or data handling, when adding dependencies or integrations, and for periodic reviews.",
+    "what_en": "Claude runs a security audit via the Centinela (QA) agent: it checks OWASP Top 10 items, scans for hardcoded secrets, and audits dependencies for CVEs, writing a report to docs/reviews/ and a verdict.",
+    "when_en": "Triggers before a release, after changes touching auth or data handling, during periodic security reviews, or when adding new dependencies. Without a scope, all of src/ is audited.",
     "say_en": [
       {
-        "text": "Run a full security audit on src/",
-        "note": "Defaults to the whole src/ directory"
+        "text": "/security-audit",
+        "note": "Audits all of src/ by default"
       },
       {
-        "text": "Audit src/auth/ and src/api/",
-        "note": "Report goes to docs/reviews/"
+        "text": "/security-audit src/auth/ src/api/",
+        "note": "Limits the audit to those paths"
       },
       {
-        "text": "Scan for hardcoded secrets and dependency CVEs",
-        "note": "It only documents findings, never fixes them"
+        "text": "Audit src/payments/ for secrets and dependency CVEs",
+        "note": "Writes a report under docs/reviews/"
       }
     ]
   }
