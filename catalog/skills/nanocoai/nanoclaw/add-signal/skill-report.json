@@ -5,7 +5,7 @@
     "name": "add-signal",
     "description": "Add Signal channel integration via signal-cli device-link. Native adapter — no Chat SDK bridge.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-signal",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "7902716b5b930215dbee4f56b8fb5b938d40468d",
     "content_hash": "sha256:67698dd402a630c1ba1911f910adf2fadbfb1d81760bb8da5b3596ee1f0c2e08",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30796,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-18T07:53:41.787Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-17T19:26:51+02:00",
+    "repo_skill_count": 61,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-18T07:53:41.787Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,26 +88,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "这个技能为 NanoClaw 添加 Signal 频道，通过原生适配器与 signal-cli 守护进程通信。安装后会把你现有的 Signal 号码链接为关联设备，助手即可用该号码收发消息，支持文本、Markdown 格式化、引用回复、私聊打字指示等。",
-    "when": "当用户或群成员向已链接的 Signal 号码发送私聊或群组消息时，技能会接管消息，自动创建会话，助手通过 Signal 回复；新 Signal 用户需先授予访问权限才能收到回复。",
+    "what": "装上后,助手通过原生适配器接入 Signal:不新增号码,而是以设备关联方式挂在你现有手机上,用那个号码收发消息,支持 Markdown、引用回复、DM 打字提示等。",
+    "when": "当你要给助手添加 Signal 通道、执行该技能的设备关联步骤时触发;需 signal-cli 已在 PATH 或 $SIGNAL_CLI_PATH 可用。",
     "say": [
       {
-        "text": "帮我链接 Signal 账户",
-        "note": "执行设备链接，生成二维码供扫描。"
+        "text": "给助手加上 Signal,用我手机上的号码关联",
+        "note": "会启动设备关联并出二维码让你扫"
       },
       {
-        "text": "查一下 Signal 频道最近的会话记录",
-        "note": "会查询 messaging_groups 表。"
+        "text": "把刚发消息的那个 Signal 群接到我的 agent",
+        "note": "先查 messaging_groups 再创建 wiring"
       },
       {
-        "text": "给这个 Signal 用户授权访问",
-        "note": "需提供 signal:UUID，创建用户并授予角色。"
+        "text": "这个 Signal 用户发消息被 not_member 挡了,给他授权",
+        "note": "创建用户并授予角色或加进组"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:67698dd402a630c1ba1911f910adf2fadbfb1d81760bb8da5b3596ee1f0c2e08",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:06:25.762Z",
-    "lint_pass": true
+    "generated_at": "2026-09-18T08:01:09.011Z",
+    "lint_pass": true,
+    "what_en": "Assistant gains Signal through a native adapter: it links as a secondary device on your existing phone number via signal-cli, no new number. It sends and receives as that number; supports Markdown, quoted replies, DM typing.",
+    "when_en": "Triggered when you ask to add Signal as an assistant channel or run this skill's device-link step; signal-cli must be on PATH or at $SIGNAL_CLI_PATH.",
+    "say_en": [
+      {
+        "text": "Add Signal to my assistant using my phone's number",
+        "note": "Starts device-link and shows a QR to scan"
+      },
+      {
+        "text": "Wire the Signal group I just messaged to my agent",
+        "note": "Look up messaging_groups, then create the wiring"
+      },
+      {
+        "text": "Grant access to this Signal user blocked as not_member",
+        "note": "Create the user and grant role or group access"
+      }
+    ]
   }
 }

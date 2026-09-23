@@ -3,27 +3,30 @@
   "meta": {
     "id": "othmanadi/planning-with-files/planning-with-files-ar",
     "name": "planning-with-files-ar",
-    "description": "نظام تخطيط الملفات بنمط Manus لتنظيم وتتبع تقدم المهام المعقدة. ينشئ ملفات task_plan.md و findings.md و progress.md. يُستخدم عند طلب التخطيط أو تحليل المهام أو تنظيم المشاريع أو تتبع التقدم أو الخطط متعددة الخطوات. يدعم الاستعادة التلقائية للجلسة بعد /clear. كلمات التشغيل: تخطيط المهام، إدارة المشاريع، خطة العمل، تحليل المهام، تنظيم المشروع، تتبع التقدم، خطة متعددة الخطوات، ساعدني في التخطيط، تحليل المشروع",
+    "description": "تخطيط مستمر قائم على الملفات لعمل وكلاء الذكاء الاصطناعي متعدد الخطوات. يحتفظ بملفات task_plan.md و findings.md و progress.md على القرص، وتحقن خطافات دورة الحياة سياق التخطيط المحدد للمشروع. تقرأ الاستعادة التلقائية ملفات تخطيط المشروع فقط. يمكن للأمر الصريح session-catchup.py --metadata فحص بيانات وصفية لجلسات الوكيل المحلية التابعة للمشروع نفسه، بينما قد يصدر --replay مقتطفات محدودة مؤطرة بقيمة nonce. يمكن للوضع المحكوم الاختياري طلب المتابعة فقط عندما يدعمه المضيف، ولا ينفذ أبدًا أوامر معلنة في Markdown. لا تتضمن المهارة مسارًا لرفع البيانات عبر الشبكة. تُستخدم للبحث أو العمل الذي يحتاج إلى 5 استدعاءات أدوات أو أكثر.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/i18n/planning-with-files-ar",
-    "upstream_commit": "9e94390e5912b1ff296556505cd999ff84838160",
-    "content_hash": "sha256:8f8766b82b278b0596c109ec6812256da706ab622cc12f5e360adfe1cdf93167",
+    "upstream_commit": "5ac39bcb41a9251d4253f7a2372b32147bfe6c2c",
+    "content_hash": "sha256:f191c3513c79c368bc1263ab921a451bb4b7074174eb7672d62419a3a88894f5",
     "license": "MIT",
     "hosting": "indexed",
-    "category": "productivity",
+    "category": "dev",
     "version": null,
     "publisher": "othmanadi",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": []
+    "tags": [
+      "agent-ops",
+      "python"
+    ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 26385,
+    "stars_github": 27052,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:23.004Z",
+    "fetched_at": "2026-09-22T08:10:59.158Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-22T13:03:16+02:00",
+    "upstream_commit_at": "2026-09-21T21:00:22+02:00",
     "repo_skill_count": 7
   },
   "context_size": {
@@ -33,31 +36,32 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:23.004Z",
+    "generated_at": "2026-09-22T08:10:59.158Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 15003,
-        "chars": 11116,
-        "tokens": 2738
+        "bytes": 18579,
+        "chars": 12915,
+        "tokens": 3230
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md",
           "scripts/check-complete.sh",
           "scripts/init-session.sh",
+          "scripts/resolve-plan-dir.sh",
           "scripts/session-catchup.py",
           "templates/findings.md",
           "templates/progress.md",
           "templates/task_plan.md"
         ],
-        "text_files": 7,
-        "bytes": 60392,
-        "chars": 48302,
-        "tokens": 10498
+        "text_files": 8,
+        "bytes": 76138,
+        "chars": 64475,
+        "tokens": 13768
       },
       "package_total_text": {
         "files": [
@@ -69,6 +73,7 @@
           "scripts/gate-stop.sh",
           "scripts/init-session.ps1",
           "scripts/init-session.sh",
+          "scripts/inject-plan.py",
           "scripts/inject-plan.sh",
           "scripts/ledger-append.ps1",
           "scripts/ledger-append.sh",
@@ -82,75 +87,78 @@
           "scripts/session-catchup.py",
           "scripts/set-active-plan.ps1",
           "scripts/set-active-plan.sh",
+          "scripts/skill-hook.sh",
           "templates/findings.md",
           "templates/progress.md",
           "templates/task_plan.md"
         ],
-        "text_files": 24,
-        "bytes": 178567,
-        "chars": 164969,
-        "tokens": 35319
+        "text_files": 26,
+        "bytes": 353248,
+        "chars": 339723,
+        "tokens": 66775
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "把复杂任务拆成分步计划,用文件持续记录进度",
+    "tagline": "让 AI 代理把多步任务的计划、发现与进度落盘保存,断点续做时不丢上下文",
     "scene_tags": [
-      "项目规划",
-      "任务拆解",
-      "进度跟踪"
+      "长任务规划",
+      "断点续做",
+      "研究调查",
+      "上下文恢复"
     ],
-    "fit_line": "适合你,如果常有多步骤项目需要拆解并持续跟踪进度",
-    "tagline_en": "Break complex tasks into trackable file plans and keep progress updated",
+    "fit_line": "适合你,如果让 AI 代理跑多步任务时总要反复解释背景、一旦中断就得从头再来。",
+    "tagline_en": "Save agent plans and progress to disk so multi-step tasks survive context resets",
     "scene_tags_en": [
-      "project planning",
-      "task breakdown",
-      "progress tracking"
+      "long task planning",
+      "resume after break",
+      "research runs",
+      "context recovery"
     ],
-    "fit_line_en": "For you if you often run multi-step projects and need to track progress",
+    "fit_line_en": "For you if your AI agent keeps losing context mid-task and you re-explain it every session.",
     "source": "llm",
-    "content_hash": "sha256:8f8766b82b278b0596c109ec6812256da706ab622cc12f5e360adfe1cdf93167",
+    "content_hash": "sha256:f191c3513c79c368bc1263ab921a451bb4b7074174eb7672d62419a3a88894f5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:05:47.198Z",
+    "generated_at": "2026-09-22T08:14:37.573Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "这个技能让Claude用Markdown文件（task_plan.md、findings.md、progress.md）规划和跟踪复杂任务，把计划、发现、进度写入项目文件，并读取这些文件恢复上下文、更新进度。",
-    "when": "当你要求规划、分析任务或跟踪进度时触发；检测到已有计划文件时也会自动读取并恢复上下文。",
+    "what": "会在你的项目里创建并维护 task_plan.md、findings.md、progress.md 三个文件,把多步任务的计划、发现和进度写到磁盘;每次你提交请求或它调用工具前后注入当前计划摘要,并在上下文压缩前提醒更新进度。",
+    "when": "当你要做多步骤规划、任务分析、项目组织或进度跟踪时触发,原文说明它适用于需要 5 次以上工具调用的研究或工作。",
     "say": [
       {
-        "text": "帮我为这个项目制定一个详细的计划。",
-        "note": "创建task_plan.md并开始跟踪。"
+        "text": "帮我为这个任务创建 task_plan.md 计划",
+        "note": "会在项目根目录生成计划文件"
       },
       {
-        "text": "把当前任务拆解成步骤并创建进度文件。",
-        "note": "生成计划和进度文件。"
+        "text": "读一下 task_plan.md,然后继续下一步",
+        "note": "会先读计划再接着做"
       },
       {
-        "text": "记录我们目前的研究发现。",
-        "note": "更新findings.md。"
+        "text": "把刚才的发现记到 findings.md",
+        "note": "会把发现写入研究文件"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:8f8766b82b278b0596c109ec6812256da706ab622cc12f5e360adfe1cdf93167",
+    "content_hash": "sha256:f191c3513c79c368bc1263ab921a451bb4b7074174eb7672d62419a3a88894f5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:47:37.395Z",
+    "generated_at": "2026-09-22T08:18:33.217Z",
     "lint_pass": true,
-    "what_en": "Makes Claude use Markdown files (task_plan.md, findings.md, progress.md) to plan and track complex tasks, writing plans, findings, and progress into project files and reading them to restore context and update status.",
-    "when_en": "Triggered when you ask for planning, task analysis, or progress tracking; also auto-reads existing plan files to restore context.",
+    "what_en": "Creates and maintains task_plan.md, findings.md and progress.md in your project to keep multi-step work on disk; it injects the current plan summary around prompts and tool calls, and reminds you to update progress before context compaction.",
+    "when_en": "Triggers when you ask for planning, task analysis, project organization, progress tracking or multi-step plans; the description says it is for research or work needing 5 or more tool calls.",
     "say_en": [
       {
-        "text": "Help me create a detailed plan for this project.",
-        "note": "Creates task_plan.md and starts tracking."
+        "text": "Create a task_plan.md plan for this task",
+        "note": "Generates plan files in the project root"
       },
       {
-        "text": "Break the current task into steps and create a progress file.",
-        "note": "Generates plan and progress files."
+        "text": "Read task_plan.md and continue with the next step",
+        "note": "Reads the plan first, then proceeds"
       },
       {
-        "text": "Log our research findings so far.",
-        "note": "Updates findings.md."
+        "text": "Record what we just found in findings.md",
+        "note": "Writes findings into the research file"
       }
     ]
   }
