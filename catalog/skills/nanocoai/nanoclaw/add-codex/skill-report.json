@@ -5,8 +5,8 @@
     "name": "add-codex",
     "description": "Use Codex (OpenAI's codex app-server) as a full agent provider — planning, tool orchestration, MCP tools, server-side history, session resume — alongside or instead of Claude. ChatGPT subscription or OpenAI API key, vault-only via OneCLI. Per-group via `ncl groups config update --provider codex`. Distinct from using OpenAI as an MCP tool (where Claude remains the planner).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-codex",
-    "upstream_commit": "7902716b5b930215dbee4f56b8fb5b938d40468d",
-    "content_hash": "sha256:5fe61acdd93f022a2eace7bfab1518a1314d8424d6def1e5a82ec48249bfd312",
+    "upstream_commit": "8aefde46f020a855c53f3c2ec20a0fb332d42b7a",
+    "content_hash": "sha256:41f5900cfff0361cfdd6714d8b291ee3e1e76c703bfe57c1e3cc15d7772a5817",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30796,
+    "stars_github": 30836,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-18T07:53:41.787Z",
+    "fetched_at": "2026-09-23T08:13:19.552Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-17T19:26:51+02:00",
+    "upstream_commit_at": "2026-09-23T10:26:32+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:53:41.787Z",
+    "generated_at": "2026-09-23T08:13:19.552Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -71,60 +71,62 @@
   },
   "eval": null,
   "copy": {
-    "tagline": "将 Codex 设为主智能体,接替 Claude 做规划、调用工具并恢复历史会话。",
+    "tagline": "把 Codex 接进工作流,让它替代或辅助 Claude 规划并执行编码任务",
     "scene_tags": [
-      "换主模型",
-      "配置智能体",
-      "多代理选择"
+      "切换编码助手",
+      "接入openai",
+      "多助手协作"
     ],
-    "fit_line": "适合你,如果希望终端 AI 的规划与工具调度由 Codex 接管。",
+    "fit_line": "适合你,如果正在用 Claude 做编码 agent,想换成或补上 Codex",
+    "tagline_en": "Plug Codex in to plan and run coding tasks, alongside or instead of Claude",
     "scene_tags_en": [
-      "switch primary model",
-      "configure agents",
-      "evaluate agent providers"
+      "switch coding agent",
+      "connect OpenAI account",
+      "multi-agent setup"
     ],
-    "fit_line_en": "For you if you want Codex to lead planning and tool calls in your terminal instead of Claude.",
+    "fit_line_en": "For you if you run a coding agent and want to swap in or add Codex",
     "source": "llm",
-    "content_hash": "sha256:5fe61acdd93f022a2eace7bfab1518a1314d8424d6def1e5a82ec48249bfd312",
+    "content_hash": "sha256:41f5900cfff0361cfdd6714d8b291ee3e1e76c703bfe57c1e3cc15d7772a5817",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-07T07:54:01.055Z",
+    "generated_at": "2026-09-23T08:17:50.169Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,它把某个组的 agent 后端换成 Codex(OpenAI 的 codex app-server):由 Codex 负责规划、编排工具、调用 MCP 工具,会话历史存在服务端,可用线程 ID 续聊。凭据只存 OneCLI vault。",
-    "when": "当你用 ncl groups config update --provider codex 把某个组切到 codex 时接管;也可把新组默认 provider 设为 codex。",
+    "what": "装上后,这个技能把 Codex(OpenAI 的 codex app-server)安装成 NanoClaw 的代理后端,让指定群组的规划、工具编排、MCP 工具和会话续接交给 Codex 而非 Claude。凭证只放在 OneCLI vault,容器里读不到真实密钥。",
+    "when": "装完后默认仍是 claude;需要由操作者在宿主机手动执行 ncl groups config update --provider codex 并重启该群组,它才会接管这个群组的代理工作。",
     "say": [
       {
-        "text": "把这个组切到 codex 后端并重启"
+        "text": "把群组 <group-id> 的 provider 改成 codex,然后重启它",
+        "note": "执行配置更新并重启该群组"
       },
       {
-        "text": "跑一遍 codex 的 provider 认证,用 ChatGPT 订阅登录",
-        "note": "凭据写入 OneCLI vault"
+        "text": "跑一下 Codex 的认证,用 ChatGPT 订阅登录",
+        "note": "写入 OneCLI vault,已有密钥会跳过"
       },
       {
-        "text": "把新组的默认 agent provider 改成 codex",
-        "note": "只影响之后新建的组"
+        "text": "把新建群组的默认 provider 设为 codex",
+        "note": "改 DEFAULT_AGENT_PROVIDER 并重启宿主"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:5fe61acdd93f022a2eace7bfab1518a1314d8424d6def1e5a82ec48249bfd312",
+    "content_hash": "sha256:41f5900cfff0361cfdd6714d8b291ee3e1e76c703bfe57c1e3cc15d7772a5817",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T08:00:49.339Z",
+    "generated_at": "2026-09-23T08:20:29.329Z",
     "lint_pass": true,
-    "what_en": "Installs Codex (OpenAI's codex app-server) as a full agent backend for a group: planning, tool orchestration, MCP tools, server-side history, session resume. Credentials stay vault-only in OneCLI.",
-    "when_en": "Takes over when an operator runs `ncl groups config update --provider codex` for a group, or sets DEFAULT_AGENT_PROVIDER=codex for new groups.",
+    "what_en": "Installs Codex (OpenAI's codex app-server) as a NanoClaw agent provider, so a group's planning, tool orchestration, MCP tools, and session resume run on Codex instead of Claude. Credentials stay vault-only in OneCLI.",
+    "when_en": "After install the default stays claude; an operator must run ncl groups config update --provider codex and restart the group before it takes over.",
     "say_en": [
       {
-        "text": "Switch this group to the codex provider and restart it",
-        "note": "Runs ncl groups config update, then restart"
+        "text": "Switch group <group-id> to the codex provider and restart it",
+        "note": "Updates config and restarts that group"
       },
       {
-        "text": "Run the codex provider auth step with my ChatGPT subscription",
-        "note": "Lands the secret in the OneCLI vault"
+        "text": "Run the Codex auth walkthrough with a ChatGPT subscription",
+        "note": "Writes to the OneCLI vault; skips if set"
       },
       {
-        "text": "Make codex the default provider for new groups",
-        "note": "Only affects groups created afterward"
+        "text": "Set the default provider for new groups to codex",
+        "note": "Sets DEFAULT_AGENT_PROVIDER, restarts host"
       }
     ]
   }

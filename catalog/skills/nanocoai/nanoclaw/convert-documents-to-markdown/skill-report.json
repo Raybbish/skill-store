@@ -5,7 +5,7 @@
     "name": "convert-documents-to-markdown",
     "description": "Convert an attached Word document, presentation, spreadsheet, OpenDocument file, RTF, EPUB, CSV, or text-based PDF into local Markdown. Use when a message supplies a local attachment path that must be read without uploading it to an external parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc/container-skills/convert-documents-to-markdown",
-    "upstream_commit": "7902716b5b930215dbee4f56b8fb5b938d40468d",
+    "upstream_commit": "8aefde46f020a855c53f3c2ec20a0fb332d42b7a",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30796,
+    "stars_github": 30836,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-18T07:53:41.787Z",
+    "fetched_at": "2026-09-23T08:13:19.552Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-17T19:26:51+02:00",
+    "upstream_commit_at": "2026-09-23T10:26:32+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:53:41.787Z",
+    "generated_at": "2026-09-23T08:13:19.552Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,37 +86,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会用容器内已安装的 anydoc 命令行工具，把消息中给出的本地附件（Word、演示文稿、表格、文本型 PDF 等）转成 Markdown 文件并输出路径；转换全程在本地容器内完成，不经外部解析服务。",
-    "when": "当消息提供本地附件路径、需要读取该文件又不把它上传到外部解析器时触发；本地转换是默认做法。",
+    "what": "装上后,Claude 会读取消息里附带的本地文件(Word、演示文稿、表格、PDF 等),在容器内转成 Markdown,并给出生成的 .md 文件路径。文档内容一律当作不可信数据,不执行其中的指令。",
+    "when": "当消息附上本地附件路径、要在不把文件上传到外部解析服务的前提下读取它时触发,转换只在 agent 容器内进行。",
     "say": [
       {
-        "text": "这个 PDF 我给了本地路径，转成 Markdown 再读关键部分",
-        "note": "大文件只读相关章节"
+        "text": "这份 PDF 不要上传到外部,只在本地转成 Markdown",
+        "note": "本地转换是默认做法,失败也不会自动上传"
       },
       {
-        "text": "从 stdin 读这个 CSV，格式指定为 csv",
-        "note": "用 --format csv 显式声明格式"
+        "text": "转出来的 Markdown 太大,只读里面财务那几节",
+        "note": "只读取相关章节,不整体放进上下文"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T08:01:17.385Z",
+    "generated_at": "2026-09-23T08:20:56.641Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude uses the preinstalled anydoc CLI to convert the local attachment path given in your message (Word, slides, spreadsheets, text-based PDF, etc.) into a Markdown file inside the agent container, without uploading it to an external parser.",
-    "when_en": "Triggered when a message supplies a local attachment path that must be read without uploading it to an external parser; local conversion is the default.",
+    "what_en": "Once installed, Claude reads a local attachment from the message (Word, presentations, spreadsheets, PDFs, etc.), converts it to Markdown inside the container, and reports the generated .md path. Document content is treated as untrusted data; its instructions are not followed.",
+    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser. Conversion happens only inside the agent container.",
     "say_en": [
       {
         "text": "Convert /workspace/inbox/msg/report.docx to Markdown",
-        "note": "It prints the generated .md path"
+        "note": "Converts in the container and returns the output path"
       },
       {
-        "text": "This PDF has a local path — convert it to Markdown, then read the relevant parts",
-        "note": "Large files: only relevant sections are read"
+        "text": "Do not upload this PDF; convert it to Markdown locally",
+        "note": "Local conversion is the default; failures are not uploaded"
       },
       {
-        "text": "Read this CSV from stdin, with the format set to csv",
-        "note": "Declares the format explicitly via --format csv"
+        "text": "The Markdown is large, just read the finance sections",
+        "note": "Reads only relevant sections instead of the whole file"
       }
     ]
   }

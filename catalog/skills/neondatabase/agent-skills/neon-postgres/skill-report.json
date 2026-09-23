@@ -5,7 +5,7 @@
     "name": "neon-postgres",
     "description": "Guides and best practices for working with Lakebase Postgres on Neon: connections, pooled vs direct, schema migrations, branching, autoscaling, scale-to-zero, instant restore, read replicas, IP allow lists, logical replication, and Lakebase Search. Use when the work is an existing DATABASE_URL, SQL, schema, inspect, or search. New backends, Auth, files, Functions, and LLM calls go to the parent `neon` skill. Also use for \"@neondatabase/serverless\", \"@neondatabase/neon-js\", \"neon inspect db\", \"semantic search\", \"vector search\", \"full-text search\", \"BM25\", or \"hybrid search\".",
     "upstream": "https://github.com/neondatabase/agent-skills/tree/main/skills/neon-postgres",
-    "upstream_commit": "b5beae8767c18ee7b9dc1ae1eb6c93c7cb1a96c4",
+    "upstream_commit": "827249744ed96416d799b68fb6bf033f4068b18a",
     "content_hash": "sha256:8c3c2d459e847b63a8e55ba2dc1dbba65f1ab3bcdf55d9674c47b8624d6630a8",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -23,10 +23,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 170700,
-    "fetched_at": "2026-09-18T07:56:59.132Z",
+    "installs_skills_sh": 182700,
+    "fetched_at": "2026-09-23T08:17:01.630Z",
     "first_seen_at": "2026-08-30T08:54:30.137Z",
-    "upstream_commit_at": "2026-09-17T15:39:25-07:00"
+    "upstream_commit_at": "2026-09-22T06:32:49-07:00"
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:56:59.132Z",
+    "generated_at": "2026-09-23T08:17:01.630Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -95,40 +95,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会按 Neon 的流程用你已有的 DATABASE_URL 连库、把 schema 和迁移写成代码、按需建分支，并用只读的 inspect 检查看查询和存储情况。",
-    "when": "当任务涉及已有的 DATABASE_URL、SQL 或 schema、数据库检查与搜索时接管；新建后端、Auth、文件、Functions 等交给上级 neon 技能。",
+    "what": "让它按 Neon 的规范处理已有的 DATABASE_URL、SQL 和 schema:选池化或直连连接、管理并测试迁移、建分支、用 neon inspect db 做诊断,还涉及读写副本、IP 白名单与搜索等配置。",
+    "when": "当你已有 DATABASE_URL,或要处理 SQL、schema、数据库检查与搜索时由它接管,提到语义搜索、向量搜索等关键词也适用。新建后端、Auth、文件等交给上层 neon 技能。",
     "say": [
       {
-        "text": "用这个 DATABASE_URL 检查一下数据库性能",
-        "note": "跑 neon inspect db 的只读检查"
+        "text": "用 neon inspect db 看看哪张表最占存储",
+        "note": "会运行 table-sizes、index-sizes 检查"
       },
       {
-        "text": "把这次 schema 改动做成迁移，先在分支上测",
-        "note": "在分支上试跑后再应用"
+        "text": "这条迁移先在分支上试过再上生产",
+        "note": "会建分支并用直连跑迁移"
       },
       {
-        "text": "解释这条查询的缓存命中情况"
+        "text": "帮我把连接串配好写进 .env",
+        "note": "会先读 .env 再写,避免覆盖原值"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:8c3c2d459e847b63a8e55ba2dc1dbba65f1ab3bcdf55d9674c47b8624d6630a8",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-19T07:50:46.147Z",
+    "generated_at": "2026-09-23T08:21:09.630Z",
     "lint_pass": true,
-    "what_en": "It follows Neon's setup flow to use an existing DATABASE_URL, manage schema and migrations as code, create branches when needed, and run built-in read-only inspect checks on queries and storage.",
-    "when_en": "Use when the task involves an existing DATABASE_URL, SQL, schema, inspect, or search work. New backends, Auth, files, Functions, and LLM calls go to the parent neon skill.",
+    "what_en": "Lets Claude work with an existing Neon Lakebase Postgres DATABASE_URL: choose pooled or direct connections, manage and test schema migrations, create branches, run neon inspect db diagnostics, and set up read replicas, IP allow lists, or search.",
+    "when_en": "Triggered when you already have a DATABASE_URL or work on SQL, schema, inspect, or search (semantic, vector, etc.). New backends, Auth, files, and Functions go to the parent neon skill.",
     "say_en": [
       {
-        "text": "Check this database's performance using this DATABASE_URL",
-        "note": "runs neon inspect db read-only checks"
+        "text": "Use neon inspect db to see which tables take the most storage",
+        "note": "Runs table-sizes and index-sizes checks"
       },
       {
-        "text": "Turn this schema change into a migration and test it on a branch",
-        "note": "test on a branch, then apply"
+        "text": "Test this migration on a branch before it hits production",
+        "note": "Creates a branch, runs the migration over a direct connection"
       },
       {
-        "text": "Explain the cache hit rate of this query",
-        "note": "uses EXPLAIN with FILECACHE and PREFETCH"
+        "text": "Set up DATABASE_URL and save it to .env",
+        "note": "Reads .env first to avoid overwriting values"
       }
     ]
   }

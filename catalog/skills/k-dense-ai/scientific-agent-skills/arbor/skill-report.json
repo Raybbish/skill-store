@@ -100,26 +100,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会自主地针对一个可修改的产物(代码、训练配方、agent 框架、数据管线等)反复实验并评估,把假设与结论记进一棵假设树,用留出的测试评估器决定是否采纳改动,最后交出最佳版本和过程记录。",
-    "when": "当你要用大量实验迭代优化某个产物、又不想过拟合时触发;描述反复的「实验—评估」循环、分支尝试竞争方案,或担心 dev/test 差距时也会接管,即使你没提 Arbor。",
+    "what": "Claude 会充当协调者,围绕一个可修改的产物和评分器反复做实验:用假设树保存假设与证据,派子代理在隔离 git worktree 中各测一条,只有通过留出测试评估的改动才并入最佳版本。",
+    "when": "当你要反复迭代改进一个可修改的产物(如提升模型 eval 分数、优化 agent、调数据或 prompt 管线等),并且有自动评分方式时触发;只想要一次性修复时不适用。",
     "say": [
       {
-        "text": "用 arbor 把这个评测分数提上去,并用单独 test 评估把关",
-        "note": "先建立目标与 dev/test 评估器,再开始循环"
+        "text": "帮我把这个 benchmark 的分数提上去,别过拟合 dev 集",
+        "note": "Claude 先和你确认目标与 dev/test 评估器"
       },
       {
-        "text": "帮我优化这个 agent harness,跑到基准上超过 baseline",
-        "note": "每个候选假设在独立 git worktree 里跑实验"
+        "text": "用 Arbor 优化这个 agent harness,跑 12 轮搜索",
+        "note": "进入协调者循环,预算 12 轮"
       },
       {
-        "text": "调这个数据合成/过滤管线,想做多轮实验别过拟合 dev",
-        "note": "洞见上传到树里,失败的假设被剪掉并记原因"
+        "text": "把这个候选改动跑一遍 held-out 测试,过了再并入",
+        "note": "通过合并闸门才成为新的最佳版本"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0e5fc8f4b16bf37d229b60ae48a90b942376d2656b0bce6e800ee5cb1ad718da",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:17:40.231Z",
-    "lint_pass": false
+    "generated_at": "2026-09-23T08:20:00.981Z",
+    "lint_pass": false,
+    "what_en": "Claude acts as coordinator: it runs many experiment cycles on a modifiable artifact and an evaluator, keeps a hypothesis tree, sends subagents to test hypotheses in git worktrees, and merges only changes that pass a held-out test.",
+    "when_en": "Use it when you want to iteratively improve a scorable artifact — model eval, agent harness, pipeline — over many experiments; a one-shot fix doesn't need it.",
+    "say_en": [
+      {
+        "text": "Raise this benchmark's score without overfitting the dev set",
+        "note": "Claude first confirms the objective and dev/test evaluators"
+      },
+      {
+        "text": "Optimize this agent harness with Arbor over 12 cycles",
+        "note": "Runs the coordinator loop with a 12-cycle budget"
+      },
+      {
+        "text": "Run the held-out test on this candidate and merge it if it passes",
+        "note": "Only test-confirmed changes become the new best"
+      }
+    ]
   }
 }

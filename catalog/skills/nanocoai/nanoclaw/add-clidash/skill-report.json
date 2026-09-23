@@ -5,7 +5,7 @@
     "name": "add-clidash",
     "description": "Add clidash — a zero-dependency, read-only web dashboard that derives its tabs and tables at runtime from any CLI that lists resources as JSON. Ships pre-wired for NanoClaw's ncl CLI (agent groups, sessions, channels, users, roles), plus message-activity charts, a log tail, and a read-only file viewer for group skills/CLAUDE.md/profiles.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-clidash",
-    "upstream_commit": "7902716b5b930215dbee4f56b8fb5b938d40468d",
+    "upstream_commit": "8aefde46f020a855c53f3c2ec20a0fb332d42b7a",
     "content_hash": "sha256:a976d52294f919ccb339c712066f7e7a8aaa4b68cad2c4671eb2180387c7b51c",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30796,
+    "stars_github": 30836,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-18T07:53:41.787Z",
+    "fetched_at": "2026-09-23T08:13:19.552Z",
     "first_seen_at": "2026-07-06T18:39:20+08:00",
-    "upstream_commit_at": "2026-09-17T19:26:51+02:00",
+    "upstream_commit_at": "2026-09-23T10:26:32+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:53:41.787Z",
+    "generated_at": "2026-09-23T08:13:19.552Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -122,40 +122,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会把 clidash 复制进 tools/clidash、生成配置、跑测试,并启动本地只读网页仪表盘。它按任何能列出 JSON 资源的 CLI 自动生成标签页与表格,另带消息活动图表、日志尾部、只读文件查看。",
-    "when": "当你想给能输出 JSON 资源的 CLI(如 NanoClaw 的 ncl)加一个本地只读仪表盘,或执行 /add-clidash 时触发。",
+    "what": "装上后，Claude 会把只读看板工具 clidash 拷进 tools/clidash 并生成配置文件，让你在本地 127.0.0.1:4690 看到每个 ncl 资源一个标签页的表格，外加 Agents 概览、消息活动、日志和文件查看面板。",
+    "when": "当你要求添加 clidash 看板，或想给能以 JSON 列出资源的 CLI（如 ncl、docker、kubectl 等）搭一个只读网页界面时触发。",
     "say": [
       {
-        "text": "把 clidash 装好并启动,然后告诉我访问地址。"
+        "text": "把 clidash 装上，配好 ncl 的配置",
+        "note": "拷贝工具目录并生成 clidash.config.json"
       },
       {
-        "text": "确认 ncl 的资源发现是否成功。",
-        "note": "会用 curl 请求 /api/clis"
+        "text": "跑一下 npm test 确认测试都过",
+        "note": "测试用桩 CLI，不需要真实 ncl"
       },
       {
-        "text": "把 clidash 配成开机自启的用户服务。",
-        "note": "会生成 systemd 用户单元并启用"
+        "text": "启动 server.js，然后 curl 检查 /api/clis",
+        "note": "确认 ncl 资源发现成功"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a976d52294f919ccb339c712066f7e7a8aaa4b68cad2c4671eb2180387c7b51c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T08:00:52.809Z",
+    "generated_at": "2026-09-23T08:20:24.637Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude copies clidash into tools/clidash, creates its config, and starts a local read-only dashboard. It builds tabs and tables from any CLI that lists resources as JSON, plus activity charts, a log tail, and a file viewer.",
-    "when_en": "Triggers when you want a local read-only dashboard for a CLI that lists JSON resources, such as NanoClaw's ncl, or run /add-clidash.",
+    "what_en": "Once installed, Claude copies the read-only clidash dashboard into tools/clidash, writes its config, and serves it at 127.0.0.1:4690 — one tab and table per ncl resource, plus Agents overview, activity, logs and a file viewer.",
+    "when_en": "Triggers when you ask to add clidash, or want a read-only dashboard for any CLI that lists resources as JSON (ncl, docker, kubectl, etc.).",
     "say_en": [
       {
-        "text": "Install clidash and start it, then tell me the URL.",
-        "note": "Copies files, creates config, serves 127.0.0.1:4690"
+        "text": "Install clidash and set up the ncl config",
+        "note": "Copies the tool dir and writes clidash.config.json"
       },
       {
-        "text": "Check whether ncl resource discovery worked.",
-        "note": "Runs curl against /api/clis"
+        "text": "Run npm test to confirm the tests pass",
+        "note": "Tests use a stub CLI, no real ncl needed"
       },
       {
-        "text": "Set clidash up as a user service that starts on boot.",
-        "note": "Writes a systemd user unit and enables it"
+        "text": "Start server.js and curl /api/clis to check",
+        "note": "Confirms ncl resource discovery worked"
       }
     ]
   }

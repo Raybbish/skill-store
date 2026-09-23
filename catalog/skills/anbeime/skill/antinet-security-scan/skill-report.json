@@ -5,7 +5,7 @@
     "name": "antinet-security-scan",
     "description": "信息安全分析师与软件开发工程师在搭建文档处理流水线时，当需要拦截违规文件或外部URL，请挂载此技能作为强制前置安检，自动输出 pass/reject 判定与详细合规扫描报告，一键守住零信任安全底线。",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-security-scan",
-    "upstream_commit": "8a079b767dfc6760aeac5e45b7ca8abeca5eb8b9",
+    "upstream_commit": "b971d75309726f338c84839ece7085c7433c5fd7",
     "content_hash": "sha256:15de872114718ffe2823927dbb646cf3b9b9a2cc4decd00acb650a53daa823aa",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 7082,
+    "stars_github": 7121,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:11:32.349Z",
+    "fetched_at": "2026-09-23T08:14:03.058Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-09-22T07:25:08Z",
+    "upstream_commit_at": "2026-09-23T07:27:48Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:11:32.349Z",
+    "generated_at": "2026-09-23T08:14:03.058Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "收到文件或外部 URL 时先做安检，输出 pass 或 reject 判定、含黑名单命中与风险等级的扫描报告，并生成 trace_id 留痕。",
-    "when": "当文档处理流水线需要拦截违规文件或外部 URL 时触发，由锦衣卫 Worker 在收到文件/URL 时作为第一道闸门接管。",
+    "what": "Claude 会在文件或外部 URL 进入文档流水线前先做安检,输出 pass 或 reject 判定,并附扫描报告(命中的黑名单项、许可状态、风险等级),同时生成 trace_id 供留痕。",
+    "when": "当有文件或外部 URL 要进入系统、需要拦截违规内容时,由锦衣卫 Worker 作为第一道闸门调用;任何文件进入系统前都必须经它把关。",
     "say": [
       {
-        "text": "扫描这个文件：/data/contract.pdf",
-        "note": "返回 pass 或 reject 与扫描报告"
+        "text": "检查这个 URL 的域名是否在违规黑名单里",
+        "note": "返回域名命中情况与风险等级"
       },
       {
-        "text": "检查这个 URL 是否违规：https://example.com/doc",
-        "note": "先解析域名再判定"
-      },
-      {
-        "text": "用 policy_ref 覆盖默认策略，重扫该文件",
-        "note": "替换合规规则集后重新判定"
+        "text": "用 policy_ref 指定的规则集重新扫这份文件",
+        "note": "按替换后的策略重新判定"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:15de872114718ffe2823927dbb646cf3b9b9a2cc4decd00acb650a53daa823aa",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:15:34.240Z",
+    "generated_at": "2026-09-23T08:18:13.488Z",
     "lint_pass": true,
-    "what_en": "On receiving a file or external URL, it runs a security check first, outputs a pass or reject verdict plus a scan report with blacklist hits and risk level, and writes a trace_id for provenance.",
-    "when_en": "Triggers when a document pipeline must block non-compliant files or external URLs; the jinyiwei Worker calls it on each incoming file or URL as the first gate.",
+    "what_en": "Before a file or external URL enters a document pipeline, Claude runs a security check, returns a pass or reject verdict plus a scan report (blacklist hits, license status, risk level) and a trace_id for auditing.",
+    "when_en": "Triggered when a file or external URL is about to enter the system and违规 content must be blocked; the Jinyiwei worker calls it as the first gate, and every file must pass it first.",
     "say_en": [
       {
-        "text": "Scan this file: /data/contract.pdf",
-        "note": "Returns a pass or reject verdict with a scan report"
+        "text": "Scan this file /path/to/doc.pdf and tell me pass or reject",
+        "note": "Returns verdict and scan report"
       },
       {
-        "text": "Check whether this URL is non-compliant: https://example.com/doc",
-        "note": "Resolves the domain before judging"
+        "text": "Check whether this URL's domain is on the violation blacklist",
+        "note": "Returns domain hits and risk level"
       },
       {
-        "text": "Override the default policy with this policy_ref and rescan the file",
-        "note": "Swaps the rule set, then re-judges"
+        "text": "Rescan this file with the ruleset in policy_ref",
+        "note": "Re-judges under the replaced policy"
       }
     ]
   }

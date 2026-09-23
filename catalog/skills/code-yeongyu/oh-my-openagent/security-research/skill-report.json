@@ -5,7 +5,7 @@
     "name": "security-research",
     "description": "Team Mode security research skill. Orchestrates 3 vulnerability hunters and 2 PoC engineers to audit a codebase in parallel, prove exploitability, classify root causes, and calibrate severity by actual exploitability. Use for security review, vulnerability research, exploitability audit, pre-release security check, threat model validation, and `/security-research`. Triggers: 'security-research', 'security research', 'security review', 'vulnerability audit', 'exploitability audit', '보안 리뷰', '취약점 감사'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/security-research",
-    "upstream_commit": "7f6be0c60f93180d6a6ad969f4fdb58a5b59cfd4",
+    "upstream_commit": "bc2f5268d05aeaa4c10cb7d764dd5f2b3ed5ec38",
     "content_hash": "sha256:b084c2d3a2a30afc390f6f4264977798c8063bbcb0840b3f59141eb0eee1e6d7",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69279,
+    "stars_github": 69311,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:10:41.719Z",
+    "fetched_at": "2026-09-23T08:13:01.631Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-22T17:08:24+09:00",
-    "repo_skill_count": 49
+    "upstream_commit_at": "2026-09-23T17:11:04+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:10:41.719Z",
+    "generated_at": "2026-09-23T08:13:01.631Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,37 +86,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "并行安全审计:3 名漏洞猎手 + 2 名 PoC 工程师分工找候选漏洞、用最小 PoC 证明或证伪可利用性、归类 CWE 根因,再按真实可利用性定级,最后给出 PASS、PASS WITH FINDINGS 或 BLOCK 判决和修复建议。",
-    "when": "当你提到 “security-research”、“vulnerability audit” 等关键词,或要求做发布前安全检查时接管;需要 team mode 已开启。",
+    "what": "装上后,Claude 会拉起 3 名漏洞猎手和 2 名 PoC 工程师并行审计代码库:梳理入口与信任边界、验证真实可利用性、按 CWE 分类根因,最后给出 PASS、PASS WITH FINDINGS 或 BLOCK 的结论报告。",
+    "when": "当你要求安全审查、漏洞审计、可利用性审计等,或输入 /security-research 时触发;需已启用 team-mode,并给出具体目标(仓库、diff、PR 等)。",
     "say": [
       {
-        "text": "对我当前分支的 diff 做一次 security review",
-        "note": "按上游或 merge base 比对后审计"
+        "text": "用 security-research 审计当前仓库",
+        "note": "会拉起 5 人团队并行审计"
       },
       {
-        "text": "审计 src/auth 目录,只做安全验证,不要破坏性测试",
-        "note": "用本地 fixture 和 dry run 证明"
+        "text": "审计这个 PR 的 diff 有没有可利用漏洞",
+        "note": "按实际可利用性定级"
+      },
+      {
+        "text": "对发布候选版本做发布前安全检查",
+        "note": "产出 PASS 或 BLOCK 结论"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:b084c2d3a2a30afc390f6f4264977798c8063bbcb0840b3f59141eb0eee1e6d7",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:16:47.866Z",
+    "generated_at": "2026-09-23T08:19:21.954Z",
     "lint_pass": true,
-    "what_en": "Runs a parallel security audit with 3 vulnerability hunters and 2 PoC engineers: find candidates, prove or falsify exploitability with minimal PoCs, classify CWE root causes, and return a PASS / PASS WITH FINDINGS / BLOCK verdict plus fixes.",
-    "when_en": "Triggers on 'security-research', 'vulnerability audit' and similar keywords, or pre-release security checks. Requires team mode enabled.",
+    "what_en": "Claude spins up 3 vulnerability hunters and 2 PoC engineers to audit a codebase in parallel: map attack surface, prove exploitability, classify root causes by CWE, and end with a PASS, PASS WITH FINDINGS, or BLOCK verdict report.",
+    "when_en": "Triggers on security review, vulnerability audit, exploitability audit and similar requests, or /security-research. Needs team-mode enabled and a concrete target such as a repo, diff, or PR.",
     "say_en": [
       {
-        "text": "Run a security review on my current branch diff",
-        "note": "Audits diff against upstream or merge base"
+        "text": "Run security-research on this repository",
+        "note": "Starts a 5-member parallel audit team"
       },
       {
-        "text": "Audit src/auth; verify safely, no destructive tests",
-        "note": "Uses local fixtures and dry runs"
+        "text": "Audit this PR diff for exploitable vulnerabilities",
+        "note": "Severity set by real exploitability"
       },
       {
-        "text": "Run a pre-release exploitability audit with a BLOCK or PASS verdict",
-        "note": "Returns report with PoCs and minimal fixes"
+        "text": "Do a pre-release security check on the release candidate",
+        "note": "Ends with PASS or BLOCK verdict"
       }
     ]
   }

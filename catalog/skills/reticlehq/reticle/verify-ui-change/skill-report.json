@@ -5,7 +5,7 @@
     "name": "verify-ui-change",
     "description": "Check that a change to a web app actually works in the running app before calling it done. Drives the real page and returns a pass/fail verdict with the request that fired, the state that moved, and the file:line to fix. Use after editing a component, a form, a route, or an API call; when you have said \"fixed\" but have not opened the app; when the user asks \"does it actually work?\"; or when a change looks right on screen and you cannot prove it.",
     "upstream": "https://github.com/reticlehq/reticle/tree/main/skills/verify-ui-change",
-    "upstream_commit": "2483c24719c7e5f64a50e44a805eadaa7b4300ee",
+    "upstream_commit": "12d18dd4cb772da46ae20d7bbcccc9a7a227cfeb",
     "content_hash": "sha256:70b4499392f185749795e77b0e1aa3bf85c5769b5128342a14c8d2974be5be1c",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 811,
+    "stars_github": 820,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:12:46.086Z",
+    "fetched_at": "2026-09-23T08:15:51.034Z",
     "first_seen_at": "2026-09-22T08:12:46.086Z",
-    "upstream_commit_at": "2026-09-21T22:44:32Z",
+    "upstream_commit_at": "2026-09-22T16:28:58Z",
     "repo_skill_count": 14
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:12:46.086Z",
+    "generated_at": "2026-09-23T08:15:51.034Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "改动网页应用后，Claude 会在真实运行的页面里跑一遍，给出通过或失败的结论，并附上触发的请求、变化的状态，以及需要修改的 file:line。",
-    "when": "改完组件、表单、路由等之后，或你已说「修好了」却没打开应用时，它会接管验证。",
+    "what": "它会在真实运行中的网页里驱动你刚做的改动,然后给出通过/不通过的判定,并附上触发的请求、变化的状态和要修改的 file:line,再报给你。",
+    "when": "在你改过组件、表单、路由等之后,或你说了“已修复”却没打开应用,或用户问“真的能用吗”时触发。",
     "say": [
       {
-        "text": "验证一下这次改动在运行的应用里到底能不能用。",
-        "note": "驱动真实页面，返回通过/失败结论。"
+        "text": "我刚改完这个表单,帮我在跑着的应用里验证是不是真的生效了",
+        "note": "它会驱动真实页面,给出通过/不通过的判定"
       },
       {
-        "text": "我改了登录表单，跑一遍确认提交后确实调了接口。",
-        "note": "报告发出的请求和状态码。"
+        "text": "这个改动看着没问题,提交前跑一下 coverage,看还有哪些控件没被点到"
       },
       {
-        "text": "这改动看着没问题，帮我证明它真的生效了。",
-        "note": "给结论；失败时附上 file:line。"
+        "text": "上次那个点击没反应,重新断言一次,别重放操作",
+        "note": "它用 since 重新断言,不重复副作用"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:70b4499392f185749795e77b0e1aa3bf85c5769b5128342a14c8d2974be5be1c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:19:34.658Z",
+    "generated_at": "2026-09-23T08:21:50.053Z",
     "lint_pass": true,
-    "what_en": "After you change a web app, Claude drives the real running page and returns a pass/fail verdict, with the request that fired, the state that moved, and the file:line to fix.",
-    "when_en": "Triggers after you edit a component, form, route, or API call; when you say \"fixed\" without opening the app; or when the user asks \"does it actually work?\"",
+    "what_en": "It drives the real running web app to check whether your change actually works, then returns a pass/fail verdict with the request that fired, the state that moved, and the file:line to fix.",
+    "when_en": "Fires after you edit a component, form, or route, when you have said \"fixed\" without opening the app, or when the user asks whether a change really works.",
     "say_en": [
       {
-        "text": "Verify whether this change actually works in the running app.",
-        "note": "Drives the real page and returns a pass/fail verdict."
+        "text": "I just changed this form — verify it actually works in the running app",
+        "note": "It drives the real page and gives a pass/fail verdict"
       },
       {
-        "text": "I changed the login form - run it and confirm the submit really calls the API.",
-        "note": "Reports the request that fired and its status."
+        "text": "This looks fine; run coverage before I commit to see what's untouched",
+        "note": "Returns total, exercised, untouched counts"
       },
       {
-        "text": "This change looks fine on screen; prove it actually took effect.",
-        "note": "Gives a verdict plus the file:line on failure."
+        "text": "That click did nothing last time — re-assert instead of re-driving it",
+        "note": "It re-asserts with since, no repeated side effect"
       }
     ]
   }

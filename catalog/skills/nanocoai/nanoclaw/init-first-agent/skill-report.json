@@ -5,7 +5,7 @@
     "name": "init-first-agent",
     "description": "Walk the operator through wiring the first NanoClaw agent to a DM channel — resolve the operator's channel identity, select or create the agent, and trigger a welcome DM via the normal delivery path. Use after channel credentials are configured and the service is running.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/init-first-agent",
-    "upstream_commit": "7902716b5b930215dbee4f56b8fb5b938d40468d",
+    "upstream_commit": "8aefde46f020a855c53f3c2ec20a0fb332d42b7a",
     "content_hash": "sha256:657e7f16b1effda2c6c47803448f352c64e513afd5cce9a7d23f2e5d9d79060a",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30796,
+    "stars_github": 30836,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-18T07:53:41.787Z",
+    "fetched_at": "2026-09-23T08:13:19.552Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-17T19:26:51+02:00",
+    "upstream_commit_at": "2026-09-23T10:26:32+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:53:41.787Z",
+    "generated_at": "2026-09-23T08:13:19.552Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会带你给某个渠道创建第一个 NanoClaw agent：确认你在该渠道的用户身份、新建或复用 agent 分组、把 DM 会话接上，并经由正常投递路径给你发一条欢迎私信。整个过程可重复运行。",
-    "when": "在渠道凭证已配置、服务已在运行、目标渠道适配器已连接之后使用；这些前提不满足时会先让你去跑 /setup。",
+    "what": "引导你把第一个 NanoClaw agent 接到某个私信频道：解析你的频道身份、新建或复用 agent，并让它通过正常投递路径给你发一条欢迎私信。所有步骤是幂等的，重复运行安全。",
+    "when": "在频道凭据已配置、服务正在运行之后使用：当你要为某个私信频道建第一个 agent 时，它会接管这段流程。若服务未启动，它会先让你运行 /setup。",
     "say": [
       {
-        "text": "帮我给 Discord 渠道建第一个 agent，我的用户 id 是 xxx",
-        "note": "会运行初始化脚本，并把欢迎私信排进投递队列"
+        "text": "帮我初始化第一个 agent，让它在我的私信频道给我发欢迎消息",
+        "note": "会先问你频道、你的用户 id 和显示名"
       },
       {
-        "text": "我已经用自己账号给 bot 发了条私信，回 done",
-        "note": "据此查最近的私信分组，确定你的 platform_id"
+        "text": "用 Telegram 建第一个 agent，走配对码，不先私信机器人",
+        "note": "生成配对码，你在 Telegram 里发回来"
       },
       {
-        "text": "欢迎私信我收到了",
-        "note": "确认端到端投递成功，流程结束"
+        "text": "欢迎私信没收到，帮我查 outbound.db 和日志",
+        "note": "检查是否卡在 pending 或容器崩溃"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:657e7f16b1effda2c6c47803448f352c64e513afd5cce9a7d23f2e5d9d79060a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T08:01:22.206Z",
+    "generated_at": "2026-09-23T08:21:02.797Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude walks you through creating the first NanoClaw agent for a channel: resolving your channel identity, wiring the DM session to a new or existing agent group, and sending you a welcome DM through the normal delivery path.",
-    "when_en": "Use it after channel credentials are configured, the service is running, and the target channel adapter is connected; otherwise run /setup first.",
+    "what_en": "Walks you through wiring the first NanoClaw agent to a DM channel: resolve your channel identity, create or reuse the agent, and have it send a welcome DM through the normal delivery path. Steps are idempotent, so reruns are safe.",
+    "when_en": "Use it after channel credentials are configured and the service is running. It takes over when you want the first agent created for a DM channel; if the service is stopped, it tells you to run /setup first.",
     "say_en": [
       {
-        "text": "Create the first agent for my Discord channel; my user id is xxx",
-        "note": "Runs the init script and queues a welcome DM"
+        "text": "Set up my first agent and have it DM me a welcome message",
+        "note": "It first asks for your channel and user id"
       },
       {
-        "text": "I've sent the bot a DM from my account — done",
-        "note": "Looks up recent DM groups to resolve your platform_id"
+        "text": "Create my first Telegram agent using the pair code, no DM first",
+        "note": "You get a code to send back in Telegram"
       },
       {
-        "text": "The welcome DM arrived",
-        "note": "Confirms end-to-end delivery; skill is done"
+        "text": "The welcome DM didn't arrive — check outbound.db and the logs",
+        "note": "Looks for stuck pending rows or crashes"
       }
     ]
   }

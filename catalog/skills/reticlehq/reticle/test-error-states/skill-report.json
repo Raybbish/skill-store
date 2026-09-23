@@ -5,7 +5,7 @@
     "name": "test-error-states",
     "description": "Force the states a happy-path run never reaches (a failing API, an empty list, a slow request, a timeout, an expired session, a toast that auto-dismisses) and check the UI actually handles them. Use when error handling was written but never run, when a loading or empty state needs verifying, when a bug only happens on a slow connection, or when a timer, poll, debounce or retry needs testing without sleeping.",
     "upstream": "https://github.com/reticlehq/reticle/tree/main/skills/test-error-states",
-    "upstream_commit": "2483c24719c7e5f64a50e44a805eadaa7b4300ee",
+    "upstream_commit": "12d18dd4cb772da46ae20d7bbcccc9a7a227cfeb",
     "content_hash": "sha256:a978854e3ef5f6d239a6a5be0d2060502677be8a92879c0d8e9cd8599d9c49e0",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 811,
+    "stars_github": 820,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:12:46.086Z",
+    "fetched_at": "2026-09-23T08:15:51.034Z",
     "first_seen_at": "2026-09-22T08:12:46.086Z",
-    "upstream_commit_at": "2026-09-21T22:44:32Z",
+    "upstream_commit_at": "2026-09-22T16:28:58Z",
     "repo_skill_count": 14
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:12:46.086Z",
+    "generated_at": "2026-09-23T08:15:51.034Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它能在运行中的 App 里强制制造正常流程走不到的状态——接口失败、空列表、超时、会话过期、自动消失的提示——并检查界面是否真的处理了；还能跳过等待时间验证定时器、轮询、重试。",
-    "when": "当错误处理写了却没跑过、空或加载状态待验证、bug 只在慢网络出现，或要测定时器、轮询、重试时。网络模拟需租用或受驱动的浏览器，时钟不需要。",
+    "what": "装上后,Claude 能强制制造正常流程走不到的状态——失败 API、空列表、慢请求、超时,再驱动流程检查 UI 是否真的处理。它还能冻结并推进时钟,不用 sleep 就验证定时器、轮询、防抖、重试。",
+    "when": "当错误处理写了却没跑过、要验证加载或空状态,或要测定时器、轮询、防抖等时触发。",
     "say": [
       {
-        "text": "把 /api/deploys 模拟成 500，再点重试，看错误提示有没有出现",
-        "note": "注入模拟后驱动流程并断言恢复"
+        "text": "把 /api/deploys 强制返回 500,然后走一遍流程看错误提示",
+        "note": "会先声明期望的恢复表现再断言"
       },
       {
-        "text": "冻结时钟并前进 5 秒，看提示是否自动消失",
-        "note": "不用真的等待"
+        "text": "冻结时钟并推进 5 秒,验证 toast 自动消失",
+        "note": "结束后记得重置时钟"
       },
       {
-        "text": "读一下当前 state，确认失败后没有残留乐观更新",
-        "note": "查的是 store，不只是界面"
+        "text": "模拟返回空列表 200,确认页面出现空状态",
+        "note": "断言用户能看到具体元素"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:a978854e3ef5f6d239a6a5be0d2060502677be8a92879c0d8e9cd8599d9c49e0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:19:35.420Z",
+    "generated_at": "2026-09-23T08:21:49.646Z",
     "lint_pass": true,
-    "what_en": "It forces states a happy path never reaches in the running app — a failing API, an empty list, a timeout, an expired session, an auto-dismissing toast — and checks the UI actually handles them. It can also skip time instead of sleeping through timers.",
-    "when_en": "Use when error handling was written but never run, an empty or loading state needs verifying, or a bug only shows on a slow connection. Network mocking needs a driven or leased browser.",
+    "what_en": "Claude can force states a happy-path run never reaches — a failing API, an empty list, a slow request, a timeout — then drive the flow and check the UI handles them. It can freeze and advance the clock to test timers without sleeping.",
+    "when_en": "Use when error handling was written but never run, when a loading or empty state needs verifying, or when a timer, poll, debounce or retry needs testing without sleeping.",
     "say_en": [
       {
-        "text": "Mock /api/deploys as 500, then click retry and check the error banner",
-        "note": "Injects the mock, then verifies recovery"
+        "text": "Mock /api/deploys as 500, then run the flow and check for an error banner.",
+        "note": "Names the expected recovery before acting."
       },
       {
-        "text": "Freeze the clock and advance 5s to see if the toast auto-dismisses",
-        "note": "No real waiting needed"
+        "text": "Freeze the clock and advance 5s to check the toast auto-dismisses.",
+        "note": "Reset the clock when done."
       },
       {
-        "text": "Read reticle_state to confirm no optimistic value survived the failure",
-        "note": "Reads the store, not just the UI"
+        "text": "Mock an empty 200 list and confirm the empty state shows.",
+        "note": "Asserts a specific element is visible."
       }
     ]
   }

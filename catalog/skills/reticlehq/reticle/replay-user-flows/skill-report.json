@@ -5,7 +5,7 @@
     "name": "replay-user-flows",
     "description": "Turn a user journey you just clicked through into a saved regression check that re-runs deterministically, with no model in the loop and no test code to write. Use when you have driven the same flow twice, when the user wants regression coverage without a Playwright suite, when a refactor needs proving against every existing journey, or when re-verifying by hand is costing a full drive every time.",
     "upstream": "https://github.com/reticlehq/reticle/tree/main/skills/replay-user-flows",
-    "upstream_commit": "2483c24719c7e5f64a50e44a805eadaa7b4300ee",
+    "upstream_commit": "12d18dd4cb772da46ae20d7bbcccc9a7a227cfeb",
     "content_hash": "sha256:fa8ae389bae150bd248252063122324811f59205a3c6c66ceb0215e9486a8d03",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 811,
+    "stars_github": 820,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:12:46.086Z",
+    "fetched_at": "2026-09-23T08:15:51.034Z",
     "first_seen_at": "2026-09-22T08:12:46.086Z",
-    "upstream_commit_at": "2026-09-21T22:44:32Z",
+    "upstream_commit_at": "2026-09-22T16:28:58Z",
     "repo_skill_count": 14
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:12:46.086Z",
+    "generated_at": "2026-09-23T08:15:51.034Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "你点过一遍的用户流程会在会话结束时自动存成 .reticle/flows/ 下的回归检查,之后可确定性重放,不需要模型参与,也不用写测试代码。重放有三种结果:ok、drift、error,失败会指出源码位置。",
-    "when": "当同一个流程你已经走过两遍、想要不带 Playwright 套件的回归覆盖、重构后要验证已有流程,或人工复核每次都要重跑一遍时触发。",
+    "what": "把你刚点过的用户流程自动保存成回归检查,之后可确定性重放,不用写测试代码,重放时不调用模型。会话结束时流程自动写入 .reticle/flows/。",
+    "when": "同一流程已驱动过两次、想要回归覆盖但不想搭 Playwright 套件、重构需要对照全部已有流程验证时,它会接管。",
     "say": [
       {
-        "text": "把这个流程存成回归检查,以后改动时重放它",
-        "note": "流程会自动存到 .reticle/flows/ 并可提交"
+        "text": "把我刚点过的流程存成回归检查并提交",
+        "note": "会话结束时自动写入 .reticle/flows/"
       },
       {
-        "text": "只重放覆盖 src/tasks/TaskList.tsx 改动的那些流程",
-        "note": "按改动范围挑选流程,不跑整批"
+        "text": "重放覆盖 src/tasks/TaskList.tsx 改动的流程",
+        "note": "只跑改动文件涉及的已保存流程"
       },
       {
-        "text": "跑一遍全部已保存的流程,只告诉我失败的",
-        "note": "返回 status、total、passed、failed"
+        "text": "跑一遍全部已保存流程,列出失败项",
+        "note": "失败项带 nextAction 与源码位置指引"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:fa8ae389bae150bd248252063122324811f59205a3c6c66ceb0215e9486a8d03",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:19:32.148Z",
+    "generated_at": "2026-09-23T08:21:46.963Z",
     "lint_pass": true,
-    "what_en": "Journeys you click through are saved to .reticle/flows/ when the session ends, then replayed with no model in the loop and no test code. Replays return ok, drift, or error, with failures pointing at source.",
-    "when_en": "Use when you have driven the same flow twice, want regression coverage without a Playwright suite, need a refactor proved against existing journeys, or re-verifying by hand costs a full drive each time.",
+    "what_en": "Turns a user journey you just clicked through into a saved regression check that replays deterministically, with no model in the loop and no test code to write. Drives auto-save to .reticle/flows/ when a session ends.",
+    "when_en": "Use when you have driven the same flow twice, want regression coverage without a Playwright suite, or a refactor needs proving against every existing journey.",
     "say_en": [
       {
-        "text": "Save this flow as a regression check and replay it after changes",
-        "note": "The flow lands in .reticle/flows/ and can be committed"
+        "text": "Save the flow I just clicked through as a regression check and commit it.",
+        "note": "Writes to .reticle/flows/ when the session ends."
       },
       {
-        "text": "Replay only the flows covering my edit to src/tasks/TaskList.tsx",
-        "note": "Picks flows by edited files instead of the whole suite"
+        "text": "Replay the flows covering my change to src/tasks/TaskList.tsx.",
+        "note": "Runs only flows touching those files."
       },
       {
-        "text": "Run every saved flow and show me only the failures",
-        "note": "Returns status, total, passed, failed"
+        "text": "Run every saved flow and list the failures.",
+        "note": "Failures carry a nextAction pointer."
       }
     ]
   }

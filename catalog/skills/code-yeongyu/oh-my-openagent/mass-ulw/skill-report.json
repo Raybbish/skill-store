@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "7f6be0c60f93180d6a6ad969f4fdb58a5b59cfd4",
+    "upstream_commit": "bc2f5268d05aeaa4c10cb7d764dd5f2b3ed5ec38",
     "content_hash": "sha256:48c4c3e9110f06ad214f1455cfb88bbf0329f97b25b6834c3ae2126da7a7c895",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69279,
+    "stars_github": 69311,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:10:41.719Z",
+    "fetched_at": "2026-09-23T08:13:01.631Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-22T17:08:24+09:00",
-    "repo_skill_count": 49
+    "upstream_commit_at": "2026-09-23T17:11:04+09:00",
+    "repo_skill_count": 50
   },
   "context_size": {
     "version": "1",
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:10:41.719Z",
+    "generated_at": "2026-09-23T08:13:01.631Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,40 +93,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它把有先后依赖的多智能体任务定义成节点图,按依赖分批并行执行;节点失败可单独重试、追加消息或修订定义,会话中断后能续跑。",
-    "when": "当你要求 mass-ulw、任务 DAG 或分批 fan-out,或某些任务必须等前置任务完成时触发。",
+    "what": "Claude 会通过原生 workflow 工具按依赖关系编排子任务,一个 run 只覆盖一个阶段,并在节点失败或跑偏时用 retry、send、amend 恢复,已完成节点的结果会保留。",
+    "when": "当你要求 mass-ulw、给出任务 DAG,或需要存在真实依赖(某任务必须先等前序完成)的并行分派时触发。",
     "say": [
       {
-        "text": "用 mass-ulw 跑 docs-refresh 这个 DAG",
-        "note": "先读规划文档,再定义并启动 run"
+        "text": "用 mass-ulw 把这次发布拆成有依赖的 DAG 跑起来",
+        "note": "会先读 planning.md 再定义图"
       },
       {
-        "text": "重试 lint 节点,提示改成跳过 vendored 目录",
-        "note": "只对该节点发起新一次尝试"
+        "text": "重试失败的 verify 节点,并顺便改严它的 prompt",
+        "note": "只重跑该节点及其依赖者"
       },
       {
-        "text": "给正在跑的 lint 节点发消息:跳过 vendored 目录",
-        "note": "原地修正这个子任务"
+        "text": "给正在跑的 audit 节点发消息,让它跳过 vendored 目录",
+        "note": "就地调整该子任务"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:48c4c3e9110f06ad214f1455cfb88bbf0329f97b25b6834c3ae2126da7a7c895",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:16:36.561Z",
+    "generated_at": "2026-09-23T08:19:09.163Z",
     "lint_pass": true,
-    "what_en": "It turns dependency-ordered multi-agent work into a node graph, running each phase as one run in parallel waves; a failed node can be retried, sent a message, or amended, and paused runs resume after a restart.",
-    "when_en": "Use when the user asks for mass-ulw, a task DAG, or staged fan-out where some tasks must wait on others.",
+    "what_en": "Claude orchestrates dependency-ordered child tasks through the native workflow tool, one run per phase, recovering single nodes with retry, send, or amend while keeping completed results.",
+    "when_en": "Triggered when you ask for mass-ulw, give a task DAG, or need staged fan-out where some tasks must wait on others.",
     "say_en": [
       {
-        "text": "Run the docs-refresh DAG with mass-ulw",
-        "note": "Reads planning.md, then defines and starts the run"
+        "text": "Use mass-ulw to run this release as a dependency-ordered DAG",
+        "note": "Reads planning.md before defining the graph"
       },
       {
-        "text": "Retry the lint node with a prompt that skips the vendored dir",
-        "note": "Only that node gets a fresh attempt"
+        "text": "Retry the failed verify node and tighten its prompt",
+        "note": "Re-runs only that node and its dependents"
       },
       {
-        "text": "Send the running lint node: skip the vendored dir",
+        "text": "Send a message to the running audit node to skip vendored dirs",
         "note": "Steers that child in place"
       }
     ]

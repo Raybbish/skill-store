@@ -5,7 +5,7 @@
     "name": "doc-parse",
     "description": "将 PDF/PPT/Excel/Word 等多格式文档解析为结构化 Markdown，并输出元数据与解析置信度，作为 RAG 与四色卡片的数据底座。",
     "upstream": "https://github.com/anbeime/skill/tree/main/antinet-agentteams/skills/doc-parse",
-    "upstream_commit": "8a079b767dfc6760aeac5e45b7ca8abeca5eb8b9",
+    "upstream_commit": "b971d75309726f338c84839ece7085c7433c5fd7",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "license": "none(all-rights-reserved)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 7082,
+    "stars_github": 7121,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:11:32.349Z",
+    "fetched_at": "2026-09-23T08:14:03.058Z",
     "first_seen_at": "2026-09-02T07:32:35.252Z",
-    "upstream_commit_at": "2026-09-22T07:25:08Z",
+    "upstream_commit_at": "2026-09-23T07:27:48Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:11:32.349Z",
+    "generated_at": "2026-09-23T08:14:03.058Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,40 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "你给出文件路径后，它把 PDF、Word、Excel 等多格式文档解析成结构化 Markdown，并附上标题、页数、表格数等元数据与 0–1 的解析置信度。",
-    "when": "当密卷房 Worker 收到已通过安全扫描的文件时被调用；主解析器失败会自动降级到下一档解析器。",
+    "what": "装上后，Claude 会把 PDF、PPT、Excel、Word 等文档解析成结构化 Markdown，并输出标题、页数、表格数等元数据、0–1 的解析置信度和最终生效的解析器名称。",
+    "when": "当文件已通过安全扫描、需要读取或索引 PDF、PPT、Excel 等文档时，由密卷房 Worker 调用接管。",
     "say": [
       {
-        "text": "帮我解析这份 PDF，输出结构化 Markdown 和置信度"
+        "text": "把这份 PDF 解析成结构化 Markdown，并给出解析置信度",
+        "note": "输出正文、元数据与置信度"
       },
       {
-        "text": "这个 Word 文档的页数和表格数是多少？",
-        "note": "从 metadata 中读取"
+        "text": "解析这个 Excel 的表格，输出 Markdown 和元数据",
+        "note": "表格抽取后附元数据"
       },
       {
-        "text": "解析失败时用的是哪个兜底解析器？",
-        "note": "回传 fallback_used 字段"
+        "text": "这份 Word 解析失败会自动降级到下一个解析器吗？",
+        "note": "三级 fallback 依次尝试"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:15:51.205Z",
+    "generated_at": "2026-09-23T08:18:31.883Z",
     "lint_pass": true,
-    "what_en": "Given a file path, it parses PDF, Word, Excel and other documents into structured Markdown, plus metadata like title, page count and table count, and a 0–1 parse confidence score.",
-    "when_en": "Runs when the 密卷房 Worker receives a file that already passed security-scan; if the main parser fails it drops to the next parser automatically.",
+    "what_en": "Once installed, Claude turns PDF, PPT, Excel and Word documents into structured Markdown, plus metadata like title, page count and table count, a 0–1 parse confidence and the parser actually used.",
+    "when_en": "Triggered when a file has passed the security scan and Claude needs to read or index a PDF, PPT, Excel or similar document; invoked by the Mijuanfang worker.",
     "say_en": [
       {
-        "text": "Parse this PDF and output structured Markdown with confidence",
-        "note": "Returns markdown, metadata and confidence"
+        "text": "Parse this PDF into structured Markdown and give me the confidence score",
+        "note": "Returns body, metadata and confidence"
       },
       {
-        "text": "How many pages and tables does this Word file have?",
-        "note": "Read from metadata"
+        "text": "Parse the tables in this Excel file into Markdown with metadata",
+        "note": "Table extraction plus metadata"
       },
       {
-        "text": "Which fallback parser was used if parsing failed?",
-        "note": "Reports fallback_used"
+        "text": "If this Word file fails to parse, will it fall back to the next parser?",
+        "note": "Three-level fallback is tried in order"
       }
     ]
   }

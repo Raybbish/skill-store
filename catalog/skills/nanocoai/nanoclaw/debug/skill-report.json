@@ -5,7 +5,7 @@
     "name": "debug",
     "description": "Debug container agent issues. Use when things aren't working, container fails, authentication problems, or to understand how the container system works. Covers logs, session DBs, mounts, and common issues.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/debug",
-    "upstream_commit": "7902716b5b930215dbee4f56b8fb5b938d40468d",
+    "upstream_commit": "8aefde46f020a855c53f3c2ec20a0fb332d42b7a",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30796,
+    "stars_github": 30836,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-18T07:53:41.787Z",
+    "fetched_at": "2026-09-23T08:13:19.552Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-17T19:26:51+02:00",
+    "upstream_commit_at": "2026-09-23T10:26:32+03:00",
     "repo_skill_count": 61,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-18T07:53:41.787Z",
+    "generated_at": "2026-09-23T08:13:19.552Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 能帮你排查容器化 agent 执行系统的问题:查主机与容器日志、用会话数据库(inbound.db / outbound.db)追消息流向、核对挂载、定位常见故障,并给出重启或清理命令。",
-    "when": "当事情不工作时、容器启动失败、出现认证问题,或你想弄清容器系统如何运作时,它会接管排查。",
+    "what": "出问题时，Claude 会按这份指南排查 NanoClaw 容器代理：查看主机日志、查询会话数据库、检查挂载与心跳文件，定位消息丢失、容器退出、认证失败等故障。",
+    "when": "当容器代理不工作、容器启动失败、出现认证问题，或想了解容器系统如何运作时触发。",
     "say": [
       {
-        "text": "机器人不回复了,帮我看看哪里出的问题",
-        "note": "会先查主机错误日志与会话数据库消息流"
+        "text": "机器人不回复了，帮我查日志和会话数据库",
+        "note": "先看 logs/nanoclaw.error.log"
       },
       {
-        "text": "容器一启动就退出,日志里该看什么?",
-        "note": "会按 LOG_LEVEL=debug 定位容器 stderr"
+        "text": "容器一启动就退出，帮我排查原因",
+        "note": "查退出码和容器 stderr"
       },
       {
-        "text": "帮我把某个会话的容器重启一下",
-        "note": "会用 ncl groups restart 重启该组的容器"
+        "text": "帮我查这个会话的 inbound.db，看消息到没到容器",
+        "note": "用 scripts/q.ts 查询"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-18T08:01:18.951Z",
+    "generated_at": "2026-09-23T08:21:00.285Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude helps debug the containerized agent execution system: it reads host and container logs, traces message flow through the session DBs (inbound.db / outbound.db), checks mounts, and diagnoses common failures.",
-    "when_en": "Use it when things aren't working, a container fails to start, authentication problems appear, or you want to understand how the container system works.",
+    "what_en": "When something breaks, Claude uses this guide to debug the NanoClaw container agent: reading host logs, querying session DBs, checking mounts and heartbeat to find lost messages, exited containers, or auth failures.",
+    "when_en": "Triggered when the container agent isn't working, a container fails, authentication problems appear, or when you want to understand how the container system works.",
     "say_en": [
       {
-        "text": "The bot stopped replying, help me find what's wrong",
-        "note": "It checks host error logs and session DB flow first"
+        "text": "The bot stopped replying — check the logs and session DBs",
+        "note": "Reads logs/nanoclaw.error.log first"
       },
       {
-        "text": "The container exits right after spawn, what should I look at?",
-        "note": "It locates container stderr via LOG_LEVEL=debug"
+        "text": "The container exits right after starting, help me find out why",
+        "note": "Checks exit code and streamed stderr"
       },
       {
-        "text": "Restart the container for one of my sessions",
-        "note": "It uses ncl groups restart for that group"
+        "text": "Check inbound.db for this session — did the message reach the container?",
+        "note": "Queries via scripts/q.ts"
       }
     ]
   }
