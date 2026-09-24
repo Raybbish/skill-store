@@ -5,7 +5,7 @@
     "name": "full-output-enforcement",
     "description": "Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles token-limit splits cleanly. Apply to any task requiring exhaustive, unabridged output.",
     "upstream": "https://github.com/leonxlnx/taste-skill/tree/main/skills/output-skill",
-    "upstream_commit": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+    "upstream_commit": "c184364c58658b2f131b4ae8bd3d206cabb3deee",
     "content_hash": "sha256:797b4adfe6b8d34bd9dcd363e648d9e893a072ae21ae23328195630ebee5f1f0",
     "license": "MIT",
     "hosting": "indexed",
@@ -20,10 +20,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 266300,
-    "fetched_at": "2026-08-27T13:40:38.926Z",
+    "installs_skills_sh": 328000,
+    "fetched_at": "2026-09-23T08:16:28.796Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-08-24T23:23:56+08:00"
+    "upstream_commit_at": "2026-09-23T09:26:15+02:00"
   },
   "context_size": {
     "version": "1",
@@ -32,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:40:38.926Z",
+    "generated_at": "2026-09-23T08:16:28.796Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -84,41 +84,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会强制按要求交付全部内容：用户要几个文件、组件或章节就完整给出几个，不许用省略号、TODO 等占位符；接近 token 上限时会在完整段落处暂停并提示继续。",
-    "when": "任务要求完整、未删节的输出（如整个文件、指定数量的组件等）时触发；输出接近 token 上限时也会启用暂停续写机制。",
+    "what": "Claude 不再把输出截断：你要整份文件就给整份文件、要 5 个组件就给 5 个，并禁止 `// ...`、`// TODO` 这类占位写法。输出接近长度上限时，它会停在一个完整断点并显示进度，等你说「continue」再从那里接着写。",
+    "when": "当你要求「完整、无删减」的输出时触发，例如要整份文件、全部组件等，任何需要一次给全的任务都走这套规则。",
     "say": [
       {
-        "text": "完整写出这个文件的所有代码，不要省略任何部分。",
-        "note": "Claude 会按完整输出模式执行，不省略内容。"
+        "text": "把这个文件完整写出来，不要省略任何部分",
+        "note": "输出完整内容，不出现占位符。"
       },
       {
-        "text": "给出5个模块的完整实现，禁止用骨架或占位符。",
-        "note": "Claude 会逐模块完整生成，满足数量要求。"
+        "text": "给我全部 5 个组件的完整代码，一个都别少",
+        "note": "数量先被锁定，逐个写完。"
       },
       {
-        "text": "从刚才暂停的断点继续，不要重新开始。",
-        "note": "Claude 会直接接着上次停止处输出。"
+        "text": "继续",
+        "note": "从上次中断的断点接着写，不重复前面内容。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:797b4adfe6b8d34bd9dcd363e648d9e893a072ae21ae23328195630ebee5f1f0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:36:05.552Z",
+    "generated_at": "2026-09-23T08:20:07.225Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude delivers all requested content in full: if the user asks for N files, components, or sections, all N are fully produced. Placeholders like ellipses, TODO, or 'rest of code' are banned. When nearing the token limit, it pauses at a clean breakpoint and prompts to continue.",
-    "when_en": "Triggers when the task demands exhaustive, unabridged output (e.g., a full file, a specified number of components, etc.), and also when the response approaches the token limit to enable the pause-and-resume mechanism.",
+    "what_en": "Claude stops truncating: it delivers every requested file, component and section in full, and never emits placeholders like `// ...` or `// TODO`. Near the token limit it pauses at a clean breakpoint and resumes on \"continue\".",
+    "when_en": "Triggers whenever the task calls for exhaustive, unabridged output — a whole file, every component, etc.",
     "say_en": [
       {
-        "text": "Output the full code of this file, with no omissions.",
-        "note": "Claude follows full-output mode and stops omitting content."
+        "text": "Write the whole file out — don't leave any part out",
+        "note": "Output comes back complete, with no placeholders."
       },
       {
-        "text": "Provide complete implementations for all 5 modules, no skeletons or placeholders.",
-        "note": "Claude generates each module fully and meets the count."
+        "text": "Give me the full code for all 5 components, none skipped",
+        "note": "The count is locked and each one is finished."
       },
       {
-        "text": "Resume exactly from the paused breakpoint, no restart.",
-        "note": "Claude picks up from where it stopped."
+        "text": "continue",
+        "note": "Resumes at the exact breakpoint, no recap."
       }
     ]
   }
