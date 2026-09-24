@@ -5,7 +5,7 @@
     "name": "standup",
     "description": "Facilitate a read-only standup across git worktrees, branches, or PRs to compare changes and produce one consolidation plan.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/standup",
-    "upstream_commit": "4520de9e0f8d6cdc20597520e383d8b51d93137f",
+    "upstream_commit": "c4bfa4595046bde1678de6f2a90bcb7e63c36d6f",
     "content_hash": "sha256:9f930921b4da027db63add61887ce9a0559d7e92134ae8edfb9b056f669c9ae9",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94436,
+    "stars_github": 94574,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:10:36.350Z",
+    "fetched_at": "2026-09-24T08:03:32.635Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-21T16:27:32-07:00",
+    "upstream_commit_at": "2026-09-23T12:57:35-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:10:36.350Z",
+    "generated_at": "2026-09-24T08:03:32.635Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,37 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把你的每个 git worktree、分支或 PR 当成独立 agent,拉进同一个 markdown 聊天室,分轮主持它们比对改动,最后给出一份合并计划:目标 worktree、合并顺序、冲突解法。全程只读。",
-    "when": "当你要求比对多个 worktree、分支或 PR 的改动、整理成一份合并计划时触发;候选少于两个时它会说明这不构成 standup 并停下。",
+    "what": "Claude 当主持人,把你的各个 git worktree、分支或 PR 当作独立 agent 拉进同一个共享聊天文件,分轮对话比对改动,最终给出一份整合方案:目标 worktree 与合并顺序。全程只读,不提交也不合并。",
+    "when": "当你想把散在多个 git worktree、分支或 PR 的改动放到一起比对时触发。若只有一个或零个候选,它会说明这不算 standup,建议放宽范围后停止。",
     "say": [
       {
-        "text": "用 standup 比一下这几个分支和开着的 PR,给我一个合并计划。",
-        "note": "先跑一轮各自介绍,再逐轮解决冲突。"
+        "text": "给最近 24 小时有改动的 worktree 开一场 standup",
+        "note": "它会列出候选 worktree 让你确认名单"
       },
       {
-        "text": "把 standup 的结论用大白话讲给我听,只列需要我拍板的事。",
-        "note": "它会转述成非技术描述并给出待决策项。"
+        "text": "把我的分支 feature-x 和这个 PR 也加进 standup",
+        "note": "按编号选择加入房间的分支和 PR"
+      },
+      {
+        "text": "把 standup 的结论交给 /do 去执行合并",
+        "note": "合并由 /do 执行,standup 本身不合并"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f930921b4da027db63add61887ce9a0559d7e92134ae8edfb9b056f669c9ae9",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:19:09.763Z",
+    "generated_at": "2026-09-24T08:12:00.823Z",
     "lint_pass": true,
-    "what_en": "Claude treats each git worktree, branch, or PR as its own agent in one shared markdown room, runs rounds to compare their changes, then writes a single consolidation plan (target worktree, merge order, conflict resolutions). Read-only.",
-    "when_en": "Triggers when you ask to compare changes across multiple worktrees, branches, or PRs and pull them into one plan. With fewer than two candidates it stops and says this isn't a standup.",
+    "what_en": "Claude acts as facilitator: each git worktree (and any PR you pick) joins a shared markdown chat as its own agent, debating in rounds to produce one consolidation plan — target worktree plus merge order. Read-only; nothing is merged.",
+    "when_en": "Triggers when you want changes scattered across several git worktrees, branches or PRs compared together. With zero or one candidate it says that isn't a standup and stops.",
     "say_en": [
       {
-        "text": "Run a standup on the worktrees with changes in the last 24 hours.",
-        "note": "It lists candidates for you to confirm."
+        "text": "Run a standup on worktrees active in the last 24 hours",
+        "note": "It lists candidate worktrees for you to confirm"
       },
       {
-        "text": "Compare these branches and my open PRs, then give me one merge plan.",
-        "note": "Rounds of intros, then conflict resolution."
+        "text": "Add my branch feature-x and this PR to the standup",
+        "note": "Pick branches and PRs by number to join the room"
       },
       {
-        "text": "Explain the standup outcome in plain language and list only my decisions.",
-        "note": "It translates the summation and asks for your calls."
+        "text": "Hand the standup plan to /do to run the merges",
+        "note": "Standup itself never commits or merges"
       }
     ]
   }

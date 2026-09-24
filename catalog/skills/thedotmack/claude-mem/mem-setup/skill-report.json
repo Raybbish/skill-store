@@ -5,7 +5,7 @@
     "name": "mem-setup",
     "description": "This skill should be used when the user asks to \"set up claude-mem\", \"pair claude-mem\", \"connect cmem\", \"add my cmem key\", \"set up cloud sync in Cowork\", or provides cmem.ai Connect values (sync token, user id, SyncHub URL) for this plugin. Configures the claude-mem-cowork plugin credentials.\n",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/cowork/skills/mem-setup",
-    "upstream_commit": "4520de9e0f8d6cdc20597520e383d8b51d93137f",
+    "upstream_commit": "c4bfa4595046bde1678de6f2a90bcb7e63c36d6f",
     "content_hash": "sha256:70efb8c424a948390986e59b98ef980f8d6156f655a2c2d1fb89aab1290ef907",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94436,
+    "stars_github": 94574,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:10:36.350Z",
+    "fetched_at": "2026-09-24T08:03:32.635Z",
     "first_seen_at": "2026-08-27T13:37:00.249Z",
-    "upstream_commit_at": "2026-09-21T16:27:32-07:00",
+    "upstream_commit_at": "2026-09-23T12:57:35-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:10:36.350Z",
+    "generated_at": "2026-09-24T08:03:32.635Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会把你在 cmem.ai 拿到的三项凭据(同步令牌、用户 id、SyncHub URL)写进插件配置,让 hooks 能捕获并注入记忆。令牌只经文件读写搬运,不会回显在对话或命令行里。",
-    "when": "当你要求 set up claude-mem、连接 cmem,或直接粘贴 cmem.ai Connect 里的凭据值时,它接管这次配置。",
+    "what": "它会把你的 cmem.ai 凭据(sync token、user id、SyncHub URL)写进插件的 config.json,让 hooks 能捕获和注入记忆;缺值时向你追问,验证时只显示脱敏输出。",
+    "when": "当你要求设置或连接 claude-mem,或直接提供 cmem.ai Connect 的三个值时接管。",
     "say": [
       {
-        "text": "帮我配置 claude-mem,这是我的 cmem 同步令牌",
-        "note": "它会写入插件 config.json 并校验状态"
+        "text": "用我的 cmem 同步令牌配对 claude-mem,并告诉我是否需要重新打包",
+        "note": "会说明容器会话结束即失效"
       },
       {
-        "text": "把这三个 cmem Connect 值写进插件配置",
-        "note": "有缺失时会先向你要同步令牌"
-      },
-      {
-        "text": "检查一下 cmem 配对状态",
-        "note": "运行 status 并返回打码后的输出"
+        "text": "查一下 claude-mem 的配对状态,只显示脱敏结果",
+        "note": "运行 status 命令"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:70efb8c424a948390986e59b98ef980f8d6156f655a2c2d1fb89aab1290ef907",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:18:57.651Z",
+    "generated_at": "2026-09-24T08:11:52.020Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude writes your three cmem.ai credentials (sync token, user id, SyncHub URL) into the plugin config so hooks can capture and inject memory. The token moves only via file reads and writes, never echoed in chat or shell argv.",
-    "when_en": "Triggered when you ask to set up claude-mem, pair claude-mem or connect cmem, or when you paste cmem.ai Connect values for this plugin.",
+    "what_en": "It writes your cmem.ai credentials (sync token, user id, SyncHub URL) into the plugin's config.json so hooks can capture and inject memory; it asks for missing values and shows only masked output when verifying.",
+    "when_en": "Triggers when you ask to set up or connect claude-mem, or paste cmem.ai Connect values (sync token, user id, SyncHub URL).",
     "say_en": [
       {
-        "text": "Set up claude-mem with my cmem sync token",
-        "note": "Writes the plugin config.json and verifies status"
+        "text": "Set up claude-mem with my cmem.ai Connect info",
+        "note": "Credentials go into the plugin's config.json"
       },
       {
-        "text": "Add these three cmem Connect values to the plugin config",
-        "note": "Asks for the sync token if any are missing"
+        "text": "Pair claude-mem with my cmem sync token and tell me if I need to repackage",
+        "note": "It explains the container is ephemeral"
       },
       {
-        "text": "Check the cmem pairing status",
-        "note": "Runs status and reports masked output"
+        "text": "Check the claude-mem pairing status, show only masked output",
+        "note": "Runs the status command"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "add-anydoc",
     "description": "Add local office-document-to-Markdown conversion to NanoClaw agent containers with the pinned Firecrawl AnyDoc CLI. Use when agents need to read attached Word, PowerPoint, Excel, OpenDocument, RTF, EPUB, CSV, or text-based PDF files without uploading them to a hosted parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc",
-    "upstream_commit": "8aefde46f020a855c53f3c2ec20a0fb332d42b7a",
+    "upstream_commit": "143db6c907c652773a536c7c9e96269fdad0a4a4",
     "content_hash": "sha256:1e06f5199dd218f27f571366d004c0852b5c9fb4b26f644a55f75c380cb8bd49",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30836,
+    "stars_github": 30841,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-23T08:13:19.552Z",
+    "fetched_at": "2026-09-24T08:03:54.099Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-23T10:26:32+03:00",
-    "repo_skill_count": 61,
+    "upstream_commit_at": "2026-09-23T18:48:57+02:00",
+    "repo_skill_count": 63,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-23T08:13:19.552Z",
+    "generated_at": "2026-09-24T08:03:54.099Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给 NanoClaw 的 agent 容器装上 Firecrawl AnyDoc CLI 和一个转换技能，让 agent 能把本地的 Word、PPT、Excel、PDF 等附件转成 Markdown 来读，文件不上传到托管解析器。",
-    "when": "当 agent 需要读取附加的 Word、Excel、PDF 等文档，且不想把它们上传到托管解析器时，该技能在容器内完成本地转换。",
+    "what": "给 NanoClaw 的 agent 容器装上固定版本 @firecrawl/anydoc 0.1.6 CLI 和一个容器技能,让附件里的 Word、PowerPoint、Excel 等文档在容器内就地转成 Markdown,不经过托管解析器。",
+    "when": "当 agent 需要读取附件里的 Word、PowerPoint、Excel 等文档,又不希望把它们上传到托管解析服务时触发。",
     "say": [
       {
-        "text": "把这个附件里的 Word 文档转成 Markdown 并总结要点",
-        "note": "在容器内本地转换，不上传"
+        "text": "把附件里的 DOCX、PPTX、XLSX 在容器内转成 Markdown 再总结",
+        "note": "转换在 agent 容器内完成,不上传"
       },
       {
-        "text": "把这份 Excel 表格转成 Markdown，只列出预算相关的部分",
-        "note": "表格 Markdown 不作为计算依据"
-      },
-      {
-        "text": "确认这份扫描版 PDF 能不能转换",
-        "note": "扫描件需要 OCR，会明确失败"
+        "text": "确认纯图片的 PDF 会明确报错、不会被上传",
+        "note": "扫描件需要 OCR"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1e06f5199dd218f27f571366d004c0852b5c9fb4b26f644a55f75c380cb8bd49",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-23T08:20:24.744Z",
+    "generated_at": "2026-09-24T08:10:46.250Z",
     "lint_pass": true,
-    "what_en": "Installs the pinned Firecrawl AnyDoc CLI and one container skill so NanoClaw agents convert attached Word, PowerPoint, Excel and text-based PDF files into Markdown locally, without uploading them to a hosted parser.",
-    "when_en": "Triggers when an agent needs to read attached Word, Excel, PDF and similar office documents without sending them to a hosted parser; conversion runs inside the agent container.",
+    "what_en": "Installs the pinned @firecrawl/anydoc 0.1.6 CLI plus a container skill so NanoClaw agents convert attached Word, PowerPoint and Excel files to Markdown locally, without sending them to a hosted parser.",
+    "when_en": "Use when agents need to read attached office documents locally, without uploading them to a hosted parser.",
     "say_en": [
       {
-        "text": "Convert the attached Word file to Markdown and summarize the key points.",
-        "note": "Runs locally in the container; nothing is uploaded."
+        "text": "Convert the attached DOCX, PPTX and XLSX to Markdown in the container, then summarize",
+        "note": "Conversion stays inside the agent container"
       },
       {
-        "text": "Turn this spreadsheet into Markdown and list only the budget rows.",
-        "note": "Spreadsheet Markdown is not authoritative for calculations."
+        "text": "Check whether @firecrawl/anydoc 0.1.6 passed the 72-hour release gate",
+        "note": "Stop if it fails"
       },
       {
-        "text": "Check whether this scanned PDF can be converted.",
-        "note": "Scanned PDFs need OCR and fail clearly."
+        "text": "Confirm an image-only PDF fails clearly and is not uploaded anywhere",
+        "note": "Scanned PDFs need OCR"
       }
     ]
   }

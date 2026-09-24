@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Guides a refactor, cleanup, or restructure with the right decomposition. Use when the user asks to refactor, simplify, extract, or modernize code.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "bc2f5268d05aeaa4c10cb7d764dd5f2b3ed5ec38",
+    "upstream_commit": "a92d9a750e09681696d87ae2b2374890c11cced0",
     "content_hash": "sha256:903a90dc519ec658b8d13fd43329579de9d2f5c026d95a0fc10f678444a5e2ed",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69311,
+    "stars_github": 69355,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-23T08:13:01.631Z",
+    "fetched_at": "2026-09-24T08:03:37.717Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-23T17:11:04+09:00",
+    "upstream_commit_at": "2026-09-24T16:49:08+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-23T08:13:01.631Z",
+    "generated_at": "2026-09-24T08:03:37.717Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,33 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会按六个阶段重构代码：先澄清你的意图、并行探查代码库、绘制依赖关系图、评估测试覆盖，再生成分步计划，逐步执行且每步后跑测试验证，失败就回退。",
-    "when": "当你要求重构、简化、抽取代码等操作时触发；也可用 /refactor <目标> 命令，配 --scope、--strategy 等选项指定范围与风险策略。",
+    "what": "发出 /refactor 后，它会先澄清重构目标，再探索代码库、梳理依赖与影响区、评估测试覆盖并写出分步计划；每改一步都跑测试和类型检查，最后做整体回归验证。",
+    "when": "当你要求重构、简化、抽取代码等时触发；也可直接输入 /refactor 并附上目标和 --scope/--strategy 参数。",
     "say": [
       {
-        "text": "把 AuthService 类里的校验逻辑抽成独立模块",
-        "note": "会先确认目标，再进入代码库分析流程。"
+        "text": "/refactor src/auth/handler.ts",
+        "note": "先探索代码再给出重构计划"
+      },
+      {
+        "text": "把 AuthService 的校验逻辑抽成独立模块",
+        "note": "会先确认目标再分步改"
+      },
+      {
+        "text": "用 --strategy=aggressive 重构 AuthService",
+        "note": "允许改动范围更大"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:903a90dc519ec658b8d13fd43329579de9d2f5c026d95a0fc10f678444a5e2ed",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-23T08:19:19.034Z",
+    "generated_at": "2026-09-24T08:09:44.915Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude runs a six-phase refactor: it clarifies intent, explores the codebase, maps dependencies, assesses test coverage, plans steps, then executes and verifies each step with tests, reverting on failure.",
-    "when_en": "Triggered when you ask to refactor, simplify, extract, or do similar code work; you can also call /refactor <target> with --scope and --strategy options.",
+    "what_en": "After you run /refactor, it clarifies the goal, explores the codebase, maps dependencies and impact zones, checks test coverage, and writes a step-by-step plan. It runs tests and type checks after each step, then a final regression check.",
+    "when_en": "Triggers when you ask to refactor, simplify, or extract code, etc. You can also type /refactor with a target plus --scope or --strategy.",
     "say_en": [
       {
-        "text": "/refactor src/auth/handler.ts --scope=file",
-        "note": "Refactors only that file; safe strategy by default."
+        "text": "/refactor src/auth/handler.ts",
+        "note": "Explores first, then plans the refactor"
       },
       {
-        "text": "Extract the validation logic in AuthService into its own module",
-        "note": "Confirms the goal first, then starts codebase analysis."
+        "text": "Extract AuthService validation into its own module",
+        "note": "Clarifies the goal before making changes"
       },
       {
-        "text": "/refactor \"all functions using the deprecated API\" --strategy=aggressive",
-        "note": "Widens change scope; needs adequate coverage."
+        "text": "Refactor AuthService with --strategy=aggressive",
+        "note": "Allows broader changes"
       }
     ]
   }

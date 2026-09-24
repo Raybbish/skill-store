@@ -5,7 +5,7 @@
     "name": "antinet-doc-parse",
     "description": "软件开发工程师与数据科学家在构建RAG系统时，当需处理PDF/Word/Excel等多格式复杂文档，用此技能可自动触发三级解析降级，一键输出高置信度结构化Markdown与元数据，免去繁琐清洗，直接夯实企业知识库数据底座！",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-doc-parse",
-    "upstream_commit": "b971d75309726f338c84839ece7085c7433c5fd7",
+    "upstream_commit": "90742445323d9b261963e1f60191a07610be9e71",
     "content_hash": "sha256:1787090c147d5fd2bbe5337c47aac78a15002fa80812ae1aeaa00a415454096e",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 7121,
+    "stars_github": 7166,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-23T08:14:03.058Z",
+    "fetched_at": "2026-09-24T08:04:22.672Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-09-23T07:27:48Z",
+    "upstream_commit_at": "2026-09-24T07:20:00Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-23T08:14:03.058Z",
+    "generated_at": "2026-09-24T08:04:22.672Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 能把 PDF、Word、Excel 等原始文档转成结构化 Markdown，并附元数据和 0–1 的解析置信度；解析按 MinerU、PyMuPDF、pdfplumber 逐级降级，全失败则标记人工介入。",
-    "when": "密卷房 Worker 收到已通过安全扫描的本地文件时接管，把它转成机器可读文本，作为下游信息抽取与检索的通用解析入口。",
+    "what": "收到已通过安全扫描的本地文档后,它按 MinerU、PyMuPDF、pdfplumber 三级依次尝试解析,输出结构化 Markdown、标题页数表格数等元数据,以及 0–1 的解析置信度和最终生效的解析器名称。",
+    "when": "当密卷房 Worker 收到已通过安全扫描的文件时接管理;处理 PDF、Word、Excel 等多格式文档时也会走这条解析流程。",
     "say": [
       {
-        "text": "帮我解析这份 PDF，输出结构化 Markdown 和置信度",
-        "note": "会得到正文、元数据和 0–1 置信度"
+        "text": "解析 /path/report.pdf,输出 Markdown 和置信度"
       },
       {
-        "text": "只保留 PDF、Word、Excel 这几种格式来解析",
-        "note": "对应 formats 白名单参数"
+        "text": "把格式白名单限定为 docx,重新解析这个文件",
+        "note": "按 formats 白名单走解析流程。"
       },
       {
-        "text": "解析失败就走人工介入，别给我残缺结果",
-        "note": "三级全失败会回传 BLOCKED"
+        "text": "这份 Excel 走三级降级解析,全失败就标记人工介入",
+        "note": "三级全失败回传 BLOCKED,不输出残缺结果。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1787090c147d5fd2bbe5337c47aac78a15002fa80812ae1aeaa00a415454096e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-23T08:18:22.148Z",
+    "generated_at": "2026-09-24T08:08:48.151Z",
     "lint_pass": true,
-    "what_en": "Claude converts raw PDF, Word, Excel and other documents into structured Markdown plus metadata (title, pages, tables, author) and a 0–1 confidence score. It tries MinerU, PyMuPDF, pdfplumber in order; if all fail it flags manual review.",
-    "when_en": "When the Mijuanfang worker receives a local file that already passed security scan, this skill takes over to turn it into machine-readable text for downstream extraction and retrieval.",
+    "what_en": "Given a security-scanned local file, it tries MinerU, PyMuPDF then pdfplumber in order, and returns structured Markdown, metadata (title, page count, table count, author), a 0-1 confidence score and the parser that finally ran.",
+    "when_en": "Triggered when the Mijuanfang Worker receives a security-scanned file, or when parsing PDF, Word, Excel and other multi-format documents.",
     "say_en": [
       {
-        "text": "Parse this PDF and give me the structured Markdown with confidence.",
-        "note": "Returns body text, metadata and a 0–1 score."
+        "text": "Parse /path/report.pdf and return Markdown plus confidence",
+        "note": "Returns markdown, metadata, confidence and fallback_used."
       },
       {
-        "text": "Only allow PDF, Word and Excel formats for this parse.",
-        "note": "Maps to the formats whitelist input."
+        "text": "Restrict the format whitelist to docx and re-parse this file",
+        "note": "Runs the parse flow with your formats whitelist."
       },
       {
-        "text": "If parsing fails, flag it for manual review instead of partial output.",
-        "note": "All three parsers failing returns BLOCKED."
+        "text": "Run the three-tier fallback on this Excel; mark manual review if all fail",
+        "note": "All three failing returns BLOCKED, no partial output."
       }
     ]
   }

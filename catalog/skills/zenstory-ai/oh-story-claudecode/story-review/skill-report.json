@@ -5,7 +5,7 @@
     "name": "story-review",
     "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/story-review、/审查、「审查一下」「帮我审一下」。",
     "upstream": "https://github.com/zenstory-ai/oh-story-claudecode/tree/main/skills/story-review",
-    "upstream_commit": "0ffe7db4fa02489f5d1989e58a22ce62d040a850",
+    "upstream_commit": "e81ebcf569e2d4c6f7be9490654d2e8c68b81ea4",
     "content_hash": "sha256:70e216ae296d3f274dcb686ada61d9ed958cb92a8afae4a7b0671a2dd71a0e0c",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 6977,
+    "stars_github": 7085,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-19T07:45:23.317Z",
+    "fetched_at": "2026-09-24T08:04:30.795Z",
     "first_seen_at": "2026-08-27T13:37:59.445Z",
-    "upstream_commit_at": "2026-09-18T09:43:21-07:00",
+    "upstream_commit_at": "2026-09-24T00:59:42-07:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-19T07:45:23.317Z",
+    "generated_at": "2026-09-24T08:04:30.795Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -119,40 +119,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会充当审查协调器,对小说正文做多视角对抗式审查,找出结构、角色、文字、设定问题,输出带 S1~S4 严重度的问题清单和可执行修改建议。它只报告问题,不改正文。",
-    "when": "当你说 “/审查”、“审查一下”、“帮我审一下” 等说法,或输入 /story-review 时接管;不指定模式时默认 full,并在报告中写明实际执行模式。",
+    "what": "它把 Claude 变成小说审查协调器:从结构、角色、文字、设定等角度找出问题,按统一格式给出可执行的修改建议,并在报告里写明实际执行模式。它只审查,不改动正文。",
+    "when": "当你说出「/story-review」「审查一下」等触发词,或要求审稿时接管;未指定模式默认 full。若所需的 reviewer agents 缺失或 spawn 失败,自动降级为 solo。",
     "say": [
       {
-        "text": "审查一下第 12 章",
-        "note": "对该章输出 findings 清单"
+        "text": "帮我审一下第 12 章",
+        "note": "默认 full 模式审查指定章节"
       },
       {
-        "text": "/story-review lean 审一下这卷"
+        "text": "/story-review lean 审这一章",
+        "note": "只 spawn 架构师和一致性检查 agent"
       },
       {
-        "text": "帮我审一下开头三章,按番茄标准",
-        "note": "加载番茄平台 rubric"
+        "text": "/story-review solo 审查最近改的正文",
+        "note": "不 spawn agent,由当前会话审查"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:70e216ae296d3f274dcb686ada61d9ed958cb92a8afae4a7b0671a2dd71a0e0c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-19T07:51:37.395Z",
+    "generated_at": "2026-09-24T08:12:10.746Z",
     "lint_pass": true,
-    "what_en": "Claude acts as a review coordinator: it runs multi-perspective adversarial review of your novel text, covering structure, character, prose and setting, and returns a findings list with S1-S4 severity plus actionable fixes. It only reports issues; it never edits the manuscript.",
-    "when_en": "It takes over when you say \"审查一下\", \"帮我审一下\" or run /story-review; the default mode is full, and the report states the effective mode actually used.",
+    "what_en": "Turns Claude into a story-review coordinator: it finds problems in structure, character, prose and setting, reports actionable fixes in a unified findings schema, and states the mode actually used. It only reviews, never edits.",
+    "when_en": "Triggers when you say \"/story-review\", \"审查一下\" and similar, or ask for a review; mode defaults to full. If needed reviewer agents are missing or spawning fails, it falls back to solo.",
     "say_en": [
       {
-        "text": "Review chapter 12",
-        "note": "Outputs a findings list for that chapter"
+        "text": "Review chapter 12 for me",
+        "note": "Reviews the given chapter in full mode"
       },
       {
-        "text": "/story-review lean on this volume",
-        "note": "Uses story-architect and consistency-checker only"
+        "text": "/story-review lean on this chapter",
+        "note": "Spawns only architect and consistency-checker"
       },
       {
-        "text": "Review the first three chapters by Fanqie standards",
-        "note": "Loads the Fanqie platform rubric"
+        "text": "/story-review solo on the latest edits",
+        "note": "No subagents; current session reviews"
       }
     ]
   }

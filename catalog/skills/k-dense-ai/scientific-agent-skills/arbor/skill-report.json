@@ -100,41 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会充当协调者,围绕一个可修改的产物和评分器反复做实验:用假设树保存假设与证据,派子代理在隔离 git worktree 中各测一条,只有通过留出测试评估的改动才并入最佳版本。",
-    "when": "当你要反复迭代改进一个可修改的产物(如提升模型 eval 分数、优化 agent、调数据或 prompt 管线等),并且有自动评分方式时触发;只想要一次性修复时不适用。",
+    "what": "Claude 变为协调者,针对一个已有产物反复做实验并评估,把假设与结论存进一棵持久假设树,并派子代理在隔离的 git worktree 中各自测试一个假设;只有通过留出测试评估器的改动才被合并成新版本。",
+    "when": "当你提到“Arbor”“假设树”,或要求把某个模型/agent 的评测分数提上去、跑大量实验又不想过拟合 dev 集时触发;若只需一次性修改或无评估器的发散想法则不适用。",
     "say": [
       {
-        "text": "帮我把这个 benchmark 的分数提上去,别过拟合 dev 集",
-        "note": "Claude 先和你确认目标与 dev/test 评估器"
+        "text": "把 BrowseComp 答案准确率提上去,但别过拟合 dev 题",
+        "note": "Claude 先确认目标、评估器和预算再开跑"
       },
       {
-        "text": "用 Arbor 优化这个 agent harness,跑 12 轮搜索",
-        "note": "进入协调者循环,预算 12 轮"
+        "text": "初始化一次 arbor 运行:目标、dev 评估命令、测试评估命令都给你",
+        "note": "把任务四元组写进假设树"
       },
       {
-        "text": "把这个候选改动跑一遍 held-out 测试,过了再并入",
-        "note": "通过合并闸门才成为新的最佳版本"
+        "text": "把最终最好的产物和这棵假设树的尝试记录给我",
+        "note": "输出运行报告和 tree status"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0e5fc8f4b16bf37d229b60ae48a90b942376d2656b0bce6e800ee5cb1ad718da",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-23T08:20:00.981Z",
-    "lint_pass": false,
-    "what_en": "Claude acts as coordinator: it runs many experiment cycles on a modifiable artifact and an evaluator, keeps a hypothesis tree, sends subagents to test hypotheses in git worktrees, and merges only changes that pass a held-out test.",
-    "when_en": "Use it when you want to iteratively improve a scorable artifact — model eval, agent harness, pipeline — over many experiments; a one-shot fix doesn't need it.",
+    "generated_at": "2026-09-24T08:10:32.224Z",
+    "lint_pass": true,
+    "what_en": "Claude runs an iterative optimization loop: experiment, score, and record hypotheses in a persistent hypothesis tree, with one subagent per hypothesis in isolated git worktrees. Changes merge only when held-out test scores improve.",
+    "when_en": "Triggers when you mention \"Arbor\" or a hypothesis tree, or ask to raise a model/agent eval score, beat a baseline, or avoid overfitting a dev set. Not for a one-shot fix or evaluator-free ideation.",
     "say_en": [
       {
-        "text": "Raise this benchmark's score without overfitting the dev set",
-        "note": "Claude first confirms the objective and dev/test evaluators"
+        "text": "Raise this agent harness's eval score without overfitting the dev set",
+        "note": "Claude fixes objective, evaluators, and budget first"
       },
       {
-        "text": "Optimize this agent harness with Arbor over 12 cycles",
-        "note": "Runs the coordinator loop with a 12-cycle budget"
+        "text": "Initialize an arbor run with this objective, dev eval, and test eval",
+        "note": "Writes the task tuple into the hypothesis tree"
       },
       {
-        "text": "Run the held-out test on this candidate and merge it if it passes",
-        "note": "Only test-confirmed changes become the new best"
+        "text": "Show me the final best artifact and the audit trail of the tree",
+        "note": "Prints the run report and tree status"
       }
     ]
   }

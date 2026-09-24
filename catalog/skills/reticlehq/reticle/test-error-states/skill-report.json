@@ -5,8 +5,8 @@
     "name": "test-error-states",
     "description": "Force the states a happy-path run never reaches (a failing API, an empty list, a slow request, a timeout, an expired session, a toast that auto-dismisses) and check the UI actually handles them. Use when error handling was written but never run, when a loading or empty state needs verifying, when a bug only happens on a slow connection, or when a timer, poll, debounce or retry needs testing without sleeping.",
     "upstream": "https://github.com/reticlehq/reticle/tree/main/skills/test-error-states",
-    "upstream_commit": "12d18dd4cb772da46ae20d7bbcccc9a7a227cfeb",
-    "content_hash": "sha256:a978854e3ef5f6d239a6a5be0d2060502677be8a92879c0d8e9cd8599d9c49e0",
+    "upstream_commit": "39cc34a84bfb78023154c9f4e99c61f3cbe8fc19",
+    "content_hash": "sha256:ac0623096d66031dbd67ff21d8048e170d772c3c3254b40a401d1718f5de614b",
     "license": "Apache-2.0",
     "hosting": "indexed",
     "category": "dev",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 820,
+    "stars_github": 829,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-23T08:15:51.034Z",
+    "fetched_at": "2026-09-24T08:05:54.806Z",
     "first_seen_at": "2026-09-22T08:12:46.086Z",
-    "upstream_commit_at": "2026-09-22T16:28:58Z",
-    "repo_skill_count": 14
+    "upstream_commit_at": "2026-09-23T17:50:44Z",
+    "repo_skill_count": 15
   },
   "context_size": {
     "version": "1",
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-23T08:15:51.034Z",
+    "generated_at": "2026-09-24T08:05:54.806Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -69,63 +69,64 @@
   },
   "eval": null,
   "copy": {
-    "tagline": "强制触发失败接口、空列表、超时等异常状态,验证界面是否真的兜住",
+    "tagline": "模拟接口失败、超时、空数据、会话过期等异常,验证界面真的扛得住",
     "scene_tags": [
       "上线前检查",
-      "异常状态验证",
-      "弱网排查",
-      "空状态核对"
+      "异常场景验证",
+      "加载态排查",
+      "接口报错复现"
     ],
-    "fit_line": "适合你,如果错误处理代码已经写好,却从没在真实异常下跑过。",
+    "fit_line": "适合你,如果错误处理代码写好了却从没跑过,想确认页面在异常下不乱",
+    "tagline_en": "Force failing APIs, timeouts and empty data, then check the UI really holds up",
     "scene_tags_en": [
-      "pre-release check",
-      "error state check",
-      "slow network debug",
-      "empty state review"
+      "pre-launch checks",
+      "error case verification",
+      "loading state review",
+      "slow connection bugs"
     ],
-    "fit_line_en": "For you if error handling is written but never actually exercised under real failures.",
+    "fit_line_en": "For you if error handling was written but never exercised and you want proof the UI copes",
     "source": "llm",
-    "content_hash": "sha256:a978854e3ef5f6d239a6a5be0d2060502677be8a92879c0d8e9cd8599d9c49e0",
+    "content_hash": "sha256:ac0623096d66031dbd67ff21d8048e170d772c3c3254b40a401d1718f5de614b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:14:45.830Z",
+    "generated_at": "2026-09-24T08:08:21.241Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能强制制造正常流程走不到的状态——失败 API、空列表、慢请求、超时,再驱动流程检查 UI 是否真的处理。它还能冻结并推进时钟,不用 sleep 就验证定时器、轮询、防抖、重试。",
-    "when": "当错误处理写了却没跑过、要验证加载或空状态,或要测定时器、轮询、防抖等时触发。",
+    "what": "在运行中的应用里强制制造失败接口、空列表、超时、过期会话等异常状态,再检查界面是否真的处理了:错误有没有显示、重试是否可用、状态是否一致、控制台有无未捕获报错。",
+    "when": "当错误处理写完却从未运行、需要验证加载或空状态、或要测定时器、轮询等定时逻辑而不 sleep 时触发。",
     "say": [
       {
-        "text": "把 /api/deploys 强制返回 500,然后走一遍流程看错误提示",
-        "note": "会先声明期望的恢复表现再断言"
+        "text": "把 /api/deploys 模拟成 500,看看部署列表的错误提示长什么样",
+        "note": "拦截该请求并在界面上触发错误状态"
       },
       {
-        "text": "冻结时钟并推进 5 秒,验证 toast 自动消失",
-        "note": "结束后记得重置时钟"
+        "text": "让搜索接口返回空数组,检查空状态页面是否正常显示",
+        "note": "用空 200 响应验证空状态"
       },
       {
-        "text": "模拟返回空列表 200,确认页面出现空状态",
-        "note": "断言用户能看到具体元素"
+        "text": "冻结时钟并推进 5 秒,验证 toast 是否自动消失",
+        "note": "用受控时钟代替真实等待"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:a978854e3ef5f6d239a6a5be0d2060502677be8a92879c0d8e9cd8599d9c49e0",
+    "content_hash": "sha256:ac0623096d66031dbd67ff21d8048e170d772c3c3254b40a401d1718f5de614b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-23T08:21:49.646Z",
+    "generated_at": "2026-09-24T08:12:37.188Z",
     "lint_pass": true,
-    "what_en": "Claude can force states a happy-path run never reaches — a failing API, an empty list, a slow request, a timeout — then drive the flow and check the UI handles them. It can freeze and advance the clock to test timers without sleeping.",
-    "when_en": "Use when error handling was written but never run, when a loading or empty state needs verifying, or when a timer, poll, debounce or retry needs testing without sleeping.",
+    "what_en": "Runs your app and forces the states a normal run never hits - failing API, empty list, timeout, expired session - then checks the UI shows the error, stays usable, and logs nothing uncaught.",
+    "when_en": "Use when error handling was written but never run, a loading or empty state needs verifying, or a timer, poll, debounce or retry needs testing without sleeping.",
     "say_en": [
       {
-        "text": "Mock /api/deploys as 500, then run the flow and check for an error banner.",
-        "note": "Names the expected recovery before acting."
+        "text": "Mock /api/deploys as a 500 and show me what the deploy list error looks like",
+        "note": "Intercepts that request and triggers the error UI"
       },
       {
-        "text": "Freeze the clock and advance 5s to check the toast auto-dismisses.",
-        "note": "Reset the clock when done."
+        "text": "Return an empty array from the search API and check the empty state renders",
+        "note": "Verifies the empty state with an empty 200"
       },
       {
-        "text": "Mock an empty 200 list and confirm the empty state shows.",
-        "note": "Asserts a specific element is visible."
+        "text": "Freeze the clock, advance 5 seconds, and verify the toast auto-dismisses",
+        "note": "Uses a controlled clock instead of sleeping"
       }
     ]
   }

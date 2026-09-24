@@ -5,7 +5,7 @@
     "name": "host-observer",
     "description": "Use this when fulfilling claude-mem observer jobs on Grok Bot: reply only skip_summary or one full observation XML, never prose.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-grok-bot/skills/host-observer",
-    "upstream_commit": "4520de9e0f8d6cdc20597520e383d8b51d93137f",
+    "upstream_commit": "c4bfa4595046bde1678de6f2a90bcb7e63c36d6f",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94436,
+    "stars_github": 94574,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:10:36.350Z",
+    "fetched_at": "2026-09-24T08:03:32.635Z",
     "first_seen_at": "2026-09-03T07:38:50.068Z",
-    "upstream_commit_at": "2026-09-21T16:27:32-07:00",
+    "upstream_commit_at": "2026-09-23T12:57:35-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:10:36.350Z",
+    "generated_at": "2026-09-24T08:03:32.635Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,40 +86,28 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它让 Claude 只按 claude-mem 观察者任务的格式作答：空闲或无工具结果时回一行 skip_summary，完成后输出一条 observation XML，不写散文。observation 含真实标题、4–10 条带路径的事实和叙述。",
-    "when": "当你在 Grok Bot 上执行 claude-mem observer 任务时接管；空闲、初始化或无工具结果时回 skip_summary，完成可搜索单元时输出一条 observation。",
-    "say": [
-      {
-        "text": "这次没有工具结果，直接回 skip_summary"
-      },
-      {
-        "text": "把这次修复写成一条 observation，标题别用工具名",
-        "note": "产出 4–10 条带路径的事实和叙述"
-      },
-      {
-        "text": "把这次决策记成一条 observation，带上路径信息",
-        "note": "只返回一条 observation XML"
-      }
-    ],
+    "what": "在 claude-mem 的 Grok Bot observer 任务里,它不再写散文,只回 `<skip_summary />` 或一条完整 `<observation>` XML:真实标题、4–10 条带路径的事实和叙述。结果写入 outbox/{id}.txt。",
+    "when": "当 Grok Bot 端派来 claude-mem observer 任务时接管:空闲、初始化或无工具结果时只回 skip_summary,完成一个可搜索单元时回一条 observation。",
+    "say": [],
     "source": "llm",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:18:52.502Z",
-    "lint_pass": true,
-    "what_en": "It makes Claude answer only in claude-mem observer job format: a one-line skip_summary when idle or with no tool results, or one observation XML when done, never prose. It has a real title, 4–10 facts with paths, and a narrative.",
-    "when_en": "It takes over when you run claude-mem observer jobs on Grok Bot; it returns skip_summary when idle, initializing, or with no tool results, and one observation when a searchable unit is finished.",
+    "generated_at": "2026-09-24T08:11:45.167Z",
+    "lint_pass": false,
+    "what_en": "In claude-mem observer jobs on Grok Bot it writes no prose, replying only with `<skip_summary />` or one `<observation>` XML: a real title, 4–10 facts with paths, and a narrative. Written to outbox/{id}.txt or the chat-completions body.",
+    "when_en": "Takes over when Grok Bot dispatches a claude-mem observer job: idle, init, or no tool results means reply `<skip_summary />` only; a finished searchable unit means one `<observation>`.",
     "say_en": [
       {
-        "text": "No tool results this time, just reply skip_summary",
-        "note": "returns <skip_summary reason=\"noise\" />"
+        "text": "No tool results this time — reply only `<skip_summary reason=\"noise\" />`",
+        "note": "No prose is emitted."
       },
       {
-        "text": "Write this bugfix as one observation, title without a tool name",
-        "note": "outputs 4–10 facts with paths and a narrative"
+        "text": "Write this as one `<observation>`: real title, 4–10 facts with paths, narrative",
+        "note": "Never title with a tool name."
       },
       {
-        "text": "Record this decision as one observation with its paths",
-        "note": "returns a single observation XML"
+        "text": "Save to outbox/{id}.txt, no prose, and skip /api/memory/save",
+        "note": "That endpoint is last resort."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Search claude-mem's persistent cross-session memory database. Use when user asks \"did we already solve this?\", \"how did we do X last time?\", or needs work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/mem-search",
-    "upstream_commit": "4520de9e0f8d6cdc20597520e383d8b51d93137f",
+    "upstream_commit": "c4bfa4595046bde1678de6f2a90bcb7e63c36d6f",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94436,
+    "stars_github": 94574,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-22T08:10:36.350Z",
+    "fetched_at": "2026-09-24T08:03:32.635Z",
     "first_seen_at": "2026-08-28T14:48:34.339Z",
-    "upstream_commit_at": "2026-09-21T16:27:32-07:00",
+    "upstream_commit_at": "2026-09-23T12:57:35-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:10:36.350Z",
+    "generated_at": "2026-09-24T08:03:32.635Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,40 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能检索 claude-mem 的跨会话记忆库:先搜索拿到带 ID 的索引,再看某条结果前后的时间线,最后只取筛出的条目详情,避免一次拉取全部内容。",
-    "when": "当你问「这个之前解决过吗」「上次是怎么做的」,或需要用到过往会话里的工作时触发;针对的是以前的会话,不是当前对话。",
+    "what": "Claude 能检索 claude-mem 的跨会话记忆库:按关键词、项目、日期、类型找出过往会话的摘要(ID、时间、标题),再按需取前后时间线与完整详情,只有摘要不够时才去读原始工具输入输出。",
+    "when": "当你问的是之前会话而非当前对话时触发,例如「这个我们解决过吗」「上次怎么做的」「上周发生了什么」等。",
     "say": [
       {
-        "text": "我们上次是怎么解决登录报错的?搜一下记忆。",
-        "note": "先返回带 ID 的搜索结果列表"
+        "text": "搜一下之前和登录认证有关的会话记录",
+        "note": "返回带 ID、时间、标题的索引表"
       },
       {
-        "text": "搜这个项目里 bugfix 类型的记录,只要最近 20 条。",
-        "note": "用 search 过滤出索引,先不取详情"
+        "text": "上周迁移失败那次是怎么处理的?",
+        "note": "按关键词和日期范围搜索并给摘要"
       },
       {
-        "text": "把这条结果的时间线上下文和完整详情调出来。"
+        "text": "把 #11131 前后的上下文拉出来看看",
+        "note": "返回该记录前后的时间线条目"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:18:56.578Z",
+    "generated_at": "2026-09-24T08:11:50.698Z",
     "lint_pass": true,
-    "what_en": "After install, Claude can search claude-mem's cross-session memory: search for an index with IDs, view timeline context around a result, then fetch full details only for filtered IDs instead of pulling everything.",
-    "when_en": "Triggers when you ask about previous sessions, e.g. \"did we already fix this?\" or \"how did we do X last time?\", rather than the current conversation.",
+    "what_en": "Claude can search claude-mem's cross-session memory by keyword, project, date, or type, returning summarized records with IDs, times, and titles, then pulling timelines and full observation details, and reading raw tool I/O only when summaries are not enough.",
+    "when_en": "Use when you ask about earlier sessions rather than the current chat, e.g. \"did we fix this already?\", \"how did we do X last time?\", or \"what happened last week?\"",
     "say_en": [
       {
-        "text": "How did we fix that login error last time? Search memory.",
-        "note": "Returns a search list with IDs first"
+        "text": "Search past sessions about login authentication",
+        "note": "Returns an index table of IDs, times, titles"
       },
       {
-        "text": "Search this project for bugfix records, latest 20 only.",
-        "note": "Uses search to filter an index before fetching"
+        "text": "How did we handle that migration failure last week?",
+        "note": "Searches by keyword and date, then summarizes"
       },
       {
-        "text": "Show the timeline context and full details for that hit.",
-        "note": "timeline for context, then get_observations for details"
+        "text": "Pull the timeline around observation #11131",
+        "note": "Returns entries before and after the anchor"
       }
     ]
   }

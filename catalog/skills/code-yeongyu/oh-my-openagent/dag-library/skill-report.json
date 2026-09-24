@@ -5,7 +5,7 @@
     "name": "dag-library",
     "description": "Stores a DAG definition once and re-runs it by name, instead of pasting the definition into every run. Use when the user wants to save a DAG, run a saved one, or schedule the same multi-agent graph repeatedly.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/dag-library",
-    "upstream_commit": "bc2f5268d05aeaa4c10cb7d764dd5f2b3ed5ec38",
+    "upstream_commit": "a92d9a750e09681696d87ae2b2374890c11cced0",
     "content_hash": "sha256:3de8a258d19e94b9956dac7592c68c965456a4011e3c56a6bfb6cca439a128b7",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69311,
+    "stars_github": 69355,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-23T08:13:01.631Z",
+    "fetched_at": "2026-09-24T08:03:37.717Z",
     "first_seen_at": "2026-08-27T13:37:06.727Z",
-    "upstream_commit_at": "2026-09-23T17:11:04+09:00",
+    "upstream_commit_at": "2026-09-24T16:49:08+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-23T08:13:01.631Z",
+    "generated_at": "2026-09-24T08:03:37.717Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,40 +88,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把 DAG 定义存成命名 JSON 文件放进库目录,之后按名字加载并运行,不必每次粘贴定义;运行时 key 会按后缀规则决定是全新跑一次还是复用旧结果。",
-    "when": "当你想保存一个 DAG、运行已保存的 DAG,或反复调度同一张多智能体图时触发。",
+    "what": "装上后,Claude 会把一个 DAG 定义存成库里的 <name>.json 文件,之后用名字加载并启动它,不必每次运行都粘贴定义。加载时会轮换 key,并填充 {{key}}、{{date}} 等占位符。",
+    "when": "当你想保存一个 DAG、运行已保存的 DAG,或重复调度同一个多智能体图时触发。",
     "say": [
       {
-        "text": "把这个 DAG 存成 nightly-audit,放到用户目录"
+        "text": "把当前这个图存成 nightly-audit,并跑一次",
+        "note": "写入 ~/.omo/dags,再用 lib.start 验证"
       },
       {
-        "text": "运行已保存的 nightly-audit",
-        "note": "key 自动加时间戳,每次都是全新运行"
+        "text": "用 nightly-audit 跑一遍,后缀用今天日期"
       },
       {
-        "text": "用后缀 20260818 运行 nightly-audit",
-        "note": "key 固定为同名,重复运行复用同一次结果"
+        "text": "再跑一次 nightly-audit,后缀留空",
+        "note": "key 保持 nightly-audit,复用上次结果"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3de8a258d19e94b9956dac7592c68c965456a4011e3c56a6bfb6cca439a128b7",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-23T08:18:52.853Z",
+    "generated_at": "2026-09-24T08:09:21.321Z",
     "lint_pass": true,
-    "what_en": "Claude stores a DAG definition as a named JSON file in the library dirs, then loads and runs it by name, so you never paste the definition again. Key rotation decides whether each call is a fresh run or reuses an earlier one.",
-    "when_en": "Triggers when the user wants to save a DAG, run a saved one, or schedule the same multi-agent graph repeatedly.",
+    "what_en": "Once installed, Claude stores a DAG definition as <name>.json in a library dir, then loads and starts it by name instead of pasting it each run. On load it rotates the key and fills {{key}}, {{date}} placeholders.",
+    "when_en": "Triggers when you want to save a DAG, run a saved one, or schedule the same multi-agent graph repeatedly.",
     "say_en": [
       {
-        "text": "Save this DAG as nightly-audit under my home dir.",
-        "note": "Writes <name>.json into $HOME/.omo/dags"
+        "text": "Save the current graph as nightly-audit and run it once",
+        "note": "Writes to ~/.omo/dags, verified via lib.start"
       },
       {
-        "text": "Run the saved nightly-audit DAG.",
-        "note": "The key gets a timestamp, so it is a fresh run"
+        "text": "Run nightly-audit with today's date as the suffix",
+        "note": "Key becomes nightly-audit-20260818, reusable"
       },
       {
-        "text": "Run nightly-audit with suffix 20260818.",
-        "note": "Fixed key reuses the same run instead"
+        "text": "Run nightly-audit again with an empty suffix",
+        "note": "Key stays nightly-audit, reusing the last result"
       }
     ]
   }

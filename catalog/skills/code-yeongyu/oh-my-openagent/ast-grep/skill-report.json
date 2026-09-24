@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Searches and rewrites code by AST shape across 25 languages. Use when the target is a syntax pattern (every call/class/import shaped like X, a codemod, a YAML rule) rather than literal text; for plain strings, comments, or filenames, use rg.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "bc2f5268d05aeaa4c10cb7d764dd5f2b3ed5ec38",
+    "upstream_commit": "a92d9a750e09681696d87ae2b2374890c11cced0",
     "content_hash": "sha256:dc05d0420a72af0e65f2512c56b4ae3aed461b58fd2f634c576b3deebaeb67d2",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69311,
+    "stars_github": 69355,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-23T08:13:01.631Z",
+    "fetched_at": "2026-09-24T08:03:37.717Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-23T17:11:04+09:00",
+    "upstream_commit_at": "2026-09-24T16:49:08+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-23T08:13:01.631Z",
+    "generated_at": "2026-09-24T08:03:37.717Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -114,41 +114,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会按代码的语法结构而不是文字来搜索和改写:找出所有形如某个模式的函数、调用、类或导入,做批量改写(codemod),也能扫描或应用 YAML 规则。支持 25 种语言。",
-    "when": "当你要找或改的是语法形状(如每个形如 X 的调用、类、导入,或 codemod、YAML 规则)而非字面文本时触发;如果是纯字符串、注释、文件名,则改用 rg。",
+    "what": "Claude 会按代码结构而非文本搜索和改写代码，覆盖 25 种语言：可批量改掉某种形状的调用、导入、类，也能跑 YAML 规则；改写默认先试运行预览。",
+    "when": "当你要找或改的是代码结构——某种形状的函数、调用、导入等——或要做 codemod、跑 YAML 规则时触发；纯文本、注释、文件名则改用 rg。",
     "say": [
       {
-        "text": "把仓库里所有 console.log(x) 改成 logger.info(x)",
-        "note": "先给预览,确认后再写入文件"
+        "text": "找出仓库里所有空的 catch 块",
+        "note": "按语法结构搜索并列出匹配"
       },
       {
-        "text": "找出所有接收 Request 参数的函数",
-        "note": "列出匹配位置和数量"
-      },
-      {
-        "text": "扫描 src/ 下的 YAML 规则并列出违规",
-        "note": "运行 sg scan 输出违规项"
+        "text": "把整个项目的 require 改成 import 并应用",
+        "note": "加 --apply 才真正写入"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dc05d0420a72af0e65f2512c56b4ae3aed461b58fd2f634c576b3deebaeb67d2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-23T08:18:50.732Z",
+    "generated_at": "2026-09-24T08:09:15.610Z",
     "lint_pass": true,
-    "what_en": "Claude searches and rewrites code by AST shape rather than literal text: finding every function, call, class, or import shaped like a pattern, running codemods, and scanning or applying YAML rules. Works across 25 languages.",
-    "when_en": "Triggers when the target is a syntax shape (every call/class/import shaped like X, a codemod, or a YAML rule) rather than literal text; use rg for plain strings, comments, or filenames.",
+    "what_en": "Claude can search and rewrite code by AST shape across 25 languages: bulk-edit calls, imports, classes; run YAML rules. Rewrites default to a dry-run preview.",
+    "when_en": "Triggered when the target is a syntax pattern - a function, call, or import of a given shape - or a codemod or YAML rule; for plain strings, comments, or filenames use rg.",
     "say_en": [
       {
-        "text": "Rewrite every console.log(x) across the repo to logger.info(x)",
-        "note": "Shows a dry-run preview first, then applies"
+        "text": "Rewrite every console.log(x) to logger.info(x), show me a preview first",
+        "note": "Dry-run by default; files untouched"
       },
       {
-        "text": "Find every function that takes a Request parameter",
-        "note": "Lists match locations and count"
+        "text": "Find every empty catch block in the repo",
+        "note": "Searches by syntax shape"
       },
       {
-        "text": "Scan the YAML rules under src/ and list violations",
-        "note": "Runs sg scan and reports violations"
+        "text": "Convert require(...) to import across the project and apply",
+        "note": "Needs --apply to write files"
       }
     ]
   }

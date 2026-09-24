@@ -5,7 +5,7 @@
     "name": "add-dial-tool",
     "description": "Give chosen NanoClaw agents a real phone number as a container tool — the `dial` CLI baked into the agent image plus OneCLI credential injection for api.getdial.ai, scoped per agent, so the agents you pick can send SMS, place AI voice calls, and receive verification codes from inside the sandbox. Independent of the Dial channel; idempotent; re-run to change which agents may use it. Use when the user wants agents to text, call, or run `dial …` from a chat, without wiring Dial as a messaging channel.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-dial-tool",
-    "upstream_commit": "8aefde46f020a855c53f3c2ec20a0fb332d42b7a",
+    "upstream_commit": "143db6c907c652773a536c7c9e96269fdad0a4a4",
     "content_hash": "sha256:c30bce35e47f03cd1f21e1035c25b376a59b83a0725b8b8decd4e461ec28defd",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30836,
+    "stars_github": 30841,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-23T08:13:19.552Z",
+    "fetched_at": "2026-09-24T08:03:54.099Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-23T10:26:32+03:00",
-    "repo_skill_count": 61,
+    "upstream_commit_at": "2026-09-23T18:48:57+02:00",
+    "repo_skill_count": 63,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-23T08:13:19.552Z",
+    "generated_at": "2026-09-24T08:03:54.099Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -96,41 +96,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "为选定的 NanoClaw agent 安装 Dial 容器工具：容器内的 agent 能用 `dial` 命令发短信、打 AI 语音电话、接收验证码；只有你选中的 agent 拿到密钥，其余 agent 被网关拦截（403 blocked_by_policy）。",
-    "when": "当你想让 agent 在聊天里发短信、打电话或运行 `dial …`，又不想把 Dial 接成消息渠道时用它。要在宿主机 NanoClaw 仓库运行，且需先装好 OneCLI，否则第一步就停。",
+    "what": "装上后,你选定的 NanoClaw agent 容器里会多出 dial 命令行工具,可以从聊天里发短信、打 AI 语音电话、收验证码,费用记在你的 Dial 账户。重新运行可改变哪些 agent 能用。",
+    "when": "当你想让选定的 agent 能从聊天里发短信、打电话或运行 dial 命令,而不把 Dial 配成消息渠道时使用。需先在主机的 NanoClaw 仓库运行,容器无法自装。",
     "say": [
       {
-        "text": "给 ag-xxxx 装上 Dial 工具，让它能发短信和打电话",
-        "note": "接着会问你选哪些 agent，然后重建镜像并重启容器"
+        "text": "运行 add-dial-tool,让指定 agent 能用 Dial",
+        "note": "会先问哪些 agent 可用"
       },
       {
-        "text": "把所有 agent 的 Dial 权限改成只有 ag-aa、ag-bb 能用",
-        "note": "重跑一次即可改授权范围，其他 agent 被拦"
+        "text": "重跑 add-dial-tool,改成只有 ag-abc 能用 Dial",
+        "note": "可重复运行来改权限名单"
       },
       {
-        "text": "先只装 Dial 工具，暂时不让任何 agent 用",
-        "note": "输入 none：工具装上但所有 agent 都被拦截"
+        "text": "先运行 /init-onecli,再装 Dial 工具",
+        "note": "没有 OneCLI 就无法注入密钥"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c30bce35e47f03cd1f21e1035c25b376a59b83a0725b8b8decd4e461ec28defd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-23T08:20:34.686Z",
+    "generated_at": "2026-09-24T08:10:59.535Z",
     "lint_pass": true,
-    "what_en": "Installs Dial as a container tool for chosen NanoClaw agents: the `dial` CLI plus credential injection, so those agents can send SMS, place AI voice calls and receive verification codes. Unchosen agents are blocked at the gateway.",
-    "when_en": "Use when you want an agent to text, call or run `dial …` from a chat without wiring Dial as a messaging channel. Run it on the host NanoClaw repo; OneCLI must be installed first.",
+    "what_en": "After install, the agents you pick get the `dial` CLI inside their containers: they can send SMS, place AI voice calls, and receive verification codes, billed to your Dial account. Re-run it to change which agents may use it.",
+    "when_en": "Use when you want picked agents to text, call, or run `dial …` from a chat without wiring Dial as a messaging channel. Requires OneCLI; run it from the NanoClaw repo, not from an agent chat.",
     "say_en": [
       {
-        "text": "Install the Dial tool for ag-xxxx so it can send texts and calls",
-        "note": "It then asks which agents, rebuilds the image and restarts containers"
+        "text": "Run add-dial-tool to give some agents Dial",
+        "note": "It asks which agents may use it"
       },
       {
-        "text": "Change Dial access so only ag-aa and ag-bb may use it",
-        "note": "Re-run to change who is allowed; the rest are blocked"
+        "text": "Re-run add-dial-tool, only ag-abc may use Dial",
+        "note": "Idempotent; changes the allowed list"
       },
       {
-        "text": "Just install the Dial tool but let no agent use it yet",
-        "note": "Enter none: installed, every agent blocked for now"
+        "text": "Run /init-onecli first, then install Dial",
+        "note": "Without OneCLI the key can't be injected"
       }
     ]
   }
