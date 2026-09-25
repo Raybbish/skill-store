@@ -5,7 +5,7 @@
     "name": "review-work",
     "description": "Post-implementation gate review: run manual QA on the real surface yourself, then launch ONE gate reviewer (never a panel) to audit goal, constraints, code quality, security, missed context, and QA evidence. Use before a PR handoff or when the user explicitly asks to review completed work.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/review-work",
-    "upstream_commit": "a92d9a750e09681696d87ae2b2374890c11cced0",
+    "upstream_commit": "05dcba64b749e7666dcd0296c079d31cf3c298f1",
     "content_hash": "sha256:902b20d056e7533114d91c9664f1ab9567320cc0922c0f7738048017624e89ba",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69355,
+    "stars_github": 69393,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-24T08:03:37.717Z",
+    "fetched_at": "2026-09-25T08:28:03.696Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-24T16:49:08+09:00",
+    "upstream_commit_at": "2026-09-25T08:30:03+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-24T08:03:37.717Z",
+    "generated_at": "2026-09-25T08:28:03.696Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,25 +89,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "实现完成后，Claude 会自己在真实界面上跑手工 QA，逐条记录场景、命令、预期与实际结果和证据；随后只启动一个 gate reviewer 子代理，审查目标、约束、代码质量、安全、遗漏上下文与 QA 证据，给出通过或失败结论。",
-    "when": "在 PR 交接之前，或用户明确要求审查已完成的工作时接管。",
+    "what": "定稿完成后，Claude 会自己在真实运行界面上手动跑一遍 QA 并留下证据，再启动一个审查子代理核对目标、约束、代码质量、安全、遗漏上下文和 QA 证据；只有 QA 无失败行且审查返回 APPROVE 才算通过。",
+    "when": "在把改动交给 PR 之前，或你明确要求审查已完成的工作时触发。只用一个审查代理，不组评审团。",
     "say": [
       {
-        "text": "帮我审查一下刚完成的改动",
-        "note": "先跑手工 QA，再起一个 gate reviewer"
+        "text": "帮我审查刚完成的改动，先跑真实界面 QA",
+        "note": "它会自己动手 QA 并保存证据"
       },
       {
-        "text": "提交 PR 之前先走一遍 review-work",
-        "note": "任一 QA 行失败会直接报 REVIEW FAILED"
+        "text": "准备提 PR 了，先走一遍 review-work",
+        "note": "交接前做门禁审查"
       },
       {
-        "text": "用 review-work 审查 main...HEAD 的改动"
+        "text": "用 review-work 审这个分支，只用一个审查代理",
+        "note": "不组评审团，单代理给结论"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:902b20d056e7533114d91c9664f1ab9567320cc0922c0f7738048017624e89ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-24T08:09:43.554Z",
-    "lint_pass": true
+    "generated_at": "2026-09-25T08:34:09.135Z",
+    "lint_pass": true,
+    "what_en": "Once work is done, Claude does manual QA on the real surface with evidence, then spawns one gate reviewer to audit goal, constraints, code quality, security and QA evidence. It passes only if no QA row fails and the reviewer approves.",
+    "when_en": "Triggers before a PR handoff, or when you explicitly ask to review completed work. It uses a single reviewer agent, never a panel.",
+    "say_en": [
+      {
+        "text": "Review the work I just finished, run real-surface QA first",
+        "note": "It runs QA itself and keeps evidence"
+      },
+      {
+        "text": "I'm about to hand off a PR, run review-work",
+        "note": "Gate review before handoff"
+      },
+      {
+        "text": "Run review-work on this branch, one reviewer only",
+        "note": "No panel; single reviewer verdict"
+      }
+    ]
   }
 }

@@ -5,7 +5,7 @@
     "name": "doc-parse",
     "description": "将 PDF/PPT/Excel/Word 等多格式文档解析为结构化 Markdown，并输出元数据与解析置信度，作为 RAG 与四色卡片的数据底座。",
     "upstream": "https://github.com/anbeime/skill/tree/main/antinet-agentteams/skills/doc-parse",
-    "upstream_commit": "90742445323d9b261963e1f60191a07610be9e71",
+    "upstream_commit": "dcf13a656eed25d61304a6e04655f44c92b26214",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "license": "none(all-rights-reserved)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 7166,
+    "stars_github": 7188,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-24T08:04:22.672Z",
+    "fetched_at": "2026-09-25T08:28:49.769Z",
     "first_seen_at": "2026-09-02T07:32:35.252Z",
-    "upstream_commit_at": "2026-09-24T07:20:00Z",
+    "upstream_commit_at": "2026-09-25T07:14:27Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-24T08:04:22.672Z",
+    "generated_at": "2026-09-25T08:28:49.769Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "把 PDF、PPT、Excel、Word 等文档解析成结构化 Markdown，同时给出标题、页数、表格数等元数据和 0–1 的解析置信度，并注明最终生效的解析器。",
-    "when": "由密卷房 Worker 在收到已通过安全扫描的文件时调用；解析器按三级 fallback 依次尝试，全部失败则标记人工介入。",
+    "what": "Claude 收到文档后,会把 PDF、Word、Excel 等格式解析成结构化 Markdown,并附上标题、页数、表格数等元数据和 0–1 的解析置信度。解析按三级依次尝试,主解析器失败会自动降级。",
+    "when": "当密卷房 Worker 收到已通过安全扫描的文件时调用;你需要把 PDF、PPT 等原始文档转成机器可读文本时也会走它。",
     "say": [
       {
-        "text": "把这个 PDF 解析成结构化 Markdown，并给出置信度",
-        "note": "输出正文、元数据和 0–1 置信度"
+        "text": "把这份 PDF 解析成结构化 Markdown,并给出解析置信度",
+        "note": "输出含元数据与 fallback 信息"
       },
       {
-        "text": "用 doc-parse 处理这份 Excel，说明用了哪个解析器",
-        "note": "返回 fallback_used 解析器名称"
+        "text": "解析这份 Excel,标注表格数和解析置信度",
+        "note": "结果写入 doc_parse.json"
       },
       {
-        "text": "解析这份 Word 的表格，低置信度的块标出来",
-        "note": "块级失败仅标记该块低置信度"
+        "text": "把这份 PPT 转成 Markdown,并告诉我用了哪个解析器",
+        "note": "fallback_used 会给出解析器名"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-24T08:09:00.723Z",
+    "generated_at": "2026-09-25T08:33:10.049Z",
     "lint_pass": true,
-    "what_en": "Turns PDF, PPT, Excel and Word files into structured Markdown, plus metadata such as title, page count and table count, a 0–1 parse confidence, and the name of the parser that finally ran.",
-    "when_en": "Called by the 密卷房 Worker when it receives a file that has passed security-scan; three fallback parsers are tried in order, and if all fail the file is marked for manual handling.",
+    "what_en": "Claude turns PDF, Word, Excel and other files into structured Markdown with metadata (title, pages, tables) and a 0–1 confidence score. It tries three parsers in order, falling back automatically if one fails.",
+    "when_en": "Called when the Mijuanfang worker receives a file that passed the security scan, or when you need PDF, PPT and similar documents turned into machine-readable text.",
     "say_en": [
       {
         "text": "Parse this PDF into structured Markdown and give me the confidence score",
-        "note": "Returns body, metadata and a 0–1 confidence"
+        "note": "Returns metadata and fallback info"
       },
       {
-        "text": "Run doc-parse on this Excel and tell me which parser was used",
-        "note": "Returns the fallback_used parser name"
+        "text": "Parse this Excel and report the table count and confidence",
+        "note": "Result saved to doc_parse.json"
       },
       {
-        "text": "Parse the tables in this Word file and flag low-confidence blocks",
-        "note": "Block-level failures are marked low confidence"
+        "text": "Parse this PPT and tell me which parser was used",
+        "note": "fallback_used names the parser"
       }
     ]
   }

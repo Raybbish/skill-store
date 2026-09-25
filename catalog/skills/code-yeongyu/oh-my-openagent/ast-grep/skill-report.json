@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Searches and rewrites code by AST shape across 25 languages. Use when the target is a syntax pattern (every call/class/import shaped like X, a codemod, a YAML rule) rather than literal text; for plain strings, comments, or filenames, use rg.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "a92d9a750e09681696d87ae2b2374890c11cced0",
+    "upstream_commit": "05dcba64b749e7666dcd0296c079d31cf3c298f1",
     "content_hash": "sha256:dc05d0420a72af0e65f2512c56b4ae3aed461b58fd2f634c576b3deebaeb67d2",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69355,
+    "stars_github": 69393,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-24T08:03:37.717Z",
+    "fetched_at": "2026-09-25T08:28:03.696Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-24T16:49:08+09:00",
+    "upstream_commit_at": "2026-09-25T08:30:03+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-24T08:03:37.717Z",
+    "generated_at": "2026-09-25T08:28:03.696Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -114,37 +114,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会按代码结构而非文本搜索和改写代码，覆盖 25 种语言：可批量改掉某种形状的调用、导入、类，也能跑 YAML 规则；改写默认先试运行预览。",
-    "when": "当你要找或改的是代码结构——某种形状的函数、调用、导入等——或要做 codemod、跑 YAML 规则时触发；纯文本、注释、文件名则改用 rg。",
+    "what": "Claude 会按代码的语法结构（AST）而不是文字来搜索和改写代码，覆盖 25 种语言。改写默认只给预览、不动文件，加 --apply 才写回。",
+    "when": "当目标是语法形状（某个形状的函数、调用、类、import 等）、codemod 或 YAML 规则时触发；纯字符串、注释、文件名等文本搜索改用 rg。",
     "say": [
       {
-        "text": "找出仓库里所有空的 catch 块",
-        "note": "按语法结构搜索并列出匹配"
+        "text": "帮我找出所有 console.log 调用，改成 logger.info",
+        "note": "默认只预览，加 --apply 才写入文件"
       },
       {
-        "text": "把整个项目的 require 改成 import 并应用",
-        "note": "加 --apply 才真正写入"
+        "text": "把仓库里的 require(...) 全部改写成 import",
+        "note": "先跑一遍预览，再决定是否应用"
+      },
+      {
+        "text": "搜索所有接收 Request 参数的函数",
+        "note": "用 search 子命令，按 AST 结构匹配"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dc05d0420a72af0e65f2512c56b4ae3aed461b58fd2f634c576b3deebaeb67d2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-24T08:09:15.610Z",
+    "generated_at": "2026-09-25T08:33:32.159Z",
     "lint_pass": true,
-    "what_en": "Claude can search and rewrite code by AST shape across 25 languages: bulk-edit calls, imports, classes; run YAML rules. Rewrites default to a dry-run preview.",
-    "when_en": "Triggered when the target is a syntax pattern - a function, call, or import of a given shape - or a codemod or YAML rule; for plain strings, comments, or filenames use rg.",
+    "what_en": "Claude searches and rewrites code by syntax structure (AST) instead of text, across 25 languages. Rewrites default to a preview only; files change on a second pass with --apply.",
+    "when_en": "Use when the target is a syntax shape (functions, calls, classes, imports shaped like X), a codemod, or YAML rules; use rg for plain strings, comments, or filenames.",
     "say_en": [
       {
-        "text": "Rewrite every console.log(x) to logger.info(x), show me a preview first",
-        "note": "Dry-run by default; files untouched"
+        "text": "Find every console.log call and rewrite it to logger.info",
+        "note": "Preview by default; add --apply to write files"
       },
       {
-        "text": "Find every empty catch block in the repo",
-        "note": "Searches by syntax shape"
+        "text": "Rewrite every require(...) to import across the repo",
+        "note": "Runs a dry-run preview before applying"
       },
       {
-        "text": "Convert require(...) to import across the project and apply",
-        "note": "Needs --apply to write files"
+        "text": "Search for every function that takes a Request parameter",
+        "note": "Uses the search subcommand with AST matching"
       }
     ]
   }

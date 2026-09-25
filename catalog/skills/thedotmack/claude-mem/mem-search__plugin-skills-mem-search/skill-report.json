@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Search claude-mem's persistent cross-session memory database. Use when user asks \"did we already solve this?\", \"how did we do X last time?\", or needs work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/mem-search",
-    "upstream_commit": "c4bfa4595046bde1678de6f2a90bcb7e63c36d6f",
+    "upstream_commit": "02cd0c9c47e38a849e764477290c571e84dfa043",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94574,
+    "stars_github": 94654,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-24T08:03:32.635Z",
+    "fetched_at": "2026-09-25T08:27:58.850Z",
     "first_seen_at": "2026-08-28T14:48:34.339Z",
-    "upstream_commit_at": "2026-09-23T12:57:35-07:00",
+    "upstream_commit_at": "2026-09-24T18:11:49-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-24T08:03:32.635Z",
+    "generated_at": "2026-09-25T08:27:58.850Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 能检索 claude-mem 的跨会话记忆库:按关键词、项目、日期、类型找出过往会话的摘要(ID、时间、标题),再按需取前后时间线与完整详情,只有摘要不够时才去读原始工具输入输出。",
-    "when": "当你问的是之前会话而非当前对话时触发,例如「这个我们解决过吗」「上次怎么做的」「上周发生了什么」等。",
+    "what": "装上后，Claude 会按分层流程检索 claude-mem 跨会话记忆库：先用 search 拿到带 ID 的索引，再用 timeline 看上下文，确认相关才取完整记录，必要时才翻原始工具输入输出；先筛后取以省 token。",
+    "when": "当你问起之前会话里的事，比如“这个我们修过了吗”“上次 X 怎么解决的”等，或需要用到以前会话的成果时触发。当前对话里的问题不归它管。",
     "say": [
       {
-        "text": "搜一下之前和登录认证有关的会话记录",
-        "note": "返回带 ID、时间、标题的索引表"
+        "text": "我们之前是不是修过这个登录问题?",
+        "note": "它在历史会话里搜索并返回相关记录 ID"
       },
       {
-        "text": "上周迁移失败那次是怎么处理的?",
-        "note": "按关键词和日期范围搜索并给摘要"
+        "text": "上个月那次数据库迁移失败是怎么解决的?",
+        "note": "先给摘要,必要时再翻出当时的原始命令输出"
       },
       {
-        "text": "把 #11131 前后的上下文拉出来看看",
-        "note": "返回该记录前后的时间线条目"
+        "text": "把 #11131 前后各三条记录拉出来看看",
+        "note": "用 timeline 展示该条记录前后的上下文"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-24T08:11:50.698Z",
+    "generated_at": "2026-09-25T08:35:57.400Z",
     "lint_pass": true,
-    "what_en": "Claude can search claude-mem's cross-session memory by keyword, project, date, or type, returning summarized records with IDs, times, and titles, then pulling timelines and full observation details, and reading raw tool I/O only when summaries are not enough.",
-    "when_en": "Use when you ask about earlier sessions rather than the current chat, e.g. \"did we fix this already?\", \"how did we do X last time?\", or \"what happened last week?\"",
+    "what_en": "Claude searches claude-mem's cross-session memory in layers: search for an index of IDs, timeline for context, get_observations for full records, and rarely get_tool_uses for raw tool I/O. It filters before fetching to save tokens.",
+    "when_en": "Triggers when you ask about previous sessions, e.g. \"did we already fix this?\" or \"how did we do X last time?\", or need work from earlier sessions. Questions about the current conversation are out of scope.",
     "say_en": [
       {
-        "text": "Search past sessions about login authentication",
-        "note": "Returns an index table of IDs, times, titles"
+        "text": "Did we already fix this login bug?",
+        "note": "It searches past sessions and returns matching record IDs"
       },
       {
-        "text": "How did we handle that migration failure last week?",
-        "note": "Searches by keyword and date, then summarizes"
+        "text": "How did we solve that failed database migration last month?",
+        "note": "It returns summaries first, raw command output only if needed"
       },
       {
-        "text": "Pull the timeline around observation #11131",
-        "note": "Returns entries before and after the anchor"
+        "text": "Show me three records before and after #11131",
+        "note": "Runs timeline to show context around that record"
       }
     ]
   }

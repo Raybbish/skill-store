@@ -5,7 +5,7 @@
     "name": "add-github",
     "description": "Add GitHub channel integration via Chat SDK. PR and issue comment threads as conversations.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-github",
-    "upstream_commit": "143db6c907c652773a536c7c9e96269fdad0a4a4",
+    "upstream_commit": "c313d061b0263dfbb1967ab64e4d7524c09a71a0",
     "content_hash": "sha256:536532a08d2dd637e092c62c3b9296b9ff309d5e50266f444807a6543ba2e793",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30841,
+    "stars_github": 30845,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-24T08:03:54.099Z",
+    "fetched_at": "2026-09-25T08:28:20.914Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-23T18:48:57+02:00",
+    "upstream_commit_at": "2026-09-24T15:57:15+03:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-24T08:03:54.099Z",
+    "generated_at": "2026-09-25T08:28:20.914Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,36 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会通过 Chat SDK 接入 GitHub 频道：用专用的机器人账号参与 PR 和 issue 的评论线程，被 @ 提及就在评论里回复。",
-    "when": "当有人在 PR 或 issue 评论中 @ 机器人账号时接管；首次提及后该线程被订阅，后续评论都会回应。",
+    "what": "Claude 会接入 GitHub:在 PR(拉取请求)和 issue 的评论线程里参与对话。有人 @ 机器人账号后它开始回复,之后该线程的后续评论它都会跟进。",
+    "when": "当有人在 PR 或 issue 评论里 @ 机器人账号时触发;首次提及后该线程的后续评论也会接管。仓库 webhook 需订阅 issue 评论、PR review 评论等事件。",
     "say": [
       {
-        "text": "帮我把 GitHub 频道接进来，机器人账号叫 my-org-bot",
-        "note": "会从 channels 分支拷入适配器并注册"
+        "text": "帮我把 GitHub 渠道接入 NanoClaw",
+        "note": "会从 channels 分支拷贝 GitHub 适配器并注册"
       },
       {
-        "text": "这个仓库是私有的，按 public 策略接线",
-        "note": "私有库可放行全部评论"
+        "text": "新建一个监控 github:acme/backend 的 GitHub 消息组",
+        "note": "用 ncl 创建消息组,再用 per-thread 模式接线"
+      },
+      {
+        "text": "这是公开仓库,请用 strict 的 unknown_sender_policy",
+        "note": "只有已注册成员能触发 agent"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:536532a08d2dd637e092c62c3b9296b9ff309d5e50266f444807a6543ba2e793",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-24T08:10:55.820Z",
+    "generated_at": "2026-09-25T08:35:09.052Z",
     "lint_pass": true,
-    "what_en": "After install, Claude adds a GitHub channel via Chat SDK: a dedicated bot account joins PR and issue comment threads and replies when @-mentioned.",
-    "when_en": "Triggers when someone @-mentions the bot account in a PR or issue comment; after the first mention the thread is subscribed and later comments are answered.",
+    "what_en": "Claude gains a GitHub channel: it takes part in pull request and issue comment threads. After someone @-mentions the bot account it replies, then follows all later comments in that thread.",
+    "when_en": "Triggers when someone @-mentions the bot account in a PR or issue comment; after that, the thread is subscribed and later comments are handled. Webhooks must cover issue and PR review comments.",
     "say_en": [
       {
-        "text": "Add the GitHub channel for me, the bot account is my-org-bot",
-        "note": "Copies the adapter from the channels branch"
+        "text": "Add the GitHub channel to my NanoClaw project",
+        "note": "Copies the GitHub adapter from the channels branch and registers it"
       },
       {
-        "text": "This repo is private, wire it with the public policy",
-        "note": "Private repos can let all comments through"
+        "text": "Create a GitHub messaging group for github:acme/backend",
+        "note": "Creates the group with ncl and wires it to an agent group"
       },
       {
-        "text": "Create a messaging group for github:acme/backend and wire it to my agent group"
+        "text": "Use strict unknown_sender_policy since this repo is public",
+        "note": "Only registered members can trigger the agent"
       }
     ]
   }

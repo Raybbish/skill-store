@@ -5,7 +5,7 @@
     "name": "add-ollama-tool",
     "description": "Add Ollama MCP server so the container agent can call local models and optionally manage the Ollama model library.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-tool",
-    "upstream_commit": "143db6c907c652773a536c7c9e96269fdad0a4a4",
+    "upstream_commit": "c313d061b0263dfbb1967ab64e4d7524c09a71a0",
     "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30841,
+    "stars_github": 30845,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-24T08:03:54.099Z",
+    "fetched_at": "2026-09-25T08:28:20.914Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-23T18:48:57+02:00",
+    "upstream_commit_at": "2026-09-24T15:57:15+03:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-24T08:03:54.099Z",
+    "generated_at": "2026-09-25T08:28:20.914Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,41 +98,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 仍是主调度者,但可以把任务交给宿主上本地运行的 Ollama 模型:它能列出已安装的模型,并让指定模型生成回答;开启管理工具后,还能下载、删除、查看模型和查看内存中已加载的模型。",
-    "when": "当你要求用本地 Ollama 模型生成回答或列出已装模型时触发;若已开启管理工具,让代理管理模型库(下载、删除、查看等)时也会接管。",
+    "what": "Claude 仍是主控,但可以把任务交给本机 Ollama 模型:默认提供「列出已安装模型」和「用指定模型生成回答」两个工具;在 .env 里设 OLLAMA_ADMIN_TOOLS=true 后,还会多出下载、删除、查看模型和查看已加载模型四类工具。",
+    "when": "当你要求用本机 Ollama 模型来回答(例如「use ollama to tell me...」),或者要它列出、下载、删除本地模型时接管。",
     "say": [
       {
-        "text": "用 ollama 告诉我法国的首都是哪里",
-        "note": "代理会先列出模型,再让某个模型生成回答"
+        "text": "列出本机已安装的 ollama 模型",
+        "note": "调用 ollama_list_models"
       },
       {
-        "text": "拉取 gemma3:1b 模型",
-        "note": "需先设 OLLAMA_ADMIN_TOOLS=true"
-      },
-      {
-        "text": "现在内存里加载了哪些 ollama 模型?",
-        "note": "代理会调用 ollama_list_running"
+        "text": "pull the gemma3:1b model",
+        "note": "需先设置 OLLAMA_ADMIN_TOOLS=true"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-24T08:11:04.140Z",
+    "generated_at": "2026-09-25T08:35:15.191Z",
     "lint_pass": true,
-    "what_en": "Claude stays the orchestrator but can offload work to local Ollama models on the host: it can list installed models and have a chosen model generate a response. With admin tools enabled it can also pull, delete, show models and list running ones.",
-    "when_en": "Triggers when you ask a local Ollama model to answer or list installed models; with admin tools enabled it also takes over when you ask the agent to manage the model library (pull, delete, show, list running).",
+    "what_en": "Claude stays the orchestrator but can offload work to local Ollama models. By default it gets tools to list installed models and generate responses; with OLLAMA_ADMIN_TOOLS=true it also gets pull, delete, show and list-running tools.",
+    "when_en": "When you ask it to answer with a local Ollama model (e.g. \"use ollama to tell me...\"), or to list, pull or delete local models.",
     "say_en": [
       {
         "text": "use ollama to tell me the capital of France",
-        "note": "It lists models, then generates with one"
+        "note": "It lists models first, then uses ollama_generate"
+      },
+      {
+        "text": "list the ollama models installed on this machine",
+        "note": "Calls ollama_list_models"
       },
       {
         "text": "pull the gemma3:1b model",
         "note": "Requires OLLAMA_ADMIN_TOOLS=true"
-      },
-      {
-        "text": "which ollama models are loaded in memory?",
-        "note": "It calls ollama_list_running"
       }
     ]
   }

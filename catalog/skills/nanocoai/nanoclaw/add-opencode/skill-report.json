@@ -5,7 +5,7 @@
     "name": "add-opencode",
     "description": "Use OpenCode as an agent provider. OpenRouter, OpenAI, Google, DeepSeek, etc. via OpenCode config — not the Anthropic Agent SDK. Per group via `ncl groups config update --provider opencode`; host passes OPENCODE_* and XDG mount when spawning containers.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-opencode",
-    "upstream_commit": "143db6c907c652773a536c7c9e96269fdad0a4a4",
+    "upstream_commit": "c313d061b0263dfbb1967ab64e4d7524c09a71a0",
     "content_hash": "sha256:e84d0f92dec5e49491c2b1fdaa347b59e67ef190fd627056273f27291b3b1abf",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30841,
+    "stars_github": 30845,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-24T08:03:54.099Z",
+    "fetched_at": "2026-09-25T08:28:20.914Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-23T18:48:57+02:00",
+    "upstream_commit_at": "2026-09-24T15:57:15+03:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-24T08:03:54.099Z",
+    "generated_at": "2026-09-25T08:28:20.914Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -173,41 +173,32 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "把 OpenCode 装成 agent 的另一种后端:装好后可按组把 provider 切成 opencode,agent 就改用 OpenRouter、DeepSeek 等模型,而非 Anthropic SDK。",
-    "when": "当你想让某个 agent 组改用 OpenCode 后端、跑 OpenRouter、DeepSeek 等非 Anthropic 模型时触发,通常从宿主机执行 ncl 命令切换。",
+    "what": "给 NanoClaw 装上 OpenCode 这个 agent provider:从 providers 分支拷入 provider 文件、装依赖、接好注册、重建容器镜像,让某个 agent 组改用 OpenRouter、DeepSeek 等模型,而不是 Anthropic Agent SDK。",
+    "when": "当你想让某个 agent 组改用 OpenCode 提供方(如 OpenRouter、DeepSeek 等模型),或要从零把它装好时。",
     "say": [
       {
-        "text": "帮我把 OpenCode provider 装好并重建 agent 镜像",
-        "note": "会拷贝 provider 文件、装依赖、重建镜像"
-      },
-      {
-        "text": "把这个组的 provider 切成 opencode 并重启",
-        "note": "写入配置后重启才生效"
-      },
-      {
-        "text": "切完 provider 帮我跑 /migrate-memory",
-        "note": "memory 不会在 provider 间自动跟随"
+        "text": "把 OpenCode 配置成用 DeepSeek 的模型。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e84d0f92dec5e49491c2b1fdaa347b59e67ef190fd627056273f27291b3b1abf",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-24T08:11:11.826Z",
+    "generated_at": "2026-09-25T08:35:19.144Z",
     "lint_pass": true,
-    "what_en": "Installs OpenCode as an alternative agent backend: after setup you can switch a group's provider to opencode so agents run on OpenRouter, DeepSeek, etc. instead of the Anthropic Agent SDK.",
-    "when_en": "Use when you want an agent group to run on the OpenCode backend with non-Anthropic models; switching is an operator action run from the host via ncl.",
+    "what_en": "Installs OpenCode as an agent provider in NanoClaw: copies provider files from the providers branch, adds the SDK dependency, wires registration, and rebuilds the image so a group can run OpenRouter, DeepSeek, etc. instead of the Anthropic Agent SDK.",
+    "when_en": "Use when you want an agent group to run on the OpenCode provider (OpenRouter, DeepSeek, etc.) instead of the default claude provider, or to set it up from scratch.",
     "say_en": [
       {
-        "text": "Install the OpenCode provider and rebuild the agent image.",
-        "note": "Copies files, adds deps, rebuilds image."
+        "text": "Install the OpenCode provider into NanoClaw and rebuild the image.",
+        "note": "Copies provider files, adds deps, runs guards, builds image."
       },
       {
-        "text": "Switch this group to the opencode provider and restart it.",
-        "note": "Config write, restart applies it."
+        "text": "Switch group <group-id> to the opencode provider and restart it.",
+        "note": "Writes provider into container_configs and restarts the group."
       },
       {
-        "text": "Run /migrate-memory after switching providers.",
-        "note": "Memory doesn't carry over on its own."
+        "text": "Set up OpenCode to use DeepSeek models.",
+        "note": "Fill .env with OpenCode provider/model strings and register the key."
       }
     ]
   }
