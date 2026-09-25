@@ -5,7 +5,7 @@
     "name": "pdf",
     "description": "Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables from PDFs, combining or merging multiple PDFs into one, splitting PDFs apart, rotating pages, adding watermarks, creating new PDFs, filling PDF forms, encrypting/decrypting PDFs, extracting images, and OCR on scanned PDFs to make them searchable. If the user mentions a .pdf file or asks to produce one, use this skill.",
     "upstream": "https://github.com/anthropics/skills/tree/main/skills/pdf",
-    "upstream_commit": "3b3fad96af16a10759d930941b4520ba0c40edae",
+    "upstream_commit": "34040c9c568585f6929bedeaad110ad08f079624",
     "content_hash": "sha256:ded12aee3fc92a8a0e60412b2f170e3b286fec8a0fabd9e897e253b97d607c06",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,9 +21,9 @@
   "signals": {
     "stars_github": null,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:36:17.261Z",
+    "fetched_at": "2026-09-11T07:41:07.073Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-08-21T10:10:53-07:00",
+    "upstream_commit_at": "2026-09-10T12:44:08-07:00",
     "appear_count": 5,
     "list_count": 5
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:36:17.261Z",
+    "generated_at": "2026-09-11T07:41:07.073Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -101,26 +101,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上这个技能后，Claude 会按技能里的方法，用 pypdf、pdfplumber、reportlab 等库和命令行工具来处理 PDF：提取文字和表格、合并拆分、旋转页面、加水印、创建新 PDF、填写表单、加解密、提取图片、对扫描件做 OCR 等。",
-    "when": "你提出任何与 PDF 文件相关的需求时触发，包括提到 .pdf 文件或要求生成 PDF。例如让你提取文字、合并 PDF、拆分 PDF 等。",
+    "what": "装上后,Claude 会直接处理 PDF 文件:读取并提取文字和表格、合并、拆分、旋转页面、加水印、创建新 PDF、填写表单、加解密、提取图片,以及把扫描件 OCR 成可搜索文字。",
+    "when": "当你提到 .pdf 文件,或要求产出一份 PDF 时触发接管;填写 PDF 表单时另按 FORMS.md 的说明处理。",
     "say": [
       {
-        "text": "把这两个 PDF 合并成一个文件。",
-        "note": "技能会用 pypdf 或 qpdf 完成合并。"
+        "text": "把这个 PDF 里的文字和表格提取出来,存成 Excel",
+        "note": "用 pdfplumber 抽表格并导出 xlsx"
       },
       {
-        "text": "提取这份 PDF 里的所有表格，存成 Excel。",
-        "note": "技能会用 pdfplumber 提取并转存。"
+        "text": "把这几个 PDF 合并成一个,再给每页加水印",
+        "note": "pypdf 合并后逐页叠加水印"
       },
       {
-        "text": "把这份扫描 PDF 的文本识别出来，做成可搜索的。",
-        "note": "技能会用 OCR 工具识别文字。"
+        "text": "这份扫描件是图片,帮我 OCR 成能搜索的文字",
+        "note": "先转图片再用 pytesseract 识别"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ded12aee3fc92a8a0e60412b2f170e3b286fec8a0fabd9e897e253b97d607c06",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:20:24.311Z",
-    "lint_pass": true
+    "generated_at": "2026-09-11T07:46:27.151Z",
+    "lint_pass": true,
+    "what_en": "Once installed, Claude handles PDF work directly: reading and extracting text or tables, merging, splitting, rotating pages, adding watermarks, creating PDFs, filling forms, encrypting/decrypting, extracting images, and OCR on scanned files.",
+    "when_en": "It takes over when you mention a .pdf file or ask for a PDF to be produced; filling a PDF form follows FORMS.md instead.",
+    "say_en": [
+      {
+        "text": "Extract the text and tables from this PDF into Excel",
+        "note": "pdfplumber pulls tables into xlsx"
+      },
+      {
+        "text": "Merge these PDFs into one and watermark every page",
+        "note": "pypdf merges, then stamps the watermark"
+      },
+      {
+        "text": "This scan is images - OCR it into searchable text",
+        "note": "Pages to images, then pytesseract"
+      }
+    ]
   }
 }
