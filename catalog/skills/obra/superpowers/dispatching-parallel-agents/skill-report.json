@@ -5,7 +5,7 @@
     "name": "dispatching-parallel-agents",
     "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
     "upstream": "https://github.com/obra/superpowers/tree/main/skills/dispatching-parallel-agents",
-    "upstream_commit": "5bf4e78011075bcfc0dc295f0724994cd123ee71",
+    "upstream_commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
     "content_hash": "sha256:fff328fc3785c25e4eccbcf17395f1769302ee2b3d6f626b802776a6ed89389f",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 196700,
-    "fetched_at": "2026-09-22T08:13:29.309Z",
+    "installs_skills_sh": 199800,
+    "fetched_at": "2026-09-26T08:17:26.677Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-09-18T17:31:35-07:00"
+    "upstream_commit_at": "2026-09-25T11:06:27-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-22T08:13:29.309Z",
+    "generated_at": "2026-09-26T08:17:26.677Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "遇到多个互不相关的问题时,Claude 会为每个问题域各派一个独立子代理,在同一轮响应里并发运行;每个代理拿到专属、自洽的指令,不继承当前会话历史。代理返回后,Claude 阅读总结、核对改动是否冲突,并跑完整测试套件。",
-    "when": "当你面对 2 个以上彼此独立、无共享状态、无先后依赖的任务时触发,比如 3 个以上根因不同的测试失败文件。相关或会互相干扰的失败则改由一个代理串行处理。",
+    "what": "遇到多个互不相关的任务或测试失败时,Claude 会为每个独立问题域派一个专属子代理,在同一轮响应里并行派发,各自只带专门写好的指令和上下文,收回摘要后核对冲突并整体验证。",
+    "when": "当出现 2 个以上可独立处理、彼此没有共享状态或先后依赖的任务时接管,例如多个测试文件因不同原因失败、多个子系统各自出问题等。",
     "say": [
       {
-        "text": "这三个测试文件都挂了,分别派一个代理去修",
-        "note": "同一响应里并发派出全部子代理"
+        "text": "这三个测试文件各自失败,原因互不相关,帮我并行修。",
+        "note": "会为每个文件派一个子代理同时处理"
       },
       {
-        "text": "让一个代理只修 agent-tool-abort.test.ts 的失败",
-        "note": "该代理只动这个文件并返回总结"
+        "text": "把这几个独立子系统的排查分给不同子代理,再把结果整合给我。",
+        "note": "各自返回摘要后核对冲突并跑全量测试"
       },
       {
-        "text": "先判断这些失败是否相互独立,再决定并行还是串行",
-        "note": "相关或共享状态的失败改为串行"
+        "text": "每个子代理只改指定文件,不要动生产代码。",
+        "note": "作为约束写进子代理指令"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:fff328fc3785c25e4eccbcf17395f1769302ee2b3d6f626b802776a6ed89389f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-22T08:18:33.758Z",
+    "generated_at": "2026-09-26T08:21:59.891Z",
     "lint_pass": true,
-    "what_en": "Claude dispatches one subagent per independent problem domain and issues them in a single response, so they run in parallel with focused, self-contained instructions. It then reviews each summary, checks conflicts, and runs the full suite.",
-    "when_en": "Triggered by 2+ independent tasks with no shared state or sequential dependencies, e.g. 3+ failing test files with different root causes. Related failures use one agent instead.",
+    "what_en": "For several unrelated tasks or failing tests, Claude dispatches one subagent per independent problem domain in one response so they run in parallel, then reads each summary, checks conflicts, and verifies the integrated result.",
+    "when_en": "Takes over when 2+ tasks are independent with no shared state or sequential dependency, e.g. several test files failing for different root causes.",
     "say_en": [
       {
-        "text": "Three test files are failing - send one agent per file to fix them",
-        "note": "All three dispatch in one response and run in parallel"
+        "text": "Three test files fail for unrelated reasons — fix them in parallel.",
+        "note": "One subagent per file, run concurrently"
       },
       {
-        "text": "Have one agent fix only the failures in agent-tool-abort.test.ts",
-        "note": "That agent touches only that file and returns a summary"
+        "text": "Split these independent subsystem investigations across subagents, then merge the results.",
+        "note": "Each returns a summary; conflicts checked after"
       },
       {
-        "text": "Check whether these failures are independent before going parallel",
-        "note": "Related or shared-state work runs sequentially instead"
+        "text": "Each subagent edits only its file — don't touch production code.",
+        "note": "Added as a constraint in agent prompts"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "migrate-from-v1",
     "description": "Finish migrating a NanoClaw v1 install into v2. Run after `bash migrate-v2.sh` completes. Seeds the owner, migrates legacy memory, reconciles container configs, and helps port custom v1 code. Triggers on \"migrate from v1\", \"finish migration\", \"v1 migration\".",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-from-v1",
-    "upstream_commit": "c313d061b0263dfbb1967ab64e4d7524c09a71a0",
+    "upstream_commit": "d4ff64f49f1defea8c46a3d884d932a1d967e6d9",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30845,
+    "stars_github": 30844,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-25T08:28:20.914Z",
+    "fetched_at": "2026-09-26T08:15:06.025Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-24T15:57:15+03:00",
+    "upstream_commit_at": "2026-09-25T22:06:59+03:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-25T08:28:20.914Z",
+    "generated_at": "2026-09-26T08:15:06.025Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "跑完迁移脚本后，Claude 接手需要人判断的收尾工作：按 handoff.json 排查失败步骤、授予 owner 角色、迁移旧记忆、核对容器配置、搬运 v1 自定义代码。",
-    "when": "当你跑完 `bash migrate-v2.sh`，或提到 “migrate from v1”、“finish migration” 等关键词时触发。",
+    "what": "接着 `migrate-v2.sh` 跑完后剩下的迁移工作:读 handoff.json 定位失败步骤、验证 v2 能收发消息、确认并授予 owner 角色、跑 `/migrate-memory` 迁移旧记忆、核对容器挂载配置,并判断 v1 的自定义代码哪些可移植。",
+    "when": "在 `bash migrate-v2.sh` 执行完成、它把控制权交回 Claude 之后接管;或当你提到“migrate from v1”、“finish migration”等关键词时触发。若 handoff.json 不存在,它会停下来让你先去终端跑脚本。",
     "say": [
       {
-        "text": "handoff.json 里有哪些失败的步骤？",
-        "note": "Claude 读取 handoff.json 逐条排查"
+        "text": "读一下 handoff.json,告诉我哪些迁移步骤失败了",
+        "note": "会列出各步结果和 followups 待办清单"
       },
       {
-        "text": "帮我把 v2 的 owner 角色授予我",
-        "note": "确认用户 ID 后写入 owner 角色"
-      },
-      {
-        "text": "我 v1 有哪些自定义提交，怎么搬过来？",
-        "note": "对比 upstream 提交并给出处理选项"
+        "text": "帮我跑一下旧记忆迁移",
+        "note": "对导入的群执行 /migrate-memory"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-25T08:35:36.692Z",
-    "lint_pass": true,
-    "what_en": "Once migrate-v2.sh finishes, this skill has Claude do the judgment calls: triage failed steps from handoff.json, grant the owner role, run the shared-memory migration, reconcile container configs, and port custom v1 code.",
-    "when_en": "Triggers after `bash migrate-v2.sh` completes, or when you mention \"migrate from v1\", \"finish migration\" and similar phrases.",
+    "generated_at": "2026-09-26T08:21:56.705Z",
+    "lint_pass": false,
+    "what_en": "Does the remaining work after `migrate-v2.sh` finishes: reads handoff.json to find failed steps, proves v2 routes real messages, confirms and grants the owner role, runs `/migrate-memory` for legacy memory, checks container mount config, and judges which v1 fork customizations are portable.",
+    "when_en": "Takes over after `bash migrate-v2.sh` completes and hands control back to Claude, or when you mention \"migrate from v1\", \"finish migration\", etc. If handoff.json is missing, it stops and asks you to run the script in your terminal first.",
     "say_en": [
       {
-        "text": "Which steps failed in handoff.json?",
-        "note": "Claude reads handoff.json and walks each step"
+        "text": "Read handoff.json and tell me which migration steps failed",
+        "note": "Lists per-step results and the followups list"
       },
       {
-        "text": "Grant me the v2 owner role",
-        "note": "Confirms your user ID, then writes the role"
+        "text": "My user ID is telegram:6037840640, grant me the owner role",
+        "note": "Inserts an owner row in user_roles"
       },
       {
-        "text": "Which v1 commits are custom, and how do I port them?",
-        "note": "Diffs against upstream and offers options"
+        "text": "Run the legacy memory migration for me",
+        "note": "Runs /migrate-memory for imported groups"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "avoid-ai-writing",
     "description": "Audit and rewrite prose so it stops reading as machine-generated. Use this skill when asked to remove AI-isms, clean up AI writing, edit a draft for AI tells, audit a README, changelog, release note, PR description, or blog post for machine-sounding prose, or make text sound less like AI. Supports a detect-only mode, a rewrite mode, and an edit-in-place mode, with optional voice and context profiles.",
     "upstream": "https://github.com/wshobson/agents/tree/main/plugins/avoid-ai-writing/skills/avoid-ai-writing",
-    "upstream_commit": "4236bb91f8395b0435f1d8b8baf9e8e4c69a8620",
+    "upstream_commit": "6161de4da8164795bc1128e8888c5054a5b67ddf",
     "content_hash": "sha256:3114bf1b53db6d5e99c430fecfb62fc5277108997dcf9c83b12d132d0d3965f8",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 39638,
+    "stars_github": 39980,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:32.749Z",
+    "fetched_at": "2026-09-26T08:15:04.219Z",
     "first_seen_at": "2026-08-27T13:37:08.572Z",
-    "upstream_commit_at": "2026-09-13T10:43:53-04:00",
+    "upstream_commit_at": "2026-09-25T20:40:31-04:00",
     "repo_skill_count": 183,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:32.749Z",
+    "generated_at": "2026-09-26T08:15:04.219Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,40 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会扫描文稿里读起来像机器生成的写作模式，逐条引用问题原文，再给出改写版本。默认是改写模式，也可以只标记不改或直接改文件；改写时不会添加原文没有的第一人称、立场或事实。",
-    "when": "当你要求去掉 AI 腔、让文字读起来不像 AI 写的，或要审查 README、changelog、PR 描述等文本时触发。",
+    "what": "Claude 会审查你给的文字，标出读起来像机器生成的句式和用词，并给出改写版本与改动说明。默认是改写模式，也能只标记问题，或就地把文件改掉。",
+    "when": "当你要求去掉文中的 AI 腔、给草稿挑 AI 痕迹，或让它审查 README、更新日志等文本时，它会接管。",
     "say": [
       {
-        "text": "把这篇稿子的 AI 腔去掉",
-        "note": "默认进入改写模式，返回问题清单和改写版。"
+        "text": "帮我把这段文字里的 AI 腔去掉，只标记问题、不要改",
+        "note": "进入 detect 模式，问题按严重程度分组列出"
       },
       {
-        "text": "只标记问题，先别改"
+        "text": "按 casual 语气改写这篇博客，最多跑两轮",
+        "note": "用 --voice casual 与 --iterate 2"
       },
       {
-        "text": "就地修改 draft.md，只动被标记的地方",
-        "note": "进入 edit 模式，改后重读文件确认。"
+        "text": "就地把这个 README 里机器味的地方改掉",
+        "note": "edit 模式，大文件先确认改哪一节"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:3114bf1b53db6d5e99c430fecfb62fc5277108997dcf9c83b12d132d0d3965f8",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:36:13.889Z",
+    "generated_at": "2026-09-26T08:22:47.423Z",
     "lint_pass": true,
-    "what_en": "Claude scans prose for machine-sounding patterns, quotes each flagged span, and rewrites it. It also offers detect-only and in-place editing modes, and never adds stance, personality, or facts the source lacked.",
-    "when_en": "Triggers when you ask to remove AI-isms, make text sound less like AI, or audit a README, changelog, PR description, or blog post.",
+    "what_en": "Claude audits your prose, quotes the patterns that read as machine-generated, and returns a cleaned rewrite with a summary of changes. Detect-only and edit-in-place modes are also available.",
+    "when_en": "Triggered when asked to remove AI-isms, clean up AI writing, or make a draft sound less like AI.",
     "say_en": [
       {
-        "text": "Strip the AI-isms from this draft",
-        "note": "Runs default rewrite mode: issues list plus rewritten text."
+        "text": "Flag the AI-isms in this text, don't rewrite it",
+        "note": "Runs detect mode; issues grouped by severity"
       },
       {
-        "text": "Flag only, don't change anything",
-        "note": "Runs detect mode, grouped by severity, marking judgment calls."
+        "text": "Rewrite this blog post in a casual voice, two passes max",
+        "note": "Uses --voice casual and --iterate 2"
       },
       {
-        "text": "Edit draft.md in place, only the flagged spots",
-        "note": "Runs edit mode, then re-reads the file to confirm."
+        "text": "Edit this README in place to remove machine-sounding prose",
+        "note": "Edit mode; confirms the section first"
       }
     ]
   }

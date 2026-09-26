@@ -3,7 +3,7 @@ name: audit-my-app
 description: Sweep a whole running web app for what is broken, without writing a script or knowing the codebase. Clicks every reachable control and reports dead buttons, console errors, failed requests, and places where the API and the screen disagree. Use on an unfamiliar codebase, before a release, after a big merge or dependency bump, when the user asks for a smoke test or a health check, or when someone says "just check everything still works".
 license: Apache-2.0
 metadata:
-  version: 3.2.0
+  version: 3.3.0
   homepage: https://www.reticle.sh
   repository: https://github.com/reticlehq/reticle
 ---
@@ -68,7 +68,7 @@ A suite of forty flows where thirty-one assert nothing is a suite that will stay
 
 ## 5. Report
 
-Lead with the counts, then one line per real finding with its `file:line` from `reticle_inspect`. Separate:
+Lead with the counts, then one line per real finding with its `file:line` from `reticle_look { action: "element" }`. Separate:
 
 - **Broken**: dead controls, contradictions, failed requests, errors thrown during the sweep.
 - **Unverified**: `untouched` controls and `assertionFree` flows. Not known to be broken; known to be unchecked.

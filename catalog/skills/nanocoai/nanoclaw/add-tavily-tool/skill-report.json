@@ -5,7 +5,7 @@
     "name": "add-tavily-tool",
     "description": "Add Tavily Search and Extract as keyless remote MCP tools for selected NanoClaw agent groups. Use when installing Tavily web search or URL extraction without an API key.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-tavily-tool",
-    "upstream_commit": "c313d061b0263dfbb1967ab64e4d7524c09a71a0",
+    "upstream_commit": "d4ff64f49f1defea8c46a3d884d932a1d967e6d9",
     "content_hash": "sha256:2d9ebf4b4d47a240ccd043ff286d0bd5ee5355d8394e0ddbb5352263870df53f",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30845,
+    "stars_github": 30844,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-25T08:28:20.914Z",
+    "fetched_at": "2026-09-26T08:15:06.025Z",
     "first_seen_at": "2026-08-12T04:44:23.959Z",
-    "upstream_commit_at": "2026-09-24T15:57:15+03:00",
+    "upstream_commit_at": "2026-09-25T22:06:59+03:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-25T08:28:20.914Z",
+    "generated_at": "2026-09-26T08:15:06.025Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -96,41 +96,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "为选定的 NanoClaw agent 组装上免密钥的 Tavily 远程 MCP 服务,提供两个工具:tavily_search(网页搜索)与 tavily_extract(网页提取);任何支持 MCP 的 provider 都能识别,Tavily 的 Crawl、Map、Research 会被过滤掉。",
-    "when": "当你想在没有 API 密钥的情况下,给某个 agent 组装上 Tavily 网页搜索或 URL 提取时使用;对非 Claude provider 的组收益更大。",
+    "what": "为指定的 NanoClaw agent 群组安装 mcp-remote 桥接,并注册 Tavily 的远程 MCP 服务器。注册后该群组多出 tavily_search 与 tavily_extract 两个工具,以无需 API key 的方式做网页搜索和 URL 提取。",
+    "when": "当你要给选定的 agent 群组装上 Tavily 网页搜索或 URL 提取、且不想用 API key 时触发;Claude 之外的 provider 群组收益更大。",
     "say": [
       {
-        "text": "给我选定的 agent 组装上免密钥的 Tavily 搜索",
-        "note": "会注册 tavily MCP 服务并重启该组"
+        "text": "用 Tavily 搜索一下今天的 AI 新闻,max_results 设为 1",
+        "note": "会调用 mcp__tavily__tavily_search"
       },
       {
-        "text": "跑一次 max_results 为 1 的 Tavily 搜索,看能不能成功",
-        "note": "用来验证安装是否生效"
+        "text": "用 Tavily 提取这个链接的正文:https://example.com"
       },
       {
-        "text": "免密钥额度用完了,帮我把 Tavily 换成付费 API key",
-        "note": "会写入升级说明并通过 OneCLI 存密钥"
+        "text": "这个群组的 tavily MCP 配置里有哪些 header?",
+        "note": "查看已存配置: ncl groups config get"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2d9ebf4b4d47a240ccd043ff286d0bd5ee5355d8394e0ddbb5352263870df53f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-25T08:35:24.031Z",
-    "lint_pass": false,
-    "what_en": "Installs a keyless Tavily MCP server into selected NanoClaw agent groups, exposing tavily_search and tavily_extract. Any MCP-capable provider picks it up; it helps non-Claude providers most. Crawl, Map and Research are filtered out.",
-    "when_en": "Use when adding Tavily web search or URL extraction to an agent group without an API key. Adds the most for groups on providers other than Claude.",
+    "generated_at": "2026-09-26T08:21:42.321Z",
+    "lint_pass": true,
+    "what_en": "Installs the mcp-remote bridge and registers Tavily's remote MCP server for selected NanoClaw agent groups. Those groups gain two tools, tavily_search and tavily_extract, for keyless web search and URL extraction.",
+    "when_en": "Triggers when you want to install Tavily web search or URL extraction for chosen agent groups without an API key. Groups on non-Claude providers benefit most.",
     "say_en": [
       {
-        "text": "Add keyless Tavily search to my selected agent groups",
-        "note": "Registers the tavily MCP server and restarts each group"
+        "text": "Search with Tavily for today's AI news, max_results 1",
+        "note": "Calls mcp__tavily__tavily_search"
       },
       {
-        "text": "Run one Tavily search with max_results 1 and tell me if it works",
-        "note": "Verifies the install"
+        "text": "Extract the main text of https://example.com with Tavily",
+        "note": "Calls mcp__tavily__tavily_extract"
       },
       {
-        "text": "The keyless allowance ran out — switch Tavily to a paid API key",
-        "note": "Writes upgrade instructions and stores the key via OneCLI"
+        "text": "What headers are in this group's tavily MCP config?",
+        "note": "Reads stored config via ncl"
       }
     ]
   }

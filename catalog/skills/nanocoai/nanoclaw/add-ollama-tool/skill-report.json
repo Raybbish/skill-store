@@ -5,7 +5,7 @@
     "name": "add-ollama-tool",
     "description": "Add Ollama MCP server so the container agent can call local models and optionally manage the Ollama model library.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-tool",
-    "upstream_commit": "c313d061b0263dfbb1967ab64e4d7524c09a71a0",
+    "upstream_commit": "d4ff64f49f1defea8c46a3d884d932a1d967e6d9",
     "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30845,
+    "stars_github": 30844,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-25T08:28:20.914Z",
+    "fetched_at": "2026-09-26T08:15:06.025Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-24T15:57:15+03:00",
+    "upstream_commit_at": "2026-09-25T22:06:59+03:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-25T08:28:20.914Z",
+    "generated_at": "2026-09-26T08:15:06.025Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,37 +98,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 仍是主控,但可以把任务交给本机 Ollama 模型:默认提供「列出已安装模型」和「用指定模型生成回答」两个工具;在 .env 里设 OLLAMA_ADMIN_TOOLS=true 后,还会多出下载、删除、查看模型和查看已加载模型四类工具。",
-    "when": "当你要求用本机 Ollama 模型来回答(例如「use ollama to tell me...」),或者要它列出、下载、删除本地模型时接管。",
+    "what": "装上后，容器里的 Claude 会多出 Ollama 的 MCP 工具：可以列出本机已装模型，把提示发给指定模型并取回回答。开启管理工具后还能拉取、删除、查看模型。",
+    "when": "当你说「用 ollama 回答…」或要求列出本机模型等时触发；只有设置 OLLAMA_ADMIN_TOOLS=true 后，拉取、删除等管理工具才可用。",
     "say": [
       {
-        "text": "列出本机已安装的 ollama 模型",
-        "note": "调用 ollama_list_models"
+        "text": "用 ollama 列出本机装了哪些模型"
       },
       {
-        "text": "pull the gemma3:1b model",
-        "note": "需先设置 OLLAMA_ADMIN_TOOLS=true"
+        "text": "用 ollama 的 gemma3:1b 回答：法国的首都是哪里",
+        "note": "调用 ollama_generate 返回该模型的回答"
+      },
+      {
+        "text": "用 ollama 拉取 gemma3:1b 模型",
+        "note": "需先开启 OLLAMA_ADMIN_TOOLS=true"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-25T08:35:15.191Z",
+    "generated_at": "2026-09-26T08:21:34.402Z",
     "lint_pass": true,
-    "what_en": "Claude stays the orchestrator but can offload work to local Ollama models. By default it gets tools to list installed models and generate responses; with OLLAMA_ADMIN_TOOLS=true it also gets pull, delete, show and list-running tools.",
-    "when_en": "When you ask it to answer with a local Ollama model (e.g. \"use ollama to tell me...\"), or to list, pull or delete local models.",
+    "what_en": "After install, the container agent gains Ollama MCP tools: it can list installed local models and send a prompt to a chosen model for a response. With admin tools enabled it can also pull, delete, and inspect models.",
+    "when_en": "Triggers when you ask Claude to use ollama, e.g. answer with a local model or list installed models. Pull, delete and other admin tools appear only when OLLAMA_ADMIN_TOOLS=true.",
     "say_en": [
       {
-        "text": "use ollama to tell me the capital of France",
-        "note": "It lists models first, then uses ollama_generate"
+        "text": "Use ollama to list which models are installed locally",
+        "note": "Calls ollama_list_models, returns name, size, family"
       },
       {
-        "text": "list the ollama models installed on this machine",
-        "note": "Calls ollama_list_models"
+        "text": "Use ollama model gemma3:1b to answer: what is the capital of France?",
+        "note": "Calls ollama_generate and returns that model's reply"
       },
       {
-        "text": "pull the gemma3:1b model",
-        "note": "Requires OLLAMA_ADMIN_TOOLS=true"
+        "text": "Use ollama to pull the gemma3:1b model",
+        "note": "Requires OLLAMA_ADMIN_TOOLS=true first"
       }
     ]
   }

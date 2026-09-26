@@ -3,7 +3,7 @@ name: install-and-verify
 description: Verify that a web app change actually works by driving the running app from the inside (DOM, network, routing, console, framework state) instead of screenshots or guessing. Use after any user-facing change, when a fix is claimed but unproven, when a test passes but the UI is broken, or when you need a real verdict rather than "looks right". Also use to install and wire up Reticle in a project that does not have it yet.
 license: Apache-2.0
 metadata:
-  version: 3.2.0
+  version: 3.3.0
   homepage: https://www.reticle.sh
   repository: https://github.com/reticlehq/reticle
 ---
@@ -34,7 +34,7 @@ cat .reticle.json 2>/dev/null || echo NOT_FOUND
 ```
 
 - `NOT_FOUND` → **SETUP** below.
-- File exists → **VERIFY** below. If `reticle_sessions` then returns an empty list, go to [references/troubleshooting.md](references/troubleshooting.md); do not restart setup.
+- File exists → **VERIFY** below. If `reticle_session { action: "list" }` then returns an empty list, go to [references/troubleshooting.md](references/troubleshooting.md); do not restart setup.
 
 Both paths are about THIS PROJECT. The machine step is separate and comes first: one command that puts the CLI on PATH and registers the MCP server with every agent it can reach.
 
@@ -150,12 +150,12 @@ Stop at the first row that fits. Do not hand-drive a flow you could replay.
 
 | The question | The call | Calls |
 | --- | --- | --- |
-| "Did my edit break anything?" | `reticle_run({ tool: "reticle_verify", args: { action: "change", files: ["src/App.tsx"] } })` | 1 |
+| "Did my edit break anything?" | `reticle_verify({ action: "change", files: ["src/App.tsx"] })` | 1 |
 | "Does this known journey still work?" | `reticle_run({ tool: "reticle_flow_replay", args: { flowName: "login" } })` | 1 |
-| "Does this new behaviour work?" | `reticle_act_sequence` for the setup, then ONE `reticle_act_and_wait` | 2 |
+| "Does this new behaviour work?" | `reticle_act { steps: [...] }` for the setup, then ONE `reticle_act_and_wait` | 2 |
 | No MCP available at all | `npx @reticlehq/server verify <url>` in the shell | 1, no MCP |
 
-The first two are **not on the advertised tool list**: they are reached through `reticle_run` exactly as written. That is the supported call shape, and it is why you have to be told they exist.
+`reticle_flow_replay` is **not on the advertised tool list**: it is reached through `reticle_run` exactly as written. That is the supported call shape, and it is why you have to be told it exists.
 
 `reticle_verify {action:"change"}` answers `unknown` when no saved flow covers the files you changed. Nothing ran, so nothing was proved: that is the honest answer, never a pass, and it is the signal to record one (step 5 above).
 

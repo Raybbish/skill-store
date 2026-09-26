@@ -3,7 +3,7 @@ name: test-error-states
 description: Force the states a happy-path run never reaches (a failing API, an empty list, a slow request, a timeout, an expired session, a toast that auto-dismisses) and check the UI actually handles them. Use when error handling was written but never run, when a loading or empty state needs verifying, when a bug only happens on a slow connection, or when a timer, poll, debounce or retry needs testing without sleeping.
 license: Apache-2.0
 metadata:
-  version: 3.2.0
+  version: 3.3.0
   homepage: https://www.reticle.sh
   repository: https://github.com/reticlehq/reticle
 ---
@@ -18,7 +18,7 @@ Every app has a `catch` block nobody has executed and an empty state nobody has 
 
 `reticle_network_mock` intercepts requests in a browser Reticle owns, and **the always-on SDK cannot do it.** A connected tab with neither `reticle drive` nor a lease still returns `{ ok: false, reason: "no-cdp-provider" }`.
 
-Your route is a leased Playwright tab (`reticle_lease acquire`) or `RETICLE_CDP_URL` pointed at a Chrome started with remote debugging:
+Your route is a leased Playwright tab (`reticle_run { tool: "reticle_lease", args: { action: "acquire", url } }`) or `RETICLE_CDP_URL` pointed at a Chrome started with remote debugging:
 
 ```bash
 # macOS — the user runs this once, in their own Chrome

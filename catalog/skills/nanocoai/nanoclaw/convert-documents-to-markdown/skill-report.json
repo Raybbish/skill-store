@@ -5,7 +5,7 @@
     "name": "convert-documents-to-markdown",
     "description": "Convert an attached Word document, presentation, spreadsheet, OpenDocument file, RTF, EPUB, CSV, or text-based PDF into local Markdown. Use when a message supplies a local attachment path that must be read without uploading it to an external parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc/container-skills/convert-documents-to-markdown",
-    "upstream_commit": "c313d061b0263dfbb1967ab64e4d7524c09a71a0",
+    "upstream_commit": "d4ff64f49f1defea8c46a3d884d932a1d967e6d9",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30845,
+    "stars_github": 30844,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-25T08:28:20.914Z",
+    "fetched_at": "2026-09-26T08:15:06.025Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-24T15:57:15+03:00",
+    "upstream_commit_at": "2026-09-25T22:06:59+03:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-25T08:28:20.914Z",
+    "generated_at": "2026-09-26T08:15:06.025Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,37 +86,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会把消息中给出的本地附件(Word、演示文稿、表格、PDF、EPUB、CSV 等)在容器内转成 Markdown 文件,再只读取其中相关段落,不经外部解析服务;转换失败时会说明原因。",
-    "when": "当消息附带一个本地文件路径、需要在不把文件上传到外部解析服务的前提下读取它时触发,适用于 Word、表格、PDF 等附件。",
+    "what": "你把本地附件的路径给它,Claude 就在容器内用 anydoc 命令把 Word、表格、演示文稿、PDF 等转成 Markdown,存到输出目录并告诉你文件路径。转换全程在本地完成,不上传外部解析服务。",
+    "when": "当消息里给出了本地附件路径、需要读取它又不想上传到外部解析器时触发,涵盖 Word、PDF、CSV 等格式。",
     "say": [
       {
-        "text": "这份 CSV 从标准输入读,按 csv 格式转换",
-        "note": "需显式指定格式"
+        "text": "这份表格的百分比和隐藏行可能丢,别拿它做数值计算",
+        "note": "Markdown 只作阅读上下文"
       },
       {
-        "text": "转换后的 Markdown 很大,只读财务相关的那几节",
-        "note": "避免把全文塞进模型上下文"
+        "text": "转换失败的话,说清是不支持、加密还是内容损坏",
+        "note": "按原文列出的失败类型回报"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-25T08:35:29.886Z",
+    "generated_at": "2026-09-26T08:21:49.519Z",
     "lint_pass": true,
-    "what_en": "Converts a local attachment path (Word, presentation, spreadsheet, PDF, EPUB, CSV, etc.) into Markdown inside the agent container, without uploading it to an external parser, and then reads only the relevant sections. Reports conversion failures clearly.",
-    "when_en": "Triggered when a message supplies a local attachment path that must be read without uploading the file to an external parser; covers Word, spreadsheets, PDFs, and more.",
+    "what_en": "Claude takes the local attachment path you give it and runs the AnyDoc CLI inside the agent container to turn Word, spreadsheet, presentation, PDF and similar files into local Markdown, then returns the output file path. Nothing is uploaded to an external parser.",
+    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser. Covers office files, CSV and text-based PDFs.",
     "say_en": [
       {
-        "text": "Convert /workspace/inbox/msg/report.docx to Markdown",
-        "note": "Writes into a temp dir under /workspace/agent/converted"
+        "text": "Convert /workspace/inbox/msg/notes.docx to Markdown",
+        "note": "Writes an .md in the container and returns its path"
       },
       {
-        "text": "Read this CSV from stdin and convert it as csv",
-        "note": "The format must be named explicitly"
+        "text": "Percentages and hidden rows may be lost, don't do math off it",
+        "note": "Treat the Markdown as reading context only"
       },
       {
-        "text": "The converted Markdown is long - read only the financial sections",
-        "note": "Keeps the full output out of model context"
+        "text": "If conversion fails, say if it's unsupported, encrypted or malformed",
+        "note": "Reports the failure types listed in the skill"
       }
     ]
   }

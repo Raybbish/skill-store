@@ -5,8 +5,8 @@
     "name": "verify-cli-run",
     "description": "Prove that a command-line tool actually did what it said, instead of trusting its exit code and its output. Snapshots the filesystem before and after, names the expected consequence in advance, and returns one of four verdicts with what could not be seen. Use after running a build, a migration, a scaffolder, a formatter, a codegen step, or an AI coding CLI; when a command printed success and you are about to report \"done\"; when you are about to write \"exit code 0, so it worked\"; or when a tool claims it edited files. Needs nothing installed.",
     "upstream": "https://github.com/reticlehq/reticle/tree/main/skills/verify-cli-run",
-    "upstream_commit": "39cc34a84bfb78023154c9f4e99c61f3cbe8fc19",
-    "content_hash": "sha256:fc3930c13b2fcddff72e323f511b9b82b0c676bb10c12be4cad34583ace6c032",
+    "upstream_commit": "c55f039e6bc3381235c29c366d3b8a9562c94320",
+    "content_hash": "sha256:52eba1a2b557470f7d31f6f846825f4549958cf647c596d89a0704efccc3ad27",
     "license": "Apache-2.0",
     "hosting": "indexed",
     "category": "dev",
@@ -15,17 +15,18 @@
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
+      "testing",
       "cli"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 829,
+    "stars_github": 886,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-24T08:05:54.806Z",
+    "fetched_at": "2026-09-26T08:16:43.629Z",
     "first_seen_at": "2026-09-24T08:05:54.806Z",
-    "upstream_commit_at": "2026-09-23T17:50:44Z",
+    "upstream_commit_at": "2026-09-26T03:25:47Z",
     "repo_skill_count": 15
   },
   "context_size": {
@@ -35,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-24T08:05:54.806Z",
+    "generated_at": "2026-09-26T08:16:43.629Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -68,63 +69,62 @@
   },
   "eval": null,
   "copy": {
-    "tagline": "跑完命令后核对文件是否真被改动,不再只信退出码和成功提示",
+    "tagline": "运行命令后,当场验证它是否真的改动了该改的文件",
     "scene_tags": [
-      "代码生成后核对",
-      "数据库迁移验证",
-      "构建结果确认",
-      "ai改文件复查"
+      "构建后验收",
+      "迁移结果核对",
+      "格式化后确认"
     ],
-    "fit_line": "适合你,如果命令报成功却不确定文件到底改没改",
+    "fit_line": "适合你,如果命令打印成功,你却不确定文件是否真的被改对了。",
+    "tagline_en": "Verify that a command really changed the files it claimed to",
     "scene_tags_en": [
-      "after codegen runs",
-      "migration checks",
-      "build result checks",
-      "AI file edits review"
+      "after a build",
+      "migration check",
+      "command verification"
     ],
-    "fit_line_en": "For you if a command says success but you can't tell if files actually changed",
+    "fit_line_en": "For you if a tool prints success and you need proof it actually changed files.",
     "source": "llm",
-    "content_hash": "sha256:fc3930c13b2fcddff72e323f511b9b82b0c676bb10c12be4cad34583ace6c032",
+    "content_hash": "sha256:52eba1a2b557470f7d31f6f846825f4549958cf647c596d89a0704efccc3ad27",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-24T08:08:23.794Z",
+    "generated_at": "2026-09-26T08:18:28.395Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "跑命令前先写下预期结果并对文件系统做快照，跑完后对比快照，给出 yes、no、unknown、no-fault 四种判定之一，并列出哪些地方没观察到。",
-    "when": "当你跑完构建、迁移或代码生成等命令，或某个工具声称改了文件、你正准备说「完成了」时，它会接管验证。",
+    "what": "运行命令行工具前后各做一次文件系统快照,并在跑之前先写下预期的结果,然后对照差异给出 yes、no、unknown、no-fault 四种裁决,同时列出没看见的盲区。它不把退出码和打印的输出当作证据。",
+    "when": "在跑完构建、迁移、AI 编码 CLI 等命令之后,或当命令打印了成功、你准备回复“完成”时,它接管核对实际发生了什么。",
     "say": [
       {
-        "text": "我刚跑完构建，验证一下 dist/ 是否真被重写了。",
-        "note": "先快照再对比，最后给判定"
+        "text": "我刚跑了 npm run build,帮我确认 dist/ 里到底变了什么",
+        "note": "先写下预期,再对比前后快照"
       },
       {
-        "text": "刚才那条命令说它改了 src/config.ts，帮我确认。",
-        "note": "用工作区 diff 作证据"
+        "text": "这条迁移命令说成功了,别信退出码,看 migrations/ 有没有真的生成文件",
+        "note": "给出四种裁决之一,并列盲区"
       },
       {
-        "text": "把同一条命令再跑一遍，看第二次 diff 是否为空。",
-        "note": "检查工具重复运行是否稳定"
+        "text": "这个 AI 编码 CLI 说它改了 src/config.ts,帮我核对一下",
+        "note": "以磁盘差异为证据,而非它的自述"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:fc3930c13b2fcddff72e323f511b9b82b0c676bb10c12be4cad34583ace6c032",
+    "content_hash": "sha256:52eba1a2b557470f7d31f6f846825f4549958cf647c596d89a0704efccc3ad27",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-24T08:12:38.432Z",
+    "generated_at": "2026-09-26T08:23:44.491Z",
     "lint_pass": true,
-    "what_en": "After a command runs, Claude snapshots the filesystem before and after, states the expected result in advance, then returns one of four verdicts (yes, no, unknown, no-fault) plus what it could not observe.",
-    "when_en": "Use after running a build, migration or AI coding CLI, or when a command printed success and you are about to report it as done.",
+    "what_en": "Before and after a CLI runs, Claude snapshots the filesystem, writes the expected consequence in advance, diffs the two, and returns one of four verdicts (yes, no, unknown, no-fault) plus what it could not see.",
+    "when_en": "Use after running a build, a migration, an AI coding CLI or similar; when a command printed success and you are about to report \"done\"; or when a tool claims it edited files.",
     "say_en": [
       {
-        "text": "I just ran the build; verify dist/ was actually rewritten.",
-        "note": "snapshots, diffs, then gives a verdict"
+        "text": "I just ran npm run build — check what actually changed in dist/",
+        "note": "Writes the expectation first, then diffs snapshots."
       },
       {
-        "text": "That command claims it edited src/config.ts; confirm it.",
-        "note": "the working-tree diff is the evidence"
+        "text": "Migration said success — don't trust exit code, check if migrations/ got files",
+        "note": "Returns one of four verdicts plus blind spots."
       },
       {
-        "text": "Run the same command twice and check the second diff is empty.",
-        "note": "catches tools that keep changing things"
+        "text": "The AI coding CLI says it edited src/config.ts — verify that",
+        "note": "Uses disk diff as evidence, not its own report."
       }
     ]
   }

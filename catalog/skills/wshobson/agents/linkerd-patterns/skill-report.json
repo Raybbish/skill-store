@@ -5,7 +5,7 @@
     "name": "linkerd-patterns",
     "description": "Implement Linkerd service mesh patterns for lightweight, security-focused service mesh deployments. Use when setting up Linkerd, configuring traffic policies, or implementing zero-trust networking with minimal overhead.",
     "upstream": "https://github.com/wshobson/agents/tree/main/plugins/cloud-infrastructure/skills/linkerd-patterns",
-    "upstream_commit": "4236bb91f8395b0435f1d8b8baf9e8e4c69a8620",
+    "upstream_commit": "6161de4da8164795bc1128e8888c5054a5b67ddf",
     "content_hash": "sha256:e3b06c2056291bf05e2647e44affed86c9d99dac373d46c6bae0f3f89fabee97",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 39638,
+    "stars_github": 39980,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:32.749Z",
+    "fetched_at": "2026-09-26T08:15:04.219Z",
     "first_seen_at": "2026-08-27T13:37:08.572Z",
-    "upstream_commit_at": "2026-09-13T10:43:53-04:00",
+    "upstream_commit_at": "2026-09-25T20:40:31-04:00",
     "repo_skill_count": 183,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:32.749Z",
+    "generated_at": "2026-09-26T08:15:04.219Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,40 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会产出 Linkerd 服务网格的安装命令与 YAML:命名空间自动注入、ServiceProfile 重试与超时、灰度流量切分、访问授权策略、多集群互联。",
-    "when": "当你搭建 Linkerd、配置流量策略,或要做零信任网络时触发。",
+    "what": "装好后,Claude 会按 Linkerd 模板产出服务网格配置:安装与校验命令、命名空间自动注入、ServiceProfile 路由重试与超时、TrafficSplit 灰度分流、ServerAuthorization 访问控制,以及 viz 监控和排查命令。",
+    "when": "当你要搭建 Linkerd 服务网格、配置流量策略(如重试、超时、灰度分流)或做零信任网络时会触发。",
     "say": [
       {
-        "text": "帮我把 Linkerd 装到集群并跑一遍检查"
+        "text": "帮我给 my-app 命名空间开启 Linkerd 自动注入",
+        "note": "生成带注入注解的 YAML"
       },
       {
-        "text": "给 my-app 命名空间开启自动注入",
-        "note": "生成带 linkerd.io/inject 注解的配置"
+        "text": "给 my-service 写一个带重试预算和超时的 ServiceProfile",
+        "note": "含 retryBudget 与每路由 timeout"
       },
       {
-        "text": "写一个 ServiceProfile,让 GET 可重试、超时 5 秒",
-        "note": "含路由与重试预算的 YAML"
+        "text": "配一个 90/10 的 TrafficSplit 灰度发布",
+        "note": "stable 900m、canary 100m"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e3b06c2056291bf05e2647e44affed86c9d99dac373d46c6bae0f3f89fabee97",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:36:29.113Z",
+    "generated_at": "2026-09-26T08:23:01.815Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude produces Linkerd service mesh install commands and YAML: namespace auto-injection, ServiceProfile retries and timeouts, traffic splits for canaries, ServerAuthorization policies, multi-cluster linking.",
-    "when_en": "Use when setting up Linkerd, configuring traffic policies, or implementing zero-trust networking with minimal overhead.",
+    "what_en": "Claude writes Linkerd mesh config: install and check commands, namespace auto-injection, ServiceProfiles with retries and timeouts, TrafficSplit canaries, ServerAuthorization policies, and viz monitoring commands.",
+    "when_en": "Triggers when you set up Linkerd, configure traffic policies such as retries, timeouts or canary splits, or implement zero-trust networking with minimal overhead.",
     "say_en": [
       {
-        "text": "Install Linkerd on my cluster and run the checks",
-        "note": "Runs linkerd check --pre, then installs CRDs and control plane"
+        "text": "Enable Linkerd auto-injection for the my-app namespace",
+        "note": "Generates annotated YAML"
       },
       {
-        "text": "Enable automatic injection for the my-app namespace",
-        "note": "Generates config with the linkerd.io/inject annotation"
+        "text": "Write a ServiceProfile for my-service with retries and timeouts",
+        "note": "Includes retryBudget and per-route timeouts"
       },
       {
-        "text": "Write a ServiceProfile that retries GET and times out at 5s",
-        "note": "YAML with routes and a retry budget"
+        "text": "Set up a 90/10 TrafficSplit canary for my-service",
+        "note": "stable 900m, canary 100m"
       }
     ]
   }

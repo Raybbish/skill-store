@@ -3,7 +3,7 @@ name: reticle
 description: Install, instrument and verify this running web app from the inside (DOM, network, routing, console and framework state) instead of screenshots or guessing. Drives one real flow end to end and returns a verdict with the file:line to fix. Use when the user asks to set up or install Reticle, when a user-facing change needs proving before you call it done, when a test passes but the UI is broken, or when the user types /reticle.
 license: Apache-2.0
 metadata:
-  version: 3.2.0
+  version: 3.3.0
   homepage: https://www.reticle.sh
   repository: https://github.com/reticlehq/reticle
 ---
@@ -97,12 +97,12 @@ Stop at the first row that fits.
 
 | The question | The call | Calls |
 | --- | --- | --- |
-| "Did my edit break anything?" | `reticle_run({ tool: "reticle_verify", args: { action: "change", files: ["src/App.tsx"] } })` | 1 |
+| "Did my edit break anything?" | `reticle_verify({ action: "change", files: ["src/App.tsx"] })` | 1 |
 | "Does this known journey still work?" | `reticle_run({ tool: "reticle_flow_replay", args: { flowName: "login" } })` | 1 |
 | "Does this new behaviour work?" | `reticle_act { steps: [...] }` for the setup, then ONE `reticle_act_and_wait` | 2 |
 | No MCP reachable at all | `npx @reticlehq/server verify <url>` in the shell | 1, no MCP |
 
-`reticle_verify` and `reticle_flow_replay` are **not on the advertised tool list**. They are reached through `reticle_run` exactly as written, which is the supported call shape and why you have to be told they exist. `reticle_verify {action:"change"}` answers `unknown` when no saved flow covers the files you changed: nothing ran, so nothing was proved. That is the honest answer and the signal to record one, never a pass.
+`reticle_flow_replay` is **not on the advertised tool list**. It is reached through `reticle_run` exactly as written, which is the supported call shape and why you have to be told it exists. `reticle_verify {action:"change"}` answers `unknown` when no saved flow covers the files you changed: nothing ran, so nothing was proved. That is the honest answer and the signal to record one, never a pass.
 
 ## Driving by hand
 

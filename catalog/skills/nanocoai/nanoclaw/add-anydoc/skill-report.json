@@ -5,7 +5,7 @@
     "name": "add-anydoc",
     "description": "Add local office-document-to-Markdown conversion to NanoClaw agent containers with the pinned Firecrawl AnyDoc CLI. Use when agents need to read attached Word, PowerPoint, Excel, OpenDocument, RTF, EPUB, CSV, or text-based PDF files without uploading them to a hosted parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc",
-    "upstream_commit": "c313d061b0263dfbb1967ab64e4d7524c09a71a0",
+    "upstream_commit": "d4ff64f49f1defea8c46a3d884d932a1d967e6d9",
     "content_hash": "sha256:1e06f5199dd218f27f571366d004c0852b5c9fb4b26f644a55f75c380cb8bd49",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30845,
+    "stars_github": 30844,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-25T08:28:20.914Z",
+    "fetched_at": "2026-09-26T08:15:06.025Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-24T15:57:15+03:00",
+    "upstream_commit_at": "2026-09-25T22:06:59+03:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-25T08:28:20.914Z",
+    "generated_at": "2026-09-26T08:15:06.025Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,37 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在 NanoClaw 的 agent 容器里装上固定版本的 Firecrawl AnyDoc CLI,让 agent 把附加的 Word、PowerPoint、Excel 等办公文档在容器内转成 Markdown,不上传到托管解析器。它会复制技能文件、写入版本清单、重建镜像并重启服务。",
-    "when": "当 agent 需要读取附加的 Word、PowerPoint、Excel 等办公文档,又不希望把文件上传到托管解析器时,由这个技能接管安装。",
+    "what": "装上后，Claude 的容器里会多一个本地转换工具，能把 Word、Excel、PPT 等办公文档转成 Markdown 来读，不上传到托管解析服务。扫描版 PDF 会明确失败，文档里的图片内容可能不完整。",
+    "when": "当 agent 需要读取附件里的 Word、Excel、PPT 等办公文档，并且不想把文件上传到托管解析器时触发。",
     "say": [
       {
-        "text": "把这个技能的 AnyDoc CLI 装到我的 NanoClaw 容器里",
-        "note": "会复制技能文件、写入清单并重建镜像"
+        "text": "把这份 Word 附件转成 Markdown，并总结相关段落",
+        "note": "在容器内本地转换，不上传"
       },
       {
-        "text": "重启 NanoClaw 服务,让新技能在下次启动时生效",
-        "note": "只重启本安装的服务"
+        "text": "把 /workspace 里那份 XLSX 转成 Markdown",
+        "note": "需给出附件的绝对本地路径"
+      },
+      {
+        "text": "这份图片型 PDF 能转吗？",
+        "note": "会明确报错，且不会上传"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1e06f5199dd218f27f571366d004c0852b5c9fb4b26f644a55f75c380cb8bd49",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-25T08:34:54.217Z",
+    "generated_at": "2026-09-26T08:21:13.790Z",
     "lint_pass": true,
-    "what_en": "Installs the pinned Firecrawl AnyDoc CLI into NanoClaw agent containers. Agents can convert attached Word, PowerPoint, Excel, and other office files to Markdown locally without uploading them to a hosted parser.",
-    "when_en": "Use when agents need to read attached Word, PowerPoint, Excel, OpenDocument, RTF, EPUB, CSV, or text-based PDF files without uploading them to a hosted parser.",
+    "what_en": "After install, the agent container gains a local converter that turns Word, Excel, PowerPoint and similar office documents into Markdown. Nothing is sent to a hosted parser; scanned PDFs fail clearly and visuals may be incomplete.",
+    "when_en": "Use when an agent needs to read attached Word, Excel, PowerPoint and similar office documents without uploading them to a hosted parser.",
     "say_en": [
       {
-        "text": "Install the AnyDoc CLI into my NanoClaw container",
-        "note": "Copies skill files, updates the manifest, rebuilds the image."
+        "text": "Convert this Word attachment to Markdown and summarize the relevant sections",
+        "note": "Converted locally in the container"
       },
       {
-        "text": "Check that @firecrawl/anydoc 0.1.6 passes the 72-hour release gate",
-        "note": "Queries the npm registry and stops on failure."
+        "text": "Convert that XLSX under /workspace to Markdown",
+        "note": "Give the file's absolute local path"
       },
       {
-        "text": "Restart the NanoClaw service so the new skill takes effect",
-        "note": "Restarts only this install's NanoClaw service."
+        "text": "Can this image-only PDF be converted?",
+        "note": "It fails clearly and is not uploaded"
       }
     ]
   }

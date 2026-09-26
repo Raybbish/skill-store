@@ -5,7 +5,7 @@
     "name": "saga-orchestration",
     "description": "Implement saga patterns for distributed transactions and cross-aggregate workflows. Use this skill when implementing distributed transactions across microservices where 2PC is unavailable, designing compensating actions for failed order workflows that span inventory, payment, and shipping services, building event-driven saga coordinators for travel booking systems that must roll back hotel, flight, and car rental reservations atomically, or debugging stuck saga states in production where compensation steps never complete.",
     "upstream": "https://github.com/wshobson/agents/tree/main/plugins/backend-development/skills/saga-orchestration",
-    "upstream_commit": "4236bb91f8395b0435f1d8b8baf9e8e4c69a8620",
+    "upstream_commit": "6161de4da8164795bc1128e8888c5054a5b67ddf",
     "content_hash": "sha256:43d968df3307409d4cabcc2ce64fee5621f8234c43e2380e4ac208bbf251538b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 39638,
+    "stars_github": 39980,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-14T08:28:32.749Z",
+    "fetched_at": "2026-09-26T08:15:04.219Z",
     "first_seen_at": "2026-08-27T13:37:08.572Z",
-    "upstream_commit_at": "2026-09-13T10:43:53-04:00",
+    "upstream_commit_at": "2026-09-25T20:40:31-04:00",
     "repo_skill_count": 183,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-14T08:28:32.749Z",
+    "generated_at": "2026-09-26T08:15:04.219Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "让 Claude 按 saga 模式设计跨服务分布式事务：产出有序步骤、动作与补偿命令、每步超时和监控设置，并帮你排查生产里卡住的 saga。",
-    "when": "当你在没有 2PC 的微服务间实现分布式事务、为跨服务订单流程设计补偿动作，或排查生产里卡住的 saga 时触发。",
+    "what": "装上后,Claude 会按你给的服务边界、失败模式与 SLA,产出带顺序步骤和补偿命令的 saga 定义、编排式或协同式实现代码、每步超时配置,以及卡死侦测与死信队列恢复的监控设置。",
+    "when": "当你在微服务间实现分布式事务但没有 2PC、为跨库存/支付/物流的失败订单设计补偿动作,或调试卡在生产环境补偿步骤的 saga 时触发。",
     "say": [
       {
-        "text": "帮我为跨库存、支付、物流的订单流程设计 saga 步骤和补偿逻辑",
-        "note": "会给出有序步骤、动作与补偿命令"
+        "text": "帮我把下单流程做成 saga,列出每步和对应的补偿命令",
+        "note": "产出带顺序步骤与补偿命令的 saga 定义"
       },
       {
-        "text": "我的 saga 卡在 COMPENSATING 状态一直不结束，帮我排查",
-        "note": "会检查补偿是否始终发布完成事件"
+        "text": "这个 saga 卡在 COMPENSATING 状态了,怎么排查",
+        "note": "排查补偿处理未发布完成事件的原因"
       },
       {
-        "text": "给这个 saga 的每一步配置各自的超时时间",
-        "note": "避免全局超时触发多余的补偿"
+        "text": "给 create_shipment 单独配 15 分钟超时,别用全局超时",
+        "note": "按步骤类型配置超时,避免误触发补偿"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:43d968df3307409d4cabcc2ce64fee5621f8234c43e2380e4ac208bbf251538b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-14T08:36:36.642Z",
+    "generated_at": "2026-09-26T08:23:09.336Z",
     "lint_pass": true,
-    "what_en": "Turns Claude into a saga designer: it produces ordered steps, action and compensation commands, per-step timeouts, and monitoring setup, and helps debug sagas stuck in production.",
-    "when_en": "Use when coordinating distributed transactions across microservices without 2PC, designing compensations for cross-service order workflows, or debugging stuck saga states in production.",
+    "what_en": "Given service boundaries, failure modes and SLAs, Claude produces saga definitions with ordered steps and compensation commands, orchestrator or choreography code, per-step timeouts, and stuck-saga monitoring with DLQ recovery.",
+    "when_en": "Use when you need multi-service transactions without 2PC, compensating actions for failed order workflows, or debugging stuck saga states in production.",
     "say_en": [
       {
-        "text": "Design saga steps and compensation logic for an order flow spanning inventory, payment, and shipping",
-        "note": "Returns ordered steps, action and compensation commands"
+        "text": "Turn our order flow into a saga and list each step with its compensation command",
+        "note": "Yields a saga definition with steps and compensations"
       },
       {
-        "text": "My saga is stuck in COMPENSATING and never finishes, help me debug it",
-        "note": "Checks that compensations always publish completion"
+        "text": "This saga is stuck in COMPENSATING - how do I debug it?",
+        "note": "Traces why compensation never publishes completion"
       },
       {
-        "text": "Give each step of this saga its own timeout",
-        "note": "Avoids a global timeout firing spurious compensation"
+        "text": "Set a 15-minute timeout for create_shipment instead of a global one",
+        "note": "Configures per-step timeouts to avoid false compensation"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Search claude-mem's persistent cross-session memory database. Use when user asks \"did we already solve this?\", \"how did we do X last time?\", or needs work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/mem-search",
-    "upstream_commit": "02cd0c9c47e38a849e764477290c571e84dfa043",
+    "upstream_commit": "4df4da25117657c359b3768d795760f796128445",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94654,
+    "stars_github": 94713,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-25T08:27:58.850Z",
+    "fetched_at": "2026-09-26T08:14:46.007Z",
     "first_seen_at": "2026-08-28T14:48:34.339Z",
-    "upstream_commit_at": "2026-09-24T18:11:49-07:00",
+    "upstream_commit_at": "2026-09-25T22:42:31-07:00",
     "repo_skill_count": 27
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-25T08:27:58.850Z",
+    "generated_at": "2026-09-26T08:14:46.007Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会按分层流程检索 claude-mem 跨会话记忆库：先用 search 拿到带 ID 的索引，再用 timeline 看上下文，确认相关才取完整记录，必要时才翻原始工具输入输出；先筛后取以省 token。",
-    "when": "当你问起之前会话里的事，比如“这个我们修过了吗”“上次 X 怎么解决的”等，或需要用到以前会话的成果时触发。当前对话里的问题不归它管。",
+    "what": "装上后,Claude 能翻查你过往所有会话的记忆库:先搜索拿到带 ID 的结果表,按标题筛选后只为相关 ID 取完整详情,原始工具输出最后才可能读。",
+    "when": "当你问起之前的会话,比如「这个问题之前解决过吗」「上次是怎么做 X 的」等,或需要用到早前会话的成果时触发。",
     "say": [
       {
-        "text": "我们之前是不是修过这个登录问题?",
-        "note": "它在历史会话里搜索并返回相关记录 ID"
+        "text": "上次我们是怎么修这个登录 bug 的?",
+        "note": "先返回带 ID 的搜索结果表"
       },
       {
-        "text": "上个月那次数据库迁移失败是怎么解决的?",
-        "note": "先给摘要,必要时再翻出当时的原始命令输出"
+        "text": "搜索认证相关的记录,只列 10 条",
+        "note": "用 limit 限制返回条数"
       },
       {
-        "text": "把 #11131 前后各三条记录拉出来看看",
-        "note": "用 timeline 展示该条记录前后的上下文"
+        "text": "把 #11131 和 #10942 的完整内容取出来",
+        "note": "批量拉取这两条观察详情"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-25T08:35:57.400Z",
+    "generated_at": "2026-09-26T08:22:32.541Z",
     "lint_pass": true,
-    "what_en": "Claude searches claude-mem's cross-session memory in layers: search for an index of IDs, timeline for context, get_observations for full records, and rarely get_tool_uses for raw tool I/O. It filters before fetching to save tokens.",
-    "when_en": "Triggers when you ask about previous sessions, e.g. \"did we already fix this?\" or \"how did we do X last time?\", or need work from earlier sessions. Questions about the current conversation are out of scope.",
+    "what_en": "Claude gains a searchable memory of your past sessions. It searches to get an index of results with IDs, filters by title, then fetches full details only for relevant IDs. Raw tool output comes last, only if the summary was not enough.",
+    "when_en": "Triggers when you ask about previous sessions, such as \"did we already fix this?\" or \"how did we solve X last time?\", or when you need work from earlier sessions.",
     "say_en": [
       {
-        "text": "Did we already fix this login bug?",
-        "note": "It searches past sessions and returns matching record IDs"
+        "text": "How did we fix that login bug last time?",
+        "note": "Returns a search index table with IDs"
       },
       {
-        "text": "How did we solve that failed database migration last month?",
-        "note": "It returns summaries first, raw command output only if needed"
+        "text": "Search auth records, show only 10 results",
+        "note": "Sets limit=10 on the search"
       },
       {
-        "text": "Show me three records before and after #11131",
-        "note": "Runs timeline to show context around that record"
+        "text": "Fetch full details for #11131 and #10942",
+        "note": "Batch get_observations request"
       }
     ]
   }

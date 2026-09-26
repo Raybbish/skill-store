@@ -3,7 +3,7 @@ name: design-system-compliance
 description: Check that the UI you actually rendered uses the design system, by reading computed styles in the running app against the project's design tokens. Catches hardcoded hex colors, off-palette backgrounds, invisible or unusable controls, and animations that never ran. Use after building or restyling a component, when a design review is wanted, when a UI looks slightly off but nobody can say why, or when a design system exists and nothing checks whether the code follows it.
 license: Apache-2.0
 metadata:
-  version: 3.2.0
+  version: 3.3.0
   homepage: https://www.reticle.sh
   repository: https://github.com/reticlehq/reticle
 ---
@@ -17,8 +17,8 @@ Reading the source tells you what the component _asks_ for. It cannot tell you w
 ## The check
 
 ```
-reticle_snapshot({ sessionId, mode: "interactive" })
-reticle_inspect({ sessionId, ref })
+reticle_look({ action: "page", sessionId, mode: "interactive" })
+reticle_look({ action: "element", sessionId, ref })
 ```
 
 `inspect` returns a `theme` report per element:

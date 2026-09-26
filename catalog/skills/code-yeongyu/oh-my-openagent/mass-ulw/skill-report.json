@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "05dcba64b749e7666dcd0296c079d31cf3c298f1",
+    "upstream_commit": "345572d0e3d2a0270957958bbdc7462828c8aa94",
     "content_hash": "sha256:48c4c3e9110f06ad214f1455cfb88bbf0329f97b25b6834c3ae2126da7a7c895",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69393,
+    "stars_github": 69432,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-25T08:28:03.696Z",
+    "fetched_at": "2026-09-26T08:14:50.494Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-25T08:30:03+09:00",
+    "upstream_commit_at": "2026-09-26T16:26:52+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-25T08:28:03.696Z",
+    "generated_at": "2026-09-26T08:14:50.494Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,41 +93,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当任务之间存在先后依赖(比如写文档要先审计再改写)时,Claude 会把它们定义成一个 DAG,按依赖分批并行跑子任务;单个节点出错时只重跑那一个节点,已完成节点的结果会复用。",
-    "when": "当你提到 “mass-ulw”、“任务 DAG” 等关键词,或要求做存在真实依赖的分批并行任务时触发。完全独立的并行任务用普通 task 即可。",
+    "what": "它把有先后依赖的任务拆成节点图(节点用 dependsOn 指定先完成哪些),按依赖分层并行跑子任务。单个节点失败可单独重试、发消息或改定义,已完成节点的结果会复用;每次只处理一个阶段的图。",
+    "when": "当你提出 mass-ulw、任务 DAG,或存在真实依赖的分批并行工作(如任务 C 需等 A、B 完成)时触发;完全独立的任务用普通并行 task 即可。",
     "say": [
       {
-        "text": "用 mass-ulw 把「先审计文档、再改写、最后校验」建成 DAG 跑一遍",
-        "note": "会构建并启动一个 run"
+        "text": "用 mass-ulw 把这次重构拆成有依赖关系的任务图并跑起来",
+        "note": "会先读 planning.md 再建图启动"
       },
       {
-        "text": "retry 一下 lint 节点,并把它改成只检查 src 目录",
-        "note": "只重跑该节点及其下游"
+        "text": "重试这个 run 里失败的 lint 节点",
+        "note": "已完成节点结果保留,不重跑"
       },
       {
-        "text": "amend 这个 run,新增一个节点,只重跑改动的部分",
-        "note": "未改动节点的缓存结果保留"
+        "text": "给正在跑的 rewrite 节点发消息:跳过 vendored 目录",
+        "note": "就地调整该子任务"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:48c4c3e9110f06ad214f1455cfb88bbf0329f97b25b6834c3ae2126da7a7c895",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-25T08:33:53.006Z",
+    "generated_at": "2026-09-26T08:20:25.743Z",
     "lint_pass": true,
-    "what_en": "When tasks depend on earlier ones, Claude defines a DAG of nodes, runs them in parallel waves as dependencies clear, one run per phase, and recovers a single bad node via retry, send, or amend while reusing finished nodes' cached results.",
-    "when_en": "Triggers when you ask for mass-ulw, a task DAG, or fan-out work where some tasks must wait on others. For fully independent workers, plain parallel task spawns are simpler.",
+    "what_en": "It turns dependency-ordered work into a node graph (nodes list dependsOn) and runs child tasks in parallel waves; one bad node can be retried, sent a message, or amended, and finished nodes keep cached results.",
+    "when_en": "Triggers when you ask for mass-ulw, a task DAG, or staged fan-out where some tasks must wait on others; fully independent work is simpler with plain parallel tasks.",
     "say_en": [
       {
-        "text": "Use mass-ulw to run audit → rewrite → verify as a DAG",
-        "note": "Builds and starts one run"
+        "text": "Turn this refactor into a dependency-ordered task graph with mass-ulw and run it",
+        "note": "Reads planning.md first, then starts the run"
       },
       {
-        "text": "Retry the lint node and change it to only check src/",
-        "note": "Re-runs that node and its dependents"
+        "text": "Retry the failed lint node in this run",
+        "note": "Finished nodes keep their cached results"
       },
       {
-        "text": "Amend this run: add a node and re-run only what changed",
-        "note": "Unchanged nodes keep cached results"
+        "text": "Send the running rewrite node a message: skip the vendored dir",
+        "note": "Steers that child in place"
       }
     ]
   }
