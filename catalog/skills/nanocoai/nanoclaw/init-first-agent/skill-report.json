@@ -5,7 +5,7 @@
     "name": "init-first-agent",
     "description": "Walk the operator through wiring the first NanoClaw agent to a DM channel — resolve the operator's channel identity, select or create the agent, and trigger a welcome DM via the normal delivery path. Use after channel credentials are configured and the service is running.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/init-first-agent",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "c313d061b0263dfbb1967ab64e4d7524c09a71a0",
     "content_hash": "sha256:657e7f16b1effda2c6c47803448f352c64e513afd5cce9a7d23f2e5d9d79060a",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30845,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-25T08:28:20.914Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-24T15:57:15+03:00",
+    "repo_skill_count": 63,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-25T08:28:20.914Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,25 +88,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会按步骤引导操作员接通第一个 NanoClaw 代理:先选渠道,再收集用户 ID、显示名和代理名,解析私信平台 ID,运行初始化脚本,让代理发出欢迎私信并确认是否收到。",
-    "when": "在渠道凭据已配置、服务运行中,且至少一个 add-<channel> 技能已执行、适配器已连接后触发。",
+    "what": "帮你为某个会话渠道创建第一个 NanoClaw agent:读取你在该渠道的用户身份,把私信消息组接到新 agent,并通过正常投递路径发出欢迎私信。整套操作可重复运行。",
+    "when": "在渠道凭据已配置、服务正在运行之后使用;它会先确认服务状态与适配器连接,再让你选择承载欢迎私信的渠道。",
     "say": [
       {
-        "text": "帮我初始化第一个 NanoClaw 代理,渠道用 Discord。",
-        "note": "Claude 会询问你的用户 ID 和显示名。"
+        "text": "帮我为第一个 NanoClaw agent 选渠道并创建它",
+        "note": "先问选哪个渠道,再让你填渠道用户 id 等身份信息"
       },
       {
-        "text": "给 Telegram 建首个代理,显示名和代理名都叫 Alice。"
+        "text": "先确认服务在运行、适配器已经连上"
       },
       {
-        "text": "给 Slack 创建第一个代理并发送欢迎私信。",
-        "note": "Claude 会先让你给机器人发一条私信以确认身份。"
+        "text": "欢迎私信两分钟没到,帮我排查投递"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:657e7f16b1effda2c6c47803448f352c64e513afd5cce9a7d23f2e5d9d79060a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:07:31.044Z",
-    "lint_pass": true
+    "generated_at": "2026-09-25T08:35:32.655Z",
+    "lint_pass": true,
+    "what_en": "Guides you through creating the first NanoClaw agent for a DM channel: it resolves your channel identity, wires the DM messaging group to a new agent, and sends a welcome DM through the normal delivery path. Reruns are safe.",
+    "when_en": "Use it after channel credentials are configured and the service is running; it first checks service status and adapter connection, then asks which channel should host the welcome DM.",
+    "say_en": [
+      {
+        "text": "Create the first NanoClaw agent for a channel I pick",
+        "note": "It asks which channel, then for your channel user id and names"
+      },
+      {
+        "text": "Check that the service is running and the adapter is connected",
+        "note": "Checks launchctl/systemctl status and connection lines in the log"
+      },
+      {
+        "text": "The welcome DM hasn't arrived in two minutes, help me debug",
+        "note": "Looks for pending rows in outbound.db and errors in the log"
+      }
+    ]
   }
 }

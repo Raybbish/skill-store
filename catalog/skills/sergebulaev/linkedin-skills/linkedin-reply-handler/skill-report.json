@@ -3,10 +3,10 @@
   "meta": {
     "id": "sergebulaev/linkedin-skills/linkedin-reply-handler",
     "name": "linkedin-reply-handler",
-    "description": "Draft a reply to a specific existing LinkedIn comment from its URL. Use when the user wants to reply to a comment on any post, or follow up after an author replied to them. Parses the commentUrn, resolves the correct parentComment target (LinkedIn flattens threads to 2 levels), and posts via Publora on approval. Not for top-level comments (use linkedin-comment-drafter).",
+    "description": "Draft a reply to one LinkedIn comment from its URL, or sweep a whole thread from just the post URL and draft a reply to every comment worth answering, in one batch. Use for replying to a comment, following an author reply, or clearing all comments on a post. Resolves the correct parentComment (LinkedIn flattens threads to 2 levels), filters low-value comments before a sweep, and posts via Publora on approval. Not for top-level comments (use linkedin-comment-drafter).",
     "upstream": "https://github.com/sergebulaev/linkedin-skills/tree/main/.codex-marketplace/linkedin-skills/skills/linkedin-reply-handler",
-    "upstream_commit": "a8e57459fecd2eb46cf39c753c6a2a5243f44c06",
-    "content_hash": "sha256:694ab75f4ad099dc0c3f65437b4ccbf9f19d9b353b7ffed0a39a3654be7cd693",
+    "upstream_commit": "5c6192db54db24bf46fab8bbac32f7946daca970",
+    "content_hash": "sha256:babc00756078e8e60736757fe652dc2ad5aa34c6f200f682b09c72e128e3a117",
     "license": "MIT",
     "hosting": "indexed",
     "category": "marketing",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 606,
+    "stars_github": 3336,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:39:52.510Z",
+    "fetched_at": "2026-09-23T08:14:26.057Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-22T16:45:20-04:00",
-    "repo_skill_count": 14
+    "upstream_commit_at": "2026-09-22T20:47:21-04:00",
+    "repo_skill_count": 13
   },
   "context_size": {
     "version": "1",
@@ -35,60 +35,103 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:39:52.510Z",
+    "generated_at": "2026-09-23T08:14:26.057Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 5673,
-        "chars": 5626,
-        "tokens": 1242
+        "bytes": 14415,
+        "chars": 14328,
+        "tokens": 3214
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md",
+          "references/examples.md",
+          "references/filtering-rules.md",
           "references/reply-templates.md",
           "references/threading-rules.md"
         ],
-        "text_files": 3,
-        "bytes": 10865,
-        "chars": 10750,
-        "tokens": 2390
+        "text_files": 5,
+        "bytes": 23638,
+        "chars": 23451,
+        "tokens": 5252
       },
       "package_total_text": {
         "files": [
           "SKILL.md",
           "references/examples.md",
+          "references/filtering-rules.md",
           "references/reply-templates.md",
           "references/threading-rules.md"
         ],
-        "text_files": 4,
-        "bytes": 11609,
-        "chars": 11482,
-        "tokens": 2538
+        "text_files": 5,
+        "bytes": 23638,
+        "chars": 23451,
+        "tokens": 5252
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "从评论链接起草回复,自动定位上级评论并待确认发布",
+    "tagline": "为 LinkedIn 帖子下的评论批量起草回复,确认后直接发布。",
     "scene_tags": [
-      "社媒互动",
-      "评论跟进"
+      "评论区互动",
+      "社媒运营",
+      "帖子维护"
     ],
-    "fit_line": "适合你,如果常在LinkedIn回复评论,想省去手动展开和找父级的麻烦。",
+    "fit_line": "适合你,如果你在 LinkedIn 发帖后要逐条回复评论,又想省下手工时间。",
+    "tagline_en": "Draft replies to every LinkedIn comment on a post, then publish after your approval.",
     "scene_tags_en": [
-      "social media replies",
-      "comment follow-up",
-      "LinkedIn engagement"
+      "comment replies",
+      "post engagement",
+      "social media management"
     ],
-    "fit_line_en": "For you if you regularly engage with LinkedIn comments and want quicker replies.",
+    "fit_line_en": "For you if you post on LinkedIn and need to answer many comments without the manual grind.",
     "source": "llm",
-    "content_hash": "sha256:694ab75f4ad099dc0c3f65437b4ccbf9f19d9b353b7ffed0a39a3654be7cd693",
+    "content_hash": "sha256:babc00756078e8e60736757fe652dc2ad5aa34c6f200f682b09c72e128e3a117",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-11T04:26:22.434Z",
+    "generated_at": "2026-09-16T08:17:27.776Z",
     "lint_pass": true
+  },
+  "howto": {
+    "what": "给它一条 LinkedIn 评论链接，它会解析链接、读取线程上下文，起草 1~2 条回复（每条 150–300 字符）并附一条表情回应建议，展示审批卡片，你确认后才通过 Publora 发出。",
+    "when": "当你贴出一条带 commentUrn 的 LinkedIn 评论链接并要求回复，或想跟进作者对你的回复时触发。不处理顶层评论（那种用 linkedin-comment-drafter）。",
+    "say": [
+      {
+        "text": "回复这条评论：<粘贴带 commentUrn 的 LinkedIn 链接>",
+        "note": "会先出草稿和回应建议，等你确认再发"
+      },
+      {
+        "text": "作者回复我了，帮我接着把这个线程聊下去",
+        "note": "沿用该线程上下文起草回复"
+      },
+      {
+        "text": "这条线程已经超过 72 小时了，还值得回吗"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:babc00756078e8e60736757fe652dc2ad5aa34c6f200f682b09c72e128e3a117",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-23T08:21:25.306Z",
+    "lint_pass": true,
+    "what_en": "Give it a LinkedIn comment URL and it parses the link, reads the thread context, drafts 1–2 replies (150–300 chars each) plus a reaction suggestion, shows an approval card, and posts via Publora only after you approve.",
+    "when_en": "Triggers when you paste a LinkedIn comment URL containing commentUrn and ask to reply, or when you want to continue after an author replied to you. Not for top-level comments.",
+    "say_en": [
+      {
+        "text": "Reply to this comment: <paste the LinkedIn URL with commentUrn>",
+        "note": "Drafts first; posts only after you approve"
+      },
+      {
+        "text": "The author replied to me — help me continue the thread",
+        "note": "Drafts from the thread's context"
+      },
+      {
+        "text": "This thread is over 72 hours old — still worth replying?",
+        "note": "Original suggests a DM via linkedin-thread-monitor"
+      }
+    ]
   }
 }
