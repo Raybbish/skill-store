@@ -5,7 +5,7 @@
     "name": "add-signal",
     "description": "Add Signal channel integration via signal-cli device-link. Native adapter — no Chat SDK bridge.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-signal",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "d4ff64f49f1defea8c46a3d884d932a1d967e6d9",
     "content_hash": "sha256:67698dd402a630c1ba1911f910adf2fadbfb1d81760bb8da5b3596ee1f0c2e08",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30844,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-26T08:15:06.025Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-25T22:06:59+03:00",
+    "repo_skill_count": 63,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-26T08:15:06.025Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,26 +88,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "这个技能为 NanoClaw 添加 Signal 频道，通过原生适配器与 signal-cli 守护进程通信。安装后会把你现有的 Signal 号码链接为关联设备，助手即可用该号码收发消息，支持文本、Markdown 格式化、引用回复、私聊打字指示等。",
-    "when": "当用户或群成员向已链接的 Signal 号码发送私聊或群组消息时，技能会接管消息，自动创建会话，助手通过 Signal 回复；新 Signal 用户需先授予访问权限才能收到回复。",
+    "what": "Claude 会把 Signal 接入为你手机的「第二个设备」：通过 signal-cli 用你手机上已有的号码收发消息，不注册新号、不用 bot API。支持 Markdown 格式、引用回复、私聊打字提示；未支持外发文件、编辑/删除消息、表情回应。",
+    "when": "当你要求给助手添加 Signal 频道、链接 Signal 账号，或正在走 /setup 流程需要接入 Signal 时，它会接管安装、扫码链接与接线步骤。",
     "say": [
       {
-        "text": "帮我链接 Signal 账户",
-        "note": "执行设备链接，生成二维码供扫描。"
+        "text": "帮我把 Signal 接进来，用 signal-cli 扫码链接我的手机号",
+        "note": "会安装 signal-cli 并显示二维码等待扫码"
       },
       {
-        "text": "查一下 Signal 频道最近的会话记录",
-        "note": "会查询 messaging_groups 表。"
+        "text": "我扫完码了，把链接到的号码存下来并重启服务",
+        "note": "写入 SIGNAL_ACCOUNT 后重启，适配器绑定该账号"
       },
       {
-        "text": "给这个 Signal 用户授权访问",
-        "note": "需提供 signal:UUID，创建用户并授予角色。"
+        "text": "把这个 Signal 群接到我的 agent 分组上",
+        "note": "用 ncl wirings create 创建接线"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:67698dd402a630c1ba1911f910adf2fadbfb1d81760bb8da5b3596ee1f0c2e08",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:06:25.762Z",
-    "lint_pass": true
+    "generated_at": "2026-09-26T08:21:39.406Z",
+    "lint_pass": true,
+    "what_en": "Claude connects Signal as a secondary device: it sends and receives through signal-cli as the number already on your phone, with no new number and no bot API. Markdown, quoted replies, and DM typing indicators are supported; outbound files, edits/deletes and reactions are not yet.",
+    "when_en": "It takes over when you ask to add a Signal channel or link a Signal account, or when the /setup flow needs Signal wired in.",
+    "say_en": [
+      {
+        "text": "Add Signal using signal-cli and link my phone by QR code",
+        "note": "Installs signal-cli and shows a QR code to scan"
+      },
+      {
+        "text": "I scanned it — save the linked number and restart the service",
+        "note": "Writes SIGNAL_ACCOUNT and binds the adapter to it"
+      },
+      {
+        "text": "Wire this Signal group to my agent group",
+        "note": "Creates the wiring with ncl wirings create"
+      }
+    ]
   }
 }
