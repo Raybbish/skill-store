@@ -5,7 +5,7 @@
     "name": "add-github",
     "description": "Add GitHub channel integration via Chat SDK. PR and issue comment threads as conversations.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-github",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "d4ff64f49f1defea8c46a3d884d932a1d967e6d9",
     "content_hash": "sha256:536532a08d2dd637e092c62c3b9296b9ff309d5e50266f444807a6543ba2e793",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30844,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-26T08:15:06.025Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-25T22:06:59+03:00",
+    "repo_skill_count": 63,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-26T08:15:06.025Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,37 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会变成 GitHub 机器人,在 PR 或 Issue 评论里被 @ 时回复;第一次被 @ 后,这个讨论串的后续评论也会自动回复。",
-    "when": "当某个已配置 Webhook 的仓库里,有人在 PR 或 Issue 评论中准确 @ 机器人账号时;首次 @ 后,该评论串的后续评论也会触发。",
+    "what": "装上后，Claude 会通过 Chat SDK 接入 GitHub，在仓库的 PR 和 issue 评论线程里参与对话：被 @ 提及时回复。首次提及后该线程被订阅，后续评论它都会跟进。",
+    "when": "当有人在 PR 或 issue 评论里 @ 到机器人账号（须与 GITHUB_BOT_USERNAME 完全一致）时触发；仓库 webhook 需订阅 Issue comments 与 Pull request review comments。",
     "say": [
       {
-        "text": "帮我把 GitHub 频道接进来,用机器人账号回复 PR 评论。",
-        "note": "会复制适配器并引导配置凭据。"
+        "text": "看一下这个 PR 里的改动，指出潜在问题",
+        "note": "在 PR 评论中 @ 机器人后它会回复"
       },
       {
-        "text": "配置 add-github,让 Issue 评论也能触发回复。",
-        "note": "会设置 webhook 并接线到智能体组。"
+        "text": "总结一下这个 issue 目前的讨论",
+        "note": "同一线程继续评论即可接着聊"
+      },
+      {
+        "text": "根据这条评论里的报错，给出修复思路",
+        "note": "线程已订阅，无需再次 @"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:536532a08d2dd637e092c62c3b9296b9ff309d5e50266f444807a6543ba2e793",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:05:24.131Z",
+    "generated_at": "2026-09-26T08:21:25.477Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude acts as a dedicated GitHub bot account: when @-mentioned in a PR or issue comment thread, it replies; after the first mention, the thread is subscribed and all follow-up comments are answered too.",
-    "when_en": "Triggered when someone @-mentions the bot account in a PR or issue comment on a repo with the webhook set up; after the first mention, subsequent comments in that thread also trigger replies.",
+    "what_en": "Once installed, Claude joins GitHub PR and issue comment threads via the Chat SDK bridge. It replies when @-mentioned; after the first mention the thread is subscribed and it follows up on later comments.",
+    "when_en": "Triggers when someone @-mentions the bot account (must match GITHUB_BOT_USERNAME exactly) in a PR or issue comment; the repo webhook must subscribe to issue and PR review comment events.",
     "say_en": [
       {
-        "text": "Help me add the GitHub channel and reply to PR comments with a bot account.",
-        "note": "Copies the adapter and guides you through credentials."
+        "text": "Look at the changes in this PR and flag potential problems.",
+        "note": "Post it as a PR comment @-mentioning the bot"
       },
       {
-        "text": "Set up add-github so issue comments can also trigger replies.",
-        "note": "Sets up webhook and wires it to an agent group."
+        "text": "Summarize the discussion in this issue so far.",
+        "note": "Keep commenting in the same thread to continue"
       },
       {
-        "text": "Use add-github with strict policy to limit who can trigger the agent.",
-        "note": "Asks public/private and adds members."
+        "text": "Here is the error in this comment — suggest a fix.",
+        "note": "The thread is subscribed, no need to @ again"
       }
     ]
   }
