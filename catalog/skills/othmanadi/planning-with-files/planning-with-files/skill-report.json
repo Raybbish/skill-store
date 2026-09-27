@@ -5,8 +5,8 @@
     "name": "planning-with-files",
     "description": "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls.",
     "upstream": "https://github.com/OthmanAdi/planning-with-files/tree/master/skills/planning-with-files",
-    "upstream_commit": "4d24d9a8a2baa55a15e7f8f9ec6da8d19793ee8c",
-    "content_hash": "sha256:d9686f9851a91ac000338202a12c857ab12d647736666b23484f89570acf73f1",
+    "upstream_commit": "51c1caa27f9fefe259e45a7cc92fa79ee8787cd7",
+    "content_hash": "sha256:68a465dc81bd97bb4ecf3739094d61d21bb2d2da396fec2c972bc79ad0c4428e",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 27132,
+    "stars_github": 27145,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-26T08:15:07.179Z",
+    "fetched_at": "2026-09-27T08:52:21.546Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-25T17:35:37+02:00",
+    "upstream_commit_at": "2026-09-27T04:43:01+02:00",
     "repo_skill_count": 6
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-26T08:15:07.179Z",
+    "generated_at": "2026-09-27T08:52:21.546Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -68,9 +68,9 @@
           "templates/task_plan.md"
         ],
         "text_files": 17,
-        "bytes": 210894,
-        "chars": 209579,
-        "tokens": 43225
+        "bytes": 213406,
+        "chars": 212089,
+        "tokens": 43733
       },
       "package_total_text": {
         "files": [
@@ -108,71 +108,68 @@
           "templates/task_plan_autonomous.md"
         ],
         "text_files": 32,
-        "bytes": 452286,
-        "chars": 450921,
-        "tokens": 87662
+        "bytes": 454907,
+        "chars": 453540,
+        "tokens": 88191
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "把多步任务的计划、发现与进度写进磁盘文件,中断后能接着干",
+    "tagline": "把多步任务的任务计划与进展写进文件,任务中断后还能接着往下做",
     "scene_tags": [
-      "长任务拆解",
-      "断点续跑",
-      "会话恢复",
-      "任务进度记录"
+      "长任务追踪",
+      "中断后接续",
+      "多步调研"
     ],
-    "fit_line": "适合你,如果任务步骤多到一次对话装不下,又怕中途中断要从头再来。",
+    "fit_line": "适合你,如果手上的任务步骤多、耗时长,中途容易断线需要接续",
+    "tagline_en": "Save task plans and progress to disk so multi-step agent work can resume later",
     "scene_tags_en": [
-      "long task breakdown",
+      "long task tracking",
       "resume after break",
-      "session recovery",
-      "progress tracking"
+      "multi-step research"
     ],
-    "fit_line_en": "For you if a task has too many steps for one session and losing progress would hurt.",
+    "fit_line_en": "For you if your task spans many steps and must survive interruptions",
     "source": "llm",
-    "content_hash": "sha256:d9686f9851a91ac000338202a12c857ab12d647736666b23484f89570acf73f1",
+    "content_hash": "sha256:68a465dc81bd97bb4ecf3739094d61d21bb2d2da396fec2c972bc79ad0c4428e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-26T08:18:11.333Z",
+    "generated_at": "2026-09-27T08:55:54.758Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "它让 Claude 把任务计划、发现和进度写进项目里的三个 markdown 文件(task_plan.md、findings.md、progress.md),当作磁盘上的工作记忆,做完一步就更新,这样上下文丢失或 /clear 之后工作还能接着做。",
-    "when": "当你要规划、拆解或整理一个多步骤项目、研究任务,或任何需要 5 次以上工具调用的工作时触发;也可以直接调用这个技能。",
+    "what": "Claude 会把任务计划、发现、进度写进项目里的三个 markdown 文件(task_plan.md、findings.md、progress.md),按阶段推进并在每阶段后更新状态、记录报错;上下文丢失或被 /clear 后仍靠这些文件接着做。",
+    "when": "当你要求规划、拆分或组织多步骤项目或研究任务,或这项工作要求 5 次以上工具调用时进入这套文件化流程。",
     "say": [
       {
-        "text": "帮我把这个多步骤任务拆成计划,写成 task_plan.md",
-        "note": "它会在项目里建计划文件并分阶段推进"
+        "text": "帮我把这个多步骤任务拆成计划,写进 task_plan.md",
+        "note": "会先建规划文件再动手"
       },
       {
-        "text": "把刚才的调研发现整理进 findings.md",
-        "note": "它会写入 findings.md 保存结论"
+        "text": "继续上次没做完的工作,先检查有没有未同步的上下文",
+        "note": "读同一项目的会话记录并汇总"
       },
       {
-        "text": "我 /clear 了,接着上次的计划继续做",
-        "note": "会话恢复会读取本项目的计划文件"
+        "text": "把这次的调研发现记到 findings.md,并更新进度"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:d9686f9851a91ac000338202a12c857ab12d647736666b23484f89570acf73f1",
+    "content_hash": "sha256:68a465dc81bd97bb4ecf3739094d61d21bb2d2da396fec2c972bc79ad0c4428e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-26T08:22:08.475Z",
+    "generated_at": "2026-09-27T08:59:17.763Z",
     "lint_pass": true,
-    "what_en": "Claude keeps task_plan.md, findings.md and progress.md on disk in your project as working memory, updating them as it works so progress survives context loss and /clear.",
-    "when_en": "Use when asked to plan out, break down or organize a multi-step project or research task, or any work needing 5+ tool calls.",
+    "what_en": "Claude writes the task plan, findings, and progress into three markdown files in your project, works phase by phase, and updates status and errors after each phase; work survives context loss and /clear.",
+    "when_en": "Triggers when you ask to plan, break down, or organize a multi-step project or research task, or when the work needs 5+ tool calls.",
     "say_en": [
       {
-        "text": "Break this multi-step task into a plan in task_plan.md",
-        "note": "It creates the plan file and tracks phases"
+        "text": "Break this multi-step task into a plan and write it to task_plan.md",
+        "note": "Creates planning files before starting"
       },
       {
-        "text": "Save what you just found into findings.md",
-        "note": "It writes the findings to findings.md"
+        "text": "Continue my unfinished work; first check for unsynced context",
+        "note": "Reads same-project session records"
       },
       {
-        "text": "I ran /clear, continue from the existing plan",
-        "note": "Recovery reads this project's plan files"
+        "text": "Log these research findings in findings.md and update progress"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "team-communication-protocols",
     "description": "Structured messaging protocols for agent team communication including message type selection, plan approval, shutdown procedures, and anti-patterns to avoid. Use this skill when establishing communication norms for a newly spawned team, when deciding whether to send a direct message or a broadcast, when a team-lead needs to review and approve an implementer's plan before work begins, when orchestrating a graceful team shutdown after all tasks are complete, or when debugging why teammates are not coordinating correctly at integration points.",
     "upstream": "https://github.com/wshobson/agents/tree/main/plugins/agent-teams/skills/team-communication-protocols",
-    "upstream_commit": "6161de4da8164795bc1128e8888c5054a5b67ddf",
+    "upstream_commit": "9b15b34b0bfc13a815cbfc2366e14ea549e09422",
     "content_hash": "sha256:6cba209e1e732c730329d6d5a91a15cff9e82386683c23cece5a6a2bc68d5e73",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 39980,
+    "stars_github": 40018,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-26T08:15:04.219Z",
+    "fetched_at": "2026-09-27T08:52:17.984Z",
     "first_seen_at": "2026-08-27T13:37:08.572Z",
-    "upstream_commit_at": "2026-09-25T20:40:31-04:00",
+    "upstream_commit_at": "2026-09-26T15:54:15-04:00",
     "repo_skill_count": 183,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-26T08:15:04.219Z",
+    "generated_at": "2026-09-27T08:52:17.984Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 在 agent 团队协作时按固定协议沟通:选择私信、广播或关闭请求等消息类型,处理计划审批,优雅关闭团队,并按队友名字发消息和派活。",
-    "when": "新建团队要定沟通规范、纠结该用私信还是广播、或 team-lead 要先审批实施者的计划时触发。",
+    "what": "装上后,Claude 会按固定消息协议与队友协作:区分直接消息与广播、用 plan_approval_request 走计划审批、用 shutdown_request 优雅关闭团队,并规避常见沟通反模式。",
+    "when": "当新建团队需要确立沟通规范、在直接消息与广播之间做选择,或要处理计划审批与团队关闭等情形时触发。",
     "say": [
       {
-        "text": "帮我给这个新团队定一套沟通规范,说清消息类型怎么选。",
-        "note": "会给出消息类型选择与要避开的反模式"
+        "text": "帮团队定沟通规范:常规更新用直接消息,别用广播",
+        "note": "lead 会按协议选消息类型"
       },
       {
-        "text": "implementer-1 交上来的计划帮我审一下,不行就写修改意见。",
-        "note": "走 plan_approval_response 审批流程"
+        "text": "把队友的计划发我审批,通过后再开工",
+        "note": "走 plan_approval_request 流程"
       },
       {
-        "text": "任务都完成后,帮我优雅关闭整个团队。",
-        "note": "逐个发 shutdown_request 后再清理团队资源"
+        "text": "任务都完成了,按流程优雅关闭团队"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:6cba209e1e732c730329d6d5a91a15cff9e82386683c23cece5a6a2bc68d5e73",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-26T08:23:13.940Z",
+    "generated_at": "2026-09-27T09:00:22.227Z",
     "lint_pass": true,
-    "what_en": "Claude follows a fixed messaging protocol when coordinating an agent team: it picks direct messages, broadcasts, or shutdown requests, handles plan approval, shuts teams down gracefully, and addresses teammates by name.",
-    "when_en": "Triggers when setting communication norms for a new team, deciding between a direct message and a broadcast, or when a lead must approve an implementer's plan before work starts.",
+    "what_en": "Once installed, Claude coordinates with teammate agents using fixed protocols: it picks direct messages vs broadcasts, routes plan approval via plan_approval_request, sends shutdown_request for graceful teardown, and avoids the listed anti-patterns.",
+    "when_en": "Triggers when a new team needs communication norms, when choosing between direct messages and broadcasts, or when handling plan approval and graceful team shutdown.",
     "say_en": [
       {
-        "text": "Help me set communication norms for this new team, including message types.",
-        "note": "Returns message-type rules and anti-patterns"
+        "text": "Set team communication norms: routine updates by direct message, not broadcast",
+        "note": "lead picks message type per protocol"
       },
       {
-        "text": "Review implementer-1's plan and tell them what to change.",
-        "note": "Uses the plan_approval_response flow"
+        "text": "Send me the teammate's plan for approval before work starts",
+        "note": "opened via plan_approval_request"
       },
       {
-        "text": "Once all tasks are done, shut the team down gracefully.",
-        "note": "Sends shutdown_request, then deletes team resources"
+        "text": "All tasks are done — shut the team down gracefully",
+        "note": "sends shutdown_request, then TeamDelete"
       }
     ]
   }

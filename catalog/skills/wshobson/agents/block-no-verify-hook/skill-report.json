@@ -5,8 +5,8 @@
     "name": "block-no-verify-hook",
     "description": "Configure a PreToolUse hook to prevent AI agents from skipping git pre-commit hooks with --no-verify and other bypass flags. Use when setting up Claude Code projects that enforce commit quality gates.",
     "upstream": "https://github.com/wshobson/agents/tree/main/plugins/block-no-verify/skills/block-no-verify-hook",
-    "upstream_commit": "6161de4da8164795bc1128e8888c5054a5b67ddf",
-    "content_hash": "sha256:d45dd8e372af339ba6af71adac43258873c521db32e3230dd614303f070e8a50",
+    "upstream_commit": "9b15b34b0bfc13a815cbfc2366e14ea549e09422",
+    "content_hash": "sha256:db9d1bda46f5813b7dccf2344f1e6bce1354f1fc09da9f4efb302b596e29805a",
     "license": "MIT",
     "hosting": "indexed",
     "category": "dev",
@@ -14,16 +14,18 @@
     "publisher": "wshobson",
     "publisher_verified": false,
     "duplicate_of": null,
-    "tags": []
+    "tags": [
+      "skill-tooling"
+    ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 39980,
+    "stars_github": 40018,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-26T08:15:04.219Z",
+    "fetched_at": "2026-09-27T08:52:17.984Z",
     "first_seen_at": "2026-08-27T13:37:08.572Z",
-    "upstream_commit_at": "2026-09-25T20:40:31-04:00",
+    "upstream_commit_at": "2026-09-26T15:54:15-04:00",
     "repo_skill_count": 183,
     "bulk_source": true
   },
@@ -34,82 +36,87 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-26T08:15:04.219Z",
+    "generated_at": "2026-09-27T08:52:17.984Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 6324,
-        "chars": 6324,
-        "tokens": 1380
+        "bytes": 7505,
+        "chars": 7505,
+        "tokens": 1726
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 6324,
-        "chars": 6324,
-        "tokens": 1380
+        "bytes": 7505,
+        "chars": 7505,
+        "tokens": 1726
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 6324,
-        "chars": 6324,
-        "tokens": 1380
+        "bytes": 7505,
+        "chars": 7505,
+        "tokens": 1726
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "禁止 AI 代理绕过 Git 提交检查",
+    "tagline": "拦住 AI 绕开提交检查的行为,让每次提交都过质量门禁",
     "scene_tags": [
-      "项目初始化",
-      "提交代码",
-      "质量门禁"
+      "提交前检查",
+      "代码质量门禁",
+      "仓库配置"
     ],
-    "fit_line": "适合你，如果需要在 Claude Code 项目中强制提交质量检查。",
-    "tagline_en": "Block AI agents from skipping pre-commit checks",
+    "fit_line": "适合你,如果担心 AI 助手用 --no-verify 跳过提交检查,想让质量门禁强制生效。",
+    "tagline_en": "Block AI agents from bypassing commit checks so every commit passes the gate",
     "scene_tags_en": [
-      "project setup",
-      "code commit",
-      "quality gates"
+      "commit checks",
+      "quality gate",
+      "repo setup"
     ],
-    "fit_line_en": "For you if you need to enforce commit quality gates in Claude Code projects.",
+    "fit_line_en": "For you if you worry AI assistants skip commit checks with --no-verify and want the gate enforced.",
     "source": "llm",
-    "content_hash": "sha256:d45dd8e372af339ba6af71adac43258873c521db32e3230dd614303f070e8a50",
+    "content_hash": "sha256:db9d1bda46f5813b7dccf2344f1e6bce1354f1fc09da9f4efb302b596e29805a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:11:12.533Z",
+    "generated_at": "2026-09-27T08:56:13.010Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 在项目中执行 Bash 命令前会先被检查:含 git --no-verify 或 --no-gpg-sign 的命令会被拦截并报错,其余命令照常执行。",
-    "when": "在配置了该 hook 的 Claude Code 项目里,每当 Claude 要运行 Bash 命令时触发检查,尤其是执行 git commit、push、merge 等命令时。",
-    "say": [],
+    "what": "装上后,Claude 的 Bash 命令只要带 --no-verify、--no-gpg-sign 等绕过旗标,就会在执行前被拦截并返回 BLOCKED 提示;普通命令照常运行。",
+    "when": "在你为 Claude Code 项目配置提交质量门槛时使用;当 Claude 试图执行带绕过旗标的 git 命令时,hook 会拦下该次调用。",
+    "say": [
+      {
+        "text": "改成全局配置,让所有项目都拦截 --no-verify",
+        "note": "写入 ~/.claude/settings.json 生效"
+      }
+    ],
     "source": "llm",
-    "content_hash": "sha256:d45dd8e372af339ba6af71adac43258873c521db32e3230dd614303f070e8a50",
+    "content_hash": "sha256:db9d1bda46f5813b7dccf2344f1e6bce1354f1fc09da9f4efb302b596e29805a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-26T08:22:47.065Z",
-    "lint_pass": false,
-    "what_en": "After setup, Claude Code inspects each Bash command before it runs: commands containing git --no-verify or --no-gpg-sign are blocked with an error message, while other commands run normally.",
-    "when_en": "Triggers on every Bash tool call in a project where the hook is configured, most relevant when Claude tries git commit, push, or merge.",
+    "generated_at": "2026-09-27T08:59:55.617Z",
+    "lint_pass": true,
+    "what_en": "Once installed, Claude's Bash calls containing bypass flags such as --no-verify or --no-gpg-sign are rejected before running and return a BLOCKED message; other commands run normally.",
+    "when_en": "Use when configuring Claude Code projects that enforce commit quality gates; when Claude tries a git command carrying a bypass flag, the hook blocks that call.",
     "say_en": [
       {
-        "text": "Add the block-no-verify hook to my .claude/settings.json",
-        "note": "Writes a hook config that blocks bypass flags"
+        "text": "Add this PreToolUse hook config to the project's .claude/settings.json",
+        "note": "Bypass-flag commands are then blocked in that project"
       },
       {
-        "text": "Also add this hook to my global ~/.claude/settings.json",
-        "note": "All projects will then block bypass flags"
+        "text": "Make it global so every project blocks --no-verify",
+        "note": "Written to ~/.claude/settings.json"
       },
       {
-        "text": "Test the hook by running git commit --no-verify -m \"test\"",
-        "note": "That command should be blocked with an error"
+        "text": "Test it: does git commit --no-verify -m test get blocked?",
+        "note": "It should be blocked with a BLOCKED message"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Searches and rewrites code by AST shape across 25 languages. Use when the target is a syntax pattern (every call/class/import shaped like X, a codemod, a YAML rule) rather than literal text; for plain strings, comments, or filenames, use rg.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "345572d0e3d2a0270957958bbdc7462828c8aa94",
+    "upstream_commit": "4139d615e140f267de4a34e57499fa7a5b8c7e7d",
     "content_hash": "sha256:dc05d0420a72af0e65f2512c56b4ae3aed461b58fd2f634c576b3deebaeb67d2",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69432,
+    "stars_github": 69545,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-26T08:14:50.494Z",
+    "fetched_at": "2026-09-27T08:52:02.510Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-26T16:26:52+09:00",
+    "upstream_commit_at": "2026-09-27T16:30:43+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-26T08:14:50.494Z",
+    "generated_at": "2026-09-27T08:52:02.510Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -114,37 +114,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能按代码结构(AST 形状)而不是文本去搜索和改写代码,支持 25 种语言:找出所有形状相同的调用、类、导入等。改写默认先出预览,加 --apply 才真正改动文件。",
-    "when": "当目标是代码结构(某个形状的调用、类、导入等),或要做 codemod、跑 YAML 规则时由它接管;若目标只是字符串、注释或文件名,则改用 rg。",
+    "what": "Claude 会按代码结构（AST）而不是字面文本搜索和重写代码，覆盖 25 种语言。它能查找形如某种模式的函数、调用、类、导入，做批量替换（codemod），并运行 YAML 规则；改写默认先给预览再应用。",
+    "when": "当你的目标是一个语法形态而非字面文本时接管，比如查找形如 X 的每个调用、类或导入，做 codemod，或运行 YAML 规则；若目标是纯字符串、注释、文件名等文本，则改用 rg。",
     "say": [
       {
-        "text": "帮我找出所有以 Request 作为参数的函数。",
-        "note": "helper search 会先列出所有匹配"
+        "text": "找出所有接收 Request 参数的函数",
+        "note": "执行结构化搜索并列出匹配位置"
       },
       {
-        "text": "跑一下项目里的 YAML 规则,报告违规项。",
-        "note": "helper scan 按规则扫描并输出结果"
+        "text": "把仓库里的 console.log 全改成 logger.info，先给我预览",
+        "note": "默认 dry-run，确认后再加参数应用"
+      },
+      {
+        "text": "用项目里的 YAML 规则扫一遍，列出违规项",
+        "note": "运行 sg scan 并汇报结果"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dc05d0420a72af0e65f2512c56b4ae3aed461b58fd2f634c576b3deebaeb67d2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-26T08:20:05.574Z",
+    "generated_at": "2026-09-27T08:57:13.844Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude can search and rewrite code by AST shape rather than text across 25 languages—finding every call, class, or import shaped like X. Rewrites preview first and only change files when --apply is set.",
-    "when_en": "Triggers when the target is code structure (a call/class/import shaped like X), a codemod, or a YAML rule; for plain strings, comments, or filenames use rg instead.",
+    "what_en": "Claude searches and rewrites code by AST shape across 25 languages. It finds every function, call, class, or import matching a pattern, applies codemods, and runs YAML rules; rewrites default to a dry-run preview.",
+    "when_en": "Triggered when the target is a syntax pattern, e.g. every call/class/import shaped like X, a codemod, or a YAML rule. For plain strings, comments, or filenames, use rg instead.",
     "say_en": [
       {
-        "text": "Find every function that takes a Request parameter.",
-        "note": "helper search lists the matches first"
+        "text": "Find every function that takes a Request parameter",
+        "note": "Runs a structural search and lists matches"
       },
       {
-        "text": "Rewrite every console.log(x) to logger.info(x) in this repo.",
-        "note": "dry-run by default; add --apply to write"
+        "text": "Rewrite all console.log calls to logger.info, preview first",
+        "note": "Dry-run by default; apply after you confirm"
       },
       {
-        "text": "Run the project's YAML rules and report violations.",
-        "note": "helper scan reports rule violations"
+        "text": "Scan the project with our YAML rules and list violations",
+        "note": "Runs sg scan with the project's rules"
       }
     ]
   }

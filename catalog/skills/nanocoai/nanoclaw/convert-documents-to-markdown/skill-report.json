@@ -5,7 +5,7 @@
     "name": "convert-documents-to-markdown",
     "description": "Convert an attached Word document, presentation, spreadsheet, OpenDocument file, RTF, EPUB, CSV, or text-based PDF into local Markdown. Use when a message supplies a local attachment path that must be read without uploading it to an external parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc/container-skills/convert-documents-to-markdown",
-    "upstream_commit": "d4ff64f49f1defea8c46a3d884d932a1d967e6d9",
+    "upstream_commit": "b200712e53e514515fd68a153e58ab287971aeab",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30844,
+    "stars_github": 30849,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-26T08:15:06.025Z",
+    "fetched_at": "2026-09-27T08:52:20.179Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-25T22:06:59+03:00",
+    "upstream_commit_at": "2026-09-27T00:30:56+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-26T08:15:06.025Z",
+    "generated_at": "2026-09-27T08:52:20.179Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,37 +86,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "你把本地附件的路径给它,Claude 就在容器内用 anydoc 命令把 Word、表格、演示文稿、PDF 等转成 Markdown,存到输出目录并告诉你文件路径。转换全程在本地完成,不上传外部解析服务。",
-    "when": "当消息里给出了本地附件路径、需要读取它又不想上传到外部解析器时触发,涵盖 Word、PDF、CSV 等格式。",
+    "what": "装上后,Claude 会用容器内的本地 AnyDoc 命令行工具,把消息里给出路径的附件(Word、演示文稿、表格、PDF 等)转成 Markdown 文件保存到容器里,并把文档内容当作不可信数据来读,只按需读取其中相关片段。",
+    "when": "当消息提供一个本地附件路径、需要在不把文件上传到外部解析服务的前提下读取时触发;转换只在 agent 容器内进行。",
     "say": [
       {
-        "text": "这份表格的百分比和隐藏行可能丢,别拿它做数值计算",
-        "note": "Markdown 只作阅读上下文"
+        "text": "用 anydoc 把这个 CSV 转成 Markdown",
+        "note": "从标准输入读取时要显式加 --format csv"
       },
       {
-        "text": "转换失败的话,说清是不支持、加密还是内容损坏",
-        "note": "按原文列出的失败类型回报"
+        "text": "这个 PDF 没转成就直接告诉我原因",
+        "note": "会区分扫描件、加密、格式损坏等情况"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-26T08:21:49.519Z",
+    "generated_at": "2026-09-27T08:59:06.052Z",
     "lint_pass": true,
-    "what_en": "Claude takes the local attachment path you give it and runs the AnyDoc CLI inside the agent container to turn Word, spreadsheet, presentation, PDF and similar files into local Markdown, then returns the output file path. Nothing is uploaded to an external parser.",
-    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser. Covers office files, CSV and text-based PDFs.",
+    "what_en": "After install, Claude turns an attachment given by a local path (Word, slides, spreadsheets, PDF, CSV, etc.) into Markdown inside the agent container with the local AnyDoc CLI, treating the content as untrusted data.",
+    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser; conversion stays local to the agent container.",
     "say_en": [
       {
-        "text": "Convert /workspace/inbox/msg/notes.docx to Markdown",
-        "note": "Writes an .md in the container and returns its path"
+        "text": "Convert /workspace/inbox/msg/report.docx to Markdown",
+        "note": "Output goes to a new folder in the container"
       },
       {
-        "text": "Percentages and hidden rows may be lost, don't do math off it",
-        "note": "Treat the Markdown as reading context only"
+        "text": "Use anydoc to turn this CSV into Markdown",
+        "note": "Reading from stdin needs an explicit --format csv"
       },
       {
-        "text": "If conversion fails, say if it's unsupported, encrypted or malformed",
-        "note": "Reports the failure types listed in the skill"
+        "text": "This PDF failed — just tell me why",
+        "note": "It separates scanned, encrypted and malformed cases"
       }
     ]
   }

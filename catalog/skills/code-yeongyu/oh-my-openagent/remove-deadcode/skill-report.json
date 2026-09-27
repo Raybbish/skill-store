@@ -5,7 +5,7 @@
     "name": "remove-deadcode",
     "description": "Remove unused code from this project with ultrawork mode, LSP-verified safety, atomic commits. Triggers: remove dead code, dead code, cleanup, remove unused.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/remove-deadcode",
-    "upstream_commit": "345572d0e3d2a0270957958bbdc7462828c8aa94",
+    "upstream_commit": "4139d615e140f267de4a34e57499fa7a5b8c7e7d",
     "content_hash": "sha256:7a6c767344ee0a69cf3d3cb53b8d88bbf2ec2895824f9963551be191384d8a9e",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69432,
+    "stars_github": 69545,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-26T08:14:50.494Z",
+    "fetched_at": "2026-09-27T08:52:02.510Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-26T16:26:52+09:00",
+    "upstream_commit_at": "2026-09-27T16:30:43+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-26T08:14:50.494Z",
+    "generated_at": "2026-09-27T08:52:02.510Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装好后 Claude 会扫描整个项目，找出没人引用的代码（没用到的导入、常量、函数、参数、孤立文件），用 LSP 引用查询逐一确认，再交给多个并行子代理按批次删除，每批单独提交。",
-    "when": "当你提到 “remove dead code”、“dead code”、“cleanup” 等关键词，或要求清理无用代码时触发；也可用文件、目录或符号名缩小扫描范围。",
+    "what": "它会扫描项目里没人引用的代码,用 LSP 引用查询逐个确认,再分批交给并行代理删除,每批通过类型检查后单独提交一次。最后给出删除清单和类型检查、测试、构建结果。",
+    "when": "当你提到 “remove dead code”、“dead code”、“cleanup” 等关键词,或要求清理项目中的未使用代码时触发。",
     "say": [
       {
-        "text": "帮我清理这个项目里没被用到的代码",
-        "note": "会先扫描，再用 LSP 确认"
+        "text": "扫描一下这个项目,找出没被引用的死代码",
+        "note": "只列出候选,确认后才删"
       },
       {
-        "text": "只扫描 src/utils 目录下的死代码",
-        "note": "把范围缩到一个目录"
+        "text": "只清理 src/utils 目录下的未使用导出",
+        "note": "用参数把扫描范围缩到该目录"
       },
       {
-        "text": "只处理 unusedFunc 这个符号的死代码",
-        "note": "把范围缩到一个符号"
+        "text": "把确认的死代码分批删掉,每批单独提交",
+        "note": "每批通过类型检查后才提交"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:7a6c767344ee0a69cf3d3cb53b8d88bbf2ec2895824f9963551be191384d8a9e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-26T08:20:33.201Z",
+    "generated_at": "2026-09-27T08:57:38.630Z",
     "lint_pass": true,
-    "what_en": "Claude scans the project for unreferenced code (unused imports, constants, functions, parameters, orphaned files), confirms each with LSP reference lookups, then hands removals to parallel subagents in batches, each committed separately.",
-    "when_en": "Triggers when you say \"remove dead code\", \"dead code\", \"cleanup\" or similar, or ask to clean up unused code. A file, directory, or symbol name can narrow the scan.",
+    "what_en": "Claude scans the project for unused code, confirms each candidate with LSP reference lookups, then sends removals to parallel agents that commit per batch after typecheck. It reports removed symbols and verification results.",
+    "when_en": "Triggers when you mention “remove dead code”, “dead code”, “cleanup” or similar keywords, or ask to clean up unused code in the project.",
     "say_en": [
       {
-        "text": "Clean up the unused code in this project",
-        "note": "Scans first, then confirms via LSP"
+        "text": "Scan this project and find dead code that nothing references",
+        "note": "Lists candidates only; nothing is removed yet"
       },
       {
-        "text": "Only scan the src/utils directory for dead code",
-        "note": "Narrows the scan to one directory"
+        "text": "Only clean unused exports under src/utils",
+        "note": "Narrows the scan to that directory"
       },
       {
-        "text": "Remove dead code, just the symbol unusedFunc",
-        "note": "Narrows the scope to one symbol"
+        "text": "Remove the confirmed dead code in batches, one commit each",
+        "note": "Each batch commits only after typecheck passes"
       }
     ]
   }

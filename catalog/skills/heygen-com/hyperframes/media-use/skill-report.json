@@ -5,8 +5,8 @@
     "name": "media-use",
     "description": "Agent Media OS, the single skill for every media need in a HyperFrames project. Resolve BGM, SFX, image, icon, brand logo, voice, color grade, or LUT into a frozen local file or paste-ready block + ledger record (one verb, `resolve`); generate via TTS / music / image models when the catalog misses; produce voiceover, transcription, captions, and background removal through one shared audio engine; operate on media (cut / reframe / transform); and reuse assets across projects. Also use for vague feedback that real footage looks dark, flat, boring, should feel retro/camcorder/print/ASCII, needs privacy, or needs a media reveal.",
     "upstream": "https://github.com/heygen-com/hyperframes/tree/main/skills/media-use",
-    "upstream_commit": "81d8a03d2e5b8e3bc2207472ccacd374a7320c8a",
-    "content_hash": "sha256:ed0eda38c6215a2e2fbe6582986b33f294ef09540071b287de707b1c71fde0c7",
+    "upstream_commit": "c83e958576f406d474a636d648d94dfc05fa822d",
+    "content_hash": "sha256:35be866ddef215ab7e3b15ff0028e664329bd80a68482de6194be3c75b83c58e",
     "license": "Apache-2.0",
     "hosting": "indexed",
     "category": "media",
@@ -20,10 +20,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 552100,
-    "fetched_at": "2026-09-26T08:17:12.623Z",
+    "installs_skills_sh": 564400,
+    "fetched_at": "2026-09-27T08:54:55.101Z",
     "first_seen_at": "2026-07-14T05:27:20.908Z",
-    "upstream_commit_at": "2026-09-26T07:36:06Z"
+    "upstream_commit_at": "2026-09-27T08:16:11Z"
   },
   "context_size": {
     "version": "1",
@@ -32,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-26T08:17:12.623Z",
+    "generated_at": "2026-09-27T08:54:55.101Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -121,12 +121,14 @@
           "scripts/dither.mjs",
           "scripts/dither.test.mjs",
           "scripts/eval.mjs",
+          "scripts/lib/config-lock.mjs",
           "scripts/lib/cutlist.mjs",
           "scripts/lib/duck.mjs",
           "scripts/lib/error-diffusion.mjs",
           "scripts/lib/index-gen.mjs",
           "scripts/lib/manifest.mjs",
           "scripts/lib/media-fetch.mjs",
+          "scripts/lib/media-home.mjs",
           "scripts/lib/npx-sync.mjs",
           "scripts/lib/parakeet-words.mjs",
           "scripts/lib/prefs-store.mjs",
@@ -141,73 +143,72 @@
           "scripts/transcript-cut.mjs",
           "scripts/transcript-cut.test.mjs"
         ],
-        "text_files": 78,
-        "bytes": 439933,
-        "chars": 437227,
-        "tokens": 90175
+        "text_files": 80,
+        "bytes": 442944,
+        "chars": 440238,
+        "tokens": 90772
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "把配乐、配音、字幕、画面修整都变成可直接用的本地素材文件",
+    "tagline": "把片子缺的音乐、音效、配音、字幕和画面一次找齐,落成可直接使用的本地文件",
     "scene_tags": [
       "配乐挑选",
-      "视频配音",
       "字幕生成",
-      "画面调色"
+      "视频剪辑",
+      "素材复用"
     ],
-    "fit_line": "适合你,如果做视频时总在到处找音乐、配音和素材,想在一处拿齐",
-    "tagline_en": "Turn music, voiceover, captions and edits into ready-to-use local assets",
+    "fit_line": "适合你,如果手上有片子要配音、配乐、加字幕,却不想挨个平台找素材",
     "scene_tags_en": [
-      "picking music",
-      "video voiceover",
-      "caption generation",
-      "color grading"
+      "soundtrack pick",
+      "caption writing",
+      "video editing",
+      "asset reuse"
     ],
-    "fit_line_en": "For you if you keep hunting for music, voice and assets across a video project.",
+    "fit_line_en": "For you if you're cutting a video and need music, voiceover, or captions without hunting sites",
     "source": "llm",
-    "content_hash": "sha256:ed0eda38c6215a2e2fbe6582986b33f294ef09540071b287de707b1c71fde0c7",
+    "content_hash": "sha256:35be866ddef215ab7e3b15ff0028e664329bd80a68482de6194be3c75b83c58e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-24T08:07:48.842Z",
+    "generated_at": "2026-09-27T08:55:51.632Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会用一条 resolve 命令，把 BGM、音效、图片、图标、品牌 logo、配音、调色等媒体解析成本地文件或可粘贴代码块，并记录台账；目录里没有时改用 TTS 等模型生成，也能做剪辑、转录、字幕、抠像。",
-    "when": "在 HyperFrames 项目里需要任何一种媒体时触发，例如要 BGM、图标、配音等；当你对画面给出模糊反馈（偏暗、平淡、想复古等）时也会接管。",
+    "what": "装上后,Claude 用一条 `resolve` 命令把 BGM、音效、图片、图标、logo、配音、调色或 LUT 解析成冻结的本地文件并记账;库里没有就调 TTS、音乐、图像模型生成。还能做配音、转写、字幕、抠像,以及剪辑、重构等素材操作。",
+    "when": "当你要求解析 BGM、图片、配音等素材,或反馈画面偏暗、平淡、想做成复古或 ASCII 风格、需要隐私处理时,它会接管。",
     "say": [
       {
-        "text": "帮我给这个项目找一段背景音乐",
-        "note": "运行 resolve --type bgm，返回本地文件路径"
+        "text": "帮我解析一首适合这支片子的背景音乐",
+        "note": "返回本地冻结文件并记账"
       },
       {
-        "text": "把这段文案生成配音",
-        "note": "通过共享音频引擎产出 TTS 语音"
+        "text": "这段素材看着发灰,帮我做一版调色",
+        "note": "先分析真实画面再给候选"
       },
       {
-        "text": "这段素材画面偏暗，帮我调一下",
-        "note": "先分析画面，再给出校正方案供你确认"
+        "text": "把画面里的彩色 emoji 换成真实图标",
+        "note": "解析出透明图标文件"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:ed0eda38c6215a2e2fbe6582986b33f294ef09540071b287de707b1c71fde0c7",
+    "content_hash": "sha256:35be866ddef215ab7e3b15ff0028e664329bd80a68482de6194be3c75b83c58e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-26T08:21:13.388Z",
+    "generated_at": "2026-09-27T08:58:13.092Z",
     "lint_pass": true,
-    "what_en": "One `resolve` command turns BGM, SFX, images, icons, logos, voice and grades into local files or paste-ready blocks with a ledger note, generating via TTS/music/image models when the catalog misses; it also cuts, reframes and removes backgrounds.",
-    "when_en": "Triggered whenever a HyperFrames project needs any media type, such as BGM, icons or voice; it also takes over for vague visual feedback like footage that looks dark, flat or should feel retro.",
+    "what_en": "`resolve` turns BGM, SFX, image, icon, logo, voice, grade or LUT into a frozen local file + ledger record; generates via TTS/music/image models if the catalog misses; handles voiceover, captions, background removal, cut/reframe.",
+    "when_en": "Triggers when you ask to resolve BGM, image or voice assets, or when you say footage looks dark or flat, wants a retro or ASCII look, or needs privacy.",
     "say_en": [
       {
-        "text": "Find a background track for this project",
-        "note": "Runs resolve --type bgm and returns a local file path"
+        "text": "Resolve a background track that fits this piece",
+        "note": "Returns a frozen local file + ledger record"
       },
       {
-        "text": "Turn this script into a voiceover",
-        "note": "Produces TTS audio through the shared audio engine"
+        "text": "This footage looks flat — give me a color grade",
+        "note": "Inspects real media first, then proposes"
       },
       {
-        "text": "This footage looks dark, please fix it",
-        "note": "Analyzes the frame, then proposes a grade you confirm"
+        "text": "Swap the emoji in the layout for real icons",
+        "note": "Resolves transparent icon files"
       }
     ]
   }

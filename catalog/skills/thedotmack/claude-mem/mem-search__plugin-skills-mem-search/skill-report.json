@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Search claude-mem's persistent cross-session memory database. Use when user asks \"did we already solve this?\", \"how did we do X last time?\", or needs work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/mem-search",
-    "upstream_commit": "4df4da25117657c359b3768d795760f796128445",
+    "upstream_commit": "7d0355413c2aaa3fa57fe6788b2ba2717fa7ff6f",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94713,
+    "stars_github": 94763,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-26T08:14:46.007Z",
+    "fetched_at": "2026-09-27T08:51:57.607Z",
     "first_seen_at": "2026-08-28T14:48:34.339Z",
-    "upstream_commit_at": "2026-09-25T22:42:31-07:00",
-    "repo_skill_count": 27
+    "upstream_commit_at": "2026-09-26T11:37:32-07:00",
+    "repo_skill_count": 28
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-26T08:14:46.007Z",
+    "generated_at": "2026-09-27T08:51:57.607Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能翻查你过往所有会话的记忆库:先搜索拿到带 ID 的结果表,按标题筛选后只为相关 ID 取完整详情,原始工具输出最后才可能读。",
-    "when": "当你问起之前的会话,比如「这个问题之前解决过吗」「上次是怎么做 X 的」等,或需要用到早前会话的成果时触发。",
+    "what": "装上后,Claude 能查询 claude-mem 的跨会话记忆库:先搜出带 ID 的结果列表,再看时间线上下文,最后只取相关条目的完整细节;只有摘要不够用时才调取原始工具输入输出。",
+    "when": "当你问的是以前的会话、而非当前对话时触发,比如“这个我们之前解决过吗?”“上次 X 是怎么做的?”等。",
     "say": [
       {
-        "text": "上次我们是怎么修这个登录 bug 的?",
+        "text": "上次那个登录 bug 我们是怎么解决的?",
         "note": "先返回带 ID 的搜索结果表"
       },
       {
-        "text": "搜索认证相关的记录,只列 10 条",
-        "note": "用 limit 限制返回条数"
+        "text": "搜一下上周跟数据库迁移有关的记录",
+        "note": "按日期范围搜索观察记录"
       },
       {
-        "text": "把 #11131 和 #10942 的完整内容取出来",
-        "note": "批量拉取这两条观察详情"
+        "text": "把 #11131 这条的完整细节取出来",
+        "note": "读取该条观察的完整内容"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-26T08:22:32.541Z",
+    "generated_at": "2026-09-27T08:59:38.419Z",
     "lint_pass": true,
-    "what_en": "Claude gains a searchable memory of your past sessions. It searches to get an index of results with IDs, filters by title, then fetches full details only for relevant IDs. Raw tool output comes last, only if the summary was not enough.",
-    "when_en": "Triggers when you ask about previous sessions, such as \"did we already fix this?\" or \"how did we solve X last time?\", or when you need work from earlier sessions.",
+    "what_en": "After install, Claude can query claude-mem's cross-session memory: it searches for an index with IDs, checks timeline context nearby, then fetches full details only for the relevant hits, and reads raw tool input/output only when summaries are not enough.",
+    "when_en": "Triggers when you ask about PREVIOUS sessions rather than the current conversation, e.g. \"did we already fix this?\" or \"how did we solve X last time?\".",
     "say_en": [
       {
         "text": "How did we fix that login bug last time?",
-        "note": "Returns a search index table with IDs"
+        "note": "Returns a search table with IDs first"
       },
       {
-        "text": "Search auth records, show only 10 results",
-        "note": "Sets limit=10 on the search"
+        "text": "Search last week's notes about the DB migration",
+        "note": "Searches observations by date range"
       },
       {
-        "text": "Fetch full details for #11131 and #10942",
-        "note": "Batch get_observations request"
+        "text": "Pull the full details of observation #11131",
+        "note": "Reads that observation in full"
       }
     ]
   }

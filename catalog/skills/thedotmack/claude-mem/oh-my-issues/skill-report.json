@@ -5,7 +5,7 @@
     "name": "oh-my-issues",
     "description": "Cluster a GitHub issue backlog by root cause into a small set of plan-master issues, redirect children with a standardized comment, and bundle architectural-fix PRs that close clusters atomically. Use when an issue tracker has accumulated dozens of reports that share underlying defects, when asked to triage / consolidate / cluster / dedupe issues, when asked to build a plan series or roadmap from open issues, or when routing a new incoming bug into an existing plan.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/oh-my-issues",
-    "upstream_commit": "4df4da25117657c359b3768d795760f796128445",
+    "upstream_commit": "7d0355413c2aaa3fa57fe6788b2ba2717fa7ff6f",
     "content_hash": "sha256:60bd448950afb01d988c47007e0dad4434bfbb983724fd9083d82aad9fcea037",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -23,12 +23,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94713,
+    "stars_github": 94763,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-26T08:14:46.007Z",
+    "fetched_at": "2026-09-27T08:51:57.607Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-25T22:42:31-07:00",
-    "repo_skill_count": 27
+    "upstream_commit_at": "2026-09-26T11:37:32-07:00",
+    "repo_skill_count": 28
   },
   "context_size": {
     "version": "1",
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-26T08:14:46.007Z",
+    "generated_at": "2026-09-27T08:51:57.607Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,24 +91,42 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "把 GitHub issue 积压按根因聚成少量 plan-master,每个簇配一份 plans/0X-*.md 设计文档;关闭子 issue 时留统一重定向评论并标为 not planned,再用一个 PR 通过 Closes #N 一次性关闭整簇。新来的 bug 以 Round N 评论并入已有 master。",
-    "when": "当仓库有 20+ 个 issue 且多为同一缺陷的重复报告,或你要求 triage、聚类、去重、从 open issues 做 plan 时接管;不足约 15 个 issue 或问题确实彼此独立时不用。",
+    "what": "把仓库里堆积的 GitHub issue 按共同根因归并成少数「计划主 issue」,每个主 issue 配一份 plans/ 设计文档;子 issue 用统一评论引流后标为 not planned 关闭,再用一个 PR 整簇关掉。",
+    "when": "当仓库有 20+ 开放 issue 且多为同源重复,或你要求 triage、合并、去重 issue 时触发;新提的 bug 也会被判断归属。",
     "say": [
       {
-        "text": "把这批 open issue 按根因聚类成几个 plan-master"
+        "text": "把重复的 issue 按根因合并成几个 plan",
+        "note": "会建计划主 issue,并关闭子 issue"
       },
       {
-        "text": "新提的这个 bug 属于哪个已有 plan?并进去"
+        "text": "这个新 bug 属于哪个已有的 plan?",
+        "note": "会在对应主 issue 下加 Round 评论并关闭它"
       },
       {
-        "text": "给 plan-02 打包 PR,用 Closes 一次关掉它的子 issue",
-        "note": "PR 合并后子 issue 自动关闭,并附上测试矩阵"
+        "text": "给 plan-02 出个 PR,一次关掉它名下所有 issue",
+        "note": "PR 用 Closes #N 自动关闭子 issue"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:60bd448950afb01d988c47007e0dad4434bfbb983724fd9083d82aad9fcea037",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-26T08:22:37.435Z",
-    "lint_pass": false
+    "generated_at": "2026-09-27T08:59:40.999Z",
+    "lint_pass": true,
+    "what_en": "Claude groups a GitHub issue backlog by shared root cause into a few plan-master issues, each mirrored as a plans/ design doc, closes children with a standard redirect comment, and bundles one PR per cluster that closes all of them.",
+    "when_en": "Triggers when a tracker has piled up dozens of reports sharing the same defects, or when asked to triage, consolidate, cluster, dedupe issues, or route a new bug into an existing plan.",
+    "say_en": [
+      {
+        "text": "Consolidate the duplicate issues into a few plans",
+        "note": "Opens plan masters and closes children."
+      },
+      {
+        "text": "Which existing plan does this new bug belong to?",
+        "note": "Adds a Round N comment, closes the child."
+      },
+      {
+        "text": "Ship a PR that closes everything under plan-02",
+        "note": "PR uses Closes #N to auto-close children."
+      }
+    ]
   }
 }
