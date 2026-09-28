@@ -5,7 +5,7 @@
     "name": "migrate-from-v1",
     "description": "Finish migrating a NanoClaw v1 install into v2. Run after `bash migrate-v2.sh` completes. Seeds the owner, migrates legacy memory, reconciles container configs, and helps port custom v1 code. Triggers on \"migrate from v1\", \"finish migration\", \"v1 migration\".",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-from-v1",
-    "upstream_commit": "b200712e53e514515fd68a153e58ab287971aeab",
+    "upstream_commit": "5e4f4b7db5160b5834b526a762329b2deba05ac0",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30849,
+    "stars_github": 30853,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:20.179Z",
+    "fetched_at": "2026-09-28T09:16:00.500Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-27T00:30:56+02:00",
+    "upstream_commit_at": "2026-09-27T19:20:34+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:20.179Z",
+    "generated_at": "2026-09-28T09:16:00.500Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它接手 bash migrate-v2.sh 跑完后的收尾工作:读取 handoff.json 排查失败步骤、指派 owner 角色、迁移旧记忆、核对容器配置,并帮你搬运 v1 的自定义代码。",
-    "when": "当你说 “migrate from v1”、“finish migration” 等关键词时触发,前提是 bash migrate-v2.sh 已经跑完并生成了 handoff.json。",
+    "what": "Claude 接手 migrate-v2.sh 跑完之后的部分：读 handoff.json 核对失败步骤，先确认 v2 能在真实频道收发消息，再授予 owner 角色、迁移旧记忆、核对容器配置，并协助搬运 v1 自定义代码。需要判断的地方会先展示再写入。",
+    "when": "当你提到“migrate from v1”、“finish migration”等说法时触发。前提是 migrate-v2.sh 已跑完；若找不到 handoff.json，它会停下并让你先在终端运行该脚本。",
     "say": [
       {
-        "text": "接手 v1 到 v2 的迁移收尾",
-        "note": "会先检查 handoff.json 是否存在"
+        "text": "帮我确认 v2 能正常回消息，然后继续完成迁移",
+        "note": "它先做冒烟测试，再进入后续阶段"
       },
       {
-        "text": "把 owner 角色指派给这个用户",
-        "note": "会查询 users 表再授予 owner"
+        "text": "把 owner 权限加到我的账号上",
+        "note": "它查 users 表后授予 owner 角色"
       },
       {
-        "text": "检查容器配置里的挂载路径是否还有效",
-        "note": "逐个 group 核对 container.json"
+        "text": "帮我迁移 v1 的旧记忆和容器配置"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:59:14.302Z",
+    "generated_at": "2026-09-28T09:22:29.187Z",
     "lint_pass": true,
-    "what_en": "It picks up after bash migrate-v2.sh: reads handoff.json, triages failed steps, grants the owner role, runs the shared-memory migration, reconciles container configs, and helps port v1 fork customizations.",
-    "when_en": "Triggers on \"migrate from v1\", \"finish migration\", or \"v1 migration\", once bash migrate-v2.sh has finished and handoff.json exists.",
+    "what_en": "Claude finishes the migration migrate-v2.sh started: reads handoff.json, checks failed steps, confirms v2 answers real messages, grants the owner role, migrates legacy memory, reconciles container config, and helps port v1 custom code. It shows changes before writing.",
+    "when_en": "Triggers on \"migrate from v1\", \"finish migration\" and similar phrases. Requires that migrate-v2.sh already ran; if handoff.json is missing it stops and tells you to run that script first, in your terminal.",
     "say_en": [
       {
-        "text": "Finish the v1 to v2 migration",
-        "note": "It checks handoff.json first"
+        "text": "Confirm v2 is answering messages, then continue the migration",
+        "note": "It runs a smoke test before later phases"
       },
       {
-        "text": "Grant the owner role to this user",
-        "note": "Queries the users table, then grants owner"
+        "text": "Grant the owner role to my account",
+        "note": "It queries the users table and grants owner"
       },
       {
-        "text": "Check whether the container mount paths still exist",
-        "note": "Verifies container.json per group"
+        "text": "Help me migrate v1 memory and container config",
+        "note": "It runs /migrate-memory and checks container.json"
       }
     ]
   }

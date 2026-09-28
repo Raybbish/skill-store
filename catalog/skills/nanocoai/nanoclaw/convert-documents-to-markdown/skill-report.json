@@ -5,7 +5,7 @@
     "name": "convert-documents-to-markdown",
     "description": "Convert an attached Word document, presentation, spreadsheet, OpenDocument file, RTF, EPUB, CSV, or text-based PDF into local Markdown. Use when a message supplies a local attachment path that must be read without uploading it to an external parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc/container-skills/convert-documents-to-markdown",
-    "upstream_commit": "b200712e53e514515fd68a153e58ab287971aeab",
+    "upstream_commit": "5e4f4b7db5160b5834b526a762329b2deba05ac0",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30849,
+    "stars_github": 30853,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:20.179Z",
+    "fetched_at": "2026-09-28T09:16:00.500Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-27T00:30:56+02:00",
+    "upstream_commit_at": "2026-09-27T19:20:34+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:20.179Z",
+    "generated_at": "2026-09-28T09:16:00.500Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,37 +86,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会用容器内的本地 AnyDoc 命令行工具,把消息里给出路径的附件(Word、演示文稿、表格、PDF 等)转成 Markdown 文件保存到容器里,并把文档内容当作不可信数据来读,只按需读取其中相关片段。",
-    "when": "当消息提供一个本地附件路径、需要在不把文件上传到外部解析服务的前提下读取时触发;转换只在 agent 容器内进行。",
+    "what": "当消息带有本地附件路径时，Claude 会在容器内用 AnyDoc 命令行把 Word、PPT、表格、RTF、EPUB、CSV、文本型 PDF 等转成本地 Markdown，并给出输出路径。它把文档当作不可信数据，不执行里面的指令。",
+    "when": "当你在消息中给出本地附件路径、需要不上传到外部解析服务就读取文档时触发。扫描件或纯图片 PDF 需 OCR，不支持。",
     "say": [
       {
-        "text": "用 anydoc 把这个 CSV 转成 Markdown",
-        "note": "从标准输入读取时要显式加 --format csv"
+        "text": "这个 CSV 走标准输入转 Markdown，用 csv 格式",
+        "note": "需显式指定格式参数"
       },
       {
-        "text": "这个 PDF 没转成就直接告诉我原因",
-        "note": "会区分扫描件、加密、格式损坏等情况"
+        "text": "这份 PDF 只读第三章，别把全文塞进上下文",
+        "note": "大文件只读相关章节"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:59:06.052Z",
+    "generated_at": "2026-09-28T09:22:21.522Z",
     "lint_pass": true,
-    "what_en": "After install, Claude turns an attachment given by a local path (Word, slides, spreadsheets, PDF, CSV, etc.) into Markdown inside the agent container with the local AnyDoc CLI, treating the content as untrusted data.",
-    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser; conversion stays local to the agent container.",
+    "what_en": "Given a local attachment path, Claude uses the AnyDoc CLI in the agent container to turn Word, slides, spreadsheets, RTF, EPUB, CSV and text PDFs into local Markdown and reports the output path. Documents count as untrusted data.",
+    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser. Scanned or image-only PDFs need OCR and are unsupported.",
     "say_en": [
       {
         "text": "Convert /workspace/inbox/msg/report.docx to Markdown",
-        "note": "Output goes to a new folder in the container"
+        "note": "Runs in the container and prints the output path"
       },
       {
-        "text": "Use anydoc to turn this CSV into Markdown",
-        "note": "Reading from stdin needs an explicit --format csv"
+        "text": "Turn this CSV into Markdown, using csv format from stdin",
+        "note": "The format must be named explicitly"
       },
       {
-        "text": "This PDF failed — just tell me why",
-        "note": "It separates scanned, encrypted and malformed cases"
+        "text": "Read only chapter 3 of this PDF, not the whole file",
+        "note": "Keeps large output out of context"
       }
     ]
   }

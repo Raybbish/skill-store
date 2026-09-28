@@ -5,7 +5,7 @@
     "name": "x-search",
     "description": "MUST read before searching X/Twitter with the x_search tool. When xAI is connected: date-bound every time-sensitive query (from_date >= yesterday, widen to 7 days), scope trusted accounts with allowed_x_handles, phrase queries as latest/recent with since:/from:/filter: operators, split into 2-3 searches by account and by keyword, and reconcile against web_search. Triggers: X search, Twitter search, tweets, posts on X, what people are saying on X, x_search, social signal.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/src/components/x-search/skill",
-    "upstream_commit": "4139d615e140f267de4a34e57499fa7a5b8c7e7d",
+    "upstream_commit": "41bde3ed6a9b32b403c3ddcec95537462ea78479",
     "content_hash": "sha256:92b9df0211400eb17044e87437ad9d1d182fbb644d52783b1fef983ef43e54ba",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69545,
+    "stars_github": 69616,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:02.510Z",
+    "fetched_at": "2026-09-28T09:15:49.524Z",
     "first_seen_at": "2026-09-04T07:41:04.908Z",
-    "upstream_commit_at": "2026-09-27T16:30:43+09:00",
+    "upstream_commit_at": "2026-09-28T17:49:27+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:02.510Z",
+    "generated_at": "2026-09-28T09:15:49.524Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "xAI 已连接时，Claude 用 x_search 搜 X/Twitter 会按本技能的规则组装查询：时效查询加日期界限、限定可信账号、拆成 2~3 次搜索，并对照 web_search，结论附 x.com 链接。",
-    "when": "当你提到「X search」、「Twitter search」、「tweets」等关键词，或要在 X 上找社交信号时触发；仅在 xAI 凭证存在、x_search 可用时生效。",
+    "what": "连接 xAI 后,Claude 会用 x_search 检索 X/Twitter 帖子:按日期限定时间敏感查询、圈定可信账号、拆成 2~3 次检索,并与 web_search 结果对照。报告时逐条附 x.com 链接,注明是某账号的帖子,而非已核实事实。",
+    "when": "当你要求搜索 X/Twitter 帖子、查看某话题在 X 上的讨论,或提到 x_search 等关键词时接管;若未连接 xAI 凭据,它会说明工具不可用并改用 web_search。",
     "say": [
       {
-        "text": "帮我搜一下 X 上最近关于英伟达的讨论",
-        "note": "会按 latest 语气加 since: 发起搜索"
+        "text": "帮我搜一下 X 上最近关于 NVDA 的帖子",
+        "note": "按昨天起的日期限定,并去掉回复噪音"
       },
       {
-        "text": "只看这几个可信账号对这件事的推文",
-        "note": "用 allowed_x_handles 限定账号范围"
+        "text": "只看 @growth_papa 这个账号最近在 X 上说了什么",
+        "note": "以该账号作为可信范围检索"
       },
       {
-        "text": "把 X 的说法和网页搜索的结果对照一下",
-        "note": "同一轮跑 web_search 后逐条比对"
+        "text": "这条推文的回复和引用都拉出来看看",
+        "note": "会单独做一次线程抓取"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:92b9df0211400eb17044e87437ad9d1d182fbb644d52783b1fef983ef43e54ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:57:58.305Z",
+    "generated_at": "2026-09-28T09:21:01.876Z",
     "lint_pass": true,
-    "what_en": "When xAI is connected, Claude reads this skill before using the x_search tool on X/Twitter: it date-bounds time-sensitive queries, limits trusted accounts, splits into 2-3 searches, reconciles with web_search, and cites x.com links.",
-    "when_en": "Triggers on phrases like \"X search\", \"Twitter search\" or \"tweets\", or when you want social signal from X; it only applies when an xAI credential exists and x_search is callable.",
+    "what_en": "With xAI connected, Claude uses x_search to find X/Twitter posts: it date-bounds queries, scopes trusted accounts, splits into 2-3 searches, and reconciles with web_search. Each claim gets an x.com link and is labeled an X post, not a fact.",
+    "when_en": "Triggers when you ask to search X/Twitter posts, check what people say about a topic on X, or mention x_search. Without an xAI credential it says the tool is unavailable and falls back to web_search.",
     "say_en": [
       {
-        "text": "Search X for recent posts about Nvidia",
-        "note": "Runs a latest-style query with since: and a from_date"
+        "text": "Search X for recent posts about NVDA",
+        "note": "Date-bounds from yesterday and drops replies."
       },
       {
-        "text": "Only look at tweets from these trusted accounts",
-        "note": "Scopes the search with allowed_x_handles"
+        "text": "What has @growth_papa posted on X lately?",
+        "note": "Scopes the search to that handle."
       },
       {
-        "text": "Compare what X says with web search results",
-        "note": "Runs web_search the same turn and reconciles both"
+        "text": "Pull the replies and quotes for this post",
+        "note": "Runs a separate thread fetch."
       }
     ]
   }

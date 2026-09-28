@@ -5,7 +5,7 @@
     "name": "lsp",
     "description": "Use when Codex needs language-server diagnostics, definitions, references, symbols, or rename safety checks in the current workspace.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/lsp/skills/lsp",
-    "upstream_commit": "4139d615e140f267de4a34e57499fa7a5b8c7e7d",
+    "upstream_commit": "41bde3ed6a9b32b403c3ddcec95537462ea78479",
     "content_hash": "sha256:46143f2cc0b6cbf136b8c819f2cc0da8dc1d86e21430b1992f4596c956cceefd",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69545,
+    "stars_github": 69616,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:02.510Z",
+    "fetched_at": "2026-09-28T09:15:49.524Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-27T16:30:43+09:00",
+    "upstream_commit_at": "2026-09-28T17:49:27+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:02.510Z",
+    "generated_at": "2026-09-28T09:15:49.524Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,33 +89,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会通过 lsp 工具调用语言服务器:查看文件诊断、跳转符号定义、查找引用、检索符号,并在重命名前检查该位置是否可改。",
-    "when": "当你在当前工作区需要语言服务器的诊断、定义、引用等结果,或要在重命名前做安全检查时,该技能会接管。",
+    "what": "Claude 会通过 lsp 工具调用语言服务器:检查文件或目录的诊断报错、跳转到符号定义、查找引用、检索符号,并在重命名前校验改动是否安全。",
+    "when": "当你需要在当前工作区获取语言服务器诊断、定义、引用等服务时触发。",
     "say": [
       {
-        "text": "用 lsp.find_references 找出这个符号在工作区里的所有引用",
-        "note": "在工作区范围内查找该符号的用法。"
+        "text": "用 lsp 检查这个文件的错误"
+      },
+      {
+        "text": "找一下这个函数在哪些地方被引用",
+        "note": "调用 lsp.find_references 搜索工作区"
+      },
+      {
+        "text": "把这个符号重命名,先确认改动是否安全"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:46143f2cc0b6cbf136b8c819f2cc0da8dc1d86e21430b1992f4596c956cceefd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:57:28.759Z",
+    "generated_at": "2026-09-28T09:20:37.268Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude calls language servers through the lsp tools: file diagnostics, go-to-definition, find references, document and workspace symbols, and rename validity checks.",
-    "when_en": "Triggered when Codex needs language-server diagnostics, definitions, references, symbols, or rename safety checks in the current workspace.",
+    "what_en": "Claude calls language-server tools through the lsp interface: it checks diagnostics for a file or directory, jumps to symbol definitions, finds references, inspects symbols, and validates a rename before applying it.",
+    "when_en": "Triggers when you need language-server diagnostics, definitions, references, or other LSP services in the current workspace.",
     "say_en": [
       {
-        "text": "Use lsp.diagnostics on this file with severity error",
-        "note": "Returns error-level diagnostics for the file."
+        "text": "Use lsp to check this file for errors",
+        "note": "Calls lsp.diagnostics, error severity preferred"
       },
       {
-        "text": "Use lsp.find_references to list all usages of this symbol",
-        "note": "Searches usages across the workspace."
+        "text": "Find where this function is referenced",
+        "note": "Calls lsp.find_references across the workspace"
       },
       {
-        "text": "Run lsp.prepare_rename here, then lsp.rename if it's valid",
-        "note": "Checks rename validity before applying the edit."
+        "text": "Rename this symbol, checking the change is safe first",
+        "note": "lsp.prepare_rename, then lsp.rename"
       }
     ]
   }

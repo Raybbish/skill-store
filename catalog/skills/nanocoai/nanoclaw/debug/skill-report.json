@@ -5,7 +5,7 @@
     "name": "debug",
     "description": "Debug container agent issues. Use when things aren't working, container fails, authentication problems, or to understand how the container system works. Covers logs, session DBs, mounts, and common issues.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/debug",
-    "upstream_commit": "b200712e53e514515fd68a153e58ab287971aeab",
+    "upstream_commit": "5e4f4b7db5160b5834b526a762329b2deba05ac0",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "license": "MIT",
     "hosting": "mirrored",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30849,
+    "stars_github": 30853,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:20.179Z",
+    "fetched_at": "2026-09-28T09:16:00.500Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-27T00:30:56+02:00",
+    "upstream_commit_at": "2026-09-27T19:20:34+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:20.179Z",
+    "generated_at": "2026-09-28T09:16:00.500Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,41 +91,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,遇到容器化 agent 出故障时,Claude 会按这份指南带你排查:读宿主日志、会话的 inbound/outbound 数据库、挂载点,以及重复实例、认证失败、心跳过期等常见问题。",
-    "when": "当机器人不回复、容器启动即退出、出现认证(401)问题,或你想了解容器系统如何运作时使用。",
+    "what": "装上后，Claude 会帮你排查容器化 agent 的问题：查看主机与容器日志、检查会话数据库（inbound.db / outbound.db）里的消息流、挂载与心跳文件，并说明常见故障的原因和对应修复命令。",
+    "when": "当容器起不来、agent 没有回复、出现认证（如 401）问题，或想弄清容器系统怎么运作时触发。",
     "say": [
       {
-        "text": "机器人不回消息了,帮我查 logs/nanoclaw.error.log",
-        "note": "定位投递失败或无适配器的告警"
+        "text": "容器起不来，agent 没回复，帮我查一下原因",
+        "note": "它会去看日志和会话 DB 的消息流"
       },
       {
-        "text": "看下这个会话的 outbound.db 里有没有回复",
-        "note": "确认 agent 是否产出了回复"
-      },
-      {
-        "text": "容器一启动就退出,开 debug 日志看 stderr",
-        "note": "检查 spawn 命令和容器报错"
+        "text": "日志里报 No adapter for channel type，怎么修",
+        "note": "它会指出重复的服务实例并给出停止命令"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cac10e22d4df0457a7597384c68391555141034166a6b6e7604035518da233ba",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:59:08.049Z",
+    "generated_at": "2026-09-28T09:22:21.931Z",
     "lint_pass": true,
-    "what_en": "Once installed, when a containerized agent breaks, Claude follows this guide to check host logs, the session inbound/outbound DBs, mounts, and common issues like duplicate instances, auth failures, and stale heartbeats.",
-    "when_en": "Use when the bot stops replying, a container fails or exits at once, authentication (401) problems appear, or you want to understand how the container system works.",
+    "what_en": "After install, Claude helps debug containerized agent issues: reading host and container logs, checking the session DBs (inbound.db/outbound.db) message flow, mounts and heartbeat files, and explaining causes and fixes for common failures.",
+    "when_en": "Triggers when a container fails, the agent stops replying, authentication (e.g. 401) problems appear, or you want to understand how the container system works.",
     "say_en": [
       {
-        "text": "The bot stopped replying, check logs/nanoclaw.error.log",
-        "note": "Find delivery failures or missing adapters"
+        "text": "The container won't start and the agent isn't replying — find out why",
+        "note": "Reads logs and the session DB message flow"
       },
       {
-        "text": "Look in this session's outbound.db for a reply",
-        "note": "Confirm the agent produced a reply"
+        "text": "Check whether this session's inbound.db and outbound.db have messages",
+        "note": "Queries both tables via scripts/q.ts"
       },
       {
-        "text": "The container exits at once - turn on debug logs",
-        "note": "Inspect spawn command and container stderr"
+        "text": "The log says No adapter for channel type — how do I fix it",
+        "note": "Points to duplicate service instances and stop commands"
       }
     ]
   }

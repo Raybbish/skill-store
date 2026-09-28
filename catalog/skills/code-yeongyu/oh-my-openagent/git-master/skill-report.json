@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "Handles git work: atomic commits, rebase, squash, blame, bisect, reflog, and history questions. Use whenever a task needs a commit or a git-history investigation; skip for ordinary code edits.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "4139d615e140f267de4a34e57499fa7a5b8c7e7d",
+    "upstream_commit": "41bde3ed6a9b32b403c3ddcec95537462ea78479",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69545,
+    "stars_github": 69616,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:02.510Z",
+    "fetched_at": "2026-09-28T09:15:49.524Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-27T16:30:43+09:00",
+    "upstream_commit_at": "2026-09-28T17:49:27+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:02.510Z",
+    "generated_at": "2026-09-28T09:15:49.524Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会先判断你的请求属于提交、改写历史、查历史还是看状态,再只执行你明确要求的那一个操作。提交时按仓库既有风格把改动拆成原子提交,查历史时给出提交哈希、文件路径和所用命令作为证据。",
-    "when": "当任务需要提交、改写分支历史,或调查某行、某文件的改动来源时接管;普通的代码编辑不触发。",
+    "what": "装上后 Claude 会先读仓库状态,再按请求分类处理:创建提交、改写分支历史,或回答历史问题。产出提交、改写后的分支,或带命令证据的结论,并列出仍未提交的文件。",
+    "when": "当任务需要提交改动,或需要调查 git 历史(谁、何时、哪次改动)时接管;普通代码编辑不触发。",
     "say": [
       {
-        "text": "把这几个改动拆成原子提交分别提交",
-        "note": "会先看仓库近期的提交风格"
+        "text": "把当前改动按模块拆成几个原子提交,消息用仓库现有风格",
+        "note": "会先分类,再按路径或 hunk 分组暂存"
       },
       {
-        "text": "这几行是谁改的?跑一下 blame",
-        "note": "会附上提交哈希、文件与行号证据"
+        "text": "用 git bisect 找出第一个坏掉的提交",
+        "note": "需要已知好坏边界和可判定成败的命令"
       },
       {
-        "text": "用 bisect 找出第一个出问题的提交",
-        "note": "需要能判定好坏的命令和已知边界"
+        "text": "这几行最后是谁改的?给我 blame 证据",
+        "note": "会引用提交哈希、文件路径和行号"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:57:20.934Z",
+    "generated_at": "2026-09-28T09:20:29.362Z",
     "lint_pass": true,
-    "what_en": "Claude classifies each request as commit, history rewrite, history lookup, or status, then only runs the Git operation you explicitly asked for. Commits follow the repo's message style; history answers cite hashes, files, and the commands used.",
-    "when_en": "Triggers when a task needs a commit or a git-history investigation, such as blame, bisect, or rebase; ordinary code edits are skipped.",
+    "what_en": "With this skill Claude reads the repo state first, classifies the request, then commits changes, rewrites branch history, or answers git-history questions. It reports commit hashes, messages, and any files left uncommitted.",
+    "when_en": "Use it when a task needs a commit or a git-history investigation — staging, rebase, squash, blame, bisect, reflog. Skip it for ordinary code edits.",
     "say_en": [
       {
-        "text": "Split these changes into atomic commits",
-        "note": "stages in groups after reading commit style"
+        "text": "Split my current changes into atomic commits using the repo's message style",
+        "note": "Classifies, then stages by path or hunk"
       },
       {
-        "text": "Who last changed these lines? Run blame",
-        "note": "returns hash, file and line evidence"
+        "text": "Find the first bad commit with git bisect",
+        "note": "Needs known good/bad bounds and a pass/fail command"
       },
       {
-        "text": "Use bisect to find the first bad commit",
-        "note": "needs a pass/fail command and known bounds"
+        "text": "Who last changed these lines? Show me the blame evidence",
+        "note": "Cites commit hash, file path, and line numbers"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "4139d615e140f267de4a34e57499fa7a5b8c7e7d",
+    "upstream_commit": "41bde3ed6a9b32b403c3ddcec95537462ea78479",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69545,
+    "stars_github": 69616,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:02.510Z",
+    "fetched_at": "2026-09-28T09:15:49.524Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-27T16:30:43+09:00",
+    "upstream_commit_at": "2026-09-28T17:49:27+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:02.510Z",
+    "generated_at": "2026-09-28T09:15:49.524Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "编辑类操作成功后,Claude 会收到 comment-checker 的自动注释检查反馈;若报告警告,该反馈会阻塞流程,Claude 需先修正或解释被标记的注释再继续。",
-    "when": "当一次编辑类工具调用(如 apply_patch、write、edit 等)成功,且 comment-checker 报告警告时接管;非编辑类工具被该插件忽略。",
+    "what": "当 Codex 成功完成补丁、写入、编辑等操作后,插件会注册 PostToolUse 钩子;若 comment-checker 报出警告,Codex 会收到阻断性反馈,需先修复或解释被标记的注释再继续。",
+    "when": "在 apply_patch、write、edit 等编辑类调用成功之后触发;非编辑类工具会被忽略。",
     "say": [
       {
-        "text": "帮我看看 comment-checker 标记了哪个注释",
-        "note": "Claude 指出被标记的注释位置"
+        "text": "comment-checker 报了警告,帮我看看那条注释并修掉",
+        "note": "Codex 会先处理被标记的注释"
       },
       {
-        "text": "把刚才被 comment-checker 警告的注释改掉",
-        "note": "Claude 修正后再继续后续改动"
+        "text": "解释一下为什么这条注释被标记,然后再继续",
+        "note": "先给原因,再接着原任务"
       },
       {
-        "text": "解释一下这段注释为什么被警告",
-        "note": "Claude 给出说明而非直接修改"
+        "text": "把刚触发警告的那行注释改写清楚,再继续改动",
+        "note": "改写注释后回到原操作"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:57:15.540Z",
+    "generated_at": "2026-09-28T09:20:22.226Z",
     "lint_pass": true,
-    "what_en": "After a successful apply_patch, write, or edit call, Claude gets automatic comment-checker feedback; if a warning is reported, that feedback is blocking, so Claude must fix or explain the flagged comment before continuing.",
-    "when_en": "Triggers when an edit-like tool call succeeds (apply_patch, write, edit, etc.) and comment-checker reports a warning. Non-edit tools are ignored by this plugin.",
+    "what_en": "It registers a PostToolUse hook after successful apply_patch, write, edit, and similar calls. If comment-checker reports a warning, Codex gets blocking feedback and must fix or explain the flagged comment before continuing.",
+    "when_en": "It activates after a successful edit-like tool call such as apply_patch, write, or edit. Non-edit tools are ignored.",
     "say_en": [
       {
-        "text": "Show me which comment comment-checker flagged",
-        "note": "Claude points out the flagged comment"
+        "text": "comment-checker warned about a comment - fix that comment for me",
+        "note": "Codex handles the flagged comment first"
       },
       {
-        "text": "Fix the comment comment-checker warned about",
-        "note": "Claude fixes it, then continues"
+        "text": "Explain why this comment was flagged, then keep going",
+        "note": "Gives the reason, then resumes the task"
       },
       {
-        "text": "Explain why this comment got flagged",
-        "note": "Claude explains instead of editing"
+        "text": "Rewrite the flagged comment clearly, then continue the change",
+        "note": "Returns to the original edit after rewriting"
       }
     ]
   }

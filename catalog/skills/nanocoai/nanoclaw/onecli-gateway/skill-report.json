@@ -5,7 +5,7 @@
     "name": "onecli-gateway",
     "description": "OneCLI Gateway: transparent HTTPS proxy that injects stored credentials into outbound calls. You MUST use this skill when the user asks you to read emails, check calendar, access GitHub repos, create issues, check Stripe payments, or interact with ANY external service or API. Do NOT use browser extensions or OAuth CLI tools. Make HTTP requests directly; the gateway injects credentials automatically.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-onecli/payload/container/skills/onecli-gateway",
-    "upstream_commit": "b200712e53e514515fd68a153e58ab287971aeab",
+    "upstream_commit": "5e4f4b7db5160b5834b526a762329b2deba05ac0",
     "content_hash": "sha256:1e9ee86b5be83fd832c4a570c39a46e5e6efce49f818568c396f2c4c89ada25b",
     "license": "MIT",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30849,
+    "stars_github": 30853,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:20.179Z",
+    "fetched_at": "2026-09-28T09:16:00.500Z",
     "first_seen_at": "2026-07-17T09:02:55.674Z",
-    "upstream_commit_at": "2026-09-27T00:30:56+02:00",
+    "upstream_commit_at": "2026-09-27T19:20:34+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -38,7 +38,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:20.179Z",
+    "generated_at": "2026-09-28T09:16:00.500Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -93,41 +93,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会直接向外部 API 发 HTTP 请求,由 OneCLI 网关在代理层自动注入已存凭证,你不必提供密钥。它能读邮件、查日历、访问 GitHub、查 Stripe 付款等。",
-    "when": "当你要求它读邮件、查日历或访问 GitHub 等外部服务与 API 时接管。它会直接发 HTTP 请求,而不是用浏览器扩展或 OAuth 工具。",
+    "what": "它让 Claude 直接向 Gmail、GitHub、Stripe 等外部 API 发 HTTP 请求,由网关在代理处自动注入凭证,Claude 看不到凭证值;服务未连接时会返回一个连接链接。",
+    "when": "当你要求读取邮件、查看 GitHub 仓库或对接其他外部服务与 API 时,它接管请求;原文明确要求不走浏览器扩展或 OAuth 命令行工具。",
     "say": [
       {
-        "text": "读一下我 Gmail 收件箱最新的 5 封邮件",
-        "note": "Claude 直接调 Gmail API,凭证由网关注入"
+        "text": "读一下我 Gmail 里最新的 5 封邮件",
+        "note": "网关自动注入凭证,直接调用 Gmail API"
       },
       {
         "text": "列出我 GitHub 上前 10 个仓库",
-        "note": "走 api.github.com,不需要你给 token"
+        "note": "直接请求 api.github.com,无需提供 token"
       },
       {
-        "text": "查一下 Stripe 最近 5 笔付款",
-        "note": "拿不到凭证时它会给出连接链接"
+        "text": "查一下我 Stripe 最近的 5 笔收款",
+        "note": "未连接时会返回连接链接"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1e9ee86b5be83fd832c4a570c39a46e5e6efce49f818568c396f2c4c89ada25b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:59:16.333Z",
+    "generated_at": "2026-09-28T09:22:29.678Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude sends HTTP requests straight to external APIs; the OneCLI gateway injects stored credentials at the proxy, so it never handles them. It can read email, check calendars, reach GitHub, check Stripe payments and more.",
-    "when_en": "It takes over when you ask it to read email, check calendar or reach GitHub and other external APIs. It calls the API directly, not via browser extensions or OAuth tools.",
+    "what_en": "Claude makes direct HTTP calls to external APIs such as Gmail, GitHub or Stripe; the gateway injects stored credentials at the proxy, so Claude never handles credential values, and returns a connect link if a service isn't connected.",
+    "when_en": "Triggers when you ask Claude to read emails, check calendar, access GitHub or otherwise interact with any external service or API. Browser extensions and manual OAuth CLI tools are explicitly not used.",
     "say_en": [
       {
-        "text": "Read the 5 latest emails in my Gmail inbox",
-        "note": "Calls the Gmail API; gateway injects credentials"
+        "text": "Read my 5 latest Gmail messages",
+        "note": "Gateway injects credentials; calls Gmail API directly"
       },
       {
         "text": "List my first 10 GitHub repos",
-        "note": "Hits api.github.com; no token needed"
+        "note": "Hits api.github.com without you supplying a token"
       },
       {
-        "text": "Check the last 5 Stripe charges",
-        "note": "Returns data, or a connect link if unconnected"
+        "text": "Show my 5 most recent Stripe charges",
+        "note": "Returns a connect link if Stripe isn't connected"
       }
     ]
   }

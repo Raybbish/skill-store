@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Processes and analyzes data with resident-kernel engines (DuckDB, Polars) and one-shot tools. Use for CSV/parquet/JSON analysis, group-by/join/aggregation, time series, distributions, cleaning, or plotting a dataset.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "4139d615e140f267de4a34e57499fa7a5b8c7e7d",
+    "upstream_commit": "41bde3ed6a9b32b403c3ddcec95537462ea78479",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69545,
+    "stars_github": 69616,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:02.510Z",
+    "fetched_at": "2026-09-28T09:15:49.524Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-09-27T16:30:43+09:00",
+    "upstream_commit_at": "2026-09-28T17:49:27+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:02.510Z",
+    "generated_at": "2026-09-28T09:15:49.524Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -105,41 +105,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会用 DuckDB、Polars 等常驻内核引擎分析 CSV、Parquet、JSON 数据,先探测文件大小和内存再决定计算在哪运行,回答后报告行数与耗时,并按需画图。",
-    "when": "当你要求分析 CSV、Parquet 或 JSON 数据,或做分组聚合、时间序列等任务时触发。",
+    "what": "分析 CSV、Parquet、JSON 数据时,Claude 改用 DuckDB 或 Polars 引擎(不用 pandas),先探查文件大小与可用内存,再决定载入内存还是原地流式查询,并报告行数与耗时,按需出图。",
+    "when": "当你让它分析 CSV、parquet、JSON 数据,做分组聚合、时间序列分析,或清洗数据、绘制图表时触发。",
     "say": [
       {
-        "text": "分析一下 data.csv,按城市统计订单总额",
-        "note": "用 DuckDB 直接查询该文件"
+        "text": "帮我分析 data.csv,按地区分组统计销售额",
+        "note": "先探查文件大小,再决定载入内存还是流式"
       },
       {
-        "text": "这个 parquet 文件多大?先看行数和内存占用",
-        "note": "先探测再决定计算方式"
+        "text": "这个 parquet 超过内存了,用流式方式算每月平均",
+        "note": "超内存数据不会整体载入,避免卡机"
       },
       {
-        "text": "把月度销售趋势画成折线图",
-        "note": "触发绘图并按可视化规范做检查"
+        "text": "画出这份数据的分布图",
+        "note": "会先读可视化参考,并做视觉检查"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:57:18.379Z",
+    "generated_at": "2026-09-28T09:20:26.075Z",
     "lint_pass": true,
-    "what_en": "Claude analyzes CSV/Parquet/JSON data with resident engines like DuckDB and Polars, probes file size and RAM before deciding where computation runs, then reports the answer with row counts and timing, charting on request.",
-    "when_en": "Triggers when you ask to analyze CSV, Parquet, or JSON data, or perform group-by/aggregation, time series, distributions, cleaning, or plotting.",
+    "what_en": "For CSV, parquet, or JSON analysis, Claude uses DuckDB or Polars instead of pandas: it probes file size and free RAM first, then loads into memory or queries and streams in place, reports row counts and timing, and charts when asked.",
+    "when_en": "Triggered when you ask it to analyze a CSV, parquet, or JSON dataset, run group-by, join, aggregation, or time-series work, clean data, or plot a dataset.",
     "say_en": [
       {
-        "text": "Analyze data.csv and total order amounts by city",
-        "note": "Queries the file directly with DuckDB"
+        "text": "Analyze data.csv and group sales by region.",
+        "note": "Probes file size, then picks load or stream"
       },
       {
-        "text": "How big is this parquet file? Show row count and memory",
-        "note": "Probes first, then picks placement"
+        "text": "This parquet is bigger than RAM — stream the monthly average.",
+        "note": "Never loads more-than-RAM data at once"
       },
       {
-        "text": "Plot monthly sales as a line chart",
-        "note": "Runs charting with the visual QA step"
+        "text": "Plot the distribution of this dataset.",
+        "note": "Follows visualization.md and its visual QA step"
       }
     ]
   }

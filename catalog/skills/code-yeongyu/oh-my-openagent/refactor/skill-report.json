@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Guides a refactor, cleanup, or restructure with the right decomposition. Use when the user asks to refactor, simplify, extract, or modernize code.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "4139d615e140f267de4a34e57499fa7a5b8c7e7d",
+    "upstream_commit": "41bde3ed6a9b32b403c3ddcec95537462ea78479",
     "content_hash": "sha256:903a90dc519ec658b8d13fd43329579de9d2f5c026d95a0fc10f678444a5e2ed",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69545,
+    "stars_github": 69616,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:02.510Z",
+    "fetched_at": "2026-09-28T09:15:49.524Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-27T16:30:43+09:00",
+    "upstream_commit_at": "2026-09-28T17:49:27+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:02.510Z",
+    "generated_at": "2026-09-28T09:15:49.524Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,37 +91,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你要求重构代码时,Claude 会先确认目标,再并行分析代码库、画出依赖与影响范围、评估测试覆盖,生成分步计划后逐步改写,每改一步就跑测试和类型检查。",
-    "when": "当你要求重构、简化或抽取代码时接管,也可用 /refactor 命令指定目标和范围。",
+    "what": "运行 /refactor 后,Claude 会先与你确认重构目标、范围与验收标准,分析代码库依赖和测试覆盖,再给出分步计划并逐步改代码,每步跑测试与诊断,最后做整体回归检查。",
+    "when": "当你要求重构、简化或提取代码时触发,典型入口是输入 /refactor <重构目标>,并可附加范围、策略等参数。",
     "say": [
       {
-        "text": "帮我把 AuthService 类里的参数校验逻辑抽成单独模块",
-        "note": "它会先复述理解、确认后再分析代码库。"
+        "text": "/refactor src/auth/handler.ts",
+        "note": "对指定文件走完整重构流程"
       },
       {
-        "text": "重构 util 目录,把重复的日期处理函数合并",
-        "note": "范围默认是 module。"
+        "text": "/refactor \"AuthService 类\" --scope=module",
+        "note": "按模块范围重构该类"
+      },
+      {
+        "text": "/refactor 把校验逻辑抽成独立模块 --strategy=safe",
+        "note": "稳妥策略下抽取逻辑"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:903a90dc519ec658b8d13fd43329579de9d2f5c026d95a0fc10f678444a5e2ed",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:57:36.475Z",
+    "generated_at": "2026-09-28T09:20:46.895Z",
     "lint_pass": true,
-    "what_en": "When you refactor code, Claude confirms the goal, maps the codebase and dependencies, checks test coverage, plans steps, then edits step by step, running tests and type checks after each change.",
-    "when_en": "Triggers when you ask to refactor, simplify, or extract code, or via /refactor with a target and scope.",
+    "what_en": "Running /refactor makes Claude confirm the goal, scope and success criteria, analyze dependencies and test coverage, produce a step-by-step plan, then apply changes step by step with tests and diagnostics after each step and a final regression check.",
+    "when_en": "Triggers when you ask to refactor, simplify, extract or modernize code, typically via /refactor <target>, optionally with scope and strategy options.",
     "say_en": [
       {
-        "text": "/refactor src/auth/handler.ts --scope=file",
-        "note": "Refactors only that file; safe strategy by default."
+        "text": "/refactor src/auth/handler.ts",
+        "note": "Runs the full refactor flow on that file"
       },
       {
-        "text": "Extract the validation logic in the AuthService class into its own module",
-        "note": "It confirms understanding first, then analyzes the codebase."
+        "text": "/refactor \"AuthService class\" --scope=module",
+        "note": "Refactors the class at module scope"
       },
       {
-        "text": "Refactor the util directory and merge duplicate date helpers",
-        "note": "Scope defaults to module."
+        "text": "/refactor extract validation into a module --strategy=safe",
+        "note": "Extracts logic under the safe strategy"
       }
     ]
   }

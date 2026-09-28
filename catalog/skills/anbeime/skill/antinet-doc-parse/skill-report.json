@@ -5,7 +5,7 @@
     "name": "antinet-doc-parse",
     "description": "软件开发工程师与数据科学家在构建RAG系统时，当需处理PDF/Word/Excel等多格式复杂文档，用此技能可自动触发三级解析降级，一键输出高置信度结构化Markdown与元数据，免去繁琐清洗，直接夯实企业知识库数据底座！",
     "upstream": "https://github.com/anbeime/skill/tree/main/skills/antinet-doc-parse",
-    "upstream_commit": "09c4cc8ad0cee59197a4dc3696ad1f3472aff547",
+    "upstream_commit": "0ca4f2683f6d720b81d8d5dd3f8be92fab6e38a0",
     "content_hash": "sha256:1787090c147d5fd2bbe5337c47aac78a15002fa80812ae1aeaa00a415454096e",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 7251,
+    "stars_github": 7302,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:52:50.590Z",
+    "fetched_at": "2026-09-28T09:16:24.259Z",
     "first_seen_at": "2026-08-12T04:45:00.369Z",
-    "upstream_commit_at": "2026-09-27T07:41:58Z",
+    "upstream_commit_at": "2026-09-28T08:20:48Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:52:50.590Z",
+    "generated_at": "2026-09-28T09:16:24.259Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "收到已通过安全扫描的文档后，Claude 按三级依次降级解析，输出结构化 Markdown、元数据与 0–1 置信度，以及实际生效的解析器名；三级全失败则标为人工介入，不输出残缺结果。",
-    "when": "由密卷房 Worker 收到已通过安全扫描的文件时接管；也可直接运行 scripts/run_doc_parse.py。需要把 PDF、Word、Excel 等文档转成结构化文本时进入。",
+    "what": "你给它一个已通过安全扫描的本地文件，它按三级解析降级依次尝试，输出结构化 Markdown、元数据、0–1 置信度和最终生效的解析器名；三级都失败就标记人工介入，不输出残缺结果。",
+    "when": "当密卷房 Worker 收到已通过安全扫描的文件时被调用；构建 RAG、知识库或做合同结构化时也会用到。",
     "say": [
       {
-        "text": "解析这份本地 PDF，输出 Markdown 和置信度",
-        "note": "按三级降级解析并返回结果"
+        "text": "解析 /path/to/report.pdf，输出 Markdown 和元数据",
+        "note": "返回正文、元数据与 0–1 置信度"
       },
       {
-        "text": "这个文件的置信度是多少？最终用了哪个解析器？",
-        "note": "返回 confidence 与 fallback_used"
+        "text": "这份合同走三级解析，告诉我最终用了哪个解析器、置信度多少",
+        "note": "返回 fallback_used 与置信度"
       },
       {
-        "text": "把这几份 Word、Excel 文档都解析成结构化 Markdown",
-        "note": "逐个解析并输出元数据"
+        "text": "这次只允许解析 PDF 和 Excel",
+        "note": "通过 formats 白名单限制格式"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1787090c147d5fd2bbe5337c47aac78a15002fa80812ae1aeaa00a415454096e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:56:49.074Z",
+    "generated_at": "2026-09-28T09:19:59.383Z",
     "lint_pass": true,
-    "what_en": "Claude parses security-scanned files through a three-tier fallback (MinerU, PyMuPDF, pdfplumber) and returns Markdown, metadata, a 0–1 confidence score, and the parser used. If all tiers fail, it flags manual review, never partial output.",
-    "when_en": "Called by the Mijuanfang Worker on files that passed the security scan, or run scripts/run_doc_parse.py. It takes over when you need PDF, Word, Excel and other documents turned into structured text.",
+    "what_en": "Give it a local file that passed the security scan; it tries three parsers in fallback order and returns structured Markdown, metadata, a 0–1 confidence score, and the parser used. If all three fail, it flags manual review.",
+    "when_en": "Triggered when the Mijuanfang Worker receives a file that has passed the security scan; also used for RAG, knowledge bases or contract structuring on PDF/Word/Excel files.",
     "say_en": [
       {
-        "text": "Parse this local PDF and output Markdown with its confidence score",
-        "note": "Runs the three-tier fallback parse"
+        "text": "Parse /path/to/report.pdf and return the Markdown, metadata and confidence.",
+        "note": "Returns markdown, metadata, confidence, fallback_used"
       },
       {
-        "text": "What confidence did this file get, and which parser was used?",
-        "note": "Returns confidence and fallback_used"
+        "text": "Run the three-level parse on this contract and report the parser used and confidence.",
+        "note": "Returns fallback_used and confidence"
       },
       {
-        "text": "Parse these Word and Excel files into structured Markdown",
-        "note": "Parses each file and returns metadata"
+        "text": "Only allow PDF and Excel for this run.",
+        "note": "Uses the formats whitelist"
       }
     ]
   }
