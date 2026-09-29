@@ -5,7 +5,7 @@
     "name": "add-tavily-tool",
     "description": "Add Tavily Search and Extract as keyless remote MCP tools for selected NanoClaw agent groups. Use when installing Tavily web search or URL extraction without an API key.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-tavily-tool",
-    "upstream_commit": "5e4f4b7db5160b5834b526a762329b2deba05ac0",
+    "upstream_commit": "ae0ba8635b3f60a2fd214625a2e7b7d1eda2e634",
     "content_hash": "sha256:2d9ebf4b4d47a240ccd043ff286d0bd5ee5355d8394e0ddbb5352263870df53f",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30853,
+    "stars_github": 30864,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-28T09:16:00.500Z",
+    "fetched_at": "2026-09-29T09:24:04.602Z",
     "first_seen_at": "2026-08-12T04:44:23.959Z",
-    "upstream_commit_at": "2026-09-27T19:20:34+02:00",
+    "upstream_commit_at": "2026-09-29T09:08:35+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-28T09:16:00.500Z",
+    "generated_at": "2026-09-29T09:24:04.602Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -96,41 +96,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给选定的 NanoClaw agent 组注册 Tavily 远程 MCP 工具,新增网页搜索(tavily_search)和 URL 内容提取(tavily_extract),无需 API 密钥;同时写入升级指引,以便额度用尽时提示换付费密钥。",
-    "when": "当你想给某个 agent 组装上 Tavily 的网页搜索或链接提取、且不想用 API 密钥时触发;注册与重启组需管理员批准。",
+    "what": "为选定的 NanoClaw 分组装上 Tavily 远程 MCP 服务：把 mcp-remote 桥接写进 agent 镜像并注册 tavily 服务，最终可用 tavily_search 与 tavily_extract 两个工具，全程不需要 API key。",
+    "when": "当你要给指定分组安装免密钥的 Tavily 网页搜索或 URL 提取时触发；若 Tavily 返回 429，说明免密钥额度用尽，agent 会转而提供付费 key 升级。",
     "say": [
       {
-        "text": "给我的 research 组装上 Tavily 搜索,不用 API key",
-        "note": "会先注册,再等管理员批准"
+        "text": "给 <group-id> 分组装上 Tavily 搜索和提取工具",
+        "note": "会注册 tavily 服务并重启该分组"
       },
       {
-        "text": "列出我的 agent 组,看哪些还没注册 Tavily",
-        "note": "读取各组 MCP 配置"
+        "text": "看看 mcp-remote 是不是已经在镜像清单里",
+        "note": "会检查 cli-tools.json 并列出分组"
       },
       {
-        "text": "验证 X 组里的 Tavily 搜索能不能用",
-        "note": "会跑一次 max_results 1 的测试搜索"
+        "text": "查一下 <group-id> 的配置里有没有 tavily 服务",
+        "note": "显示该组已存储的 MCP 配置"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2d9ebf4b4d47a240ccd043ff286d0bd5ee5355d8394e0ddbb5352263870df53f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-28T09:22:09.470Z",
+    "generated_at": "2026-09-29T09:31:26.578Z",
     "lint_pass": true,
-    "what_en": "Registers Tavily's remote MCP server for selected NanoClaw agent groups, adding web search and URL extraction tools with no API key. It also writes upgrade instructions so a paid key can be offered when the keyless allowance runs out.",
-    "when_en": "Use when installing Tavily web search or URL extraction for an agent group without an API key. Registration and group restarts are approval-gated.",
+    "what_en": "Installs Tavily's remote MCP server for selected NanoClaw agent groups: adds the pinned mcp-remote bridge to the agent image and registers a tavily server, giving you tavily_search and tavily_extract with no API key.",
+    "when_en": "Use when installing keyless Tavily web search or URL extraction for selected agent groups. If Tavily returns 429, the keyless allowance is spent and the agent offers the paid-key upgrade.",
     "say_en": [
       {
-        "text": "Install Tavily search for my research group, no API key.",
-        "note": "Registers, then waits for admin approval."
+        "text": "Install Tavily search and extract for group <group-id>",
+        "note": "Registers the tavily MCP server, then restarts the group"
       },
       {
-        "text": "List my agent groups and show which lack the Tavily server.",
-        "note": "Reads each group's MCP config."
+        "text": "Check whether mcp-remote is already in the image manifest",
+        "note": "Greps cli-tools.json and lists your groups"
       },
       {
-        "text": "Check that the Tavily search tool works in group X.",
-        "note": "Runs one test search with max_results 1."
+        "text": "Show the stored config for <group-id> to confirm the tavily server",
+        "note": "Prints the group's MCP config"
       }
     ]
   }

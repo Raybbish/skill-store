@@ -5,7 +5,7 @@
     "name": "add-dial-number",
     "description": "Add another phone number to an existing Dial channel — a second (or third) public line for the agent, so one NanoClaw install answers SMS and AI voice calls on multiple numbers. Use when Dial is already installed and the operator wants an additional number (e.g. a personal line plus a support line). Requires the Dial channel to already be installed (see /add-dial).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-dial-number",
-    "upstream_commit": "5e4f4b7db5160b5834b526a762329b2deba05ac0",
+    "upstream_commit": "ae0ba8635b3f60a2fd214625a2e7b7d1eda2e634",
     "content_hash": "sha256:9bfad30e6458d6dcf130a254bf44d22ef6c7b0f42dbd7407b69b92df79c8ab00",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30853,
+    "stars_github": 30864,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-28T09:16:00.500Z",
+    "fetched_at": "2026-09-29T09:24:04.602Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-27T19:20:34+02:00",
+    "upstream_commit_at": "2026-09-29T09:08:35+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-28T09:16:00.500Z",
+    "generated_at": "2026-09-29T09:24:04.602Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给已装好的 Dial 通道再加一个电话号码,这样一个 NanoClaw 安装就能在多个号码上收发短信和 AI 语音通话。每个号码是独立的分线会话,回复会从收到消息的那个号码发出。",
-    "when": "当 Dial 通道已经装好、你又想要额外一个号码(比如个人线加支持线)时使用。前置条件是已安装支持多号码的 Dial 适配器。",
+    "what": "给已经装好 Dial 的安装再加一个电话号码,让同一套 NanoClaw 能在多条号码上收发短信、接 AI 语音电话。每个号码是独立的线程化线路,回复从收到消息的那个号码发出,已有线路不变。",
+    "when": "已经在用 Dial,并想给同一个 agent 再加一个号码(比如个人线之外再加一条支持线)时进入;前提是 Dial 渠道已经装好,否则先跑 /add-dial。",
     "say": [
       {
-        "text": "帮我给 Dial 再加一个号码",
-        "note": "它会先确认 Dial 已装好,再列出账号里的号码"
+        "text": "给 Dial 再加一个号码,带我走一遍安装。",
+        "note": "会先检查 Dial 是否已装好。"
       },
       {
-        "text": "把 +14155550123 这条线接到某个 agent 组",
-        "note": "它会问这条线叫什么、谁能发消息"
-      },
-      {
-        "text": "重启服务并验证新号码这条线",
-        "note": "重启后核对号码与 agent 组的绑定"
+        "text": "这条线的来消息权限设成 strict 还是 public?",
+        "note": "strict 只放行已知用户,public 谁都能发。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9bfad30e6458d6dcf130a254bf44d22ef6c7b0f42dbd7407b69b92df79c8ab00",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-28T09:21:47.756Z",
+    "generated_at": "2026-09-29T09:31:08.233Z",
     "lint_pass": true,
-    "what_en": "Adds another phone number to an already-installed Dial channel, so one NanoClaw install answers SMS and AI voice calls on several numbers. Each number is its own threaded line; replies leave from the number that received the message.",
-    "when_en": "Use when the Dial channel is already installed and you want an extra number, e.g. a personal line plus a support line. It requires the multi-number Dial adapter.",
+    "what_en": "Adds another phone number to an already-installed Dial channel, so one NanoClaw install answers SMS and AI voice calls on multiple numbers. Each number is its own threaded line, and replies leave from the number that received the message.",
+    "when_en": "Use when Dial is already installed and the operator wants an additional number, e.g. a personal line plus a support line.",
     "say_en": [
       {
-        "text": "Add another number to Dial",
-        "note": "It confirms Dial is installed, then lists the account's numbers"
+        "text": "Add another number to Dial and walk me through the setup.",
+        "note": "Checks that Dial is installed first."
       },
       {
-        "text": "Wire +14155550123 to an agent group",
-        "note": "It asks for the line name and who may text it"
+        "text": "Wire the Dial number +14155550123 to an agent group.",
+        "note": "The number must belong to the signed-in account."
       },
       {
-        "text": "Restart and verify the new line",
-        "note": "It restarts the service and checks the wiring"
+        "text": "Should this line be strict or public for inbound senders?",
+        "note": "strict = known users only; public = anyone."
       }
     ]
   }

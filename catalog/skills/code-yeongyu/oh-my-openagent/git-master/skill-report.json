@@ -5,7 +5,7 @@
     "name": "git-master",
     "description": "Handles git work: atomic commits, rebase, squash, blame, bisect, reflog, and history questions. Use whenever a task needs a commit or a git-history investigation; skip for ordinary code edits.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/git-master",
-    "upstream_commit": "41bde3ed6a9b32b403c3ddcec95537462ea78479",
+    "upstream_commit": "c8feddc8e5f679fc9b333b1b07922ac424c6e284",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69616,
+    "stars_github": 69645,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-28T09:15:49.524Z",
+    "fetched_at": "2026-09-29T09:23:53.709Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-28T17:49:27+09:00",
+    "upstream_commit_at": "2026-09-29T18:20:44+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-28T09:15:49.524Z",
+    "generated_at": "2026-09-29T09:23:53.709Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会先读仓库状态,再按请求分类处理:创建提交、改写分支历史,或回答历史问题。产出提交、改写后的分支,或带命令证据的结论,并列出仍未提交的文件。",
-    "when": "当任务需要提交改动,或需要调查 git 历史(谁、何时、哪次改动)时接管;普通代码编辑不触发。",
+    "what": "装上后 Claude 会先分清请求类型(提交、改写历史、查历史、看状态),先读仓库状态再动手:要么把改动按行为拆成原子提交,要么用具体命令证据回答某处改动出自哪个提交。",
+    "when": "当你要求提交代码、改写分支历史,或调查某个文件/某几行由哪个提交改的时接管;普通代码编辑不接管。",
     "say": [
       {
-        "text": "把当前改动按模块拆成几个原子提交,消息用仓库现有风格",
-        "note": "会先分类,再按路径或 hunk 分组暂存"
+        "text": "把当前改动按功能拆成几个原子提交",
+        "note": "先看 diff 再分组暂存提交"
       },
       {
-        "text": "用 git bisect 找出第一个坏掉的提交",
-        "note": "需要已知好坏边界和可判定成败的命令"
+        "text": "查一下 README 这段文字是哪次提交改的",
+        "note": "用 git log -S 等给出提交哈希"
       },
       {
-        "text": "这几行最后是谁改的?给我 blame 证据",
-        "note": "会引用提交哈希、文件路径和行号"
+        "text": "把这个 fixup 提交合并进目标提交",
+        "note": "先问是否需要 force-push"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:5a20ffbb64ba17d62481f087cff5d6364db5b1e628ae1923578198bdb9769995",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-28T09:20:29.362Z",
+    "generated_at": "2026-09-29T09:29:06.257Z",
     "lint_pass": true,
-    "what_en": "With this skill Claude reads the repo state first, classifies the request, then commits changes, rewrites branch history, or answers git-history questions. It reports commit hashes, messages, and any files left uncommitted.",
-    "when_en": "Use it when a task needs a commit or a git-history investigation — staging, rebase, squash, blame, bisect, reflog. Skip it for ordinary code edits.",
+    "what_en": "Once installed, Claude classifies each git request (commit, rebase, history, status), reads the repo state first, then stages atomic commits by behavior or answers history questions with exact command evidence.",
+    "when_en": "Triggers when you ask it to commit changes, rewrite branch history, or investigate which commit changed a file or line; it skips ordinary code edits.",
     "say_en": [
       {
-        "text": "Split my current changes into atomic commits using the repo's message style",
-        "note": "Classifies, then stages by path or hunk"
+        "text": "Split these changes into a few atomic commits by feature.",
+        "note": "It reads the diff, groups, stages, commits"
       },
       {
-        "text": "Find the first bad commit with git bisect",
-        "note": "Needs known good/bad bounds and a pass/fail command"
+        "text": "Which commit changed this paragraph in the README?",
+        "note": "Uses git log -S and cites the hash"
       },
       {
-        "text": "Who last changed these lines? Show me the blame evidence",
-        "note": "Cites commit hash, file path, and line numbers"
+        "text": "Squash this fixup commit into the target one.",
+        "note": "May ask before force-pushing"
       }
     ]
   }

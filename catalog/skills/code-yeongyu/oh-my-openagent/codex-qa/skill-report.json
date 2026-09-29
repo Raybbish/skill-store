@@ -5,7 +5,7 @@
     "name": "codex-qa",
     "description": "QA the omo Codex Light edition (lazycodex / packages/omo-codex) itself, in strict isolation so ONLY our plugin is exercised, never the user's real ~/.codex. The first-party method drives the real `codex app-server` against an isolated CODEX_HOME plus a LOCAL mock model (no real API call), and proves a plugin hook fired by asserting hook/started + hook/completed notifications. Also: isolated install verification, per-component hook probes, a tmux TUI smoke, and runtime log observation (RUST_LOG / logs SQLite / /debug-config). Ships tested helper scripts each with a --self-test. Use whenever someone changes anything under packages/omo-codex or wants to QA, smoke-test, verify, or debug the Codex plugin, its hooks/components, the installer/config.toml, the app-server flow, or the Codex TUI. Triggers: codex qa, qa codex, codex-qa, test codex plugin, verify codex hook, codex app-server, lazycodex qa, isolated CODEX_HOME, prove codex hook fired, codex tui test.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/codex-qa",
-    "upstream_commit": "41bde3ed6a9b32b403c3ddcec95537462ea78479",
+    "upstream_commit": "c8feddc8e5f679fc9b333b1b07922ac424c6e284",
     "content_hash": "sha256:f017d4daf5d12a84c6ff25a231125a23796cdf36c3c87f3ff1a89fdedea69425",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69616,
+    "stars_github": 69645,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-28T09:15:49.524Z",
+    "fetched_at": "2026-09-29T09:23:53.709Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-28T17:49:27+09:00",
+    "upstream_commit_at": "2026-09-29T18:20:44+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-28T09:15:49.524Z",
+    "generated_at": "2026-09-29T09:23:53.709Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -119,39 +119,36 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会在隔离的 CODEX_HOME 加本地 mock 模型下测试 Codex 插件,不碰你真实的 ~/.codex,并把 JSON、日志等证据写进 .omo/evidence/。",
-    "when": "当你改动了 packages/omo-codex,或提到 codex qa、codex-qa 等关键词时触发。",
+    "what": "在隔离的 CODEX_HOME 和本地 mock 模型下跑真实 Codex,只测我们的插件,不碰你真实的 ~/.codex。可验证 hook 是否触发、安装是否落地、TUI 能否启动,证据写入 .omo/evidence/。",
+    "when": "当你改动 packages/omo-codex 下的代码,或提到 “codex qa” 等触发词,想 QA、验证或调试 Codex 插件时触发。",
     "say": [
       {
-        "text": "跑一下 codex-qa,验证我们的插件 hook 有没有真的触发"
+        "text": "用 install-verify.sh 验证本地构建装进隔离家目录"
       },
       {
-        "text": "验证本地 omo 构建装进隔离 CODEX_HOME 后有没有落地"
-      },
-      {
-        "text": "用 tmux 给 Codex TUI 做个冒烟测试",
-        "note": "TUI 在隔离 home 启动、渲染后留存 pane 截图"
+        "text": "用 tui-smoke.sh 在 tmux 里冒烟测真实 Codex TUI",
+        "note": "把 TUI 面板保存为证据"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f017d4daf5d12a84c6ff25a231125a23796cdf36c3c87f3ff1a89fdedea69425",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-28T09:20:24.995Z",
+    "generated_at": "2026-09-29T09:29:02.496Z",
     "lint_pass": true,
-    "what_en": "Claude tests the Codex plugin itself inside an isolated CODEX_HOME with a local mock model, so no real API call is made and your real ~/.codex is never touched; evidence is written under .omo/evidence/.",
-    "when_en": "Use when you change anything under packages/omo-codex, or on keywords like codex qa, codex-qa.",
+    "what_en": "Runs the real Codex in an isolated CODEX_HOME with a local mock model (no real API call), exercising only the omo Codex plugin, never your real ~/.codex. Proves hooks fired, verifies installs, smokes the TUI, logs evidence.",
+    "when_en": "Use when you change anything under packages/omo-codex, or want to QA, smoke-test, verify, or debug the Codex plugin, its hooks, installer, app-server flow, or TUI.",
     "say_en": [
       {
-        "text": "Run codex-qa and verify our plugin hook actually fired.",
-        "note": "Drives the app-server in isolation and asserts hook/completed."
+        "text": "Run app-server-drive.sh --plugin to check whether the plugin hook fired.",
+        "note": "Prints hook/started and hook/completed notifications."
       },
       {
-        "text": "Verify the local omo build installs into an isolated CODEX_HOME.",
-        "note": "Runs install-verify and checks the real ~/.codex is unchanged."
+        "text": "Run install-verify.sh to check the local build lands in an isolated home.",
+        "note": "Asserts config.toml enables omo@sisyphuslabs."
       },
       {
-        "text": "Smoke-test the Codex TUI under tmux.",
-        "note": "Boots and renders the TUI in the isolated home, keeps the pane."
+        "text": "Smoke the real Codex TUI under tmux with tui-smoke.sh.",
+        "note": "Captures the pane as evidence."
       }
     ]
   }

@@ -3,6 +3,9 @@ name: ss-resolve
 description: Compile the effective StyleSeed rule bundle for one artifact, or inspect install and evidence health read-only. Use before setup or build, or to diagnose rule drift.
 ---
 
+Before this workflow, follow the once-per-session [update preflight](../ss-update/references/update-preflight.md).
+
+
 # Resolve effective StyleSeed context
 
 Use the bundled `scripts/resolve-context.mjs`; do not hand-compose the rule stack.
@@ -20,6 +23,13 @@ Use the bundled `scripts/resolve-context.mjs`; do not hand-compose the rule stac
 5. Preserve the manifest output: legacy uses `.styleseed/manifest.json`; registry uses
    `.styleseed/manifests/<artifact-id>.json`.
 6. Use `--check` to detect context drift without rewriting files.
+
+For spacing recommendations and scoped control, see the [spatial roles guide](references/spacing.md).
+Optional project/artifact `spacing` compiles into a role table and artifact-scoped CSS in the bundle.
+`recommend-spacing.mjs --project-root . --artifact <id>` emits a read-only starting proposal; it does
+not inspect or rewrite implementation tokens and does not establish design acceptance. Optional
+`--measurement <project-relative-report.json>` adds source-bound rendered diagnostics; stale or
+inconsistent reports are rejected, and starting values remain explicitly heuristic.
 
 For installation or project-health questions, run the read-only diagnostic first:
 

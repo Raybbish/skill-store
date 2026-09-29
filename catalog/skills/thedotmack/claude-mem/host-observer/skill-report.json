@@ -5,7 +5,7 @@
     "name": "host-observer",
     "description": "Use this when fulfilling claude-mem observer jobs on Grok Bot: reply only skip_summary or one full observation XML, never prose.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-grok-bot/skills/host-observer",
-    "upstream_commit": "7d0355413c2aaa3fa57fe6788b2ba2717fa7ff6f",
+    "upstream_commit": "ade13f3067d3de486f41dbd8ed90ac5c854de718",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94763,
+    "stars_github": 94884,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:51:57.607Z",
+    "fetched_at": "2026-09-29T09:23:48.850Z",
     "first_seen_at": "2026-09-03T07:38:50.068Z",
-    "upstream_commit_at": "2026-09-26T11:37:32-07:00",
+    "upstream_commit_at": "2026-09-28T15:37:31-07:00",
     "repo_skill_count": 28
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:51:57.607Z",
+    "generated_at": "2026-09-29T09:23:48.850Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,39 +86,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在 claude-mem 观察者任务里，它只输出两种内容：`<skip_summary />`，或一条完整 `<observation>` XML（真实标题、带路径的事实与叙述）。结果写入 outbox/{id}.txt。",
-    "when": "当 claude-mem 经 OpenRouter 向本地 shim 派发观察者任务（inbox job）时接管；空闲、初始化或无工具结果时回 skip_summary。",
+    "what": "装上后，Claude 处理 claude-mem 观察任务时不再输出普通文字，只回 skip_summary 或一条 observation XML；完成可搜索单元时写出含真实标题、4–10 条带路径事实和叙述的记录。",
+    "when": "当你在 Grok Bot 上执行 claude-mem 观察任务，或写入 outbox/{id}.txt、返回 chat-completions 正文时接管；空闲、初始化或无工具结果时只回 skip_summary。",
     "say": [
       {
-        "text": "这轮没有工具结果，直接回 skip_summary。"
+        "text": "把这次观察写成一条 observation XML",
+        "note": "返回单个 observation 块"
       },
       {
-        "text": "把这批搜索结果整理成一条 observation XML。",
-        "note": "含真实标题、4–10 条事实与叙述。"
+        "text": "这次没有工具结果，跳过吧",
+        "note": "只回 skip_summary，不写正文"
       },
       {
-        "text": "把结果写到 outbox 里对应 id 的文件。"
+        "text": "观察里的事实带上文件路径",
+        "note": "事实条目会包含路径"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:59:35.625Z",
+    "generated_at": "2026-09-29T09:31:58.139Z",
     "lint_pass": true,
-    "what_en": "On claude-mem observer jobs it outputs only two things: `<skip_summary />`, or one full `<observation>` XML with a real title, facts with paths, and narrative. Results go to outbox/{id}.txt, never prose.",
-    "when_en": "Takes over when claude-mem dispatches an observer job (inbox job) via the OpenRouter HTTP agent to the local shim; on idle, init, or no tool results it returns skip_summary.",
+    "what_en": "After install, Claude answers claude-mem observer jobs with only skip_summary or one observation XML, never prose. Finished searchable units get a real title, 4-10 facts with paths, and a narrative.",
+    "when_en": "It takes over when you run claude-mem observer jobs on Grok Bot, write outbox/{id}.txt, or return the chat-completions body. Idle, init, or no tool results get skip_summary only.",
     "say_en": [
       {
-        "text": "No tool results this round — just return skip_summary.",
-        "note": "Output is `<skip_summary reason=\"noise\" />`."
+        "text": "Write this observation as one observation XML",
+        "note": "Returns a single observation block"
       },
       {
-        "text": "Turn this searchable unit into one observation XML.",
-        "note": "Real title, 4–10 facts with paths, narrative."
+        "text": "No tool results this time, skip it",
+        "note": "Replies skip_summary only"
       },
       {
-        "text": "Write the result to the matching outbox id file.",
-        "note": "Writes outbox/{id}.txt for the inbox job."
+        "text": "Include file paths with the facts",
+        "note": "Facts carry paths"
       }
     ]
   }

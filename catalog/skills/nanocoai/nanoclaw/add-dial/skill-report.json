@@ -5,7 +5,7 @@
     "name": "add-dial",
     "description": "Add Dial channel integration — a real phone number for SMS and AI voice calls via the Dial platform (getdial.ai). Native adapter — no Chat SDK bridge.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-dial",
-    "upstream_commit": "5e4f4b7db5160b5834b526a762329b2deba05ac0",
+    "upstream_commit": "ae0ba8635b3f60a2fd214625a2e7b7d1eda2e634",
     "content_hash": "sha256:c6919bd82253c47e03c681ed50d0639fdd5632a73156b2430bc795a5b982f727",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30853,
+    "stars_github": 30864,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-28T09:16:00.500Z",
+    "fetched_at": "2026-09-29T09:24:04.602Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-27T19:20:34+02:00",
+    "upstream_commit_at": "2026-09-29T09:08:35+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-28T09:16:00.500Z",
+    "generated_at": "2026-09-29T09:24:04.602Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,41 +94,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会获得一个真实 Dial 电话号码,能收发短信、用 AI 语音接听来电。安装会把 Dial 适配器和测试复制进来、注册频道、装好 dial CLI,并用 6 位短信配对码把你的手机绑到这个号码。",
-    "when": "当你要求给 Claude 加一个 Dial 电话号码做短信和 AI 语音来电,或运行 /add-dial-tool 时触发。",
+    "what": "Claude 会多出一个 Dial 渠道:一个真实手机号,能收发短信,并用 AI 接听语音来电。出站经 `dial message`,入站由 CLI 的事件守护进程转给适配器。",
+    "when": "当你运行 add-dial 技能、要为本机添加 Dial 手机号渠道时触发;它负责复制适配器、登录 Dial 并注册号码。",
     "say": [
       {
-        "text": "帮我把 Dial 电话号码接入,让 Claude 能收发短信",
-        "note": "会复制适配器并开始安装流程"
+        "text": "帮我装好 Dial 渠道,给我一个能收发短信、接电话的手机号",
+        "note": "会复制适配器、安装 dial CLI 并引导登录"
       },
       {
-        "text": "让 Claude 用 Dial 号码接听语音来电",
-        "note": "设置该号码的来电欢迎语"
+        "text": "把这个号码设为只允许我配对的那个手机号发消息进来"
       },
       {
-        "text": "这条 Dial 线路只允许我的手机号发短信",
-        "note": "登记为 owner 策略,其他人被拒"
+        "text": "给这个号码设置来电时的 AI 问候语",
+        "note": "设置来电使用的系统提示词"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c6919bd82253c47e03c681ed50d0639fdd5632a73156b2430bc795a5b982f727",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-28T09:21:47.776Z",
+    "generated_at": "2026-09-29T09:31:07.233Z",
     "lint_pass": true,
-    "what_en": "Claude gets a real Dial phone number to send and receive SMS and answer calls with AI voice. Install copies the Dial adapter and tests, registers the channel, installs the dial CLI, and pairs your phone via a 6-digit code.",
-    "when_en": "Triggers when you ask to add a Dial phone number for SMS and AI voice calls, or run /add-dial-tool.",
+    "what_en": "Claude gains a Dial channel: a real phone number that sends/receives SMS and answers AI voice calls. Outbound goes through `dial message`; inbound arrives via the CLI's command-target daemon.",
+    "when_en": "Triggered when you run the add-dial skill to add a Dial phone-number channel to this install — it copies the adapter, signs in to Dial, and registers the line.",
     "say_en": [
       {
-        "text": "Add a Dial phone number so Claude can send and receive SMS",
-        "note": "Copies the adapter and starts install"
+        "text": "Set up the Dial channel and give me a number for SMS and calls",
+        "note": "Copies the adapter, installs the dial CLI, starts sign-in"
       },
       {
-        "text": "Let Claude answer voice calls on my Dial number",
-        "note": "Sets the inbound greeting"
+        "text": "Make this line owner-only, so just my paired phone can text it",
+        "note": "Writes the owner unknown_sender_policy"
       },
       {
-        "text": "Only my phone may text this Dial line",
-        "note": "Registers owner-only policy"
+        "text": "Set the inbound call greeting for this number",
+        "note": "Sets the AI prompt used on inbound calls"
       }
     ]
   }

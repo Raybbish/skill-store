@@ -5,7 +5,7 @@
     "name": "supabase-postgres-best-practices",
     "description": "Postgres best practices maintained by Supabase, for Postgres running anywhere. Load this skill BEFORE writing or changing anything that lives in a Postgres database: creating or altering tables and columns (including choosing column types), schema design, migrations and declarative schema files, RLS policies and the tests that verify them, indexes, triggers, database functions, queues and scheduled jobs (pg_cron, pgmq), vector/semantic search (pgvector), and restoring dumps (pg_restore) or importing data. Also load it when diagnosing slow queries, high CPU, timeouts, EXPLAIN plans, connection exhaustion, locking, bloat, or rows visible to the wrong user or tenant. This is not just a performance guide — schema, migration, security, and SQL authoring tasks need these rules too, even for a one-column change or a single query.",
     "upstream": "https://github.com/supabase/agent-skills/tree/main/skills/supabase-postgres-best-practices",
-    "upstream_commit": "551274ed2fe97c8fea1325f7ceb05803a542f8df",
+    "upstream_commit": "544bfc56c89afe2b87b20017a59b2c6e9502a1fb",
     "content_hash": "sha256:eb3af1d69771f2f799a7f2325a6489e0df165d83edb095c877797dd7c0961ba6",
     "license": "MIT",
     "hosting": "indexed",
@@ -23,10 +23,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 416200,
-    "fetched_at": "2026-09-25T08:31:03.672Z",
+    "installs_skills_sh": 421900,
+    "fetched_at": "2026-09-29T09:26:12.017Z",
     "first_seen_at": "2026-07-03T10:12:12+08:00",
-    "upstream_commit_at": "2026-09-24T18:55:24+09:00"
+    "upstream_commit_at": "2026-09-28T10:42:33+01:00"
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-25T08:31:03.672Z",
+    "generated_at": "2026-09-29T09:26:12.017Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -127,41 +127,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "在你写或改 Postgres 数据库相关内容之前,Claude 会先查 Supabase 维护的规则库(按影响分成 8 类),给出正确与错误 SQL 的对照和 EXPLAIN 分析,然后再动手写。",
-    "when": "当你提到建表、迁移、RLS 等改动数据库的任务,或在排查慢查询等性能问题时触发;改一列或写一条查询也会用上。",
+    "what": "在处理任何 Postgres 数据库的改动之前,Claude 会先套用 Supabase 维护的规则集:建表改列与列类型、迁移、RLS 策略、索引、函数、队列与定时任务、向量检索、导入导出,以及排查慢查询和租户越权。",
+    "when": "当你要求写或改动 Postgres 数据库里的东西——建表改列、写迁移、RLS 策略等——或排查慢查询、超时等问题时触发,哪怕只改一列也适用。",
     "say": [
       {
-        "text": "帮我设计一张 orders 表,顺便检查列类型和索引是否合理。",
-        "note": "会先套用规则再给 SQL 和理由。"
+        "text": "帮我给 orders 表加一个 status 列,看看用什么类型合适",
+        "note": "会按规则给出列类型和迁移写法"
       },
       {
-        "text": "这条查询很慢,帮我看看 EXPLAIN 和执行计划。",
-        "note": "会按诊断规则分析慢的原因。"
+        "text": "这条查询很慢,帮我看 EXPLAIN 和该加什么索引",
+        "note": "会给索引建议和查询计划分析"
       },
       {
-        "text": "我要写 users 表的 RLS 策略和对应测试,按规则来。",
-        "note": "会给出策略写法和验证测试。"
+        "text": "给 messages 表加 RLS 策略,让用户只能看自己的行",
+        "note": "会附上验证策略的测试"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:eb3af1d69771f2f799a7f2325a6489e0df165d83edb095c877797dd7c0961ba6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-25T08:35:44.128Z",
+    "generated_at": "2026-09-29T09:31:49.749Z",
     "lint_pass": true,
-    "what_en": "Before you write or change anything in a Postgres database, Claude consults Supabase's rule set (8 categories ranked by impact) and returns correct-vs-incorrect SQL examples and EXPLAIN notes before acting.",
-    "when_en": "Triggers when you work on tables, migrations, RLS or other database changes, or diagnose slow queries and similar performance issues — even a single column or query.",
+    "what_en": "Before touching anything in a Postgres database, Claude applies Supabase-maintained rules for tables and column types, migrations, RLS, indexes, functions, queues, vector search, imports, and diagnosing slow queries and wrong-tenant rows.",
+    "when_en": "Triggers when you write or change anything in a Postgres database — tables, migrations, RLS policies, etc. — or diagnose slow queries or timeouts, even for a one-column change.",
     "say_en": [
       {
-        "text": "Design an orders table for me and check the column types and indexes.",
-        "note": "Applies the rules, then gives the SQL and reasons."
+        "text": "Add a status column to the orders table and suggest the right type",
+        "note": "Gives a column type and migration approach"
       },
       {
-        "text": "This query is slow — walk me through the EXPLAIN plan.",
-        "note": "Analyzes the cause against the diagnostic rules."
+        "text": "This query is slow — check the EXPLAIN plan and what index to add",
+        "note": "Returns index advice and query plan analysis"
       },
       {
-        "text": "Write the RLS policies for the users table plus tests, following the rules.",
-        "note": "Gives the policy code and verifying tests."
+        "text": "Add an RLS policy on messages so users only see their own rows",
+        "note": "Includes tests that verify the policy"
       }
     ]
   }

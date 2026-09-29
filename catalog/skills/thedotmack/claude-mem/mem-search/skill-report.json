@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Use this when the user asks to search memory, \"did we already solve this?\", \"how did we do X last time?\", or wants work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-cursor/skills/mem-search",
-    "upstream_commit": "7d0355413c2aaa3fa57fe6788b2ba2717fa7ff6f",
+    "upstream_commit": "ade13f3067d3de486f41dbd8ed90ac5c854de718",
     "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94763,
+    "stars_github": 94884,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-27T08:51:57.607Z",
+    "fetched_at": "2026-09-29T09:23:48.850Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-26T11:37:32-07:00",
+    "upstream_commit_at": "2026-09-28T15:37:31-07:00",
     "repo_skill_count": 28
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-27T08:51:57.607Z",
+    "generated_at": "2026-09-29T09:23:48.850Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "需要回顾以前的工作时,Claude 会去查 claude-mem 的跨会话记忆库:先返回一张带 ID 的索引表,再看某条记录前后的时间线,最后只为筛选出的 ID 取完整详情。",
-    "when": "当你问「这个问题之前是不是解决过」「上次是怎么做 X 的」,或需要之前会话里的工作成果时触发。",
+    "what": "装上后,Claude 可以搜索 claude-mem 的跨会话记忆库:先按关键词搜出带 ID 的索引,再看某条记录前后的时间线上下文,最后只对筛出的 ID 取完整记录。",
+    "when": "当你问「这个问题以前解决过吗」「上次我们是怎么做的」等关于过往会话的问题时触发;当前对话里的问题不走它。",
     "say": [
       {
-        "text": "搜一下之前会话里关于认证的记录",
-        "note": "先返回带 ID 的索引表"
+        "text": "搜一下之前有没有修过认证相关的问题",
+        "note": "返回带 ID 的索引列表,每条约 50-100 tokens"
       },
       {
-        "text": "看看 #11131 前后的时间线",
-        "note": "显示该条前后的记录"
+        "text": "看看 #11131 前后发生了什么",
+        "note": "返回该条前后交错的时间线条目"
       },
       {
-        "text": "把 #11131 和 #10942 的完整详情取出来",
-        "note": "一次请求批量取详情"
+        "text": "把 #11131 和 #10942 的完整记录取出来",
+        "note": "批量取完整记录,一次请求代替多次"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-27T08:59:35.955Z",
+    "generated_at": "2026-09-29T09:32:01.874Z",
     "lint_pass": true,
-    "what_en": "When you ask about earlier sessions, Claude searches claude-mem's cross-session memory: it first returns an index table with IDs, then a timeline around a result, and only then fetches full details for the IDs you keep.",
-    "when_en": "Triggers when you ask \"did we already solve this?\" or \"how did we do X last time?\", or need work from previous sessions.",
+    "what_en": "After installing, Claude can search claude-mem's cross-session memory: a keyword search returns an index with IDs, a timeline shows context around a hit, and full details are fetched only for the IDs you filter.",
+    "when_en": "Triggers when you ask about past sessions, e.g. \"did we already solve this?\" or \"how did we do X last time?\"; questions about the current conversation don't use it.",
     "say_en": [
       {
-        "text": "Search past sessions for anything about authentication",
-        "note": "Returns an index table with IDs"
+        "text": "Search whether we already fixed anything about auth",
+        "note": "Returns an index with IDs, ~50-100 tokens each"
       },
       {
-        "text": "Show the timeline around #11131",
-        "note": "Lists items before and after it"
+        "text": "Show what happened around #11131",
+        "note": "Returns timeline items near that ID"
       },
       {
         "text": "Fetch full details for #11131 and #10942",
-        "note": "One batched request"
+        "note": "Batch-fetches records in one request"
       }
     ]
   }

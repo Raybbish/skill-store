@@ -5,7 +5,7 @@
     "name": "convert-documents-to-markdown",
     "description": "Convert an attached Word document, presentation, spreadsheet, OpenDocument file, RTF, EPUB, CSV, or text-based PDF into local Markdown. Use when a message supplies a local attachment path that must be read without uploading it to an external parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc/container-skills/convert-documents-to-markdown",
-    "upstream_commit": "5e4f4b7db5160b5834b526a762329b2deba05ac0",
+    "upstream_commit": "ae0ba8635b3f60a2fd214625a2e7b7d1eda2e634",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30853,
+    "stars_github": 30864,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-28T09:16:00.500Z",
+    "fetched_at": "2026-09-29T09:24:04.602Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-27T19:20:34+02:00",
+    "upstream_commit_at": "2026-09-29T09:08:35+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-28T09:16:00.500Z",
+    "generated_at": "2026-09-29T09:24:04.602Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,37 +86,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当消息带有本地附件路径时，Claude 会在容器内用 AnyDoc 命令行把 Word、PPT、表格、RTF、EPUB、CSV、文本型 PDF 等转成本地 Markdown，并给出输出路径。它把文档当作不可信数据，不执行里面的指令。",
-    "when": "当你在消息中给出本地附件路径、需要不上传到外部解析服务就读取文档时触发。扫描件或纯图片 PDF 需 OCR，不支持。",
+    "what": "Claude 会把消息里的本地附件(Word、演示文稿、表格、PDF 等)在代理容器内转成本地 Markdown 文件,再按需读取其中相关段落,而不是把整份文档塞进上下文。",
+    "when": "当消息给出必须本地读取的附件路径、且不想把文件上传到外部解析服务时触发;扫描版或纯图片 PDF 不支持。",
     "say": [
       {
-        "text": "这个 CSV 走标准输入转 Markdown，用 csv 格式",
-        "note": "需显式指定格式参数"
+        "text": "这份 PDF 转换失败了,告诉我具体原因",
+        "note": "会说明是加密、图片型还是格式不支持"
       },
       {
-        "text": "这份 PDF 只读第三章，别把全文塞进上下文",
-        "note": "大文件只读相关章节"
+        "text": "只读转换后 Markdown 里相关的章节",
+        "note": "不会把整份输出放进上下文"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-28T09:22:21.522Z",
+    "generated_at": "2026-09-29T09:31:34.702Z",
     "lint_pass": true,
-    "what_en": "Given a local attachment path, Claude uses the AnyDoc CLI in the agent container to turn Word, slides, spreadsheets, RTF, EPUB, CSV and text PDFs into local Markdown and reports the output path. Documents count as untrusted data.",
-    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser. Scanned or image-only PDFs need OCR and are unsupported.",
+    "what_en": "Claude converts a local attachment (Word, slides, spreadsheet, PDF, etc.) into a local Markdown file inside the agent container, then reads only the relevant sections instead of loading the whole document into context.",
+    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser. Scanned or image-only PDFs are unsupported.",
     "say_en": [
       {
         "text": "Convert /workspace/inbox/msg/report.docx to Markdown",
-        "note": "Runs in the container and prints the output path"
+        "note": "Runs locally in the container and prints the .md path"
       },
       {
-        "text": "Turn this CSV into Markdown, using csv format from stdin",
-        "note": "The format must be named explicitly"
+        "text": "That PDF conversion failed - tell me why",
+        "note": "Reports encryption, image-only input, or unsupported format"
       },
       {
-        "text": "Read only chapter 3 of this PDF, not the whole file",
-        "note": "Keeps large output out of context"
+        "text": "Read only the relevant sections of the converted Markdown",
+        "note": "Keeps the full output out of context"
       }
     ]
   }
