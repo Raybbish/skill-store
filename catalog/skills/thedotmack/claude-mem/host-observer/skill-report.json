@@ -1,0 +1,125 @@
+{
+  "schema_version": "2",
+  "meta": {
+    "id": "thedotmack/claude-mem/host-observer",
+    "name": "host-observer",
+    "description": "Use this when fulfilling claude-mem observer jobs on Grok Bot: reply only skip_summary or one full observation XML, never prose.",
+    "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-grok-bot/skills/host-observer",
+    "upstream_commit": "7d0355413c2aaa3fa57fe6788b2ba2717fa7ff6f",
+    "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
+    "license": "Apache-2.0",
+    "hosting": "indexed",
+    "category": "uncategorized",
+    "version": null,
+    "publisher": "thedotmack",
+    "publisher_verified": false,
+    "duplicate_of": null,
+    "tags": [
+      "agent-ops"
+    ]
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "signals": {
+    "stars_github": 94763,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-09-27T08:51:57.607Z",
+    "first_seen_at": "2026-09-03T07:38:50.068Z",
+    "upstream_commit_at": "2026-09-26T11:37:32-07:00",
+    "repo_skill_count": 28
+  },
+  "context_size": {
+    "version": "1",
+    "counter": {
+      "id": "static-mixed-estimate-v1.1",
+      "method": "heuristic",
+      "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
+    },
+    "generated_at": "2026-09-27T08:51:57.607Z",
+    "scopes": {
+      "activation_core": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 795,
+        "chars": 793,
+        "tokens": 177
+      },
+      "activation_with_declared_refs": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 795,
+        "chars": 793,
+        "tokens": 177
+      },
+      "package_total_text": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 795,
+        "chars": 793,
+        "tokens": 177
+      }
+    }
+  },
+  "eval": null,
+  "copy": {
+    "tagline": "执行Grok Bot的记忆观察任务,只输出标准总结或完整观测结果。",
+    "scene_tags": [
+      "记忆观察任务",
+      "观测结果上报"
+    ],
+    "fit_line": "适合你,如果你需要让机器人按规范格式输出记忆观察结果。",
+    "scene_tags_en": [
+      "memory observation task",
+      "observation reporting"
+    ],
+    "fit_line_en": "For you if you need a bot to report memory observations in a structured format.",
+    "source": "llm",
+    "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-03T07:51:46.735Z",
+    "lint_pass": true
+  },
+  "howto": {
+    "what": "在 claude-mem 观察者任务里，它只输出两种内容：`<skip_summary />`，或一条完整 `<observation>` XML（真实标题、带路径的事实与叙述）。结果写入 outbox/{id}.txt。",
+    "when": "当 claude-mem 经 OpenRouter 向本地 shim 派发观察者任务（inbox job）时接管；空闲、初始化或无工具结果时回 skip_summary。",
+    "say": [
+      {
+        "text": "这轮没有工具结果，直接回 skip_summary。"
+      },
+      {
+        "text": "把这批搜索结果整理成一条 observation XML。",
+        "note": "含真实标题、4–10 条事实与叙述。"
+      },
+      {
+        "text": "把结果写到 outbox 里对应 id 的文件。"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-27T08:59:35.625Z",
+    "lint_pass": true,
+    "what_en": "On claude-mem observer jobs it outputs only two things: `<skip_summary />`, or one full `<observation>` XML with a real title, facts with paths, and narrative. Results go to outbox/{id}.txt, never prose.",
+    "when_en": "Takes over when claude-mem dispatches an observer job (inbox job) via the OpenRouter HTTP agent to the local shim; on idle, init, or no tool results it returns skip_summary.",
+    "say_en": [
+      {
+        "text": "No tool results this round — just return skip_summary.",
+        "note": "Output is `<skip_summary reason=\"noise\" />`."
+      },
+      {
+        "text": "Turn this searchable unit into one observation XML.",
+        "note": "Real title, 4–10 facts with paths, narrative."
+      },
+      {
+        "text": "Write the result to the matching outbox id file.",
+        "note": "Writes outbox/{id}.txt for the inbox job."
+      }
+    ]
+  }
+}

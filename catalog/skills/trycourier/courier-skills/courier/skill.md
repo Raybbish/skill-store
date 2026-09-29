@@ -1,6 +1,6 @@
 ---
 name: courier
-description: "Use when building notifications with Courier across email, SMS, push, in-app inbox, Slack, Teams, and WhatsApp: sends, templates, Elemental, journeys, preferences, routing, CLI and MCP."
+description: "Use when building notifications with Courier across email, SMS, push, in-app inbox, Slack, Teams, and WhatsApp: sends, templates, translations, email client previews, Elemental, journeys, preferences, routing, CLI and MCP."
 license: MIT
 ---
 
@@ -19,7 +19,7 @@ Multi-step flows (anything with a delay, a branch, or aggregation) are **journey
 1. **Route first.** [Where to Look](#where-to-look) picks the 1–2 files for the task. Don't read the tree.
 2. **Ask when the request is ambiguous.** Channel? Transactional or lifecycle? New code or existing? Which language? Skip the questions when the request is already specific.
 3. **Verify shapes against a [live source](#verifying-against-live-sources)** rather than memory. The installed SDK's own types are ground truth.
-4. **Apply the rules.** [Universal Rules](#universal-rules) and each file's Quick Reference are constraints, not suggestions.
+4. **Apply the rules.** [Universal Rules](#universal-rules) and each file's Quick Reference are constraints, not suggestions. (`sdk-reference.md` is a lookup table and has none.)
 
 If the project already has `@trycourier/courier` or `trycourier` installed, skip quickstart's install steps and assume `client` exists.
 
@@ -84,18 +84,19 @@ client.send.message(
 
 Full method-name lookup for both SDKs: **[sdk-reference.md](./references/sdk-reference.md)**.
 
-**The 20 namespaces are the complete SDK surface.** If an operation isn't here, it isn't in the SDK:
+**The 23 namespaces are the complete SDK surface.** If an operation isn't here, it isn't in the SDK:
 
 ```
 audiences  auditEvents  auth      automations  brands
-digests    inbound      journeys  lists        messages
-notifications  profiles  providers  requests   routingStrategies
-send       tenants      translations  users    workspacePreferences
+broadcasts  bulk        digests   inbound      journeys
+lists      messages     notifications  previews  profiles
+providers  requests     routingStrategies  send  tenants
+translations  users     workspacePreferences
 ```
 
-Sub-namespaces: `digests.schedules`, `journeys.templates`, `notifications.checks`, `providers.catalog`, `lists.subscriptions`, `profiles.lists`, `tenants.templates`, `tenants.preferences.items`, `users.preferences`, `users.tenants`, `users.tokens`, `automations.invoke`, `workspacePreferences.topics`.
+Sub-namespaces: `automations.invoke`, `automations.runs`, `digests.schedules`, `journeys.runs`, `journeys.templates`, `lists.subscriptions`, `notifications.checks`, `notifications.previews`, `notifications.previews.runs`, `profiles.lists`, `providers.catalog`, `tenants.preferences`, `tenants.preferences.items`, `tenants.templates`, `tenants.templates.versions`, `users.preferences`, `users.tenants`, `users.tokens`, `workspacePreferences.topics`.
 
-`auditEvents`, `digests`, `inbound`, and `requests` have no dedicated guide. Use MCP or the CLI for those.
+`auditEvents`, `inbound`, and `requests` have no dedicated guide. Use MCP or the CLI for those.
 
 ### Common operations
 
@@ -132,6 +133,14 @@ Sub-namespaces: `digests.schedules`, `journeys.templates`, `notifications.checks
 ## Debugging a Delivery Failure
 
 Work down this ladder. Each step tells you whether to stop or keep going.
+
+First, separate the two questions. **One message that failed** is this ladder. **A template whose
+delivery rate is dropping across the board** is [metrics.md](./references/guides/metrics.md), which
+returns the funnel as a time series. Running the ladder on a sample of messages will not tell you a
+rate is trending down.
+
+A delivered rate that is low while sent looks healthy is usually delivery tracking, not failed mail:
+the provider isn't reporting back. See [metrics.md](./references/guides/metrics.md).
 
 1. **Did Courier accept the request?** A `2xx` from `send` returns a `requestId`. No `requestId` means the call failed, not the delivery.
 2. **What does Courier think happened?** Run `courier messages list --trace-id "<requestId>"`. A list or audience send fans out to one message per recipient, so the `requestId` is the job, not a message id.
@@ -192,21 +201,24 @@ One row per file. Read the 1–2 that match the task, not the whole tree.
 | **First notification / addressing (`to` field) / inline vs template** | [quickstart.md](./references/guides/quickstart.md) |
 | **Transactional**: password reset, OTP, orders, receipts, dunning, appointments, security alerts | [transactional.md](./references/transactional.md) |
 | **Lifecycle marketing**: onboarding, adoption, engagement, win-back, referral, campaigns | [lifecycle-marketing.md](./references/lifecycle-marketing.md) |
-| **Multi-step sequences**: delays, branches, batching, digests, A/B, cancellation. Also covers existing `client.automations.*` code | [journeys.md](./references/guides/journeys.md) |
+| **Multi-step sequences**: delays, branches, batching, A/B, cancellation, Slack/Teams send nodes, tenant-scoped sends. Also covers existing `client.automations.*` code | [journeys.md](./references/guides/journeys.md) |
 | Channel routing, fallbacks, escalation, provider failover | [multi-channel.md](./references/guides/multi-channel.md) |
 | Idempotency, retries, delivery statuses, webhook verification | [reliability.md](./references/guides/reliability.md) |
 | Preference topics, opt-out, preference centers, workspace preference sections | [preferences.md](./references/guides/preferences.md) |
 | **Scheduling a send**: delay, exact timestamp, delivery windows (business/quiet hours) | [scheduling.md](./references/guides/scheduling.md) |
-| Aggregation and digests (`batch`, `add-to-digest`) | [batching.md](./references/guides/batching.md) |
+| **Digests**: daily or weekly summaries, a topic's digest schedule, letting users pick how often, releasing a digest now | [digests.md](./references/guides/digests.md) |
+| Rolling up bursts of events in a journey (`batch` node) | [batching.md](./references/guides/batching.md) |
 | **Branding**: logo, colors, email/in-app theme, attaching a brand to sends/tenants, sending unbranded | [brands.md](./references/guides/brands.md) |
 | **Audiences**: dynamic segments, filter rules, sending to a segment | [audiences.md](./references/guides/audiences.md) |
 | **Multi-tenant / B2B**: tenants, per-tenant brand, preference defaults, tenant templates | [tenants.md](./references/guides/tenants.md) |
 | Frequency caps, quiet hours, fatigue | [throttling.md](./references/guides/throttling.md) |
-| Template CRUD, publishing, versioning, rollback, verify rendered output, locales | [templates.md](./references/guides/templates.md) |
+| Template CRUD, editing a template in place, publishing, versioning, rollback, verify rendered output | [templates.md](./references/guides/templates.md) |
 | **Templates as code**: manage templates from a repo, CI/CD, sync/drift detection, template aliases, promote between workspaces | [templates-as-code.md](./references/guides/templates-as-code.md) |
+| **Delivery metrics for a template**: sent/delivered/opened/clicked as a time series, dashboards, alerting on delivery rate | [metrics.md](./references/guides/metrics.md) |
 | Exact SDK method names for an operation | [sdk-reference.md](./references/sdk-reference.md), or read the installed package's own types |
 | Elemental content format, elements, control flow | [elemental.md](./references/guides/elemental.md) |
-| **Localization**: per-locale content, and AI Translation in Design Studio (add a language, AI translates every field) | [elemental.md](./references/guides/elemental.md#localization) |
+| **Translating a template**: add languages, sync with a translation tool (export strings, `putLocale`), how the recipient's locale is picked, Design Studio AI Translation, `.po` strings for `{{t}}` | [localization.md](./references/guides/localization.md) |
+| **See an email on real clients before sending**: Outlook, Gmail, Apple Mail, mobile, dark mode screenshots (Device Preview), an agent review loop | [device-preview.md](./references/guides/device-preview.md) |
 | Routing strategies (`rs_...`, provider priority) | [routing-strategies.md](./references/guides/routing-strategies.md) |
 | Configuring providers via API, catalog discovery | [providers.md](./references/guides/providers.md) |
 | Lists and bulk targeting (subscribe, list/pattern sends) | [patterns.md](./references/guides/patterns.md) |
@@ -218,7 +230,7 @@ One row per file. Read the 1–2 that match the task, not the whole tree.
 | Email: deliverability, SPF/DKIM/DMARC, sender config | [email.md](./references/channels/email.md) |
 | SMS: 10DLC registration, character limits, sender setup | [sms.md](./references/channels/sms.md) |
 | Push: APNs/FCM setup, tokens, permission priming | [push.md](./references/channels/push.md) |
-| Sending **to** the in-app inbox, content, actions, inbox+push | [inbox.md](./references/channels/inbox.md) |
+| Sending **to** the in-app inbox: setup (`courier` provider), content, actions, inbox+push, Elemental for inbox, `UNROUTABLE` triage | [inbox.md](./references/channels/inbox.md) |
 | **Rendering** the inbox in your app: JWT auth, React / Web Components / React Native / iOS / Android / Flutter, read state, real-time | [inbox/rendering.md](./references/inbox/rendering.md) |
 | Slack, Block Kit, OAuth, bot setup | [slack.md](./references/channels/slack.md) |
 | Microsoft Teams, Adaptive Cards, connector/bot | [ms-teams.md](./references/channels/ms-teams.md) |

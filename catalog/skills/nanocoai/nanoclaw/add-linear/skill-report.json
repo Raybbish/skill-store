@@ -5,7 +5,7 @@
     "name": "add-linear",
     "description": "Add Linear channel integration via Chat SDK. Issue comment threads as conversations.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-linear",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "5e4f4b7db5160b5834b526a762329b2deba05ac0",
     "content_hash": "sha256:fb376234d769199390c5006721da4986b4707a8c7e28c4d24248ed7b47671eb1",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30853,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-28T09:16:00.500Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-27T19:20:34+02:00",
+    "repo_skill_count": 63,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-28T09:16:00.500Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会接入 Linear：当所连团队的 issue 出现新评论时，它会自动以评论形式回复，无需 @ 提及；每个 issue 的评论串作为一个独立对话，会话按线程隔离。",
-    "when": "当所连接的 Linear 团队中有 issue 收到新评论时触发，无需 @ 提及；每条评论都会进入该 issue 的独立对话线程。",
+    "what": "它把 Linear 接成 Claude 的消息频道：Claude 参与 issue 的评论线程，每条评论都触发它（无需 @ 提及），每个 issue 的评论线程各自成为独立会话。",
+    "when": "安装并把某个 Linear 团队接好后，该团队任一 issue 出现评论时触发；Linear OAuth 应用无法被 @ 提及，因此按纯评论触发，而非提及触发。",
     "say": [
       {
-        "text": "回复 Linear 上 ENG 团队最新 issue 的评论",
-        "note": "它会读取该 issue 的评论串并以评论回复。"
+        "text": "总结一下这个 issue 评论线程里讨论的内容"
       },
       {
-        "text": "把 Linear 的 ENG 团队重新接到默认 agent",
-        "note": "重新执行 wiring，把该团队路由到指定 agent。"
+        "text": "根据这条评论把方案改一版，结果回帖到线程里",
+        "note": "回复只出现在该 issue 的会话中"
       },
       {
-        "text": "帮我排查 Linear 评论没到达 agent 的原因",
-        "note": "按排查步骤检查 webhook 和凭据设置。"
+        "text": "跑一下 linear-registration 测试看看频道是否正常",
+        "note": "会执行该注册测试并报告结果"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:fb376234d769199390c5006721da4986b4707a8c7e28c4d24248ed7b47671eb1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:05:33.739Z",
+    "generated_at": "2026-09-28T09:21:58.876Z",
     "lint_pass": true,
-    "what_en": "After installation, Claude connects to Linear: whenever a new comment appears on an issue in the connected team, it automatically replies as a comment, no @-mention required. Each issue's comment thread becomes its own conversation, isolated per thread.",
-    "when_en": "Triggered when an issue in the configured Linear team receives a new comment, without needing an @-mention. Each comment enters the issue's own thread conversation.",
+    "what_en": "Adds Linear as a channel through the Chat SDK bridge: Claude joins issue comment threads, every comment triggers it (no @-mention needed), and each issue thread becomes its own separate conversation.",
+    "when_en": "Once a Linear team is wired up, it takes over whenever a comment appears on that team's issues; Linear OAuth apps can't be @-mentioned, so plain comments trigger it.",
     "say_en": [
       {
-        "text": "Reply to the latest comment on ENG issue in Linear.",
-        "note": "It reads that issue's thread and replies as a comment."
+        "text": "Summarize what's being discussed in this issue comment thread",
+        "note": "Post it in the Linear issue; Claude replies in that thread"
       },
       {
-        "text": "Rewire the ENG Linear team to the default agent.",
-        "note": "Reruns the wiring so that team routes to the agent."
+        "text": "Revise the plan based on this comment and post the result in the thread",
+        "note": "The reply stays in that issue's conversation"
       },
       {
-        "text": "Help me debug why Linear comments aren't reaching the agent.",
-        "note": "Checks webhook and credentials per troubleshooting steps."
+        "text": "Run the linear-registration test to check the channel",
+        "note": "Runs that registration test and reports the result"
       }
     ]
   }

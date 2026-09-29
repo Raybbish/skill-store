@@ -1,0 +1,136 @@
+{
+  "schema_version": "2",
+  "meta": {
+    "id": "eternityspring/reelbench-skills/video-scrub",
+    "name": "video-scrub",
+    "description": "把一条视频重建成「只有画面和声音」的干净文件——**源片的元数据一概不搬**：\nGPS、设备型号、账号 ID、创建时间、章节、GoPro 的遥测轨，全部留在原地。\n走的是白名单而不是黑名单：不列要删什么，只说带什么过去（画面一条流、声音一条流），\n隐私保证来自结构，不来自枚举。\n难点不在容器 tag，在**看不见的那几层**：x264 把完整编码参数写成 SEI 塞在码流里、\nAAC 把版本号写进 DSE、avc1 的 compressorname 里还有一份——`ffprobe` 一个都看不见。\n五个藏身处逐一堵死，每一处都有实测。\n默认 `--mode copy`：**画面逐字节照搬**（cmp 验证过），只重编音频，53 秒的片子 1.3 秒跑完；\n`--mode encode` 完整重编码，多杀掉码流域的东西。\n验收不靠声称：把源片所有元数据字符串当「针」，在输出文件里做**字节级扫描**，\n扎到一根就红。12 道门全部由脚本确定性检查。\n零依赖、零 API key，只要 node 和 ffmpeg。\nUse when asked to 清元数据、去元数据、抹掉视频信息、视频隐私、去水印信息、\nstrip video metadata、remove exif from video、scrub video。\n",
+    "upstream": "https://github.com/eternityspring/reelbench-skills/tree/main/skills/video-scrub",
+    "upstream_commit": "1b51af897b6a57556b85dfe96e0427e231b4b613",
+    "content_hash": "sha256:ab0e65e0ffd49e46a3003c3f6715f40ca27247c8292e19196677b2a1888b1f4c",
+    "license": "Apache-2.0",
+    "hosting": "indexed",
+    "category": "media",
+    "version": "1.0.0",
+    "publisher": "eternityspring",
+    "publisher_verified": false,
+    "duplicate_of": null,
+    "tags": []
+  },
+  "frontmatter_valid": true,
+  "frontmatter_issues": [],
+  "signals": {
+    "stars_github": 813,
+    "installs_skills_sh": null,
+    "fetched_at": "2026-09-22T08:12:44.368Z",
+    "first_seen_at": "2026-09-22T08:12:44.368Z",
+    "upstream_commit_at": "2026-09-21T16:12:42+08:00",
+    "repo_skill_count": 3
+  },
+  "context_size": {
+    "version": "1",
+    "counter": {
+      "id": "static-mixed-estimate-v1.1",
+      "method": "heuristic",
+      "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
+    },
+    "generated_at": "2026-09-22T08:12:44.368Z",
+    "scopes": {
+      "activation_core": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 9323,
+        "chars": 5167,
+        "tokens": 2816
+      },
+      "activation_with_declared_refs": {
+        "files": [
+          "SKILL.md"
+        ],
+        "text_files": 1,
+        "bytes": 9323,
+        "chars": 5167,
+        "tokens": 2816
+      },
+      "package_total_text": {
+        "files": [
+          "README.en.md",
+          "README.md",
+          "SKILL.md",
+          "references/profiles.md",
+          "references/residue-map.md",
+          "scripts/selftest.mjs",
+          "scripts/video-scrub.mjs"
+        ],
+        "text_files": 7,
+        "bytes": 81608,
+        "chars": 63015,
+        "tokens": 21764
+      }
+    }
+  },
+  "eval": null,
+  "copy": {
+    "tagline": "清掉视频里的 GPS、设备型号、拍摄时间等隐藏信息,画面与声音保持原样。",
+    "scene_tags": [
+      "发布前清理",
+      "上传社交平台",
+      "私密视频外发",
+      "素材交付"
+    ],
+    "fit_line": "适合你,如果要外发或上传视频,又不想暴露拍摄地点、设备与时间。",
+    "tagline_en": "Remove GPS, device and time metadata from videos, leaving picture and sound intact.",
+    "scene_tags_en": [
+      "before posting",
+      "social upload",
+      "private sharing",
+      "footage delivery"
+    ],
+    "fit_line_en": "For you if you share or upload videos and don't want location or device details exposed.",
+    "source": "llm",
+    "content_hash": "sha256:ab0e65e0ffd49e46a3003c3f6715f40ca27247c8292e19196677b2a1888b1f4c",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-22T08:14:13.442Z",
+    "lint_pass": true
+  },
+  "howto": {
+    "what": "Claude 会把一条视频重建成只含画面和声音的干净文件：源片的 GPS、设备型号、创建时间、章节、GoPro 遥测轨等元数据一概不带过去,随后做字节级扫描验收。",
+    "when": "当你提到「清元数据」「去元数据」等关键词,或要求抹掉视频里的隐私信息时触发。",
+    "say": [
+      {
+        "text": "先 inspect 这条视频,看看里面藏了哪些元数据",
+        "note": "列全容器 tag、流、章节和码流里的身份串"
+      },
+      {
+        "text": "用 video-scrub run 清掉这条视频的元数据,输出 out.mp4",
+        "note": "清完自动做字节级验收"
+      },
+      {
+        "text": "用 --profile bare 再跑一遍,让输出不留任何声明",
+        "note": "隐私强度最高的档位"
+      }
+    ],
+    "source": "llm",
+    "content_hash": "sha256:ab0e65e0ffd49e46a3003c3f6715f40ca27247c8292e19196677b2a1888b1f4c",
+    "model": "deepseek-v4-flash",
+    "generated_at": "2026-09-22T08:19:21.954Z",
+    "lint_pass": true,
+    "what_en": "Claude rebuilds a video into a clean file with only one picture stream and one audio stream. Source metadata (GPS, device model, creation time, chapters, telemetry) is never carried over, and a byte-level scan verifies the result.",
+    "when_en": "Triggers when you ask to clear video metadata, or mention scrub video, strip video metadata, etc.",
+    "say_en": [
+      {
+        "text": "Inspect this video first and show me what metadata it carries.",
+        "note": "Lists tags, streams, chapters and hidden strings"
+      },
+      {
+        "text": "Run video-scrub on this video to strip metadata into out.mp4",
+        "note": "Cleans, then runs byte-level verification"
+      },
+      {
+        "text": "Run it again with --profile bare so the output claims nothing",
+        "note": "Leaves no tool or device declaration"
+      }
+    ]
+  }
+}
