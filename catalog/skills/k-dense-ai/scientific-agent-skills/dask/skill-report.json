@@ -5,7 +5,7 @@
     "name": "dask",
     "description": "Distributed computing for larger-than-RAM pandas/NumPy workflows. Use when you need to scale existing pandas/NumPy code beyond memory or across clusters. Best for parallel file processing, distributed ML, integration with existing pandas code. For out-of-core analytics on single machine use vaex; for in-memory speed use polars.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/dask",
-    "upstream_commit": "065b734670d7d990627dbc06a05b5a99be33f1f1",
+    "upstream_commit": "65d6e786832e2c52832713117bbbf5096b56f77f",
     "content_hash": "sha256:52fe1cebf229d78b43f40c31faf2ccfab34b5ba2f3dac888884f17874d9e56b4",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47069,
+    "stars_github": 47171,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:00.269Z",
+    "fetched_at": "2026-09-30T09:14:13.637Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-28T09:31:55Z",
-    "repo_skill_count": 166,
+    "upstream_commit_at": "2026-09-29T16:34:22-07:00",
+    "repo_skill_count": 168,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:00.269Z",
+    "generated_at": "2026-09-30T09:14:13.637Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,33 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会改用 Dask 处理超出内存的 pandas/NumPy 数据:写懒执行的并行代码,用 .compute() 返回结果,也能在多机集群上运行。",
-    "when": "当你要把现有 pandas/NumPy 代码扩展到超出内存或多机集群,或并行处理多个文件(CSV、Parquet、日志)时触发。",
+    "what": "装上后，Claude 能用 Dask 处理超出内存的 pandas/NumPy 数据：读取多个 CSV/Parquet 文件、做分组聚合、并行计算，并可跑在多核或集群上。运算默认惰性，调用 .compute() 才出结果。",
+    "when": "当你需要处理超出可用内存的数据，或把现有 pandas/NumPy 代码扩展到多文件、多核或集群时触发。",
     "say": [
       {
-        "text": "用 dask.distributed 的 Client 把参数扫描的任务并行提交",
-        "note": "需先建 Client,任务提交即执行"
+        "text": "用 Dask 读取 data/ 下所有 CSV 并做分组聚合",
+        "note": "先建惰性任务图，.compute() 后才出结果"
+      },
+      {
+        "text": "把这段 pandas 代码改成 Dask DataFrame 处理更大数据",
+        "note": "用 dd.read_csv 等替代本地读入"
+      },
+      {
+        "text": "启动本地 Dask 分布式客户端并看 dashboard",
+        "note": "Client() 会打印 dashboard 链接"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:52fe1cebf229d78b43f40c31faf2ccfab34b5ba2f3dac888884f17874d9e56b4",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:30:23.242Z",
+    "generated_at": "2026-09-30T09:20:34.573Z",
     "lint_pass": true,
-    "what_en": "Claude switches to Dask for pandas/NumPy data that exceeds memory: it writes lazy, parallel code, returns results via .compute(), and can run across clusters.",
-    "when_en": "Triggers when you want to scale existing pandas/NumPy code beyond memory or across clusters, or process multiple files (CSV, Parquet, logs) in parallel.",
+    "what_en": "Claude can use Dask to process pandas/NumPy data larger than memory: read many CSV/Parquet files, group and aggregate, and compute in parallel across cores or a cluster. Work is lazy until .compute() runs.",
+    "when_en": "Use it when your data exceeds available RAM, or when you want to scale existing pandas/NumPy code to multiple files, multiple cores, or a cluster.",
     "say_en": [
       {
-        "text": "Use Dask DataFrame to read this larger-than-RAM CSV, group by and mean, then compute",
-        "note": "Builds a lazy task graph; compute returns the result"
+        "text": "Use Dask to read all CSVs under data/ and run a groupby aggregation",
+        "note": "Builds a lazy graph; results appear after .compute()"
       },
       {
-        "text": "Use Dask Bag to read logs/*.json, filter, and convert to a DataFrame",
-        "note": "Good for unstructured log cleaning"
+        "text": "Convert this pandas code to a Dask DataFrame so it handles larger data",
+        "note": "Replaces local loads with dd.read_csv and similar"
       },
       {
-        "text": "Use a dask.distributed Client to submit my parameter sweep in parallel",
-        "note": "Create the Client first; tasks run on submit"
+        "text": "Start a local Dask distributed client and show the dashboard",
+        "note": "Client() prints the dashboard link"
       }
     ]
   }

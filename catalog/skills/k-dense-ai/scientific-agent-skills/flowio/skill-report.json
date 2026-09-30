@@ -5,7 +5,7 @@
     "name": "flowio",
     "description": "Read, inspect, and write Flow Cytometry Standard (FCS) 2.0, 3.0, and 3.1 files with FlowIO. Use for low-level FCS metadata and channel inspection, NumPy event extraction, multi-dataset files, table export, and FCS 3.1 creation; use FlowKit for compensation, cytometry transforms, gating, or FlowJo workspaces.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/flowio",
-    "upstream_commit": "065b734670d7d990627dbc06a05b5a99be33f1f1",
+    "upstream_commit": "65d6e786832e2c52832713117bbbf5096b56f77f",
     "content_hash": "sha256:24f5adf40e66e6dc85e34d2b3ec83f100341711eb94ae5824826b780a4cdda24",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47069,
+    "stars_github": 47171,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:00.269Z",
+    "fetched_at": "2026-09-30T09:14:13.637Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-28T09:31:55Z",
-    "repo_skill_count": 166,
+    "upstream_commit_at": "2026-09-29T16:34:22-07:00",
+    "repo_skill_count": 168,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:00.269Z",
+    "generated_at": "2026-09-30T09:14:13.637Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,40 +98,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会写 Python 代码用 FlowIO 读写 FCS 2.0/3.0/3.1 文件:查看元数据与通道信息、把事件数据取成 NumPy 数组、导出 CSV,也能新建 FCS 3.1 文件。",
-    "when": "当你需要解析或检查 FCS 文件、提取事件数据,或生成新的 FCS 3.1 文件时触发;补偿、门控等高级分析建议改用 FlowKit。",
+    "what": "装上后 Claude 能读取、检查流式细胞术 FCS 文件(v2.0–3.1),把事件数据提取成 NumPy 数组、读取元数据与通道信息、导出 CSV,并能新建 FCS 3.1 文件。补偿、门控、FlowJo 工作区它不做,建议配 FlowKit。",
+    "when": "当你需要解析或检查 FCS 文件、提取事件数据、导出 CSV,或从数组新建 FCS 3.1 文件时触发;涉及补偿、门控、FlowJo 工作区则推荐改用 FlowKit。",
     "say": [
       {
-        "text": "帮我读取这个 FCS 文件,列出通道信息和元数据。",
-        "note": "只解析 TEXT 段,不加载事件数据。"
+        "text": "读取 experiment.fcs,列出 FCS 版本、事件数和通道名",
+        "note": "返回版本、事件计数与 pnn_labels"
       },
       {
-        "text": "把这些 .fcs 文件的事件数据导出成 CSV。",
-        "note": "事件写成 DataFrame 后存为 CSV。"
+        "text": "把这个 FCS 的事件数据导出成 CSV",
+        "note": "用 pandas 转 DataFrame 后写 CSV"
       },
       {
-        "text": "把这个多数据集的 FCS 文件拆开,逐个查看。"
+        "text": "拿这批 NumPy 数据新建一个 FCS 3.1 文件",
+        "note": "create_fcs 以单精度浮点写出"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:24f5adf40e66e6dc85e34d2b3ec83f100341711eb94ae5824826b780a4cdda24",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:30:38.407Z",
+    "generated_at": "2026-09-30T09:20:48.588Z",
     "lint_pass": true,
-    "what_en": "Claude writes Python with FlowIO to read FCS 2.0/3.0/3.1 files: inspect metadata and channels, extract events as NumPy arrays, export CSV, and create new FCS 3.1 files.",
-    "when_en": "Use it when you need to parse or inspect FCS files, extract event data, or create new FCS 3.1 files. For compensation, gating, or FlowJo workspaces, FlowKit is recommended instead.",
+    "what_en": "Reads, inspects, and creates Flow Cytometry Standard files (v2.0-3.1): extracts events as NumPy arrays, reads metadata and channel labels, exports CSV/DataFrame, and writes new FCS 3.1 files.",
+    "when_en": "Use when you need to parse or inspect FCS files, extract event data, export to CSV, or create FCS 3.1 files. For compensation, gating, or FlowJo workspaces, use FlowKit instead.",
     "say_en": [
       {
-        "text": "Read this FCS file and list its channel info and metadata.",
-        "note": "Parses only the TEXT segment, skipping events."
+        "text": "Read experiment.fcs and list the FCS version, event count, and channel names",
+        "note": "Returns version, event count, pnn_labels"
       },
       {
-        "text": "Export the event data from these .fcs files to CSV.",
-        "note": "Events go into a DataFrame, then a CSV."
+        "text": "Export the events from this FCS file to CSV",
+        "note": "Builds a DataFrame and writes CSV"
       },
       {
-        "text": "Split this multi-dataset FCS file and show me each dataset.",
-        "note": "Uses read_multiple_data_sets to load all datasets."
+        "text": "Create a new FCS 3.1 file from this NumPy array",
+        "note": "create_fcs writes single-precision floats"
       }
     ]
   }

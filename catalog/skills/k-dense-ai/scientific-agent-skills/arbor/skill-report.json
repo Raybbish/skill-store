@@ -5,7 +5,7 @@
     "name": "arbor",
     "description": "Autonomously improve a real artifact (code, training recipe, agent harness, data pipeline, prompt) against an objective and an evaluator, using Hypothesis Tree Refinement (HTR) from the Arbor paper. Use this whenever someone wants to iteratively optimize something over many experiments without overfitting — e.g. \"get my model's eval score up\", \"improve this agent/harness\", \"tune this pipeline\", \"beat the baseline on this benchmark\", \"run a search over approaches and keep the best\", \"do an MLE-bench / Kaggle-style optimization\", or any long-horizon \"make this artifact better and don't just memorize the dev set\" task. Trigger it even when the user doesn't say \"Arbor\" or \"hypothesis tree\" but describes repeated experiment-and-evaluate loops, branching exploration of competing ideas, or worries about a dev/test gap. Runs Claude itself as the coordinator with subagent executors in isolated git worktrees; for the standalone `arbor` CLI tool see references/arbor-upstream.md.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arbor",
-    "upstream_commit": "065b734670d7d990627dbc06a05b5a99be33f1f1",
+    "upstream_commit": "65d6e786832e2c52832713117bbbf5096b56f77f",
     "content_hash": "sha256:0e5fc8f4b16bf37d229b60ae48a90b942376d2656b0bce6e800ee5cb1ad718da",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47069,
+    "stars_github": 47171,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:00.269Z",
+    "fetched_at": "2026-09-30T09:14:13.637Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-28T09:31:55Z",
-    "repo_skill_count": 166,
+    "upstream_commit_at": "2026-09-29T16:34:22-07:00",
+    "repo_skill_count": 168,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:00.269Z",
+    "generated_at": "2026-09-30T09:14:13.637Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -100,41 +100,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会围绕一个目标和评测器自主优化你现有的产物（代码、训练配方、提示词等）：反复提出假设、派子代理在隔离的 git worktree 里各跑一个实验，把结论记进一棵假设树，只有通过留出测试评测的改动才合并进最终版本。",
-    "when": "当你要求迭代优化某个能被评测的产物（如提高模型 eval 分数、改进 agent/harness、调优 pipeline）时触发。即使你没提 Arbor 或假设树，只要描述反复实验加评测的循环也会触发。",
+    "what": "Claude 会作为协调者，围绕可测量目标反复改进你给的产物（如代码、训练配方、提示词）：用假设树记录每轮实验，派子代理在隔离 git worktree 中各测一个假设，只有通过留存测试评估器的改动才被采用，最后给你可运行的产物与报告。",
+    "when": "当你要求提升某个具体产物（如模型 eval 分数、agent 通过率、提示词），且能反复打分时触发；即使你没提 Arbor 或“假设树”，只要在描述反复实验评测或担心过拟合，也会触发。",
     "say": [
       {
-        "text": "把这个 repo 的 eval 分数提上去，别只记住 dev 集",
-        "note": "先确认目标和 dev/test 评测器再开跑"
+        "text": "帮我把这个仓库的 eval 分数提上去",
+        "note": "Claude 会先确认目标、dev 与留存测试评估命令"
       },
       {
-        "text": "用 arbor 帮我改进这个 agent harness，跑 12 轮实验",
-        "note": "按给定预算跑协调循环"
+        "text": "给我的 agent harness 做长期优化，别过拟合 dev",
+        "note": "多轮跑子代理，只有通过测试门的改动才合并"
       },
       {
-        "text": "帮我在这条数据 pipeline 上搜索几种做法，保留通过测试评测的版本",
-        "note": "只有通过测试评测的改动才成为新最好版本"
+        "text": "把这条数据合成 pipeline 调到下游模型表现更好",
+        "note": "用 dev 搜索，测试评估器决定是否合并"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:0e5fc8f4b16bf37d229b60ae48a90b942376d2656b0bce6e800ee5cb1ad718da",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:30:11.690Z",
+    "generated_at": "2026-09-30T09:20:36.197Z",
     "lint_pass": true,
-    "what_en": "Claude autonomously improves an existing artifact against an objective: it forms hypotheses, tests each via subagents in isolated git worktrees, keeps a hypothesis tree, and merges only changes that pass a held-out test evaluator.",
-    "when_en": "Triggers when you want to iteratively optimize a scoreable artifact (eval score, agent/harness, pipeline), even without the word \"Arbor\", when you describe repeated experiment-and-evaluate loops.",
+    "what_en": "Claude runs a loop that improves a real artifact toward a measurable goal. It logs experiments in a hypothesis tree, sends subagents to test one hypothesis each in git worktrees, and merges only changes passing a held-out test evaluator.",
+    "when_en": "When you want to iteratively improve an artifact (eval score, agent harness, prompt) that you can score repeatedly — even if you never say “Arbor” — or describe repeated experiment/evaluate loops.",
     "say_en": [
       {
-        "text": "Raise this repo's eval score — and don't just memorize the dev set.",
-        "note": "Confirms objective and dev/test evaluators first."
+        "text": "Improve this repo's eval score",
+        "note": "Claude first confirms the objective, dev and held-out test evaluators"
       },
       {
-        "text": "Use arbor to improve this agent harness, run 12 experiment cycles.",
-        "note": "Runs the coordinator loop for the given budget."
+        "text": "Long-run optimize my agent harness without overfitting dev",
+        "note": "Runs cycles with subagents; only test-gate passes get merged"
       },
       {
-        "text": "Search over approaches for this data pipeline and keep whatever passes test.",
-        "note": "Only test-passing changes get merged as the new best."
+        "text": "Tune this data pipeline for better downstream model behavior",
+        "note": "Searches on dev, uses the test evaluator to decide merges"
       }
     ]
   }

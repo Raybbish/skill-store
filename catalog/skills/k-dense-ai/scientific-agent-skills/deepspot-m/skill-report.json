@@ -5,7 +5,7 @@
     "name": "deepspot-m",
     "description": "Generate transcriptome-wide virtual spatial transcriptomics from H&E histology with DeepSpot-M. Use when you need spatial gene expression in log1p-CPM for 224x224 tiles at about 20x, want to query protein-coding genes by symbol instead of a fixed panel, or want to run prediction across a whole slide after tiling with histolab.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/deepspot-m",
-    "upstream_commit": "065b734670d7d990627dbc06a05b5a99be33f1f1",
+    "upstream_commit": "65d6e786832e2c52832713117bbbf5096b56f77f",
     "content_hash": "sha256:4bb725875a6cd163b398cbd077c5c45a808439240f2cf6ca084d730d5095c0b2",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47069,
+    "stars_github": 47171,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:00.269Z",
+    "fetched_at": "2026-09-30T09:14:13.637Z",
     "first_seen_at": "2026-08-08T04:09:18.811Z",
-    "upstream_commit_at": "2026-09-28T09:31:55Z",
-    "repo_skill_count": 166,
+    "upstream_commit_at": "2026-09-29T16:34:22-07:00",
+    "repo_skill_count": 168,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:00.269Z",
+    "generated_at": "2026-09-30T09:14:13.637Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,33 +92,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "输入 224x224 的 H&E 组织切片图,输出每个切片在各查询基因上的空间表达值(log1p-CPM);可按 HGNC 基因符号在约 1.9 万蛋白编码基因面板中查询。",
-    "when": "当你要在约 20x、224x224 的切片上取 log1p-CPM 空间基因表达,想按基因符号查询蛋白编码基因,或用 histolab 切好片后做整张切片预测时触发。",
+    "what": "把 224x224 的 H&E 组织切片 tile(约 20x)映射成 log1p-CPM 的空间基因表达:每个 tile 按查询的基因给出数值,并与 tile 网格对齐。可用 HGNC 基因名查询约 1.9 万个蛋白编码基因,整张切片可分块批量预测。",
+    "when": "当需要 224x224、约 20x 的 tile 的 log1p-CPM 空间基因表达,想按基因名查询蛋白编码基因,或用 histolab 切好 tile 后跑整张切片预测时触发。",
     "say": [
       {
-        "text": "把 source 换成 evo2,再跑同一批切片。",
-        "note": "改用基因组序列嵌入构建基因投影。"
+        "text": "把这批 tile 跑完整张切片,拼成 tile×基因矩阵并导出 AnnData",
+        "note": "每个批次用同一份基因列表。"
+      },
+      {
+        "text": "换 source=evo2 把同样的 tile 再跑一遍",
+        "note": "五个嵌入源可选,每次运行选一个。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:4bb725875a6cd163b398cbd077c5c45a808439240f2cf6ca084d730d5095c0b2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:30:29.335Z",
+    "generated_at": "2026-09-30T09:20:40.564Z",
     "lint_pass": true,
-    "what_en": "Feeds 224x224 H&E tiles into DeepSpot-M and returns per-tile spatial gene expression in log1p-CPM, queryable by HGNC symbol across a ~19k protein-coding gene panel.",
-    "when_en": "Use when you need log1p-CPM spatial expression on 224x224 tiles at about 20x, want to query protein-coding genes by symbol, or want whole-slide prediction after tiling with histolab.",
+    "what_en": "Turns 224x224 H&E tiles (~20x) into log1p-CPM spatial gene expression: one value per queried gene per tile, aligned with the tile grid. Query ~19k protein-coding genes by HGNC symbol; whole slides get tiled and predicted in batches.",
+    "when_en": "Use when you need log1p-CPM spatial expression for 224x224 tiles at ~20x, want to query genes by symbol rather than a fixed panel, or want a whole-slide run after tiling with histolab.",
     "say_en": [
       {
-        "text": "Predict EPCAM and CD3D expression for this 224x224 tile with DeepSpot-M.",
-        "note": "Returns log1p-CPM values aligned to your gene list."
+        "text": "Use DeepSpot-M to predict EPCAM and CD3D expression in this 224x224 tile",
+        "note": "Returns log1p-CPM values in gene-list order."
       },
       {
-        "text": "Rerun the same tiles with source set to evo2.",
-        "note": "Uses the genomic-sequence gene embedding."
+        "text": "Run these tiles through DeepSpot-M and assemble the slide map as AnnData",
+        "note": "Same gene list for every batch."
       },
       {
-        "text": "Tile with histolab, predict in batches, build a tiles-by-genes matrix.",
-        "note": "Drops into AnnData for spatial analysis."
+        "text": "Rerun the same tiles with source=evo2",
+        "note": "Five gene embedding sources; one per run."
       }
     ]
   }

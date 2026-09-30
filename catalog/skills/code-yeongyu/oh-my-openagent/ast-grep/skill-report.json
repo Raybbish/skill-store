@@ -5,7 +5,7 @@
     "name": "ast-grep",
     "description": "Searches and rewrites code by AST shape across 25 languages. Use when the target is a syntax pattern (every call/class/import shaped like X, a codemod, a YAML rule) rather than literal text; for plain strings, comments, or filenames, use rg.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/ast-grep",
-    "upstream_commit": "c8feddc8e5f679fc9b333b1b07922ac424c6e284",
+    "upstream_commit": "3d8cf52b673fcbf4dd9d34361a273b791a19c2e5",
     "content_hash": "sha256:dc05d0420a72af0e65f2512c56b4ae3aed461b58fd2f634c576b3deebaeb67d2",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69645,
+    "stars_github": 69666,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:23:53.709Z",
+    "fetched_at": "2026-09-30T09:14:06.665Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-29T18:20:44+09:00",
+    "upstream_commit_at": "2026-09-30T17:58:33+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:23:53.709Z",
+    "generated_at": "2026-09-30T09:14:06.665Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -114,41 +114,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能按代码结构(而非字面文本)在 25 种语言里搜索和改写代码:找出某类函数、调用或导入,把 console.log 换成 logger.info,或按 YAML 规则扫描。改写默认先预览、再应用。",
-    "when": "当需求取决于代码语法结构而非文本字节时触发:查找形如 X 的函数、调用、导入等,或做跨文件代码改写。纯文本、注释、文件名请改用 rg。",
+    "what": "Claude 会按代码的语法结构（而不是字面文字）来搜索和改写代码，覆盖 25 种语言；改写默认只给预览，需明确确认才真正写入文件。",
+    "when": "当你按代码结构而非字面文本查找或改写时接管，例如形如 X 的调用、类、import；若目标是字符串、注释或文件名，原文建议改用 rg。",
     "say": [
       {
-        "text": "找出所有形如 console.log($MSG) 的调用",
-        "note": "只列出匹配位置,不改文件"
+        "text": "找出仓库里所有空 catch 块",
+        "note": "按语法结构匹配，不是文字搜索"
       },
       {
-        "text": "把所有 console.log(x) 改成 logger.info(x),先预览",
-        "note": "默认干跑,加 --apply 才落盘"
-      },
-      {
-        "text": "扫描 src/ 下的 YAML 规则并报告违规",
-        "note": "发现 sgconfig.yml 后运行全部规则"
+        "text": "跑一下项目的 YAML 规则，列出违规",
+        "note": "依赖 sgconfig.yml 配置"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dc05d0420a72af0e65f2512c56b4ae3aed461b58fd2f634c576b3deebaeb67d2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:28:57.935Z",
+    "generated_at": "2026-09-30T09:19:07.020Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude can search and rewrite code by AST shape across 25 languages — finding calls, classes, or imports shaped like X, rewriting console.log to logger.info, or scanning YAML rules. Rewrites preview first by default.",
-    "when_en": "Triggers when the target is a syntax pattern rather than text: every function, call, or import shaped like X, or a codemod. For strings, comments, or filenames, use rg.",
+    "what_en": "Claude searches and rewrites code by syntax structure instead of literal text, across 25 languages. Rewrites preview changes first and only write files when you confirm.",
+    "when_en": "Triggers when the target is a syntax shape (a call, class, or import shaped like X, a codemod, a YAML rule) rather than literal text; for strings, comments, or filenames, use rg.",
     "say_en": [
       {
-        "text": "Find every call shaped like console.log($MSG)",
-        "note": "Lists matches without changing files"
+        "text": "Rewrite every console.log(x) to logger.info(x); show me a preview first",
+        "note": "Default is preview only; no files changed"
       },
       {
-        "text": "Rewrite all console.log(x) to logger.info(x), preview first",
-        "note": "Dry-run by default; --apply to write"
+        "text": "Find all empty catch blocks in the repo",
+        "note": "Matches by syntax tree, not text"
       },
       {
-        "text": "Scan src/ with the YAML rules and report violations",
-        "note": "Finds sgconfig.yml and runs all rules"
+        "text": "Run the project's YAML rules and list violations",
+        "note": "Scans via sgconfig.yml"
       }
     ]
   }

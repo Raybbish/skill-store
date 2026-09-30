@@ -5,7 +5,7 @@
     "name": "migrate-from-v1",
     "description": "Finish migrating a NanoClaw v1 install into v2. Run after `bash migrate-v2.sh` completes. Seeds the owner, migrates legacy memory, reconciles container configs, and helps port custom v1 code. Triggers on \"migrate from v1\", \"finish migration\", \"v1 migration\".",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/migrate-from-v1",
-    "upstream_commit": "ae0ba8635b3f60a2fd214625a2e7b7d1eda2e634",
+    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30864,
+    "stars_github": 30863,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:04.602Z",
+    "fetched_at": "2026-09-30T09:14:18.080Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-29T09:08:35+02:00",
+    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:04.602Z",
+    "generated_at": "2026-09-30T09:14:18.080Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "承接 `migrate-v2.sh` 已经跑完的迁移收尾工作：处理失败步骤、把 v1 主人设为 owner、迁移旧记忆、核对容器配置，并协助搬运 v1 的定制代码。产出是收尾完成的 v2 实例。",
-    "when": "当你提到 “migrate from v1”、“finish migration”、“v1 migration” 等关键词时触发；前提是 `migrate-v2.sh` 已在终端跑完并生成 handoff.json，否则它会让你先去运行脚本。",
+    "what": "装上后 Claude 接手 migrate-v2.sh 之后的收尾工作：读 handoff.json 排查失败步骤、给所有者授权、跑共享记忆迁移、校对容器配置、帮忙移植 v1 自定义代码。",
+    "when": "当你说“migrate from v1”、“finish migration”等，且 migrate-v2.sh 已跑完时触发。若 handoff.json 不存在，它会让你先回终端跑脚本。",
     "say": [
       {
-        "text": "读一下 handoff.json，告诉我哪些迁移步骤失败了",
-        "note": "先看交接文件再决定下一步"
+        "text": "帮我完成 v1 到 v2 的迁移收尾"
       },
       {
-        "text": "把我设为 owner，再一起确定访问策略",
-        "note": "查询 users 表并授予 owner 角色"
+        "text": "把 v1 的共享记忆迁移到 v2",
+        "note": "它会为对应组运行 /migrate-memory"
       },
       {
-        "text": "检查每个群组的 container.json 挂载路径是否还有效",
-        "note": "只标记失效路径，不改动文件"
+        "text": "确认我的所有者账号，并设置谁能使用机器人",
+        "note": "它会查 users 表并授予 owner 角色"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f294b113bd3c116a892931b7fa4a66c51f9842e26d768c2cdc93991a676c87bc",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:31:42.350Z",
+    "generated_at": "2026-09-30T09:21:52.290Z",
     "lint_pass": true,
-    "what_en": "Takes over after migrate-v2.sh has run: triages failed steps, grants the owner role, migrates legacy memory, reconciles container configs, and helps port custom v1 code. Output is a finished NanoClaw v2 install.",
-    "when_en": "Triggers on \"migrate from v1\", \"finish migration\", \"v1 migration\"; it only continues once migrate-v2.sh has finished and handoff.json exists.",
+    "what_en": "After migrate-v2.sh finishes, Claude reads handoff.json, triages failed steps, seeds the owner, runs the shared-memory migration, reconciles container.json, and helps port portable v1 customizations.",
+    "when_en": "Triggers when you say \"migrate from v1\", \"finish migration\" or \"v1 migration\", once migrate-v2.sh has completed. If handoff.json is missing, it tells you to run the script in your terminal first.",
     "say_en": [
       {
-        "text": "Read handoff.json and tell me which migration steps failed",
-        "note": "It checks the handoff file first"
+        "text": "Finish the v1 to v2 migration for me",
+        "note": "Starts by reading handoff.json"
       },
       {
-        "text": "Make me the owner, then we'll settle the access policy",
+        "text": "Migrate the legacy shared memory over",
+        "note": "Runs /migrate-memory for each group"
+      },
+      {
+        "text": "Confirm my owner account and set the access policy",
         "note": "Queries users and grants the owner role"
-      },
-      {
-        "text": "Check each group's container.json mounts are still valid",
-        "note": "Flags dead paths, writes nothing"
       }
     ]
   }

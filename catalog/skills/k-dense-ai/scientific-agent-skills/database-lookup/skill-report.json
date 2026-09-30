@@ -5,7 +5,7 @@
     "name": "database-lookup",
     "description": "Query documented public database APIs with explicit endpoints, filters, pagination, and provenance. Use when a scientific, regulatory, financial, or other database-backed fact must be retrieved reproducibly from a named source rather than inferred from general knowledge.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/database-lookup",
-    "upstream_commit": "065b734670d7d990627dbc06a05b5a99be33f1f1",
+    "upstream_commit": "65d6e786832e2c52832713117bbbf5096b56f77f",
     "content_hash": "sha256:e1662671d51e6a71eb150d78bce27bbfc1a5c8f416c99b814ace7463731cb9e9",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47069,
+    "stars_github": 47171,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:00.269Z",
+    "fetched_at": "2026-09-30T09:14:13.637Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-28T09:31:55Z",
-    "repo_skill_count": 166,
+    "upstream_commit_at": "2026-09-29T16:34:22-07:00",
+    "repo_skill_count": 168,
     "bulk_source": true
   },
   "context_size": {
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:00.269Z",
+    "generated_at": "2026-09-30T09:14:13.637Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -254,41 +254,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把你要查的公开数据事实，按指定端点、筛选和分页从数据库 API 取回，并给出所用数据库、参数、访问日期和数量核对，而不是凭记忆作答。",
-    "when": "当你需要从具名公开数据库（如 PubChem、UniProt、FRED 等）可复现地取回科学、法规或金融事实，而不是靠通用知识推断时触发。",
+    "what": "装上后，Claude 会把你要查的事实转成一次可复现的数据库检索：先挑权威库，再带筛选条件和分页调用官方 API，核对记录条数，最后附带库名、接口、参数和检索日期。",
+    "when": "当你需要从指定来源可复现地取得某个数据库事实、而不是靠常识推断时触发，例如科学、监管、金融类查询。若一次检索超过 1 万条记录或 100 次 API 调用，它会先征求你确认。",
     "say": [
       {
-        "text": "用 PubChem 查阿司匹林的 CID 和分子式",
-        "note": "返回化合物条目及查询参数"
+        "text": "用 UniProt 取 TP53 的蛋白序列，并核对返回条数。",
+        "note": "会做条数对账再给结果。"
       },
       {
-        "text": "用 UniProt 取 P04637 的蛋白序列和功能注释",
-        "note": "给出端点、参数与访问日期"
-      },
-      {
-        "text": "从 FRED 查美国 CPI 时间序列",
-        "note": "附来源与数量核对结果"
+        "text": "从 FRED 拉美国 CPI 月度数据，说明调了哪个接口。",
+        "note": "会写明接口与参数。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e1662671d51e6a71eb150d78bce27bbfc1a5c8f416c99b814ace7463731cb9e9",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:30:24.758Z",
+    "generated_at": "2026-09-30T09:20:35.697Z",
     "lint_pass": true,
-    "what_en": "Claude retrieves database-backed facts through documented public APIs with explicit endpoints, filters and pagination, returning the databases, parameters, access date and count reconciliation instead of answering from memory.",
-    "when_en": "Use when a scientific, regulatory or financial fact must be retrieved reproducibly from a named public database (e.g. PubChem, UniProt, FRED) rather than inferred from general knowledge.",
+    "what_en": "After installing, Claude turns a fact question into a reproducible retrieval: pick an authoritative database, call its documented API with filters and pagination, reconcile counts, and report endpoints, parameters and access date.",
+    "when_en": "Use when a database-backed fact must come reproducibly from a named source, e.g. scientific, regulatory or financial lookups. It asks before exceeding 10,000 records or 100 API calls.",
     "say_en": [
       {
-        "text": "Use PubChem to look up aspirin's CID and molecular formula",
-        "note": "Returns the compound record and query parameters"
+        "text": "Look up aspirin's molecular weight and SMILES in PubChem, plus the endpoint used.",
+        "note": "Returns the result with provenance."
       },
       {
-        "text": "Get the protein sequence and annotations for P04637 from UniProt",
-        "note": "Reports endpoint, parameters and access date"
+        "text": "Use UniProt to get the TP53 protein sequence and reconcile the return count.",
+        "note": "Reconciles counts first."
       },
       {
-        "text": "Pull the US CPI time series from FRED",
-        "note": "Includes source and count reconciliation"
+        "text": "Pull US CPI monthly data from FRED and state which endpoint you called.",
+        "note": "Names endpoint and parameters."
       }
     ]
   }

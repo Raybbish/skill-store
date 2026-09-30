@@ -5,7 +5,7 @@
     "name": "footage-cutlist",
     "description": "Watch a brand's own product footage (screen recording, product film), pick the moment that proves each line with the user, and render those picks as a product layer — free, local. survey.py turns footage into timestamped contact sheets + scene cuts + motion so the agent can actually look at it; the agent writes a cut list (beat → source window + framing); preview.py draws it as a review sheet the user corrects round by round; cut.py renders the approved list into a silent 1080x1920 layer with the creator's area left as a plate. Also frames footage as a filmed screen (keystone, bezel, handheld drift) with dissolves between beats, and takes still screenshots as sources. Use for any format that shows real product footage beside, between or instead of a creator (split-screen, screen inserts, walkthroughs).",
     "upstream": "https://github.com/gooseworks-ai/goose-skills/tree/main/skills/ads/capabilities/footage-cutlist",
-    "upstream_commit": "207fcb084e18380f0639865fa20c5fef6d550857",
+    "upstream_commit": "a6913178e08960657d5ddd699a677c5e30f046db",
     "content_hash": "sha256:19c0d358aece2eea408c7820063eb206306bd8489b40fcceaee73cbc545e425f",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 1225,
+    "stars_github": 1226,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:25:14.167Z",
+    "fetched_at": "2026-09-30T09:15:30.952Z",
     "first_seen_at": "2026-09-29T09:25:14.167Z",
-    "upstream_commit_at": "2026-09-29T12:38:30+05:30",
+    "upstream_commit_at": "2026-09-30T00:18:04+05:30",
     "repo_skill_count": 286,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:25:14.167Z",
+    "generated_at": "2026-09-30T09:15:30.952Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,41 +98,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会看完品牌的产品素材（生成带时间戳的联系表、场景切点），为每句文案挑一个能证明它的画面窗口，写成 cutlist；再用审阅图让你逐轮修改，最后渲染成无声 1080x1920 产品层，创作者区域留空。",
-    "when": "当你需要分屏、屏幕插图、产品走查这类把真实产品素材放在创作者旁边、中间或代替创作者的格式时，会接管。",
+    "what": "装上后,Claude 会先看品牌自己的产品素材(录屏、产品片),把它转成带时间戳的截图、场景切换和运动信息;再与你逐轮确认每句台词配哪段画面,最后把定稿渲染成 1080x1920 的无声产品图层。",
+    "when": "当视频要在创作者旁边、之间或代替创作者展示真实产品素材时接管,比如分屏、屏幕插入、走查等格式;静态截图也能当素材。",
     "say": [
       {
-        "text": "帮我看完整段产品录像，为每句文案挑一个能证明它的画面窗口。",
-        "note": "先生成带时间戳的联系表，再写 cutlist。"
+        "text": "先看完整段素材,再帮我写选段清单"
       },
       {
-        "text": "b4 不对，换成报告加载出来的那一段。",
-        "note": "只重查那一段，并改这一个 beat。"
+        "text": "b4 不对,换成报告加载出来的那一段",
+        "note": "只改该节拍的画面窗口,重出审阅图"
       },
       {
-        "text": "把这份 cutlist 渲染成草稿层，我想先看看动态。",
-        "note": "输出带动态的草稿产品层。"
+        "text": "把这段画面处理成近距离拍摄的屏幕",
+        "note": "启用 look: screen 的边框与手持漂移"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:19c0d358aece2eea408c7820063eb206306bd8489b40fcceaee73cbc545e425f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:33:03.728Z",
+    "generated_at": "2026-09-30T09:22:57.091Z",
     "lint_pass": true,
-    "what_en": "Claude watches the brand's product footage (timestamped sheets + scene cuts), picks a window per line into a cutlist, shows a review sheet you correct, then renders a silent 1080x1920 product layer, creator area left as a plate.",
-    "when_en": "Use it for formats that show real product footage beside, between or instead of a creator: split-screen, screen inserts, walkthroughs.",
+    "what_en": "Claude looks at a brand's own product footage, turns it into timestamped contact sheets, scene cuts and motion, picks with you which moment plays under each line, then renders the approved cut list into a silent 1080x1920 product layer.",
+    "when_en": "Triggers whenever a video shows real product footage beside, between or instead of a creator — split-screen, screen inserts, walkthroughs and similar. Still screenshots work as sources too.",
     "say_en": [
       {
-        "text": "Watch the whole product recording and pick a window that proves each line.",
-        "note": "Makes timestamped sheets first, then writes the cutlist."
+        "text": "Watch the whole clip first, then write the cut list",
+        "note": "Claude surveys the footage, then drafts cutlist.json"
       },
       {
-        "text": "b4 is wrong, use the part where the report loads.",
-        "note": "Re-surveys just that stretch and changes only b4."
+        "text": "b4 is wrong — use the part where the report loads",
+        "note": "Only that beat's window changes; the review sheet re-renders"
       },
       {
-        "text": "Render this cutlist as a draft layer, I want to see the motion.",
-        "note": "Outputs the draft product layer."
+        "text": "Frame this footage as a screen filmed up close",
+        "note": "Uses look: screen bezel and handheld drift"
       }
     ]
   }

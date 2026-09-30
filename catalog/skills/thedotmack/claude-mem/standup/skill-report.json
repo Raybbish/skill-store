@@ -5,7 +5,7 @@
     "name": "standup",
     "description": "Facilitate a read-only standup across git worktrees, branches, or PRs to compare changes and produce one consolidation plan.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/standup",
-    "upstream_commit": "ade13f3067d3de486f41dbd8ed90ac5c854de718",
+    "upstream_commit": "431a1f89a3693e3637042e3093b04a9e035dccdd",
     "content_hash": "sha256:9f930921b4da027db63add61887ce9a0559d7e92134ae8edfb9b056f669c9ae9",
     "license": "Apache-2.0",
     "hosting": "mirrored",
@@ -23,11 +23,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94884,
+    "stars_github": 94972,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:23:48.850Z",
+    "fetched_at": "2026-09-30T09:14:01.750Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-28T15:37:31-07:00",
+    "upstream_commit_at": "2026-09-30T02:09:49-07:00",
     "repo_skill_count": 28
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:23:48.850Z",
+    "generated_at": "2026-09-30T09:14:01.750Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,41 +94,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把你选定的 git worktree、分支或 PR 拉进一个共享的 markdown 聊天室,每个扮演一个 agent 轮流发言;几轮之后产出一份归并计划并用大白话讲给你听。房间是只读的,只做决定,不提交、不合并。",
-    "when": "当你想把多个 worktree、分支或 PR 的改动归并到一处时触发。原文说明至少要有两个候选:零个或一个不算 standup,它会直接告诉你并建议扩大范围。",
+    "what": "Claude 把每个 git worktree（和选中的 PR）当成一个 agent，拉进一个共享 markdown 聊天室分轮对话：各自改了什么、哪里重叠、谁当合并目标、按什么顺序合并。全程只读、不提交不合并，最后由它写汇总并翻成普通人能看懂的话。",
+    "when": "当你想比较多条 worktree、分支或 PR 的改动、并要一份统一的合并计划时触发；候选少于两个就不算 standup，它会说明并提议扩大范围后停下。",
     "say": [
       {
-        "text": "开个 standup,把最近 24 小时有改动的 worktree 拉进来",
-        "note": "它会先列出候选清单让你确认"
+        "text": "帮我在这几个 worktree 之间开个 standup，看看怎么合并。",
+        "note": "它会先列出候选让你确认，再分轮推进。"
       },
       {
-        "text": "把这两个分支和那个 PR 放进同一个 standup 房间,商量怎么合",
-        "note": "各 agent 轮流发言,几轮后给出一份合并计划"
+        "text": "把最近 24 小时有改动的分支都拉进 standup。",
+        "note": "按时间窗挑出有改动的 worktree。"
       },
       {
-        "text": "用大白话总结这次 standup:先合谁、哪些决定要我拍板",
-        "note": "它会翻译成人类可读的结论和待定项"
+        "text": "把这些开放的 PR 和分支一起放进 standup 对比。",
+        "note": "PR 用 gh 拉取；没有 gh 就只跑 worktree。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f930921b4da027db63add61887ce9a0559d7e92134ae8edfb9b056f669c9ae9",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:32:10.716Z",
+    "generated_at": "2026-09-30T09:22:40.564Z",
     "lint_pass": true,
-    "what_en": "Claude puts the worktrees, branches, or PRs you pick into one shared markdown chat, each speaking as its own agent. After a few rounds it writes one consolidation plan and explains it to you plainly. Read-only — it decides, never merges.",
-    "when_en": "Triggers when you want to fold several worktrees, branches, or PRs into one place. The source says zero or one candidate is not a standup — Claude will say so and offer to widen the net.",
+    "what_en": "Claude runs a read-only standup: each git worktree (and any PR you pick) is an agent in a shared markdown room, taking rounds on what changed, where branches overlap, the target and merge order. It writes a SUMMATION in plain language.",
+    "when_en": "Triggers when you want to compare changes across several worktrees, branches or PRs and get one consolidation plan. Fewer than two candidates isn't a standup — it says so and offers to widen.",
     "say_en": [
       {
-        "text": "Run a standup on every worktree touched in the last 24 hours",
-        "note": "It lists the candidates for you to confirm first"
+        "text": "Run a standup across my worktrees and figure out how to merge them.",
+        "note": "It lists candidates for you to confirm."
       },
       {
-        "text": "Put these two branches and that PR in one standup room and sort out the merge",
-        "note": "Each agent speaks in turn, then it delivers one plan"
+        "text": "Pull in branches changed in the last 24 hours.",
+        "note": "Filters active worktrees by time window."
       },
       {
-        "text": "Wrap up the standup in plain words: merge order and what I must decide",
-        "note": "It translates the result into human-readable choices"
+        "text": "Add my open PRs and branches to the standup.",
+        "note": "PRs come via gh; without it, worktrees only."
       }
     ]
   }

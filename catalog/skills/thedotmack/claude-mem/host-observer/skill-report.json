@@ -5,7 +5,7 @@
     "name": "host-observer",
     "description": "Use this when fulfilling claude-mem observer jobs on Grok Bot: reply only skip_summary or one full observation XML, never prose.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-grok-bot/skills/host-observer",
-    "upstream_commit": "ade13f3067d3de486f41dbd8ed90ac5c854de718",
+    "upstream_commit": "431a1f89a3693e3637042e3093b04a9e035dccdd",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94884,
+    "stars_github": 94972,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:23:48.850Z",
+    "fetched_at": "2026-09-30T09:14:01.750Z",
     "first_seen_at": "2026-09-03T07:38:50.068Z",
-    "upstream_commit_at": "2026-09-28T15:37:31-07:00",
+    "upstream_commit_at": "2026-09-30T02:09:49-07:00",
     "repo_skill_count": 28
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:23:48.850Z",
+    "generated_at": "2026-09-30T09:14:01.750Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,41 +86,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 处理 claude-mem 观察任务时不再输出普通文字，只回 skip_summary 或一条 observation XML；完成可搜索单元时写出含真实标题、4–10 条带路径事实和叙述的记录。",
-    "when": "当你在 Grok Bot 上执行 claude-mem 观察任务，或写入 outbox/{id}.txt、返回 chat-completions 正文时接管；空闲、初始化或无工具结果时只回 skip_summary。",
+    "what": "装上后,它在 claude-mem 观察者任务里的回复被限制成两种:要么是 `<skip_summary reason=\"noise\" />`,要么是一条完整的 `<observation>` XML(真实标题、4–10 条带路径的事实和叙述)。散文式回复会被丢弃。",
+    "when": "在 Grok Bot 上执行 claude-mem 观察者任务时接管:任务闲置、初始化、没有工具结果,或刚完成一个可检索单元时。",
     "say": [
       {
-        "text": "把这次观察写成一条 observation XML",
-        "note": "返回单个 observation 块"
+        "text": "这次没内容可记,直接跳过",
+        "note": "它会返回 skip_summary,不写正文"
       },
       {
-        "text": "这次没有工具结果，跳过吧",
-        "note": "只回 skip_summary，不写正文"
+        "text": "把刚才那个修复整理成一条 observation",
+        "note": "输出带标题和事实清单的 XML"
       },
       {
-        "text": "观察里的事实带上文件路径",
-        "note": "事实条目会包含路径"
+        "text": "这条写成 feature 类型,事实要带文件路径",
+        "note": "按 observation 结构返回"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:06a6be46ef2a21f0dd4961297f07c1f6b19dd5af61639e11463f1369ac0f5fd0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:31:58.139Z",
+    "generated_at": "2026-09-30T09:22:26.251Z",
     "lint_pass": true,
-    "what_en": "After install, Claude answers claude-mem observer jobs with only skip_summary or one observation XML, never prose. Finished searchable units get a real title, 4-10 facts with paths, and a narrative.",
-    "when_en": "It takes over when you run claude-mem observer jobs on Grok Bot, write outbox/{id}.txt, or return the chat-completions body. Idle, init, or no tool results get skip_summary only.",
+    "what_en": "After install, its replies in claude-mem observer jobs are limited to two forms: `<skip_summary reason=\"noise\" />` or one full `<observation>` XML (real title, 4–10 facts with paths, narrative). Prose is dropped.",
+    "when_en": "Takes over when you run claude-mem observer jobs on Grok Bot: idle/init with no tool results, or a finished searchable unit.",
     "say_en": [
       {
-        "text": "Write this observation as one observation XML",
-        "note": "Returns a single observation block"
+        "text": "Nothing worth recording this time, skip it",
+        "note": "It returns skip_summary instead of prose"
       },
       {
-        "text": "No tool results this time, skip it",
-        "note": "Replies skip_summary only"
+        "text": "Turn that fix into one observation",
+        "note": "Outputs an observation XML with title and facts"
       },
       {
-        "text": "Include file paths with the facts",
-        "note": "Facts carry paths"
+        "text": "Write it as a feature-type observation with file paths",
+        "note": "Returns facts with paths per the observation schema"
       }
     ]
   }

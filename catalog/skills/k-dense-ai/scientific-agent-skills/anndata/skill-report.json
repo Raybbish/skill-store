@@ -5,7 +5,7 @@
     "name": "anndata",
     "description": "Data structure for annotated matrices in single-cell analysis. Use when working with .h5ad files or integrating with the scverse ecosystem. This is the data format skill—for analysis workflows use scanpy; for probabilistic models use scvi-tools; for population-scale queries use cellxgene-census.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/anndata",
-    "upstream_commit": "065b734670d7d990627dbc06a05b5a99be33f1f1",
+    "upstream_commit": "65d6e786832e2c52832713117bbbf5096b56f77f",
     "content_hash": "sha256:03775655b059464e5be5ee16552faacd76b66c914bd2234ada3f510e15c85e1f",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47069,
+    "stars_github": 47171,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:00.269Z",
+    "fetched_at": "2026-09-30T09:14:13.637Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-28T09:31:55Z",
-    "repo_skill_count": 166,
+    "upstream_commit_at": "2026-09-29T16:34:22-07:00",
+    "repo_skill_count": 168,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:00.269Z",
+    "generated_at": "2026-09-30T09:14:13.637Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,41 +98,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会按 AnnData 规范帮你创建、读取、写入 .h5ad/.zarr 等带注释的数据矩阵，做子集筛选、多数据集合并和元数据管理，并给出对应的 Python 代码。",
-    "when": "当你处理 .h5ad、.zarr 文件，或要在 scverse 生态里读写带注释的矩阵时接管；分析流程转用 scanpy，概率模型转用 scvi-tools。",
+    "what": "让 Claude 直接创建、读写和操作带注释的矩阵数据(AnnData 对象),覆盖 .h5ad、zarr 等格式,能做合并、筛选、转置、稀疏矩阵和 backed 模式等操作。它只管数据格式,分析流程要用 scanpy。",
+    "when": "当你处理 .h5ad 或 zarr 文件、合并多批数据集,或要与 scverse 生态工具配合时接管。",
     "say": [
       {
-        "text": "把这个 h5ad 文件读进来，看看有多少细胞和基因",
-        "note": "会读取 .h5ad 并报告维度"
+        "text": "把这个 50GB 的 .h5ad 用 backed 模式打开,筛出高质量细胞",
+        "note": "只读懒加载,筛选后再载入内存"
       },
       {
-        "text": "把这三个批次的 h5ad 按批次标签合并成一个",
-        "note": "用 ad.concat 合并并加 batch 标签"
-      },
-      {
-        "text": "数据太大内存放不下，用 backed 模式打开并保留筛选后的子集",
-        "note": "先 backed='r' 懒加载，再 to_memory()"
+        "text": "把这三个 batch 的 h5ad 按 obs 合并,加一列 batch 标签",
+        "note": "用 ad.concat,join 和 keys 可指定"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:03775655b059464e5be5ee16552faacd76b66c914bd2234ada3f510e15c85e1f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:30:04.206Z",
+    "generated_at": "2026-09-30T09:20:13.896Z",
     "lint_pass": true,
-    "what_en": "Claude will create, read, and write AnnData objects such as .h5ad and .zarr files, subset and concatenate annotated matrices, manage metadata, and output the matching Python code.",
-    "when_en": "Triggered when you work with .h5ad or .zarr files, or read and write annotated matrices in the scverse ecosystem. Analysis workflows go to scanpy, probabilistic models to scvi-tools.",
+    "what_en": "Lets Claude create, read, write and manipulate annotated matrices (AnnData objects) in .h5ad, zarr and other formats — concatenating datasets, subsetting, transposing, sparse and backed mode. Format only; analysis runs via scanpy.",
+    "when_en": "Triggers when you work with .h5ad or zarr files, concatenate batches, or integrate with scverse ecosystem tools.",
     "say_en": [
       {
-        "text": "Read this h5ad file and tell me how many cells and genes it has",
-        "note": "Reads the .h5ad and reports dimensions"
+        "text": "Open this 50GB .h5ad in backed mode and keep only high-quality cells",
+        "note": "Read-only lazy load, then filter"
       },
       {
-        "text": "Concatenate these three batch h5ad files with batch labels",
-        "note": "Uses ad.concat with label='batch'"
+        "text": "Concatenate these three batch h5ad files on obs and add a batch label",
+        "note": "Uses ad.concat with join and keys"
       },
       {
-        "text": "This data is too big for memory—open it backed and keep the filtered subset",
-        "note": "Opens with backed='r', then to_memory()"
+        "text": "Convert string columns in adata to categoricals, then write a gzip h5ad",
+        "note": "Shrinks file and speeds up reads"
       }
     ]
   }

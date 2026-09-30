@@ -5,7 +5,7 @@
     "name": "linkedin-engager-analytics",
     "description": "Pull the people who liked or commented on any LinkedIn post and segment them by ICP fit (peer / aspirational / prospect / other). Produces an engager roster, tier breakdown, and outbound action lists (follow back, comment-drop, DM-able with one-line openers). Powered by Apify, no LinkedIn login. Triggers on \"who liked my post\", \"who engaged\", \"engagers report\", \"audience analytics\". Not for tracking author replies to your comments (use linkedin-thread-monitor).",
     "upstream": "https://github.com/sergebulaev/linkedin-skills/tree/main/.codex-marketplace/linkedin-skills/skills/linkedin-engager-analytics",
-    "upstream_commit": "5c6192db54db24bf46fab8bbac32f7946daca970",
+    "upstream_commit": "14d332b9e91e314f2e35b299246ced6df2594fab",
     "content_hash": "sha256:88e53f4db84ac79b23476d23f16b0f492a0a5e35b64d121a7125db6d8891af95",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 3336,
+    "stars_github": 3752,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-23T08:14:26.057Z",
+    "fetched_at": "2026-09-30T09:14:58.970Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-22T20:47:21-04:00",
+    "upstream_commit_at": "2026-09-29T07:46:17-04:00",
     "repo_skill_count": 13
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-23T08:14:26.057Z",
+    "generated_at": "2026-09-30T09:14:58.970Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "你给它一个或多个 LinkedIn 帖子链接,它会拉出所有点赞和评论的人,按 ICP 匹配度分成 peer / aspirational / prospect / other 四档,并产出互动者名单和跟进动作清单(回关、评论、私信开场白)。需要 APIFY_TOKEN,没有时改为让你粘贴名单。",
-    "when": "当你说“who liked my post”“who engaged”等触发词,或发帖后想知道谁互动了、活动前要分析竞品帖子评论者时触发。不适用于跟踪作者对你评论的回复(那用 linkedin-thread-monitor)。",
+    "what": "装上后,Claude 会抓取某条 LinkedIn 帖子的点赞者和评论者,按 ICP 匹配度分成同行、向往对象、潜在客户、其他四档,产出互动者名单和跟进动作清单(回关、评论、私信开场白)。依赖 APIFY_TOKEN,没有该令牌时改为由你粘贴名单。",
+    "when": "当你提到「谁点赞了我的帖子」「谁参与了」「受众分析」等关键词,或要求分析某条帖子的互动者、按公司规模给他们分组时触发。",
     "say": [
       {
-        "text": "谁点赞和评论了我这篇帖子?按 ICP 分档列出来",
-        "note": "会拉取互动者名单、分档并附跟进动作清单"
+        "text": "帮我分析这条 LinkedIn 帖子的互动者,按 ICP 分档",
+        "note": "抓取点赞和评论者并输出分档名单"
       },
       {
-        "text": "把这几个竞品爆款帖的评论者按公司规模分组",
-        "note": "支持多个帖子 URL,会去重并标出互动 2 次以上的人"
+        "text": "把这几条帖子的互动者去重,标出参与了 2 条以上的人",
+        "note": "标记跨帖互动的高意向人群"
       },
       {
-        "text": "给我这篇帖子 prospect 档的私信开场白",
-        "note": "每个互动者一条,引用其互动过的帖子角度"
+        "text": "给潜在客户档的互动者各写一句私信开场白",
+        "note": "结合他们互动的那条帖子生成开场白"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:88e53f4db84ac79b23476d23f16b0f492a0a5e35b64d121a7125db6d8891af95",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-23T08:21:22.470Z",
+    "generated_at": "2026-09-30T09:22:06.276Z",
     "lint_pass": true,
-    "what_en": "Given one or more LinkedIn post URLs, it pulls likers and commenters, sorts them into peer / aspirational / prospect / other ICP tiers, and returns a roster plus action lists. Without APIFY_TOKEN you paste the list.",
-    "when_en": "Triggers on \"who liked my post\", \"who engaged\" and similar phrases, or when checking who engaged after a post or analyzing competitor commenters. Not for tracking author replies to your comments.",
+    "what_en": "Claude pulls likers and commenters from a LinkedIn post, buckets them by ICP fit (peer / aspirational / prospect / other), and outputs a roster plus action lists (follow back, comment, DM openers). Needs APIFY_TOKEN.",
+    "when_en": "Triggers when you ask who liked or engaged with a post, request an engagers report, or run audience analytics on a post URL.",
     "say_en": [
       {
-        "text": "Who liked and commented on my post? Break them down by ICP tier",
-        "note": "Returns engager roster with tiers and action lists"
+        "text": "Analyze the engagers on this LinkedIn post and bucket them by ICP tier",
+        "note": "Pulls likers and commenters, outputs a tiered roster"
       },
       {
-        "text": "Group the commenters on these competitor posts by company size",
-        "note": "Accepts multiple post URLs; dedupes and flags 2+ engagements"
+        "text": "Dedupe engagers across these posts and flag those who engaged 2+ times",
+        "note": "Flags cross-post high-intent engagers"
       },
       {
-        "text": "Give me DM openers for the prospect tier on this post",
-        "note": "One line each, citing the post the engager reacted to"
+        "text": "Write a one-line DM opener for each prospect-tier engager",
+        "note": "Uses the post they engaged with"
       }
     ]
   }

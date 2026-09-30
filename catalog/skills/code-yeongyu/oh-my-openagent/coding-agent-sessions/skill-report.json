@@ -5,7 +5,7 @@
     "name": "coding-agent-sessions",
     "description": "Finds, reads, and reconstructs coding-agent sessions across Codex, Claude, OpenCode, OMO/Senpi, and other local agent logs. Use when asked to find or search past sessions, transcripts, or subagent runs, or to recover what an earlier session did.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/coding-agent-sessions",
-    "upstream_commit": "c8feddc8e5f679fc9b333b1b07922ac424c6e284",
+    "upstream_commit": "3d8cf52b673fcbf4dd9d34361a273b791a19c2e5",
     "content_hash": "sha256:e1c185dfd73603b06172c90d2886530168df31dbbe72a2014e9a9fb6574907a6",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69645,
+    "stars_github": 69666,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:23:53.709Z",
+    "fetched_at": "2026-09-30T09:14:06.665Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-29T18:20:44+09:00",
+    "upstream_commit_at": "2026-09-30T17:58:33+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:23:53.709Z",
+    "generated_at": "2026-09-30T09:14:06.665Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -126,40 +126,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它让 Claude 在回答前先翻本地日志：跨 Codex、Claude、OpenCode 等产品查找、读取并还原过往会话与子代理运行，输出带路径、时间和首末用户提示的 JSON 结果。",
-    "when": "当你要查找或搜索过往会话、transcripts、子代理运行，或想还原早前会话做过什么时触发；也包括“前几天在忙什么”这类回忆式提问。",
+    "what": "装上后,Claude 会先在你机器上搜索 Codex、Claude、OpenCode 等编码代理的本地会话记录,并把平台、会话 ID、文件路径、首末用户提示、子会话数等以 JSON 返回;需要时可读取某个会话或原始记录。",
+    "when": "当你要求查找、搜索过去的会话记录、子代理运行,或想弄清某次会话做过什么时接管;没指定平台时会并行扫描所有已注册平台。",
     "say": [
       {
-        "text": "帮我找出上周那个 OpenCode 的 bug 会话，读一下它做了什么",
-        "note": "会先跑跨平台查找，再读取该会话"
+        "text": "帮我找上周那个 OpenCode bug 的会话",
+        "note": "会拆成多条查询词并行搜索并返回候选"
       },
       {
-        "text": "搜索所有和 deploy 相关的会话，包括子代理运行"
+        "text": "列出最近 7 天的 Codex 会话",
+        "note": "返回平台、路径、时间等字段的列表"
       },
       {
-        "text": "那个改 proxy 的会话，把原始 transcript 路径给我",
-        "note": "返回原始文件路径，作为核对依据"
+        "text": "读一下这个会话,连它的子代理一起",
+        "note": "输出提示、事件和子会话树"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e1c185dfd73603b06172c90d2886530168df31dbbe72a2014e9a9fb6574907a6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:28:59.918Z",
+    "generated_at": "2026-09-30T09:19:07.914Z",
     "lint_pass": true,
-    "what_en": "Claude checks local agent logs before answering: it finds, reads, and reconstructs past sessions and subagent runs across Codex, Claude, OpenCode and more, returning JSON with path, timestamps, and first/last user prompts.",
-    "when_en": "Triggered when you ask to find or search past sessions, transcripts, or subagent runs, or to recover what an earlier session did, including recall questions like 'what did I work on a few days ago'.",
+    "what_en": "After install, Claude searches local logs of coding agents like Codex, Claude and OpenCode, returning JSON with platform, session ID, path, first/last user prompts and subagent counts; it can then read a session or raw transcript.",
+    "when_en": "Triggers on requests to find or search past sessions, transcripts or subagent runs, or to recover what an earlier session did. With no platform named, it scans all registered platforms in parallel.",
     "say_en": [
       {
-        "text": "Find last week's OpenCode bug session and read what it did.",
-        "note": "Runs the broad finder, then reads that session."
+        "text": "Find my session about the OpenCode bug last week",
+        "note": "Expands into several queries run in parallel"
       },
       {
-        "text": "Search all sessions mentioning deploy, including subagent runs.",
-        "note": "--include-subagents adds child sessions to results."
+        "text": "List Codex sessions from the last 7 days",
+        "note": "Returns platform, path and time per hit"
       },
       {
-        "text": "Show me the raw transcript path for that proxy session.",
-        "note": "Returns the raw file path as source of truth."
+        "text": "Read that session including its subagents",
+        "note": "Shows prompts, events and the child session tree"
       }
     ]
   }

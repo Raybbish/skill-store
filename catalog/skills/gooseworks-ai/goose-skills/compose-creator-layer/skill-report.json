@@ -5,7 +5,7 @@
     "name": "compose-creator-layer",
     "description": "Composite a generated creator track into a product layer, per beat — in the creator's zone on split beats (either side of a seam), full frame on creator beats, hidden on product beats — with the creator's voice as the audio (loudness -14 LUFS) and an optional ducked music bed, or a music-only or silent master for voiceless formats. Free, local ffmpeg. Pairs with footage-cutlist (the layer) and create-creator-takes-h3 (the creator). Use for split-screen, screen-insert and any creator-over-product format.",
     "upstream": "https://github.com/gooseworks-ai/goose-skills/tree/main/skills/ads/capabilities/compose-creator-layer",
-    "upstream_commit": "207fcb084e18380f0639865fa20c5fef6d550857",
+    "upstream_commit": "a6913178e08960657d5ddd699a677c5e30f046db",
     "content_hash": "sha256:24b0a68846215b6e1e5c2791ff087b62dc132ad7f0411549ea9c422b214123d2",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 1225,
+    "stars_github": 1226,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:25:14.167Z",
+    "fetched_at": "2026-09-30T09:15:30.952Z",
     "first_seen_at": "2026-09-29T09:25:14.167Z",
-    "upstream_commit_at": "2026-09-29T12:38:30+05:30",
+    "upstream_commit_at": "2026-09-30T00:18:04+05:30",
     "repo_skill_count": 286,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:25:14.167Z",
+    "generated_at": "2026-09-30T09:15:30.952Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它按节拍把创作者片段合进产品画面层:分屏节拍放入创作者区域,创作者节拍全画幅,产品节拍隐藏;用创作者原声(响度 -14 LUFS),可选压低音乐床,也能出纯音乐或静音母版。用本地 ffmpeg。",
-    "when": "当你做分屏、屏幕插入等创作者叠在产品上的格式,并已备好 footage-cutlist 的图层与 create-creator-takes-h3 的创作者片段时使用。",
+    "what": "装上后,Claude 会把生成的创作者画面按节拍合成进产品视频层:分割节拍放在创作者区域,创作者节拍满屏,产品节拍隐藏;音频用创作者人声(-14 LUFS),可加压低音量的音乐垫,也可输出纯音乐或无声母版。",
+    "when": "当你做分屏、画面插入等「创作者叠加在产品上」的格式时触发,由它把创作者轨道按节拍合进产品层。",
     "say": [
       {
-        "text": "用 layer.mp4、节拍表和 creator.mp4 合成成片",
-        "note": "按节拍合成并输出成片"
+        "text": "用 --audio music 出一个纯音乐母版,给无口播的付费广告",
+        "note": "只保留背景音乐垫"
       },
       {
-        "text": "加 --music 与 --music-db -20,音乐在人声下压低",
-        "note": "音乐作为被压低的声音床"
-      },
-      {
-        "text": "--audio none 出一版静音母版,字幕之后再烧",
-        "note": "字幕在合成之后再烧"
+        "text": "加 --head 0.30,让创作者缩放覆盖时头部留在上三分之一",
+        "note": "调整裁切的垂直位置"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:24b0a68846215b6e1e5c2791ff087b62dc132ad7f0411549ea9c422b214123d2",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:33:09.556Z",
+    "generated_at": "2026-09-30T09:22:53.864Z",
     "lint_pass": true,
-    "what_en": "It composites a creator track into a product layer per beat: creator's zone on split beats, full frame on creator beats, hidden on product beats. Voice at -14 LUFS with optional ducked music; music-only or silent masters. Local ffmpeg.",
-    "when_en": "Use it for split-screen, screen-insert and other creator-over-product formats, once you have a footage-cutlist layer and a create-creator-takes-h3 creator track.",
+    "what_en": "Per beat, Claude composites a creator track into the product layer: creator's zone on split beats, full frame on creator beats, hidden on product beats. Audio: creator voice (-14 LUFS), optional ducked music bed, or music-only/silent.",
+    "when_en": "Use when you need split-screen, screen-insert or any creator-over-product format, compositing a creator track into a product layer per beat.",
     "say_en": [
       {
-        "text": "Composite layer.mp4, cutlist.aligned.json and creator.mp4 into reel.mp4",
-        "note": "Runs the per-beat composite"
+        "text": "Composite creator.mp4 into layer.mp4 per cutlist beats, output reel.mp4",
+        "note": "Per-beat compositing, voice as audio"
       },
       {
-        "text": "Add --music bed.mp3 --music-db -20 to duck music under the voice",
-        "note": "Music is sidechained under the voice"
+        "text": "Render a music-only master with --audio music for a voiceless paid ad",
+        "note": "Output keeps the music bed alone"
       },
       {
-        "text": "Render a silent master with --audio none, then burn captions",
-        "note": "Captions come after this step"
+        "text": "Add --head 0.30 so the head stays in the upper third when covering an area",
+        "note": "Sets the vertical crop position"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "add-rtk",
     "description": "Install rtk token-compression proxy into agent containers. Routes Bash tool calls through rtk for 60–90% token savings on dev commands (git, cargo, pytest, docker, kubectl, etc.).",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-rtk",
-    "upstream_commit": "ae0ba8635b3f60a2fd214625a2e7b7d1eda2e634",
+    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
     "content_hash": "sha256:2d794ab4db2bf9ef8982e33e03b2fadb8ef70ea63e033599111fc938314accc6",
     "license": "MIT",
     "hosting": "mirrored",
@@ -24,11 +24,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30864,
+    "stars_github": 30863,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:04.602Z",
+    "fetched_at": "2026-09-30T09:14:18.080Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-29T09:08:35+02:00",
+    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -39,7 +39,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:04.602Z",
+    "generated_at": "2026-09-30T09:14:18.080Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -95,37 +95,35 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "安装 rtk 代理并挂载进 agent 容器,在 settings.json 里加 PreToolUse 钩子,让每次 Bash 调用自动经 rtk 过滤,对 git、cargo、pytest 等开发命令报告 60–90% 的 token 节省,不需要写 CLAUDE.md 指令。",
-    "when": "当你想给某个 agent 容器装上 rtk 代理,或希望 Bash 里的 git、cargo 等开发命令少消耗 token 时,会走这套安装流程(需在宿主机上执行 ncl 命令)。",
+    "what": "在宿主机装好 rtk，把二进制只读挂载进指定 agent group 的容器，并在 settings.json 写入 PreToolUse 钩子；之后每次 Bash 调用自动经 rtk 过滤，dev 命令省 60–90% token。",
+    "when": "当你要把 rtk 装进 agent 容器、或让某个 agent group 的 Bash 调用走 rtk 时。宿主侧操作，重复运行会跳过已有的挂载与钩子。",
     "say": [
       {
-        "text": "确认容器里 rtk 能执行,再跑一下 git status",
-        "note": "rtk 会静默拦截这条命令"
+        "text": "列出所有 agent group"
       },
       {
-        "text": "跑 rtk gain 看看目前省了多少 token",
-        "note": "读取当前累计的节省数据"
+        "text": "检查容器里的 rtk 能不能运行"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2d794ab4db2bf9ef8982e33e03b2fadb8ef70ea63e033599111fc938314accc6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:31:28.580Z",
+    "generated_at": "2026-09-30T09:21:34.004Z",
     "lint_pass": true,
-    "what_en": "Installs the rtk proxy and mounts it into the agent container, adding a PreToolUse hook in settings.json so every Bash call is filtered through rtk, reporting 60–90% token savings on git, cargo, pytest and similar commands.",
-    "when_en": "Use when you want to install the rtk proxy into an agent container, or want Bash calls for dev commands such as git, cargo or pytest to use fewer tokens.",
+    "what_en": "Installs the rtk token-compression proxy on the host, mounts the binary read-only into a target agent group's containers, and adds a PreToolUse hook so every Bash call is filtered through rtk, cutting 60-90% of tokens on dev commands.",
+    "when_en": "Use when you want rtk installed into an agent container or want a group's Bash calls routed through rtk. Steps are idempotent, so re-running skips mounts and hooks that already exist.",
     "say_en": [
       {
-        "text": "Install rtk and mount it into group ag-1776342942165-ptgddd",
-        "note": "Runs install, mount, hook and container restart"
+        "text": "Install rtk into the agent group ag-1776342942165-ptgddd",
+        "note": "Installs the binary, mount, and hook, then restarts the container"
       },
       {
-        "text": "Check that rtk runs in the container, then run git status",
-        "note": "rtk intercepts the command silently"
+        "text": "List all agent groups",
+        "note": "Run ncl groups list first to get the group ID"
       },
       {
-        "text": "Run rtk gain to see how many tokens have been saved",
-        "note": "Reads the current savings totals"
+        "text": "Check whether rtk runs inside the container",
+        "note": "Runs rtk --version via docker exec to verify the mount"
       }
     ]
   }

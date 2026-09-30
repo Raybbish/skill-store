@@ -5,7 +5,7 @@
     "name": "arboreto",
     "description": "Infer gene regulatory networks (GRNs) from gene expression data using scalable algorithms (GRNBoost2, GENIE3). Use when analyzing transcriptomics data (bulk RNA-seq, single-cell RNA-seq) to identify transcription factor-target gene relationships and regulatory interactions. Supports distributed computation for large-scale datasets.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arboreto",
-    "upstream_commit": "065b734670d7d990627dbc06a05b5a99be33f1f1",
+    "upstream_commit": "65d6e786832e2c52832713117bbbf5096b56f77f",
     "content_hash": "sha256:e1502f2a00b00b1434411a52ff16b47cde33820990c4bf003c5cfa4dbb6207b6",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47069,
+    "stars_github": 47171,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:00.269Z",
+    "fetched_at": "2026-09-30T09:14:13.637Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-28T09:31:55Z",
-    "repo_skill_count": 166,
+    "upstream_commit_at": "2026-09-29T16:34:22-07:00",
+    "repo_skill_count": 168,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:00.269Z",
+    "generated_at": "2026-09-30T09:14:13.637Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,33 +94,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会用 arboreto 的 GRNBoost2 或 GENIE3 算法,从基因表达数据推断转录因子与靶基因之间的调控关系,产出含 TF、target、importance 三列的表格文件。",
-    "when": "当你分析转录组数据(bulk RNA-seq、单细胞 RNA-seq 等),要找出转录因子与靶基因的调控关系时,它会接管。",
+    "what": "装上后,Claude 会用 GRNBoost2 或 GENIE3 算法读入基因表达矩阵,推断哪些转录因子调控哪些靶基因,产出含 TF、target、importance 三列的表格,并可保存为文件。",
+    "when": "当你分析转录组数据(bulk RNA-seq、单细胞 RNA-seq 等),想找出转录因子与靶基因的调控关系时触发。",
     "say": [
       {
-        "text": "用 human_tfs.txt 里的转录因子过滤,只推断这些 TF 的靶基因",
-        "note": "限制推断范围到指定转录因子"
+        "text": "用 grnboost2 从这份表达矩阵推断调控网络,seed 设为 777",
+        "note": "产出 TF、target、importance 三列网络表"
+      },
+      {
+        "text": "用 tf_names 限定转录因子列表,limit 设为 5000",
+        "note": "只推断给定 TF 并限制返回条数"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e1502f2a00b00b1434411a52ff16b47cde33820990c4bf003c5cfa4dbb6207b6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:30:05.923Z",
+    "generated_at": "2026-09-30T09:20:16.478Z",
     "lint_pass": true,
-    "what_en": "Claude uses arboreto's GRNBoost2 or GENIE3 algorithms to infer transcription factor-target gene regulatory links from expression data, producing a table with TF, target, and importance columns.",
-    "when_en": "Triggers when you analyze transcriptomics data (bulk RNA-seq, single-cell RNA-seq, etc.) and want to find transcription factor-target gene regulatory relationships.",
+    "what_en": "Claude infers gene regulatory networks from expression matrices with GRNBoost2 or GENIE3, returning links of transcription factor, target gene, and importance score, and can save them to a file.",
+    "when_en": "Use when analyzing transcriptomics data such as bulk or single-cell RNA-seq to find transcription factor-target gene regulatory links.",
     "say_en": [
       {
-        "text": "Run GRNBoost2 on expression_data.tsv and save the network to network.tsv",
-        "note": "Produces TF, target, importance table"
+        "text": "Infer a regulatory network from this expression matrix with grnboost2, seed 777",
+        "note": "Returns a TF, target, importance table"
       },
       {
-        "text": "Keep links with importance above 0.5 and set the seed to 42",
-        "note": "Filters high-confidence links, fixes seed"
+        "text": "Infer networks for each condition and keep links with importance above 0.5",
+        "note": "Runs per condition and filters links"
       },
       {
-        "text": "Restrict inference to the TFs in human_tfs.txt",
-        "note": "Limits inference to given transcription factors"
+        "text": "Restrict inference to these tf_names with limit 5000",
+        "note": "Limits TFs used and links returned"
       }
     ]
   }

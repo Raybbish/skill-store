@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Use this when the user asks to search memory, \"did we already solve this?\", \"how did we do X last time?\", or wants work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/claude-mem-cursor/skills/mem-search",
-    "upstream_commit": "ade13f3067d3de486f41dbd8ed90ac5c854de718",
+    "upstream_commit": "431a1f89a3693e3637042e3093b04a9e035dccdd",
     "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94884,
+    "stars_github": 94972,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:23:48.850Z",
+    "fetched_at": "2026-09-30T09:14:01.750Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-28T15:37:31-07:00",
+    "upstream_commit_at": "2026-09-30T02:09:49-07:00",
     "repo_skill_count": 28
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:23:48.850Z",
+    "generated_at": "2026-09-30T09:14:01.750Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 可以搜索 claude-mem 的跨会话记忆库:先按关键词搜出带 ID 的索引,再看某条记录前后的时间线上下文,最后只对筛出的 ID 取完整记录。",
-    "when": "当你问「这个问题以前解决过吗」「上次我们是怎么做的」等关于过往会话的问题时触发;当前对话里的问题不走它。",
+    "what": "装上后,Claude 能查询 claude-mem 的跨会话记忆库:先用 search 列出带 ID 的历史条目索引,再用 timeline 看某条前后的上下文,最后只对挑中的 ID 用 get_observations 取完整详情,避免直接拉全部内容。",
+    "when": "当你问起以前会话里的事,比如「这个问题我们是不是已经修过了」「上次 X 是怎么做的」,或需要之前会话留下的成果时会触发。",
     "say": [
       {
-        "text": "搜一下之前有没有修过认证相关的问题",
-        "note": "返回带 ID 的索引列表,每条约 50-100 tokens"
+        "text": "在记忆里搜一下 JWT 认证相关的记录",
+        "note": "先返回带 ID 的索引表,不拉全文"
       },
       {
-        "text": "看看 #11131 前后发生了什么",
-        "note": "返回该条前后交错的时间线条目"
+        "text": "上次这个登录 bug 是怎么修的?",
+        "note": "可用 timeline 展开该条前后的上下文"
       },
       {
-        "text": "把 #11131 和 #10942 的完整记录取出来",
-        "note": "批量取完整记录,一次请求代替多次"
+        "text": "把 #11131 和 #10942 的完整详情取出来",
+        "note": "get_observations 一次批量取回"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:efc56893bd80f0070dcce3e5f2251bae5b259645df0b6bbecd9dd4189997e918",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:32:01.874Z",
+    "generated_at": "2026-09-30T09:22:30.352Z",
     "lint_pass": true,
-    "what_en": "After installing, Claude can search claude-mem's cross-session memory: a keyword search returns an index with IDs, a timeline shows context around a hit, and full details are fetched only for the IDs you filter.",
-    "when_en": "Triggers when you ask about past sessions, e.g. \"did we already solve this?\" or \"how did we do X last time?\"; questions about the current conversation don't use it.",
+    "what_en": "Once installed, Claude can search claude-mem's cross-session memory: search lists past entries with IDs, timeline shows context around one entry, and get_observations fetches full details only for the chosen IDs.",
+    "when_en": "Triggers when you ask about previous sessions, e.g. \"did we already solve this?\" or \"how did we do X last time?\", or need work left from earlier sessions.",
     "say_en": [
       {
-        "text": "Search whether we already fixed anything about auth",
-        "note": "Returns an index with IDs, ~50-100 tokens each"
+        "text": "Search memory for the JWT authentication records",
+        "note": "Returns an index table with IDs first"
       },
       {
-        "text": "Show what happened around #11131",
-        "note": "Returns timeline items near that ID"
+        "text": "How did we fix this login bug last time?",
+        "note": "timeline can expand context around that entry"
       },
       {
-        "text": "Fetch full details for #11131 and #10942",
-        "note": "Batch-fetches records in one request"
+        "text": "Fetch the full details for #11131 and #10942",
+        "note": "get_observations batch-fetches in one call"
       }
     ]
   }

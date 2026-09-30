@@ -5,7 +5,7 @@
     "name": "debug",
     "description": "Debug container agent issues. Use when things aren't working, container fails, authentication problems, or to understand how the container system works. Covers logs, session DBs, mounts, and common issues.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/debug",
-    "upstream_commit": "ae0ba8635b3f60a2fd214625a2e7b7d1eda2e634",
+    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
     "content_hash": "sha256:440cbb040cf7752585bd07da759b2cb051c69ee6b27d92c2c98a7d2ec41bab25",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30864,
+    "stars_github": 30863,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:04.602Z",
+    "fetched_at": "2026-09-30T09:14:18.080Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-29T09:08:35+02:00",
+    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:04.602Z",
+    "generated_at": "2026-09-30T09:14:18.080Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,40 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会帮你排查容器化 agent 的运行问题:读主机与容器日志、查会话数据库、检查挂载，定位消息没回复、容器闪退、认证失败等原因。",
-    "when": "当消息没有回复、容器启动后立刻退出、出现认证问题，或你想弄懂这套容器系统如何运作时会用到。",
+    "what": "Claude 会按这份指南排查容器代理故障：查看主机日志与安装日志、读取会话数据库里消息的收发记录、核对容器挂载点，并对照常见问题（消息丢失、容器闪退、鉴权失败等）定位原因。",
+    "when": "当容器不工作、容器启动失败、出现鉴权问题，或想弄清容器系统如何运作时使用。",
     "say": [
       {
-        "text": "容器起不来，帮我看看日志和退出码"
+        "text": "容器没反应了，帮我查下日志和 inbound.db 里的消息",
+        "note": "判断消息是否到达容器"
       },
       {
-        "text": "机器人不回复了，帮我查消息有没有到容器",
-        "note": "对比 inbound.db 与 outbound.db"
+        "text": "消息发出去了但用户没收到，是不是适配器出问题了",
+        "note": "对照重复服务实例的排查步骤"
       },
       {
-        "text": "日志级别开到 debug，把挂载和启动命令打出来",
-        "note": "给出设 LOG_LEVEL=debug 的方法"
+        "text": "容器一启动就退出，outbound.db 里没写入",
+        "note": "引导查看 processing_ack 和主机日志"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:440cbb040cf7752585bd07da759b2cb051c69ee6b27d92c2c98a7d2ec41bab25",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:31:36.174Z",
+    "generated_at": "2026-09-30T09:21:44.302Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude helps you debug the containerized agent system: reading host and container logs, querying session DBs, checking mounts, and tracing why replies fail, containers exit, or auth breaks.",
-    "when_en": "Use it when messages get no reply, a container exits immediately, authentication fails, or you want to understand how the container system works.",
+    "what_en": "Claude follows this guide to debug container agent issues: it checks host and setup logs, reads session DBs for inbound and outbound messages, verifies container mount points, and matches common problems like lost messages, auth failures, or crashed containers.",
+    "when_en": "Use when something isn't working, a container fails, there are authentication problems, or you want to understand how the container system works.",
     "say_en": [
       {
-        "text": "The container won't start, check the logs and exit code",
-        "note": "Looks at the spawn/exit lines in logs/nanoclaw.log"
+        "text": "The container isn't responding — check the logs and inbound.db messages",
+        "note": "Shows whether the message reached the container"
       },
       {
-        "text": "The bot stopped replying, check if messages reached the container",
-        "note": "Compares inbound.db and outbound.db"
+        "text": "Messages go out but users never receive them — is the adapter broken?",
+        "note": "Points to the duplicate-instance issue"
       },
       {
-        "text": "Turn on debug logging and print the mounts and spawn command",
-        "note": "Shows how to set LOG_LEVEL=debug"
+        "text": "Container exits right away and writes nothing to outbound.db",
+        "note": "Leads to processing_ack and host log checks"
       }
     ]
   }

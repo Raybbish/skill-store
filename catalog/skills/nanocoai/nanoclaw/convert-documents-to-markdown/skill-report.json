@@ -5,7 +5,7 @@
     "name": "convert-documents-to-markdown",
     "description": "Convert an attached Word document, presentation, spreadsheet, OpenDocument file, RTF, EPUB, CSV, or text-based PDF into local Markdown. Use when a message supplies a local attachment path that must be read without uploading it to an external parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc/container-skills/convert-documents-to-markdown",
-    "upstream_commit": "ae0ba8635b3f60a2fd214625a2e7b7d1eda2e634",
+    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30864,
+    "stars_github": 30863,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:04.602Z",
+    "fetched_at": "2026-09-30T09:14:18.080Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-29T09:08:35+02:00",
+    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:04.602Z",
+    "generated_at": "2026-09-30T09:14:18.080Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,37 +86,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会把消息里的本地附件(Word、演示文稿、表格、PDF 等)在代理容器内转成本地 Markdown 文件,再按需读取其中相关段落,而不是把整份文档塞进上下文。",
-    "when": "当消息给出必须本地读取的附件路径、且不想把文件上传到外部解析服务时触发;扫描版或纯图片 PDF 不支持。",
+    "what": "装上后，Claude 能把消息里附带的本地文档（Word、PPT、表格、PDF、EPUB、CSV 等）在容器内转成 Markdown，并告诉你生成的输出路径。转换在本地进行，不上传外部解析服务。",
+    "when": "当消息里给出了本地附件路径，需要在不外传的前提下读取这份文档时触发。",
     "say": [
       {
-        "text": "这份 PDF 转换失败了,告诉我具体原因",
-        "note": "会说明是加密、图片型还是格式不支持"
-      },
-      {
-        "text": "只读转换后 Markdown 里相关的章节",
-        "note": "不会把整份输出放进上下文"
+        "text": "这份扫描版 PDF 转出来是空的，帮我说明哪里不支持",
+        "note": "会如实报告图片型输入等失败原因"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:39051c9137496b02549369c2558bbbde8a4f81a929ab3c72419c364366d8ba5b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:31:34.702Z",
+    "generated_at": "2026-09-30T09:21:41.716Z",
     "lint_pass": true,
-    "what_en": "Claude converts a local attachment (Word, slides, spreadsheet, PDF, etc.) into a local Markdown file inside the agent container, then reads only the relevant sections instead of loading the whole document into context.",
-    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser. Scanned or image-only PDFs are unsupported.",
+    "what_en": "Once installed, Claude converts a locally attached document (Word, presentation, spreadsheet, PDF, EPUB, CSV, etc.) into Markdown inside the agent container and reports the output path. Conversion stays local; nothing is uploaded to an external parser.",
+    "when_en": "Triggers when a message supplies a local attachment path that must be read without uploading it to an external parser.",
     "say_en": [
       {
         "text": "Convert /workspace/inbox/msg/report.docx to Markdown",
-        "note": "Runs locally in the container and prints the .md path"
+        "note": "Converts in the container and prints the output path"
       },
       {
-        "text": "That PDF conversion failed - tell me why",
-        "note": "Reports encryption, image-only input, or unsupported format"
+        "text": "This scanned PDF converted to nothing; tell me why it's unsupported",
+        "note": "Reports image-only input and other failure causes"
       },
       {
-        "text": "Read only the relevant sections of the converted Markdown",
-        "note": "Keeps the full output out of context"
+        "text": "Convert /workspace/inbox/msg/data.csv with --format csv",
+        "note": "Reads CSV from stdin and names the format"
       }
     ]
   }

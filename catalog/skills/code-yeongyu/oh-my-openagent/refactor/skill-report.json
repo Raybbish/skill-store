@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Guides a refactor, cleanup, or restructure with the right decomposition. Use when the user asks to refactor, simplify, extract, or modernize code.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "c8feddc8e5f679fc9b333b1b07922ac424c6e284",
+    "upstream_commit": "3d8cf52b673fcbf4dd9d34361a273b791a19c2e5",
     "content_hash": "sha256:fe231dce9c12ded1f17485375cde1c36a2a5986990b7ef0b78353e1ca0fdced6",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69645,
+    "stars_github": 69666,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:23:53.709Z",
+    "fetched_at": "2026-09-30T09:14:06.665Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-29T18:20:44+09:00",
+    "upstream_commit_at": "2026-09-30T17:58:33+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:23:53.709Z",
+    "generated_at": "2026-09-30T09:14:06.665Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,37 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会先弄清你的重构目标,梳理代码依赖与测试覆盖,再按计划分步改代码,每步改完都跑测试确认没有回归。",
-    "when": "当你要求重构、清理或改写代码时接管;目标或范围不清时,它会先反问确认再动手。",
+    "what": "装上后,Claude 处理重构会走固定流程:先确认目标和范围,再探索代码库、评估测试覆盖,生成分步计划后逐步改动,每步跑测试和类型检查,不过就停下回滚。",
+    "when": "当你要求重构、简化、抽取代码等改动时触发,通常以 /refactor <目标> 调用,可用 --scope、--strategy 等参数指定范围和风险偏好。",
     "say": [
       {
-        "text": "/refactor AuthService 类 --strategy=safe",
-        "note": "保守策略,要求较高的测试覆盖。"
+        "text": "帮我重构 src/auth/handler.ts",
+        "note": "进入意图确认与代码库分析"
       },
       {
-        "text": "把校验逻辑提取成单独模块 --scope=module",
-        "note": "会先梳理依赖,再分步修改。"
+        "text": "把 AuthService 的校验逻辑抽成独立模块",
+        "note": "先确认范围与测试覆盖再动手"
+      },
+      {
+        "text": "用 --scope=project --strategy=safe 重构整个项目",
+        "note": "测试覆盖不足时会先建议补测试"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:fe231dce9c12ded1f17485375cde1c36a2a5986990b7ef0b78353e1ca0fdced6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:29:23.923Z",
+    "generated_at": "2026-09-30T09:19:32.015Z",
     "lint_pass": true,
-    "what_en": "It first clarifies your intent, maps dependencies and test coverage, then refactors step by step, running tests after each change to confirm no regressions.",
-    "when_en": "Use it when you ask to refactor, clean up, or restructure code. If the goal or scope is unclear, it asks a clarifying question first.",
+    "what_en": "Claude follows a fixed refactor flow: confirm goal and scope, explore the codebase, assess test coverage, plan steps, then change code and verify each step with tests and type checks—stopping and reverting on failure.",
+    "when_en": "Triggers when you ask to refactor, simplify, extract or modernize code, usually via /refactor <target> with --scope and --strategy for range and risk.",
     "say_en": [
       {
-        "text": "/refactor src/auth/handler.ts --scope=file",
-        "note": "Refactors just that one file."
+        "text": "Refactor src/auth/handler.ts",
+        "note": "Starts intent check and codebase analysis"
       },
       {
-        "text": "/refactor AuthService class --strategy=safe",
-        "note": "Conservative; needs solid test coverage."
+        "text": "Extract the validation logic in AuthService into its own module",
+        "note": "Confirms scope and coverage first"
       },
       {
-        "text": "extract validation logic into its own module --scope=module",
-        "note": "Maps dependencies, then edits in steps."
+        "text": "Refactor the whole project with --scope=project --strategy=safe",
+        "note": "Suggests adding tests if coverage is low"
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "iron-proxy-gateway",
     "description": "Use Iron Proxy for external accounts and APIs, including GitHub through gh. Connect credentials through the operator console and diagnose blocked requests without exposing tokens or adding unnecessary MCP servers.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-iron-proxy/payload/container/skills/iron-proxy-gateway",
-    "upstream_commit": "ae0ba8635b3f60a2fd214625a2e7b7d1eda2e634",
+    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
     "content_hash": "sha256:764ae1d3bdea4e6f101a05c17ad08e6bb35381fa55d0b12c96596ff4017b5819",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30864,
+    "stars_github": 30863,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-29T09:24:04.602Z",
+    "fetched_at": "2026-09-30T09:14:18.080Z",
     "first_seen_at": "2026-09-24T08:03:54.099Z",
-    "upstream_commit_at": "2026-09-29T09:08:35+02:00",
+    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-29T09:24:04.602Z",
+    "generated_at": "2026-09-30T09:14:18.080Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,40 +92,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "所有对外 HTTP/HTTPS 请求都经会话的 Iron Proxy 转发。连账号时它执行 ncl groups connect,把 connect_url 交给你,凭据由操作员在控制台配置;遇 403/401 只报告主机名和错误,不索取也不打印 token。",
-    "when": "当你需要访问外部账号或 API(如用 gh 访问 GitHub),或请求被 403/401 拦下、需要确认是哪一层拦截时触发。",
+    "what": "你的对外请求会走会话的 Iron Proxy:访问外部账号或 API(含 GitHub 的 gh)时,凭据由运营控制台配置并经人工批准,Claude 只拿到无效占位符,不索要、不打印真实 token。",
+    "when": "当你需要用外部账号或 API(如 GitHub 的 gh),或请求被代理拦下需要排查原因时触发。",
     "say": [
       {
-        "text": "帮我连一下 api.github.com 这个账号",
-        "note": "它会返回 connect_url,由操作员配置凭据"
+        "text": "帮我连一下 GitHub 的 API 账号",
+        "note": "返回 connect_url,由运营方配置凭据"
       },
       {
-        "text": "用 gh 查一下我的 GitHub 仓库"
+        "text": "用 gh 看我的 GitHub 仓库,别用真实 token",
+        "note": "以 gateway-managed 占位符运行"
       },
       {
-        "text": "我请求 GitHub 被 403 了,帮我查是哪一层拦的",
-        "note": "它会报告主机名和错误,请操作员侧检查"
+        "text": "这个请求返回 403,帮我查是哪一层拦的",
+        "note": "报告主机名与错误,请主机侧检查"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:764ae1d3bdea4e6f101a05c17ad08e6bb35381fa55d0b12c96596ff4017b5819",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-29T09:31:39.506Z",
+    "generated_at": "2026-09-30T09:21:48.478Z",
     "lint_pass": true,
-    "what_en": "Outbound HTTP/HTTPS traffic goes through your session's Iron Proxy. Connecting an account runs ncl groups connect and returns a connect_url for an operator to set credentials; on 403/401 it just reports the hostname and error, never tokens.",
-    "when_en": "Use it when you need an external account or API (including GitHub via gh), or when a request comes back 403/401 and you need to find out which layer blocked it.",
+    "what_en": "Outbound requests go through the session's Iron Proxy. For external accounts or APIs, credentials are set in the operator console and need human approval; Claude only holds a placeholder and never prints real tokens.",
+    "when_en": "Use it when you need an external account or API such as GitHub via gh, or when a request is blocked and you need to find out why.",
     "say_en": [
       {
-        "text": "Connect api.github.com for me",
-        "note": "It returns a connect_url for the operator to configure credentials"
+        "text": "Connect my GitHub API account",
+        "note": "Returns a connect_url for the operator to configure"
       },
       {
-        "text": "Look up my GitHub repos with gh",
-        "note": "Goes through the proxy; the client uses gateway-managed as a placeholder"
+        "text": "Use gh to list my GitHub repos without a real token",
+        "note": "Runs with a gateway-managed placeholder"
       },
       {
-        "text": "My GitHub request got a 403 - check which layer blocked it",
-        "note": "It reports the hostname and error for a host-side check"
+        "text": "This request got a 403 — which layer blocked it?",
+        "note": "Reports hostname and error, asks host-side check"
       }
     ]
   }
