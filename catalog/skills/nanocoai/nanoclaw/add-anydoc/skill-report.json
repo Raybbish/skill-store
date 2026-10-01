@@ -5,7 +5,7 @@
     "name": "add-anydoc",
     "description": "Add local office-document-to-Markdown conversion to NanoClaw agent containers with the pinned Firecrawl AnyDoc CLI. Use when agents need to read attached Word, PowerPoint, Excel, OpenDocument, RTF, EPUB, CSV, or text-based PDF files without uploading them to a hosted parser.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-anydoc",
-    "upstream_commit": "294ef2aee85218b23ad30eda9dfe10e590b54a8c",
+    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
     "content_hash": "sha256:1e06f5199dd218f27f571366d004c0852b5c9fb4b26f644a55f75c380cb8bd49",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30627,
+    "stars_github": 30863,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-28T14:48:48.528Z",
+    "fetched_at": "2026-09-30T09:14:18.080Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-08-27T19:30:29+02:00",
-    "repo_skill_count": 58,
+    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
+    "repo_skill_count": 63,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-28T14:48:48.528Z",
+    "generated_at": "2026-09-30T09:14:18.080Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -92,41 +92,33 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 能把附加的 Word、PowerPoint、Excel 等办公文档在本地转成 Markdown，并读取和总结其中内容，不再需要上传到外部解析服务。",
-    "when": "当代理收到需要阅读的 Word、PowerPoint、Excel 等办公文档附件时触发。",
+    "what": "它会往 NanoClaw 的 agent 容器里装一个固定版本的 Firecrawl AnyDoc 命令行工具,让 agent 直接在容器内把 Word、Excel、PPT、PDF 等本地附件转成 Markdown,不把文件上传给外部解析服务。纯图片 PDF 会明确报错。",
+    "when": "当你的 agent 需要读取本地附加的 Word、Excel、PDF 等文档,又不希望把文件上传到托管解析器时触发。",
     "say": [
       {
-        "text": "把附件里的 Word 转成 Markdown 并总结。",
-        "note": "Claude 会本地转换并读取内容。"
-      },
-      {
-        "text": "分析这个 Excel 文件，列出关键数据。",
-        "note": "Claude 转换后按 Markdown 内容回答。"
-      },
-      {
-        "text": "这份 PDF 能直接转 Markdown 吗？",
-        "note": "文本型 PDF 可以；扫描版会提示需要 OCR。"
+        "text": "这份纯图片 PDF 为什么转换失败?",
+        "note": "会确认它报错且未上传任何地方"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:1e06f5199dd218f27f571366d004c0852b5c9fb4b26f644a55f75c380cb8bd49",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:04:30.180Z",
+    "generated_at": "2026-09-30T09:21:14.011Z",
     "lint_pass": true,
-    "what_en": "After install, Claude can convert attached Word, PowerPoint, Excel, and similar office docs to Markdown locally, then read and summarize the content without uploading to a hosted parser.",
-    "when_en": "Triggers when the agent needs to read attached Word, PowerPoint, Excel, or similar office documents, including text-based PDFs, without uploading them.",
+    "what_en": "It installs a pinned Firecrawl AnyDoc CLI into NanoClaw agent containers, so agents convert attached Word, Excel, PPT, PDF and similar local files to Markdown inside the container, without sending them to a hosted parser.",
+    "when_en": "Use when agents need to read attached Word, Excel, PDF and similar local documents without uploading them to a hosted parser.",
     "say_en": [
       {
-        "text": "Convert the attached Word file to Markdown and summarize it.",
-        "note": "Claude converts locally and reads the content."
+        "text": "Convert the attachment in /workspace/inbox/ to Markdown and summarize it.",
+        "note": "AnyDoc runs inside the container and returns Markdown."
       },
       {
-        "text": "Analyze this Excel file and list the key data.",
-        "note": "Claude converts it and answers from the Markdown."
+        "text": "Install add-anydoc so the agent can read Word and Excel attachments locally.",
+        "note": "Pins the AnyDoc CLI and rebuilds the image."
       },
       {
-        "text": "Can this PDF be converted directly to Markdown?",
-        "note": "Text-based PDFs work; scanned ones need OCR."
+        "text": "Why did this image-only PDF fail to convert?",
+        "note": "It confirms the failure and that nothing was uploaded."
       }
     ]
   }
