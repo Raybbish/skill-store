@@ -5,7 +5,7 @@
     "name": "pre-publish-review",
     "description": "Nuclear-grade 12-agent pre-publish release gate. Runs /get-unpublished-changes to detect all changes since last npm release, spawns up to 10 ultrabrain agents for deep per-change analysis, invokes /review-work (orchestrator manual QA plus one gate reviewer) for holistic review, and 1 oracle for overall release synthesis. Runs ONLY when the user explicitly asks for a pre-publish review — a plain publish/release request MUST NOT trigger this; /publish ships directly. Triggers: 'pre-publish review', 'review before publish', 'release review', 'pre-release review', 'ready to publish?', 'can I publish?', 'pre-publish', 'safe to publish', 'publishing review', 'pre-publish check'.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/.agents/skills/pre-publish-review",
-    "upstream_commit": "3d8cf52b673fcbf4dd9d34361a273b791a19c2e5",
+    "upstream_commit": "ed421cce50fbcf9f96c4c90fc36fc42e96c666c1",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69666,
+    "stars_github": 69710,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:06.665Z",
+    "fetched_at": "2026-10-01T09:41:44.868Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-30T17:58:33+09:00",
+    "upstream_commit_at": "2026-10-01T18:17:02+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:06.665Z",
+    "generated_at": "2026-10-01T09:41:44.868Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,40 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你明确要求发布前审查时，它会先查出上次 npm 发布以来的所有改动，并行让最多 10 个 ultrabrain 逐个改动组深入分析，再跑 /review-work 做整体审查，外加 1 个 oracle 给出整体发布定级与版本号建议。",
-    "when": "只在你明确要求发布前审查时接管,例如说“pre-publish review”“release review”等;普通的 publish/release 请求不会触发它,/publish 会直接发布。",
+    "what": "它会先跑 /get-unpublished-changes 找出未发布改动，并行派出最多 10 个 ultrabrain 代理逐组深查，再由 /review-work 做整体审查、1 个 oracle 汇总版本建议与发布风险。",
+    "when": "只有当用户明确要求发布前审查时触发，如「pre-publish review」、「ready to publish?」等；普通 publish/release 请求不会触发。",
     "say": [
       {
-        "text": "做一次 pre-publish review，检查上个版本以来的改动"
+        "text": "跑一次 pre-publish review，看现在能不能发布",
+        "note": "会启动三层审查并给出发布结论"
       },
       {
-        "text": "现在可以发布吗?给我发布前审查的结论",
-        "note": "产出各发布层的版本号建议与风险定级。"
+        "text": "审查未发布的改动，逐组列出问题",
+        "note": "按改动分组派 ultrabrain 代理深查"
       },
       {
-        "text": "pre-publish check:重点看有没有破坏性改动",
-        "note": "oracle 会列出破坏性变更与迁移步骤。"
+        "text": "这次发布该打 patch 还是 minor？有无破坏性变更？",
+        "note": "由 oracle 汇总版本建议与风险"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:bfceda1db60192eaade5de278bd93f42f44b59a7edf5d74687ffb79221e5af8a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:19:30.049Z",
+    "generated_at": "2026-10-01T09:46:58.472Z",
     "lint_pass": true,
-    "what_en": "When you explicitly ask for a pre-publish review, it finds what changed since the last npm release, then runs up to 10 ultrabrain per-change analyses, one /review-work holistic review, and one oracle release synthesis.",
-    "when_en": "It only takes over when you explicitly ask for a pre-publish review, e.g. \"pre-publish review\" or \"release review\". A plain publish or release request will not trigger it; /publish ships directly.",
+    "what_en": "It runs /get-unpublished-changes to detect unpublished changes, then spawns up to 10 ultrabrain agents for per-change analysis, a /review-work holistic review, and one oracle reporting version bump and release risk.",
+    "when_en": "Only triggers when the user explicitly asks for a pre-publish review, e.g. \"pre-publish review\" or \"ready to publish?\"; a plain publish/release request does not trigger it.",
     "say_en": [
       {
-        "text": "Run a pre-publish review on the changes since the last release",
-        "note": "Detects unpublished changes first, then fans out reviews."
+        "text": "Run a pre-publish review and tell me if this is safe to publish",
+        "note": "Starts the three-layer gate and gives a verdict"
       },
       {
-        "text": "Can I publish now? Give me the pre-publish review verdict",
-        "note": "Returns layer version bumps and deployment risk."
+        "text": "Review the unpublished changes and list issues per change group",
+        "note": "Spawns ultrabrain agents per group"
       },
       {
-        "text": "Pre-publish check: focus on breaking changes",
-        "note": "Lists breaking changes and migration steps."
+        "text": "Should this release be patch or minor, and are there breaking changes?",
+        "note": "Oracle summarizes version bump and risk"
       }
     ]
   }

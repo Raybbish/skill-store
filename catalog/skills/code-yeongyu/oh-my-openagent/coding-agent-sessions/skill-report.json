@@ -5,7 +5,7 @@
     "name": "coding-agent-sessions",
     "description": "Finds, reads, and reconstructs coding-agent sessions across Codex, Claude, OpenCode, OMO/Senpi, and other local agent logs. Use when asked to find or search past sessions, transcripts, or subagent runs, or to recover what an earlier session did.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/coding-agent-sessions",
-    "upstream_commit": "3d8cf52b673fcbf4dd9d34361a273b791a19c2e5",
+    "upstream_commit": "ed421cce50fbcf9f96c4c90fc36fc42e96c666c1",
     "content_hash": "sha256:e1c185dfd73603b06172c90d2886530168df31dbbe72a2014e9a9fb6574907a6",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69666,
+    "stars_github": 69710,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:06.665Z",
+    "fetched_at": "2026-10-01T09:41:44.868Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-30T17:58:33+09:00",
+    "upstream_commit_at": "2026-10-01T18:17:02+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:06.665Z",
+    "generated_at": "2026-10-01T09:41:44.868Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -126,41 +126,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会先在你机器上搜索 Codex、Claude、OpenCode 等编码代理的本地会话记录,并把平台、会话 ID、文件路径、首末用户提示、子会话数等以 JSON 返回;需要时可读取某个会话或原始记录。",
-    "when": "当你要求查找、搜索过去的会话记录、子代理运行,或想弄清某次会话做过什么时接管;没指定平台时会并行扫描所有已注册平台。",
+    "what": "装上后,Claude 会先在本地各 coding agent 的会话日志里搜索再回答,而不是凭记忆。它能给出会话 ID、路径、工作目录、首末用户提示和子会话等字段,并把选中的会话读出来供核对。",
+    "when": "当你要求查找、读取或查看本地 coding agent 会话记录时触发,也包括回忆类提问,如「前几天我在做什么」。可点名 Codex、Claude、OpenCode 等平台。",
     "say": [
       {
-        "text": "帮我找上周那个 OpenCode bug 的会话",
-        "note": "会拆成多条查询词并行搜索并返回候选"
+        "text": "帮我找上周在 OpenCode 里修过的那个 bug 会话",
+        "note": "会先跑查找脚本,列出候选会话"
       },
       {
-        "text": "列出最近 7 天的 Codex 会话",
-        "note": "返回平台、路径、时间等字段的列表"
+        "text": "读一下这个会话的详情,看看当时做了什么",
+        "note": "会显示首末用户提示和子会话"
       },
       {
-        "text": "读一下这个会话,连它的子代理一起",
-        "note": "输出提示、事件和子会话树"
+        "text": "找找有没有把 X 迁移过,子会话也算上",
+        "note": "会加 --include-subagents 搜索委派的工作"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e1c185dfd73603b06172c90d2886530168df31dbbe72a2014e9a9fb6574907a6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:19:07.914Z",
+    "generated_at": "2026-10-01T09:46:40.369Z",
     "lint_pass": true,
-    "what_en": "After install, Claude searches local logs of coding agents like Codex, Claude and OpenCode, returning JSON with platform, session ID, path, first/last user prompts and subagent counts; it can then read a session or raw transcript.",
-    "when_en": "Triggers on requests to find or search past sessions, transcripts or subagent runs, or to recover what an earlier session did. With no platform named, it scans all registered platforms in parallel.",
+    "what_en": "After install, Claude searches local coding-agent session logs before answering instead of using memory. It reports session IDs, paths, working dirs, first/last prompts and subagents, then reads the chosen session.",
+    "when_en": "Triggers on any request to find, read or inspect a local coding-agent session, plus recall questions like \"what did I work on a few days ago\". Codex, Claude or OpenCode may be named.",
     "say_en": [
       {
-        "text": "Find my session about the OpenCode bug last week",
-        "note": "Expands into several queries run in parallel"
+        "text": "Find the OpenCode bug session I fixed last week",
+        "note": "Runs the finder script and lists candidate sessions"
       },
       {
-        "text": "List Codex sessions from the last 7 days",
-        "note": "Returns platform, path and time per hit"
+        "text": "Read that session in detail to see what happened",
+        "note": "Shows first/last user prompts and subagents"
       },
       {
-        "text": "Read that session including its subagents",
-        "note": "Shows prompts, events and the child session tree"
+        "text": "Search for whether X was migrated, subagents included",
+        "note": "Uses --include-subagents to catch delegated work"
       }
     ]
   }

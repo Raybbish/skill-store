@@ -5,7 +5,7 @@
     "name": "add-discord",
     "description": "Add Discord bot channel integration via Chat SDK.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-discord",
-    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
+    "upstream_commit": "64706602d4252dadcb82fa4954b7f810908d3b3c",
     "content_hash": "sha256:7ef5e1440dcfd3dcd9b30d4b46ca5a907a3d1046abc844068e4c1a02c2e7dee5",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30863,
+    "stars_github": 30865,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:18.080Z",
+    "fetched_at": "2026-10-01T09:41:54.791Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
+    "upstream_commit_at": "2026-10-01T10:07:05+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:18.080Z",
+    "generated_at": "2026-10-01T09:41:54.791Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,39 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它把 Discord 机器人通道接进 NanoClaw:从 channels 分支复制适配器并注册、安装 @chat-adapter/discord@4.29.0、构建并跑注册测试、存入凭证后重启服务。完成后你可以在 Discord 私信或服务器频道里和它对话。",
-    "when": "当你要求把 Discord 机器人通道接入 NanoClaw,或在 /setup 流程中需要添加该通道时,它会接管并执行 Apply 各步骤,最后重启服务。",
+    "what": "它会把 Discord 适配器复制进 src/channels/、注册到 channel barrel,安装 @chat-adapter/discord@4.29.0,然后构建并跑注册测试;再引导你创建 Discord bot、粘贴 Bot Token、写入凭据并重启服务。之后 bot 能在 Discord 私信或服务器频道里跟你对话。",
+    "when": "当你要求把 Discord 频道接入 NanoClaw(如走 /manage-channels)时接管;若你正在跑 /setup,它做完后会让你返回该流程。",
     "say": [
       {
-        "text": "帮我把 Discord 机器人通道加到 NanoClaw 里。",
-        "note": "它会复制并注册适配器、安装依赖。"
+        "text": "给 NanoClaw 加上 Discord 频道",
+        "note": "会复制适配器、装依赖并跑注册测试"
       },
       {
-        "text": "Discord 机器人收不到我的消息,帮我排查一下。"
+        "text": "这是我的 Discord Bot Token,请配置好",
+        "note": "校验后写入 .env 并重启服务"
       },
       {
-        "text": "帮我重新跑一遍 Discord 通道的注册测试。"
+        "text": "帮我解析我的 Discord 私信频道",
+        "note": "调接口拿到 discord:@me:<channelId>"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:7ef5e1440dcfd3dcd9b30d4b46ca5a907a3d1046abc844068e4c1a02c2e7dee5",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:21:20.887Z",
-    "lint_pass": true,
-    "what_en": "Adds the Discord bot channel to NanoClaw: copies the adapter from the channels branch, registers it, installs the package, builds, runs the registration test, stores credentials and restarts. Chat then works via DMs or server channels.",
-    "when_en": "Triggers when you ask to add the Discord bot channel to NanoClaw, or when the /setup flow reaches adding that channel; it then runs the Apply steps and restarts the service.",
+    "generated_at": "2026-10-01T09:48:47.931Z",
+    "lint_pass": false,
+    "what_en": "It copies the Discord adapter into src/channels/, registers it in the channel barrel, installs @chat-adapter/discord@4.29.0, then builds and runs its registration test. It also walks you through creating a Discord bot and storing its token.",
+    "when_en": "Triggers when you ask to add a Discord channel to NanoClaw, or when wiring channels (e.g. /manage-channels); if you are mid-/setup, it tells you to return to that flow.",
     "say_en": [
       {
-        "text": "Add the Discord bot channel to NanoClaw for me.",
-        "note": "Copies and registers the adapter, installs the package."
+        "text": "Add a Discord channel to NanoClaw",
+        "note": "Copies the adapter, installs the dep, runs the test"
       },
       {
-        "text": "The Discord bot is online but never sees my messages.",
-        "note": "Checks Message Content Intent and shared servers."
+        "text": "Here is my Discord Bot Token, please configure it",
+        "note": "Validates the token, writes .env, restarts"
       },
       {
-        "text": "Re-run the Discord channel registration test.",
-        "note": "Runs vitest run src/channels/discord-registration.test.ts."
+        "text": "Resolve my Discord DM channel",
+        "note": "Returns discord:@me:<channelId>"
       }
     ]
   }

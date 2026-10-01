@@ -5,7 +5,7 @@
     "name": "add-dial-tool",
     "description": "Give chosen NanoClaw agents a real phone number as a container tool — the `dial` CLI baked into the agent image plus OneCLI credential injection for api.getdial.ai, scoped per agent, so the agents you pick can send SMS, place AI voice calls, and receive verification codes from inside the sandbox. Independent of the Dial channel; idempotent; re-run to change which agents may use it. Use when the user wants agents to text, call, or run `dial …` from a chat, without wiring Dial as a messaging channel.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-dial-tool",
-    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
+    "upstream_commit": "64706602d4252dadcb82fa4954b7f810908d3b3c",
     "content_hash": "sha256:c30bce35e47f03cd1f21e1035c25b376a59b83a0725b8b8decd4e461ec28defd",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30863,
+    "stars_github": 30865,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:18.080Z",
+    "fetched_at": "2026-10-01T09:41:54.791Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
+    "upstream_commit_at": "2026-10-01T10:07:05+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:18.080Z",
+    "generated_at": "2026-10-01T09:41:54.791Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -96,41 +96,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给选定的 NanoClaw 智能体装上 Dial 容器工具:`dial` CLI 进容器 PATH,配 dial-cli 技能和 OneCLI 凭证注入,可从沙箱内发短信、打 AI 语音电话、收验证码;未选中的智能体在网关被拦截。可重复运行来改名单。",
-    "when": "当你想让智能体在聊天里发短信、打电话,或直接运行 `dial …`,又不把 Dial 接成消息渠道时使用。需在主机 NanoClaw 仓库里执行,且已装好 OneCLI。",
+    "what": "给选定的 NanoClaw agent 装上 Dial 容器工具：容器里出现 `dial` 命令和 dial-cli 技能，这些 agent 能发短信、打 AI 语音电话、收验证码，费用记在 Dial 账户上；没选中的 agent 会被网关拦截。",
+    "when": "当你想让某个 agent 能发短信、打电话或在聊天里运行 `dial …`，又不把 Dial 接成消息通道时用；需在 NanoClaw 仓库的主机上运行，不能从聊天里装。",
     "say": [
       {
-        "text": "给智能体加上 Dial 工具,让它们能发短信和打电话",
-        "note": "会先列出智能体,让你选谁能用"
+        "text": "运行 /add-dial-tool，所有 agent 都开通 Dial",
+        "note": "每个 agent 都获得 Dial 访问权"
       },
       {
-        "text": "只让 ag-abc 用 Dial,其他智能体都拦住",
-        "note": "按 agent id 开通,其余在网关被拦"
-      },
-      {
-        "text": "重新跑一次,把能用 Dial 的智能体换成 ag-xyz",
-        "note": "可重复执行,只改授权名单"
+        "text": "再跑一次 /add-dial-tool，改成只让 ag-yyy 用 Dial",
+        "note": "重复运行可改哪些 agent 能用"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c30bce35e47f03cd1f21e1035c25b376a59b83a0725b8b8decd4e461ec28defd",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:21:21.121Z",
+    "generated_at": "2026-10-01T09:48:47.031Z",
     "lint_pass": true,
-    "what_en": "Installs Dial as a container tool for chosen NanoClaw agents: the `dial` CLI on PATH, the dial-cli skill, and an OneCLI key for api.getdial.ai, so they can send SMS, place AI voice calls, and receive codes. Unchosen agents get 403.",
-    "when_en": "Use when you want agents to text, call, or run `dial …` from a chat without wiring Dial as a messaging channel. Run from the NanoClaw repo on the host; OneCLI must already be installed.",
+    "what_en": "Installs Dial as a container tool for chosen NanoClaw agents: a `dial` CLI plus a dial-cli skill, so they can send SMS, place AI voice calls, and receive codes. Unchosen agents are blocked at the gateway.",
+    "when_en": "Use when you want an agent to text, call, or run `dial …` from a chat without wiring Dial as a messaging channel. Run it from the NanoClaw repo on the host, not from a chat.",
     "say_en": [
       {
-        "text": "Add the Dial tool so my agents can text and call",
-        "note": "It lists agent groups and asks who may use Dial"
+        "text": "Run /add-dial-tool and let agent ag-xxx use Dial to text and call",
+        "note": "Installs the CLI and injects the key per agent"
       },
       {
-        "text": "Only let ag-abc use Dial, block the others",
-        "note": "Scopes the key to that agent; the rest are blocked"
+        "text": "Run /add-dial-tool and give Dial to all agents",
+        "note": "Every agent gets Dial access"
       },
       {
-        "text": "Re-run it and switch Dial access to ag-xyz",
-        "note": "Idempotent; only the allowed list changes"
+        "text": "Re-run /add-dial-tool so only ag-yyy can use Dial",
+        "note": "Re-running changes which agents may use it"
       }
     ]
   }

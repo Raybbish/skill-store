@@ -5,7 +5,7 @@
     "name": "data-scientist",
     "description": "Processes and analyzes data with resident-kernel engines (DuckDB, Polars) and one-shot tools. Use for CSV/parquet/JSON analysis, group-by/join/aggregation, time series, distributions, cleaning, or plotting a dataset.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/data-scientist",
-    "upstream_commit": "3d8cf52b673fcbf4dd9d34361a273b791a19c2e5",
+    "upstream_commit": "ed421cce50fbcf9f96c4c90fc36fc42e96c666c1",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69666,
+    "stars_github": 69710,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:06.665Z",
+    "fetched_at": "2026-10-01T09:41:44.868Z",
     "first_seen_at": "2026-08-01T05:51:04.410Z",
-    "upstream_commit_at": "2026-09-30T17:58:33+09:00",
+    "upstream_commit_at": "2026-10-01T18:17:02+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:06.665Z",
+    "generated_at": "2026-10-01T09:41:44.868Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -105,41 +105,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会用常驻内核里的 DuckDB 或 Polars 处理数据:先探测文件大小和可用内存,再决定把计算放在内存、原地查询还是流式执行,产出查询结果、必要图表以及行数和耗时,并且不使用 pandas。",
-    "when": "当你要求分析 CSV、Parquet、JSON 等数据文件,或做分组聚合、清洗、绘图时触发。",
+    "what": "Claude 会用 DuckDB、Polars 等常驻内核引擎读 CSV/Parquet/JSON,做分组、连接、聚合、时间序列、清洗和绘图;先探测数据量和内存,再决定放内存还是流式查询,重活会报行数和耗时。",
+    "when": "当你要求分析 CSV、Parquet、JSON 数据集,或做分组聚合、时间序列、绘图时触发。",
     "say": [
       {
-        "text": "帮我分析 data.csv:按城市分组算平均订单金额",
-        "note": "先探测文件,再决定是否载入内存"
+        "text": "帮我分析 data.csv,按城市分组统计订单金额",
+        "note": "用 DuckDB 直接查文件并返回结果"
       },
       {
-        "text": "直接查 S3 上的 parquet,只取需要的列再聚合",
-        "note": "DuckDB 可带投影读取远程文件"
+        "text": "把这个 parquet 文件的日期列画成时间序列趋势图",
+        "note": "会先读可视化参考再出图"
       },
       {
-        "text": "用 numpy 检验这两组数据的分布差异是否显著",
-        "note": "在 Python 内核里做统计检验"
+        "text": "这个数据集比内存大,请用流式方式查询",
+        "note": "改用流式查询或让 DuckDB 落盘"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9f6c2379098e92631b4996552c184f480cbb7dd595b3a8a2bf512375e2873138",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:19:12.416Z",
+    "generated_at": "2026-10-01T09:46:42.029Z",
     "lint_pass": true,
-    "what_en": "With this skill, Claude analyzes data using DuckDB or Polars in a resident kernel, probes file size and free RAM before placing the computation, and returns query results plus row counts and timing, without using pandas.",
-    "when_en": "Triggered when you ask to analyze CSV, Parquet or JSON data, or to do group-by aggregation, cleaning or plotting.",
+    "what_en": "Claude analyzes CSV/Parquet/JSON with resident engines (DuckDB, Polars, numpy): group-by, joins, aggregation, time series, cleaning, and matplotlib charts. It probes size/RAM first and reports row counts and timing for heavy work.",
+    "when_en": "Triggers when you ask to analyze a CSV, Parquet or JSON dataset, or to do group-by aggregation, time series or plotting.",
     "say_en": [
       {
-        "text": "Analyze data.csv: average order amount grouped by city",
-        "note": "It probes the file, then places the work"
+        "text": "Analyze data.csv and group order amounts by city",
+        "note": "DuckDB queries the file in place"
       },
       {
-        "text": "Query the parquet on S3 directly, selecting only needed columns",
-        "note": "DuckDB reads remote files with pushdown"
+        "text": "Plot a time-series trend of the date column in this parquet file",
+        "note": "Reads the visualization reference first"
       },
       {
-        "text": "Use numpy to test whether the two groups differ significantly",
-        "note": "Runs a statistical test in the Python kernel"
+        "text": "This dataset is bigger than RAM - stream the query",
+        "note": "Polars streaming or DuckDB spill"
       }
     ]
   }

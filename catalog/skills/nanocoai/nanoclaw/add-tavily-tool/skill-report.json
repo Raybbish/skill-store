@@ -5,7 +5,7 @@
     "name": "add-tavily-tool",
     "description": "Add Tavily Search and Extract as keyless remote MCP tools for selected NanoClaw agent groups. Use when installing Tavily web search or URL extraction without an API key.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-tavily-tool",
-    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
+    "upstream_commit": "64706602d4252dadcb82fa4954b7f810908d3b3c",
     "content_hash": "sha256:2d9ebf4b4d47a240ccd043ff286d0bd5ee5355d8394e0ddbb5352263870df53f",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,11 +22,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30863,
+    "stars_github": 30865,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:18.080Z",
+    "fetched_at": "2026-10-01T09:41:54.791Z",
     "first_seen_at": "2026-08-12T04:44:23.959Z",
-    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
+    "upstream_commit_at": "2026-10-01T10:07:05+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:18.080Z",
+    "generated_at": "2026-10-01T09:41:54.791Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -96,41 +96,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给选定的 NanoClaw agent 组注册 Tavily 远程 MCP 服务;装好后这些组多出 tavily_search 和 tavily_extract 两个工具,可做网页搜索和 URL 内容提取,且不需要 API key。",
-    "when": "当你要在没有 API key 的情况下,为选定的 NanoClaw agent 组安装 Tavily 网页搜索或 URL 提取时触发。Claude 提供商以外的组、以及任何需要结构化提取的组受益最多。",
+    "what": "给选定的 NanoClaw agent 群组注册 Tavily 远程 MCP 服务,装上后这些群组多出 mcp__tavily__tavily_search 和 mcp__tavily__tavily_extract 两个工具,无需 API key(走 Tavily 的 IP 配额)。Crawl、Map、Research 会被过滤掉。",
+    "when": "当你想给 agent 群组装免 API key 的 Tavily 网页搜索或 URL 提取,或需要结构化提取时触发。注册与重启命令受审批限制,在容器内执行会先返回 approval-pending。",
     "say": [
       {
-        "text": "给 group-abc 这个组加上 Tavily 搜索和提取工具",
-        "note": "会先要求管理员批准再注册与重启该组"
+        "text": "列出所有群组,告诉我哪些能装 Tavily",
+        "note": "先跑 ncl groups list"
       },
       {
-        "text": "帮我确认 group-abc 里的 Tavily 搜索能不能跑通",
-        "note": "用 max_results 1 试一次搜索并报告结果"
-      },
-      {
-        "text": "keyless 额度用完了,帮我换成用 API key 的方式",
-        "note": "agent 会引导通过 OneCLI 面板存入密钥并重新注册"
+        "text": "给 group-x 装上 Tavily 搜索和提取,然后重启它",
+        "note": "注册后需管理员批准"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:2d9ebf4b4d47a240ccd043ff286d0bd5ee5355d8394e0ddbb5352263870df53f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:21:35.379Z",
-    "lint_pass": true,
-    "what_en": "Registers Tavily's remote MCP server for selected NanoClaw agent groups, adding tavily_search and tavily_extract tools for web search and URL extraction with no API key.",
-    "when_en": "Use when installing Tavily web search or URL extraction without an API key into selected NanoClaw agent groups. Groups not on the Claude provider, and structured extraction anywhere, benefit most.",
+    "generated_at": "2026-10-01T09:49:05.359Z",
+    "lint_pass": false,
+    "what_en": "Registers Tavily's remote MCP server for selected NanoClaw agent groups, adding mcp__tavily__tavily_search and mcp__tavily__tavily_extract with no API key (Tavily's IP-based allowance). Crawl, Map and Research are filtered out.",
+    "when_en": "Use when you want keyless Tavily web search or URL extraction for agent groups, or structured extraction. Registration and restart commands are approval-gated; run inside a container they return approval-pending first.",
     "say_en": [
       {
-        "text": "Add Tavily search and extract tools to the group group-abc",
-        "note": "Admin approval is needed before registering and restarting"
+        "text": "List all groups and tell me which ones can get Tavily",
+        "note": "Runs ncl groups list first"
       },
       {
-        "text": "Check whether Tavily search works in group-abc",
-        "note": "Runs one search with max_results 1 and reports"
+        "text": "Install Tavily search and extract on group-x, then restart it",
+        "note": "Registration needs admin approval"
       },
       {
-        "text": "The keyless allowance ran out, switch me to an API key",
-        "note": "Agent guides storing the key via the OneCLI dashboard"
+        "text": "Run one tavily_search with max_results 1 and report if it succeeds",
+        "note": "Verifies the tools work"
       }
     ]
   }

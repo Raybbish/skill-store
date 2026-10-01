@@ -5,7 +5,7 @@
     "name": "prisma-mongodb-upgrade",
     "description": "Decision and migration guide for Prisma ORM MongoDB projects on v6, which have no upgrade path to v7. Use when a MongoDB project asks about upgrading Prisma, when \"upgrade to prisma 7\" comes up in a project with provider = \"mongodb\", or when evaluating a move to Prisma 8. Triggers on \"upgrade prisma mongodb\", \"prisma 7 mongodb\", \"mongodb prisma migration\", \"prisma 8 mongodb\".",
     "upstream": "https://github.com/prisma/skills/tree/main/prisma-mongodb-upgrade",
-    "upstream_commit": "82b88dd82801e958706f8265c29c910e6f0ebfa4",
+    "upstream_commit": "be16a8740d01363d13552b317042431ee8dfc581",
     "content_hash": "sha256:6dbbba2d45926838da823b568a2676cfbc831f19c98c8e9d07c9c6c12eb38a11",
     "license": "MIT",
     "hosting": "indexed",
@@ -23,10 +23,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 305700,
-    "fetched_at": "2026-09-30T09:16:24.258Z",
+    "installs_skills_sh": 308500,
+    "fetched_at": "2026-10-01T09:43:41.531Z",
     "first_seen_at": "2026-08-05T05:44:36.271Z",
-    "upstream_commit_at": "2026-09-29T13:27:12+03:00"
+    "upstream_commit_at": "2026-10-01T01:24:56+05:30"
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:16:24.258Z",
+    "generated_at": "2026-10-01T09:43:41.531Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -99,37 +99,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "处理 Prisma ORM MongoDB 项目的升级问题:判断该迁到 Prisma 8 还是留在 v6,并按参考文件给出模式、客户端 API、迁移流程的对应做法。它会指出 MongoDB 没有 v7 连接器,也不会让你改用 SQL 数据库。",
-    "when": "当 MongoDB 项目问起升级 Prisma、提到「upgrade to prisma 7」「prisma 8 mongodb」等触发词,或评估迁到 Prisma 8 时接管。",
+    "what": "当你在 MongoDB 项目里问要不要升级 Prisma,Claude 会说明 v6 是 MongoDB 的最后一个大版本、v7 没有 MongoDB 连接器,并帮你判断是迁到 Prisma 8(早期访问)还是留在 v6,再给出对应迁移要点。",
+    "when": "当 MongoDB 项目(provider = \"mongodb\")问起升级 Prisma、出现「upgrade to Prisma 7」的说法,或在评估迁到 Prisma 8 时接管。",
     "say": [
       {
-        "text": "帮我判断这个 MongoDB 项目该迁到 Prisma 8 还是留在 v6。",
-        "note": "按决策表给出方向。"
+        "text": "我们的 MongoDB 项目要不要升级到 Prisma 7?",
+        "note": "会被告知 v7 没有 MongoDB 连接器,这条路不存在。"
       },
       {
-        "text": "我用了 $transaction 做多文档事务,迁到 Prisma 8 会怎样?",
-        "note": "提醒 Prisma 8 尚无 MongoDB 事务方法。"
+        "text": "这个 MongoDB 项目该留在 v6 还是迁到 Prisma 8?",
+        "note": "会按决策表判断,并检查 $transaction 等阻断项。"
+      },
+      {
+        "text": "帮我把 v6 的 schema 迁到 Prisma 8 的写法。",
+        "note": "给出 schema 契约映射,并提示先在副本上演练。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:6dbbba2d45926838da823b568a2676cfbc831f19c98c8e9d07c9c6c12eb38a11",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:21:58.873Z",
+    "generated_at": "2026-10-01T09:49:31.705Z",
     "lint_pass": true,
-    "what_en": "For Prisma ORM MongoDB projects, it decides whether to migrate to Prisma 8 or stay on v6, and lays out the schema, client API, and migration steps. It notes MongoDB has no v7 connector and won't switch your database engine.",
-    "when_en": "Triggered when a MongoDB Prisma project asks about upgrading Prisma, mentions \"upgrade to prisma 7\" or \"prisma 8 mongodb\", or evaluates a move to Prisma 8.",
+    "what_en": "Ask about upgrading Prisma in a MongoDB project and Claude explains v6 is the last MongoDB major — v7 has no MongoDB connector — then helps decide between migrating to Prisma 8 or staying on v6, with migration steps.",
+    "when_en": "Triggers when a MongoDB project (provider = \"mongodb\") asks about upgrading Prisma, when \"upgrade to Prisma 7\" comes up, or when evaluating a move to Prisma 8.",
     "say_en": [
       {
-        "text": "My Prisma project uses the mongodb provider — should I upgrade to Prisma 7?",
-        "note": "Explains MongoDB has no v7 connector."
+        "text": "Should our MongoDB project upgrade to Prisma 7?",
+        "note": "You'll hear v7 has no MongoDB connector — that path doesn't exist."
       },
       {
-        "text": "Should this MongoDB project migrate to Prisma 8 or stay on v6?",
-        "note": "Gives a direction from the decision table."
+        "text": "Should this MongoDB project stay on v6 or move to Prisma 8?",
+        "note": "Claude applies the decision table and checks blockers like $transaction."
       },
       {
-        "text": "We use $transaction for multi-document writes — what breaks on Prisma 8?",
-        "note": "Notes Prisma 8 lacks a MongoDB transaction method."
+        "text": "Help me port my v6 schema to Prisma 8.",
+        "note": "Gives schema contract mapping and says to rehearse on a copy."
       }
     ]
   }

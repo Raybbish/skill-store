@@ -5,7 +5,7 @@
     "name": "add-dial",
     "description": "Add Dial channel integration — a real phone number for SMS and AI voice calls via the Dial platform (getdial.ai). Native adapter — no Chat SDK bridge.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-dial",
-    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
+    "upstream_commit": "64706602d4252dadcb82fa4954b7f810908d3b3c",
     "content_hash": "sha256:c6919bd82253c47e03c681ed50d0639fdd5632a73156b2430bc795a5b982f727",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30863,
+    "stars_github": 30865,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:18.080Z",
+    "fetched_at": "2026-10-01T09:41:54.791Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
+    "upstream_commit_at": "2026-10-01T10:07:05+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:18.080Z",
+    "generated_at": "2026-10-01T09:41:54.791Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -94,39 +94,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 多出一个真实电话号码，可收发短信、接听 AI 语音来电；短信和通话两个方向都经 dial CLI 走。它会从 channels 分支复制 Dial 适配器与配对辅助文件并注册。",
-    "when": "当你想给 Claude 加一个能收发短信、接 AI 语音电话的真实号码时触发；它会复制 Dial 适配器、注册 pair-dial 配对步骤并安装 dial CLI。",
+    "what": "给 Claude 接上一个 Dial 电话号码，可以收发短信、接听 AI 语音来电。技能会从 channels 分支复制 Dial 适配器和配对助手，安装 qrcode、构建并跑注册测试，再把号码注册成消息组。",
+    "when": "当你要求给 Claude 加上一个 Dial 电话号码时触发。之后会依次安装 dial CLI、用邮箱验证码登录、确认号码、设置来电问候语并重启服务。",
     "say": [
       {
-        "text": "给我加一个 Dial 号码，用来收发短信和接电话",
-        "note": "开始复制适配器、安装 dial CLI 并走配对流程"
+        "text": "帮我加上 Dial 电话号码，我要用短信和 AI 语音接电话",
+        "note": "会复制适配器、装依赖并重启服务"
       },
       {
-        "text": "这条 Dial 线路只允许我自己的手机发短信进来"
+        "text": "这条线路只允许我配对的手机发消息进来"
       },
       {
-        "text": "把这条 Dial 线路设为公开，谁发短信都能回"
+        "text": "把拨入这个号码的来电问候语改成：你好，请留言",
+        "note": "设置号码的 inbound-instruction"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:c6919bd82253c47e03c681ed50d0639fdd5632a73156b2430bc795a5b982f727",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:21:18.011Z",
+    "generated_at": "2026-10-01T09:48:43.294Z",
     "lint_pass": true,
-    "what_en": "Claude gains a real phone number for SMS and AI voice calls via Dial (getdial.ai), wired both ways through the dial CLI. It copies the Dial adapter and pairing helper from the channels branch and registers the adapter.",
-    "when_en": "Triggers when you want Claude on a real number for SMS or AI voice calls; it copies the Dial adapter, registers the pair-dial step and installs the dial CLI.",
+    "what_en": "Gives the agent a Dial phone number for SMS and AI voice calls. The skill copies the Dial adapter and pairing helper from the channels branch, installs qrcode, builds, runs the registration test, and registers the line as a messaging group.",
+    "when_en": "Triggers when you ask to add a Dial phone number to Claude. Setup then installs the dial CLI, verifies by email code, confirms the line, sets the inbound greeting, and restarts the service.",
     "say_en": [
       {
-        "text": "Add a Dial number so Claude can send SMS and take calls",
-        "note": "Copies the adapter, installs the dial CLI, starts pairing"
+        "text": "Add a Dial phone number for me; I want SMS and AI voice calls",
+        "note": "Copies the adapter, installs deps, restarts"
       },
       {
-        "text": "Keep this Dial line owner-only, just my phone can text in",
-        "note": "Sets the line's unknown_sender_policy to strict"
+        "text": "Only the phone I pair may text this line",
+        "note": "Writes unknown_sender_policy as strict"
       },
       {
-        "text": "Make this Dial line public so anyone can text the agent",
-        "note": "Sets the line's unknown_sender_policy to public"
+        "text": "Change the inbound call greeting to: Hello, please leave a message",
+        "note": "Sets the line's inbound-instruction"
       }
     ]
   }

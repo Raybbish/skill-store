@@ -5,7 +5,7 @@
     "name": "comment-checker",
     "description": "Use when Codex needs to understand or respond to automatic comment-checker feedback emitted after an edit-like PostToolUse hook.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-codex/plugin/components/comment-checker/skills/comment-checker",
-    "upstream_commit": "3d8cf52b673fcbf4dd9d34361a273b791a19c2e5",
+    "upstream_commit": "ed421cce50fbcf9f96c4c90fc36fc42e96c666c1",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69666,
+    "stars_github": 69710,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:06.665Z",
+    "fetched_at": "2026-10-01T09:41:44.868Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-30T17:58:33+09:00",
+    "upstream_commit_at": "2026-10-01T18:17:02+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:06.665Z",
+    "generated_at": "2026-10-01T09:41:44.868Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当编辑类工具(apply_patch、write、edit 等)成功执行后,插件会注册 PostToolUse 钩子;若 comment-checker 报出警告,Codex 会收到阻塞性反馈,需要先修复或解释被标记的注释才能继续。",
-    "when": "在 Codex 用 apply_patch、write、edit 等编辑类工具成功执行之后触发;非编辑类工具会被忽略,不触发。",
+    "what": "Codex 每次成功执行 apply_patch、write、edit 等改动后，插件会自动运行 comment-checker。若报出警告，Codex 会收到阻塞式反馈，需先修正或说明被标记的注释才能继续。",
+    "when": "当 Codex 在 apply_patch、write、edit 等改动类操作成功后触发 PostToolUse 钩子；非改动类工具不触发。缺检查器二进制时不输出。",
     "say": [
       {
-        "text": "comment-checker 报的这条警告是什么意思?",
-        "note": "Codex 会说明被标记的注释问题"
+        "text": "comment-checker 报了警告，帮我改掉被标记的注释",
+        "note": "Codex 会修改该注释，解除阻塞反馈"
       },
       {
-        "text": "帮我把被标记的那条注释改掉再继续",
-        "note": "Codex 先修复注释再往下走"
+        "text": "说说 comment-checker 为什么标记这段注释",
+        "note": "Codex 会给出说明而非直接改代码"
       },
       {
-        "text": "这条注释我不想改,说明一下原因",
-        "note": "Codex 给出解释后继续"
+        "text": "这条注释没过检查，按提示重写一下",
+        "note": "Codex 按警告内容重写该注释"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:dd82fb171b64f483e8d70c008bcb9f0117e046bc81f274a53135504262446070",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:19:07.847Z",
+    "generated_at": "2026-10-01T09:46:35.396Z",
     "lint_pass": true,
-    "what_en": "After a successful edit-like tool call (apply_patch, write, edit, etc.), the plugin registers a PostToolUse hook. If comment-checker warns after a patch, Codex gets blocking feedback and must fix or explain the flagged comment before moving on.",
-    "when_en": "Triggered in Codex after edit-like tools (apply_patch, write, edit, etc.) run successfully. Non-edit tools are ignored, so they do not trigger it.",
+    "what_en": "After each successful apply_patch, write, or edit call, the plugin runs comment-checker automatically. If it reports a warning, Codex gets blocking feedback and must fix or explain the flagged comment before continuing.",
+    "when_en": "Triggers on the PostToolUse hook after successful edit-like calls such as apply_patch, write, and edit; other tools are ignored. Nothing is emitted if the checker binary is missing.",
     "say_en": [
       {
-        "text": "What does this comment-checker warning mean?",
-        "note": "Codex explains the flagged comment"
+        "text": "comment-checker raised a warning — fix the flagged comment for me",
+        "note": "Codex edits that comment to clear the blocking feedback"
       },
       {
-        "text": "Fix the flagged comment, then continue",
-        "note": "Codex fixes it before going on"
+        "text": "Explain why comment-checker flagged this comment",
+        "note": "Codex explains instead of changing the code"
       },
       {
-        "text": "I don't want to change that comment; explain why it's flagged",
-        "note": "Codex explains, then continues"
+        "text": "This comment failed the check — rewrite it as suggested",
+        "note": "Codex rewrites the comment per the warning"
       }
     ]
   }

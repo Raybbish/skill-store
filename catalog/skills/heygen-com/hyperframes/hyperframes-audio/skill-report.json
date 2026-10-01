@@ -5,7 +5,7 @@
     "name": "hyperframes-audio",
     "description": "Use when audio already placed in a HyperFrames composition needs to be mixed: fade-in/fade-out, crossfade, track gain or volume, volume automation, ducking, a music bed that fights a voiceover (voiceover carve), effects on a track (EQ, compressor, limiter, gate, saturation, delay, reverb, chorus, phaser, bitcrush), automation envelopes drawn on a track's volume or any effect parameter, or one submix bus carrying a chain, a fader and an automation clock for several tracks at once (`<hf-audio-group>`). Don't use for sourcing or generating audio — finding BGM, SFX, or making a voiceover is `/media-use`. Don't use for clip timing or track layout, which is `/hyperframes-core`.\n",
     "upstream": "https://github.com/heygen-com/hyperframes/tree/main/skills/hyperframes-audio",
-    "upstream_commit": "18a1b226c5e67e12308ee82afd7a5be5834df39a",
+    "upstream_commit": "2eb19191032c88949604541d7a2b3593eb1c7bd7",
     "content_hash": "sha256:9da265246fe53c8bbdf401960306c2298f2434700b2418a3dcd1f78c0b1b0270",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -20,10 +20,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 309500,
-    "fetched_at": "2026-09-30T09:16:11.217Z",
+    "installs_skills_sh": 321100,
+    "fetched_at": "2026-10-01T09:43:29.750Z",
     "first_seen_at": "2026-09-13T07:57:05.420Z",
-    "upstream_commit_at": "2026-09-30T09:07:15Z"
+    "upstream_commit_at": "2026-10-01T02:02:11-07:00"
   },
   "context_size": {
     "version": "1",
@@ -32,7 +32,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:16:11.217Z",
+    "generated_at": "2026-10-01T09:43:29.750Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,41 +98,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "给已放进 HyperFrames 合成里的音频做混音：靠 data-fx-chain、data-automation、data-fx-carve 三个属性实现淡入淡出、增益、音量自动化、人声闪避、效果链和多轨 submix 总线。",
-    "when": "当 HyperFrames 合成里已经放好音频、需要给它混音时接管，比如做淡入淡出、闪避或效果链。找 BGM、音效等素材或排片段时交给别的技能。",
+    "what": "对已放进 HyperFrames 合成的音频做混音:设置淡入淡出、交叉淡化、轨道音量与音量自动化,给音乐床加人声 carve 避开旁白,搭建 EQ、压缩、限制等效果链,或用 <hf-audio-group> 一条总线管多轨。",
+    "when": "当你已把音频放进 HyperFrames 合成、需要混音时触发,比如做淡入淡出、音量自动化、人声 carve 等;找或生成音频请用 /media-use,片段时序与轨道布局请用 /hyperframes-core。",
     "say": [
       {
-        "text": "给配乐轨加上 voiceover carve，按人声让路",
-        "note": "写入 data-fx-carve，自动生成闪避包络"
+        "text": "给音乐床加一个 carve,让它避开旁白。"
       },
       {
-        "text": "给这段音频加 2 秒淡入、结尾 3 秒淡出",
-        "note": "在已放置的音轨上写入淡入淡出包络"
+        "text": "把旁白那几段放进一个音频组,再让音乐床对组做 carve。",
+        "note": "之后加入该组的片段会被 carve 自动覆盖。"
       },
       {
-        "text": "把人声和配乐放进同一个 hf-audio-group 总线",
-        "note": "一条总线带链、推子和自动化时钟"
+        "text": "这段人声发闷,用 Reduce Mud 预设处理。",
+        "note": "套用 250 Hz 的预设作业。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:9da265246fe53c8bbdf401960306c2298f2434700b2418a3dcd1f78c0b1b0270",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:19:56.787Z",
+    "generated_at": "2026-10-01T09:47:26.074Z",
     "lint_pass": true,
-    "what_en": "Claude mixes audio already placed in a HyperFrames composition by writing data-fx-chain, data-automation and data-fx-carve: fades, gain, volume automation, voiceover carve ducking, effect chains and submix buses.",
-    "when_en": "Triggers when audio is already placed in a HyperFrames composition and needs mixing, e.g. fades, ducking or an effect chain. Sourcing BGM/SFX or arranging clips belongs to other skills.",
+    "what_en": "For audio already placed in a HyperFrames composition, Claude mixes it: fades, crossfades, track gain, volume automation, voiceover carve on a music bed, effect chains (EQ, compressor, limiter), or one <hf-audio-group> bus for several tracks.",
+    "when_en": "Triggers when placed audio in a HyperFrames composition needs mixing — fades, volume automation, voiceover carve. Sourcing audio is /media-use; clip timing and layout are /hyperframes-core.",
     "say_en": [
       {
-        "text": "Add a voiceover carve to the music bed so it yields to the voice",
-        "note": "Writes data-fx-carve and ducking envelopes"
+        "text": "Add a carve to the music bed so it steps aside for the voiceover.",
+        "note": "Writes data-fx-carve on the music element."
       },
       {
-        "text": "Give this clip a 2-second fade-in and a 3-second fade-out",
-        "note": "Writes fade envelopes on the placed track"
+        "text": "Group the narration clips, then carve the bed against the group.",
+        "note": "Clips added to the group later are covered automatically."
       },
       {
-        "text": "Put the voice and music on one hf-audio-group bus",
-        "note": "One bus carrying a chain, fader and automation clock"
+        "text": "This voice sounds muffled - apply the Reduce Mud preset.",
+        "note": "Applies the 250 Hz named job."
       }
     ]
   }

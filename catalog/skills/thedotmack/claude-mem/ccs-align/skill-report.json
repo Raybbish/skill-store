@@ -5,8 +5,8 @@
     "name": "ccs-align",
     "description": "Run the CCS Align seat's hourly breathing cycle — prove the local claude-mem worker is healthy, pull needle observations through search → timeline → get_observations, land them in a seat-owned middle cache via atomic grab → append → filter exclude-marks → replace, manage exclude marks, and walk house → project → seat rules to detect conflicts (SHADOW_HOUSE, DENY_ALLOW, DRIFT, CLOCK_HEADER) with an append-only rules-report.md. Use when asked to run CCS Align, breathe the alignment seat, refresh the middle cache, exclude or restore an observation, walk rules, check rules conflicts, or check the Worker Watch board.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/ccs-align",
-    "upstream_commit": "431a1f89a3693e3637042e3093b04a9e035dccdd",
-    "content_hash": "sha256:7f2aff609d892a949cb7dcb81a6f7c9070dbc6060e2a9b7fc312052940b725fa",
+    "upstream_commit": "e290f3dd7097715c8c481a1e386fe03beb48ed81",
+    "content_hash": "sha256:5d74c4745d00e98aa74d78bb093001cbf9d27eca5b06d74c83f53d5b620785f0",
     "license": "Apache-2.0",
     "hosting": "indexed",
     "category": "dev",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94972,
+    "stars_github": 95056,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:01.750Z",
+    "fetched_at": "2026-10-01T09:41:40.294Z",
     "first_seen_at": "2026-09-09T07:46:20.369Z",
-    "upstream_commit_at": "2026-09-30T02:09:49-07:00",
-    "repo_skill_count": 28
+    "upstream_commit_at": "2026-09-30T22:46:59-07:00",
+    "repo_skill_count": 29
   },
   "context_size": {
     "version": "1",
@@ -36,93 +36,97 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:01.750Z",
+    "generated_at": "2026-10-01T09:41:40.294Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 24641,
-        "chars": 24380,
-        "tokens": 5449
+        "bytes": 24782,
+        "chars": 24517,
+        "tokens": 5484
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 24641,
-        "chars": 24380,
-        "tokens": 5449
+        "bytes": 24782,
+        "chars": 24517,
+        "tokens": 5484
       },
       "package_total_text": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 24641,
-        "chars": 24380,
-        "tokens": 5449
+        "bytes": 24782,
+        "chars": 24517,
+        "tokens": 5484
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "自动巡检并维护AI记忆服务,同时发现规则冲突报告",
+    "tagline": "跑一遍对齐循环:体检记忆服务、归集中间缓存、扫描规则冲突",
     "scene_tags": [
-      "记忆巡检",
-      "规则冲突排查"
+      "定时巡检",
+      "规则冲突排查",
+      "缓存同步",
+      "健康体检"
     ],
-    "fit_line": "适合你,如果你管理本地AI记忆服务,希望每小时自动检查并整理它。",
-    "tagline_en": "Run hourly checks on AI memory, refresh its cache, and catch rule conflicts.",
+    "fit_line": "适合你,如果你在维护分层规则,需要定时对齐记忆与观测缓存。",
+    "tagline_en": "Verify memory health, refresh the middle cache, and scan rules for conflicts.",
     "scene_tags_en": [
-      "memory health check",
-      "rule conflict scan"
+      "scheduled check",
+      "rule conflict scan",
+      "cache refresh",
+      "health sweep"
     ],
-    "fit_line_en": "For you if you manage a local AI memory service and want its cache and rules checked hourly.",
+    "fit_line_en": "For you if you maintain layered rules and need regular alignment of memory and observations.",
     "source": "llm",
-    "content_hash": "sha256:7f2aff609d892a949cb7dcb81a6f7c9070dbc6060e2a9b7fc312052940b725fa",
+    "content_hash": "sha256:5d74c4745d00e98aa74d78bb093001cbf9d27eca5b06d74c83f53d5b620785f0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-09T07:55:36.480Z",
+    "generated_at": "2026-10-01T09:45:35.266Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "它每小时跑一次对齐循环:确认本地 claude-mem worker 健康,拉取 needle 观察写入席位自己的 middle.jsonl 缓存,并可管理排除标记、走规则层级生成冲突报告。",
-    "when": "当你要求运行 CCS Align、刷新 middle 缓存、排除或恢复某条观察等操作时触发。",
+    "what": "安装后它每小时跑一次对齐循环：检查 claude-mem worker 健康，按 search→timeline→get_observations 拉 needle 观察，写入座席缓存 middle.jsonl，维护排除标记，每 6 小时走一遍规则。",
+    "when": "当你要求运行 CCS Align、刷新 middle 缓存，或排除/恢复某条观察、检查 Worker Watch 面板等时触发。",
     "say": [
       {
-        "text": "跑一遍 CCS Align,刷新 middle 缓存",
-        "note": "先验证 worker 健康,再拉取并落盘观察"
+        "text": "运行 CCS Align，刷新一次对齐座席。",
+        "note": "会先查 worker 健康，再按三层顺序拉取观察。"
       },
       {
-        "text": "把观察 12345 排除掉,原因是 manual",
-        "note": "middle.jsonl 里不再有它,日记仍保留"
+        "text": "把观察 12345 排除出 middle 缓存。",
+        "note": "只过滤编译缓存，日记与 SQLite 不动。"
       },
       {
-        "text": "走一遍规则,看看有没有冲突",
-        "note": "生成追加式 rules-report.md"
+        "text": "走一遍规则，检查有没有冲突。",
+        "note": "结果追加写入 rules-report.md。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:7f2aff609d892a949cb7dcb81a6f7c9070dbc6060e2a9b7fc312052940b725fa",
+    "content_hash": "sha256:5d74c4745d00e98aa74d78bb093001cbf9d27eca5b06d74c83f53d5b620785f0",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:22:25.814Z",
+    "generated_at": "2026-10-01T09:49:44.939Z",
     "lint_pass": true,
-    "what_en": "Each hour it runs the alignment cycle: checks the local claude-mem worker health, pulls needle observations into the seat's own middle.jsonl cache, and can mark or restore excludes, walk rules, and append a conflict report.",
-    "when_en": "Triggers when you ask to run CCS Align, refresh the middle cache, exclude or restore an observation, or walk rules and check the Worker Watch board.",
+    "what_en": "Installed, it runs an hourly cycle: checks claude-mem worker health, pulls needle observations (search → timeline → get_observations), lands them in a seat-owned middle.jsonl, manages exclude marks, and walks rules every 6th hour.",
+    "when_en": "Triggered when you ask to run CCS Align, refresh the middle cache, exclude or restore an observation, walk rules, check rule conflicts, or check the Worker Watch board.",
     "say_en": [
       {
-        "text": "Run CCS Align and refresh the middle cache",
-        "note": "Checks worker health, then pulls and lands observations"
+        "text": "Run CCS Align and refresh the alignment seat.",
+        "note": "Checks worker health, then pulls observations."
       },
       {
-        "text": "Exclude observation 12345, reason manual",
-        "note": "Drops from middle.jsonl; the diary stays"
+        "text": "Exclude observation 12345 from the middle cache.",
+        "note": "Filters the compiled cache only; diary stays."
       },
       {
-        "text": "Walk the rules and check for conflicts",
-        "note": "Appends to rules-report.md"
+        "text": "Walk the rules and check for conflicts.",
+        "note": "Appends to rules-report.md."
       }
     ]
   }

@@ -5,7 +5,7 @@
     "name": "prisma-driver-adapter-implementation",
     "description": "Required reference for Prisma ORM 7 SQL driver adapter work. Use when implementing or modifying adapters, adding database drivers, or touching SqlDriverAdapter, Transaction, savepoint, result mapping, or DriverAdapterError behavior. Covers current transaction lifecycle, optional savepoint hooks, original database-error preservation, and verification.",
     "upstream": "https://github.com/prisma/skills/tree/main/prisma-driver-adapter-implementation",
-    "upstream_commit": "82b88dd82801e958706f8265c29c910e6f0ebfa4",
+    "upstream_commit": "be16a8740d01363d13552b317042431ee8dfc581",
     "content_hash": "sha256:e94fbb32f73e9c9f552d57e1e916eb790034729c94b04dc25b967f021793afec",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 312100,
-    "fetched_at": "2026-09-30T09:16:24.258Z",
+    "installs_skills_sh": 314900,
+    "fetched_at": "2026-10-01T09:43:41.531Z",
     "first_seen_at": "2026-08-04T05:46:24.648Z",
-    "upstream_commit_at": "2026-09-29T13:27:12+03:00"
+    "upstream_commit_at": "2026-10-01T01:24:56+05:30"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:16:24.258Z",
+    "generated_at": "2026-10-01T09:43:41.531Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -86,40 +86,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "写 Prisma 7 SQL 驱动适配器时,Claude 会按接口契约实现 SqlDriverAdapter、事务与 savepoint、结果映射和错误转换,并对着校验清单逐项检查连接、列类型和原始错误码是否保真。",
-    "when": "当你实现或修改 Prisma 7 驱动适配器、新增数据库驱动,或触及事务生命周期、savepoint、结果映射等契约代码时会接管。",
+    "what": "按 Prisma ORM 7 的适配器协议帮你实现或修改 SQL 驱动适配器:产出 queryRaw/executeRaw、事务与 savepoint、错误映射代码,并附带一份验证清单。",
+    "when": "当你在实现或修改 Prisma 驱动适配器、新增数据库驱动,或改动事务、savepoint、结果映射等接口行为时接管。",
     "say": [
       {
-        "text": "帮我按 Prisma 驱动适配器契约实现 queryRaw 的结果映射",
-        "note": "会按 ColumnTypeEnum 映射列类型并保留精度"
+        "text": "检查我的 startTransaction 是否每个事务独占一条连接",
+        "note": "会指出连接泄漏与重复提交/回滚问题"
       },
       {
-        "text": "检查我的 startTransaction 是否为每个事务分配独立连接",
-        "note": "对照连接与提交/回滚的释放规则逐条核对"
-      },
-      {
-        "text": "把驱动错误包成 DriverAdapterError 并保留原始错误码"
+        "text": "把驱动错误映射为 DriverAdapterError,保留原始错误码和信息",
+        "note": "未映射的错误会保留细节用于 P2039 回退"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:e94fbb32f73e9c9f552d57e1e916eb790034729c94b04dc25b967f021793afec",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:21:58.490Z",
+    "generated_at": "2026-10-01T09:49:30.489Z",
     "lint_pass": true,
-    "what_en": "For Prisma 7 SQL driver adapter work, Claude implements the SqlDriverAdapter, transaction and savepoint, result-mapping and error-conversion contract, then checks connections, column types and preserved original error codes against the verification checklist.",
-    "when_en": "Triggers when you implement or modify a Prisma 7 driver adapter, add a database driver, or touch the transaction lifecycle, savepoints, result mapping or DriverAdapterError behavior.",
+    "what_en": "Implement or modify Prisma ORM 7 SQL driver adapters: it produces queryRaw/executeRaw, transaction and savepoint, and error-mapping code, plus a verification checklist.",
+    "when_en": "Triggered when you implement or modify a Prisma driver adapter, add a database driver, or touch transaction, savepoint or result-mapping interfaces.",
     "say_en": [
       {
-        "text": "Implement queryRaw result mapping per the Prisma driver adapter contract",
-        "note": "Maps column types via ColumnTypeEnum and keeps precision"
+        "text": "Implement queryRaw and executeRaw for my driver adapter per the Prisma 7 adapter protocol",
+        "note": "Returns example code mapping args and results by type"
       },
       {
-        "text": "Check that startTransaction gives each transaction its own dedicated connection",
-        "note": "Verifies connection and commit/rollback release rules"
+        "text": "Check whether my startTransaction gives each transaction its own connection",
+        "note": "Flags connection leaks and duplicate commit/rollback"
       },
       {
-        "text": "Wrap driver errors in DriverAdapterError and keep the original code and message",
-        "note": "Preserves originalCode so unmapped errors fall back to P2039"
+        "text": "Map my driver errors to DriverAdapterError, keeping the original code and message",
+        "note": "Unmapped errors keep details for the P2039 fallback"
       }
     ]
   }

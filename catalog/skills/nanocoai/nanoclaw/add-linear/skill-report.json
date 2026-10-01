@@ -5,7 +5,7 @@
     "name": "add-linear",
     "description": "Add Linear channel integration via Chat SDK. Issue comment threads as conversations.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-linear",
-    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
+    "upstream_commit": "64706602d4252dadcb82fa4954b7f810908d3b3c",
     "content_hash": "sha256:fb376234d769199390c5006721da4986b4707a8c7e28c4d24248ed7b47671eb1",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30863,
+    "stars_github": 30865,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:18.080Z",
+    "fetched_at": "2026-10-01T09:41:54.791Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
+    "upstream_commit_at": "2026-10-01T10:07:05+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:18.080Z",
+    "generated_at": "2026-10-01T09:41:54.791Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,39 +90,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后 Claude 会把 Linear 接进 NanoClaw:它会参与议题的评论线程,某条评论一发就回应,不需要 @ 提及。每个议题的评论线程各自成为一个独立会话。设置时需要你提供 OAuth 凭据或 Personal API key、webhook 签名密钥和团队 key。",
-    "when": "当你在 Linear 某个受监控团队的议题下出现新评论时,Claude 会自动接管回应,无需 @ 提及。配置阶段,当你要接入 Linear 频道、填凭据或排查评论没送达时也会用到它。",
+    "what": "给 Claude 接上 Linear:它会盯着你指定的那个团队,自动回复每个 issue 评论线程,不需要 @提及;每条 issue 线程算作一个独立会话。安装过程会复制 Linear 适配器、注册频道并写入凭据。",
+    "when": "当你要求为 NanoClaw 添加 Linear 频道、并指定某个 Linear 团队来接管其 issue 评论时触发;评论经 webhook 到达,新评论会直接交给它。",
     "say": [
       {
-        "text": "帮我把 Linear 的 ENG 团队接入 NanoClaw",
-        "note": "它会读取团队 key 并把该团队议题接到指定 agent"
+        "text": "帮我把 Linear 适配器装好并注册到频道里",
+        "note": "会执行 Apply 各步并跑注册测试"
       },
       {
-        "text": "Linear 用 Personal API key 配置,跳过 OAuth"
+        "text": "用 Personal API Key 方式配 Linear,跳过 OAuth",
+        "note": "提示处填 none,再手写 LINEAR_API_KEY"
       },
       {
-        "text": "Linear 评论一直没到 agent,帮我查 webhook"
+        "text": "我的 Linear 评论没到 agent,帮我查 webhook",
+        "note": "会检查 URL、团队、Comment 事件与签名密钥"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:fb376234d769199390c5006721da4986b4707a8c7e28c4d24248ed7b47671eb1",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:21:24.888Z",
+    "generated_at": "2026-10-01T09:48:53.286Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude joins Linear issue comment threads on the selected team and replies to every comment — no @-mention needed. Each issue's comment thread becomes its own isolated conversation. Setup needs OAuth credentials or a Personal API key, a webhook signing secret, and the team key.",
-    "when_en": "It takes over when a new comment appears on an issue in the watched Linear team, with no @-mention required. It also runs while you wire the Linear channel, enter credentials, or debug comments that never arrive.",
+    "what_en": "Hooks Claude up to Linear: it watches one team and replies to every issue comment thread automatically, with no @-mention needed. Each issue thread becomes its own isolated session; setup copies the adapter, registers the channel and writes credentials.",
+    "when_en": "Use when you want to add a Linear channel to NanoClaw and point one Linear team at it; comments arrive over webhook, so every new comment is handed to the agent.",
     "say_en": [
       {
-        "text": "Connect my Linear ENG team to NanoClaw",
-        "note": "Reads the team key and routes that team's issues to an agent"
+        "text": "Install and register the Linear adapter for me",
+        "note": "Runs the Apply steps and the registration test"
       },
       {
         "text": "Set Linear up with a Personal API key, skip OAuth",
-        "note": "Answer none at both OAuth prompts, then set LINEAR_API_KEY in .env"
+        "note": "Answer none at OAuth prompts; set LINEAR_API_KEY"
       },
       {
-        "text": "Linear comments never reach the agent, check the webhook",
-        "note": "It verifies webhook URL, team, Comment event, and signing secret"
+        "text": "My Linear comments aren't reaching the agent — check the webhook",
+        "note": "Checks URL, team, Comment event, signing secret"
       }
     ]
   }

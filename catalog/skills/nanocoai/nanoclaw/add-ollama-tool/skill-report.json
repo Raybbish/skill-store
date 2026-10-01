@@ -5,7 +5,7 @@
     "name": "add-ollama-tool",
     "description": "Add Ollama MCP server so the container agent can call local models and optionally manage the Ollama model library.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-ollama-tool",
-    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
+    "upstream_commit": "64706602d4252dadcb82fa4954b7f810908d3b3c",
     "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30863,
+    "stars_github": 30865,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:18.080Z",
+    "fetched_at": "2026-10-01T09:41:54.791Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
+    "upstream_commit_at": "2026-10-01T10:07:05+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:18.080Z",
+    "generated_at": "2026-10-01T09:41:54.791Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -98,40 +98,39 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 仍负责编排,但可以把任务交给主机上本地运行的 Ollama 模型:默认能列出已装模型(名称、大小、家族),并向指定模型发提示取回回答;开启管理开关后,还能下载、删除、查看模型,以及查看内存中已加载的模型。",
-    "when": "当你要求用 ollama 或本地模型回答问题,或让它列出、管理本地模型(如下载某个模型)时,Claude 会调用这些工具。",
+    "what": "装上后 Claude 仍是主导者，但可以把任务转交给本机 Ollama 模型。它能列出已安装模型、向指定模型发提示并返回结果；开启管理工具后还能下载、删除、查看模型详情和列出已加载模型。",
+    "when": "当你明确要求用 Ollama 模型来回答或做本地推理时触发；开启管理工具后，也可在要求下载、删除模型等模型库操作时触发。",
     "say": [
       {
         "text": "用 ollama 告诉我法国的首都是哪里",
-        "note": "它会先列出模型,再生成回答"
+        "note": "会先列模型，再调用 ollama_generate 回答"
       },
       {
-        "text": "pull 一下 gemma3:1b 模型",
-        "note": "需要已开启 OLLAMA_ADMIN_TOOLS"
+        "text": "把 gemma3:1b 模型下载下来"
       },
       {
-        "text": "现在内存里加载了哪些 ollama 模型?",
-        "note": "会调用 ollama_list_running"
+        "text": "现在内存里加载了哪些 ollama 模型？",
+        "note": "会调用 ollama_list_running 列出"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:cc0f2afb754f24b78383a1080783337a0e2542c5fab00183f0b62c22b4181365",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:21:30.480Z",
+    "generated_at": "2026-10-01T09:48:58.948Z",
     "lint_pass": true,
-    "what_en": "Claude stays the orchestrator but can offload work to local Ollama models on the host. It can list installed models and send a prompt to one for a reply; with an admin flag it can also pull, delete, show and list running models.",
-    "when_en": "Triggers when you ask it to use Ollama or a local model to answer, or to list or manage local models, such as pulling one.",
+    "what_en": "After install, Claude still orchestrates but can offload tasks to local Ollama models on the host. It can list installed models and send prompts to a chosen one; with admin tools on, it can also pull, delete, show, and list loaded models.",
+    "when_en": "Triggers when you explicitly ask for an Ollama model to answer or run local inference; with admin tools enabled, also when you ask to pull or delete models and similar library operations.",
     "say_en": [
       {
         "text": "Use ollama to tell me the capital of France",
-        "note": "It lists models first, then generates."
+        "note": "Claude first calls ollama_list_models, then ollama_generate."
       },
       {
         "text": "Pull the gemma3:1b model",
-        "note": "Needs OLLAMA_ADMIN_TOOLS=true."
+        "note": "Needs OLLAMA_ADMIN_TOOLS=true; calls ollama_pull_model."
       },
       {
-        "text": "Which ollama models are loaded in memory now?",
+        "text": "Which ollama models are currently loaded in memory?",
         "note": "Calls ollama_list_running."
       }
     ]

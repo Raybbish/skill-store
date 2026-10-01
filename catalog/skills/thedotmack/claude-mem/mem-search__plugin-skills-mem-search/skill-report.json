@@ -5,7 +5,7 @@
     "name": "mem-search",
     "description": "Search claude-mem's persistent cross-session memory database. Use when user asks \"did we already solve this?\", \"how did we do X last time?\", or needs work from previous sessions.",
     "upstream": "https://github.com/thedotmack/claude-mem/tree/main/plugin/skills/mem-search",
-    "upstream_commit": "431a1f89a3693e3637042e3093b04a9e035dccdd",
+    "upstream_commit": "e290f3dd7097715c8c481a1e386fe03beb48ed81",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -21,12 +21,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 94972,
+    "stars_github": 95056,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:01.750Z",
+    "fetched_at": "2026-10-01T09:41:40.294Z",
     "first_seen_at": "2026-08-28T14:48:34.339Z",
-    "upstream_commit_at": "2026-09-30T02:09:49-07:00",
-    "repo_skill_count": 28
+    "upstream_commit_at": "2026-09-30T22:46:59-07:00",
+    "repo_skill_count": 29
   },
   "context_size": {
     "version": "1",
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:01.750Z",
+    "generated_at": "2026-10-01T09:41:40.294Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -87,41 +87,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 能查 claude-mem 保存的跨会话记忆:先搜索拿到带 ID 的索引列表,再看某条前后的时间线上下文,最后只对挑中的记录取完整详情;只有当摘要不够用时,才去取工具调用的原始输入输出。",
-    "when": "当你问「这个我们是不是已经解决过了」「上次 X 是怎么做的」等涉及以往会话而非当前对话的问题时触发。",
+    "what": "Claude 能检索 claude-mem 跨会话记忆库:先按关键词搜出带 ID 的索引,再看某条命中前后的时间线,只对筛出的 ID 取完整详情,必要时才取原始工具输入输出。",
+    "when": "当你问起之前会话的事,比如「这个问题是不是已经解决了?」「上次怎么做的?」或需要上周的工作记录时触发。",
     "say": [
       {
-        "text": "我们上次是怎么修认证 token 过期这个问题的?",
-        "note": "先返回带 ID 的搜索结果列表,再按需取详情"
+        "text": "上次我们是怎么解决 JWT 认证问题的?",
+        "note": "先搜索引,再按需取完整详情"
       },
       {
-        "text": "帮我搜上周关于「迁移失败」的记录",
-        "note": "按关键词和时间范围返回索引,不直接拉全文"
+        "text": "搜一下 my-project 里最近的 bugfix",
+        "note": "返回带 ID 的结果表"
       },
       {
-        "text": "把 #11131 这条观察的完整内容取出来",
-        "note": "用 get_observations 批量拉取完整详情"
+        "text": "看看 11131 这条记录前后发生了什么",
+        "note": "返回锚点前后的时间线"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:f24b88583186f278871d018842eea41437a153036aa4ba9f221ab1461530b55c",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:22:32.953Z",
+    "generated_at": "2026-10-01T09:49:50.929Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude can search claude-mem's cross-session memory: first search for an index of results with IDs, then view timeline context around an entry, then fetch full details only for the entries it picks. Raw tool input/output is retrieved only when the summary is not enough.",
-    "when_en": "Triggers when you ask about previous sessions rather than the current conversation, e.g. \"did we already solve this?\" or \"how did we do X last time?\".",
+    "what_en": "Claude can search claude-mem's cross-session memory: find an index of IDs by keyword, view the timeline around a hit, fetch full details only for filtered IDs, and pull raw tool I/O only if needed.",
+    "when_en": "Triggers when you ask about previous sessions, e.g. \"did we already solve this?\", \"how did we do X last time?\", or what happened last week.",
     "say_en": [
       {
-        "text": "How did we fix the auth token expiration last time?",
-        "note": "Returns an ID list first, details on demand"
+        "text": "How did we solve the JWT auth issue last time?",
+        "note": "Searches the index first, fetches details only if needed"
       },
       {
-        "text": "Search last week's records about the migration failure",
-        "note": "Returns an index by keyword and date range"
+        "text": "Search my-project for recent bugfixes",
+        "note": "Returns a table of results with IDs"
       },
       {
-        "text": "Fetch the full content of observation #11131",
-        "note": "Uses get_observations for full details"
+        "text": "Show what happened around observation 11131",
+        "note": "Returns a timeline around the anchor"
       }
     ]
   }

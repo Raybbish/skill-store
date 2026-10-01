@@ -5,7 +5,7 @@
     "name": "dial-cli",
     "description": "Reference for the `dial` CLI — gives you a real phone number to send SMS, place AI voice calls, and receive inbound texts/codes via the Dial platform (getdial.ai). Use when the user mentions phones, calls, texts, SMS, voice, OTP, 2FA, or verification codes; when they ask to text, call, ring, or wait for a code from someone; before running any `dial …` command for the first time in a session; or when investigating what the Dial platform can do. Load this skill before invoking the CLI — `dial --help` alone will not surface the workflows, the `--json` conventions, or the docs-lookup pattern needed to use Dial correctly.",
     "upstream": "https://github.com/nanocoai/nanoclaw/tree/main/.claude/skills/add-dial-tool/container-skills/dial-cli",
-    "upstream_commit": "4c1eabd3ddd74cc3d71b1871da857391a9411c8d",
+    "upstream_commit": "64706602d4252dadcb82fa4954b7f810908d3b3c",
     "content_hash": "sha256:77900fc2f6d82b695fa0667ef96d91528aa02f3e328bc339540238c06cfcb329",
     "license": "MIT",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 30863,
+    "stars_github": 30865,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:18.080Z",
+    "fetched_at": "2026-10-01T09:41:54.791Z",
     "first_seen_at": "2026-08-27T13:37:21.454Z",
-    "upstream_commit_at": "2026-09-29T22:11:56+02:00",
+    "upstream_commit_at": "2026-10-01T10:07:05+02:00",
     "repo_skill_count": 63,
     "bulk_source": true
   },
@@ -36,7 +36,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:18.080Z",
+    "generated_at": "2026-10-01T09:41:54.791Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,39 +90,40 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会用真实手机号通过 dial 命令行发短信、拨打由 AI 语音代理接管的电话、等待并收取对方发来的短信或验证码,还能购买和设置号码。每条命令都支持 --json 输出。",
-    "when": "当你提到电话、短信、语音、OTP、2FA、验证码等关键词,或要求给某人发短信、打电话、等验证码,或本会话首次运行 dial 命令时触发。",
+    "what": "装上后，Claude 会通过 dial 命令用一个真实电话号码发短信、拨打由 AI 接听的语音电话，并等待、读取收到的短信和验证码。首次用到某个命令时，它会先查该命令的 --help。",
+    "when": "当你提到电话、短信、验证码等词，或要求发短信、打电话、等验证码时触发；本会话首次运行 dial 命令前也会加载。",
     "say": [
       {
-        "text": "用 dial 给 +14155550123 发条短信,内容是「你好」",
-        "note": "执行 dial message 发送并返回结果"
+        "text": "用 +14155550123 给 +14155550124 发条短信：明天见",
+        "note": "调用 dial message 发送，需带本机号码"
       },
       {
-        "text": "给这个号码打个 AI 语音电话,确认明天的预约"
+        "text": "给 +14155550123 打个语音电话，说明确认预约",
+        "note": "AI 语音代理按指令通话"
       },
       {
-        "text": "等一条短信验证码,收到后把验证码告诉我"
+        "text": "等一条短信验证码，收到后把内容告诉我"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:77900fc2f6d82b695fa0667ef96d91528aa02f3e328bc339540238c06cfcb329",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:21:45.723Z",
+    "generated_at": "2026-10-01T09:49:18.837Z",
     "lint_pass": true,
-    "what_en": "Claude gets a dial command-line tool that uses a real phone number to send SMS, place AI voice calls, wait for inbound texts and verification codes, and manage numbers. Every command supports --json output.",
-    "when_en": "Triggers when you mention phones, calls, texts, SMS, OTP, 2FA, or verification codes; ask to text or call someone; wait for a code; or before the first dial command in a session.",
+    "what_en": "Once installed, Claude can use a real phone number through the dial CLI to send SMS, place AI voice calls, and wait for and read inbound texts and codes. It runs a command's --help first when that verb is new in the session.",
+    "when_en": "Triggers when you mention phones, texts, SMS, voice, OTP or 2FA codes, or ask to text, call, or wait for a code; also loaded before the first dial command in a session.",
     "say_en": [
       {
-        "text": "Text +14155550123 'hello' with dial",
-        "note": "Runs dial message and returns the result"
+        "text": "Text +14155550124 from +14155550123: see you tomorrow",
+        "note": "Runs dial message"
       },
       {
-        "text": "Call this number with an AI voice agent to confirm tomorrow's appointment",
-        "note": "Starts dial call; check it later with dial call get"
+        "text": "Call +14155550123 and confirm the appointment",
+        "note": "AI voice agent follows the instruction"
       },
       {
-        "text": "Wait for an SMS verification code and tell me the code",
-        "note": "Runs dial wait-for message.received"
+        "text": "Wait for an SMS code and tell me what it says",
+        "note": "Long-polls via dial wait-for"
       }
     ]
   }

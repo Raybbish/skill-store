@@ -5,7 +5,7 @@
     "name": "mass-ulw",
     "description": "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/omo-senpi/skills/mass-ulw",
-    "upstream_commit": "3d8cf52b673fcbf4dd9d34361a273b791a19c2e5",
+    "upstream_commit": "ed421cce50fbcf9f96c4c90fc36fc42e96c666c1",
     "content_hash": "sha256:557f6ee6e5100d0299e1765c5c9cb01fcede21640a539df2ee9dcb975e71895d",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69666,
+    "stars_github": 69710,
     "installs_skills_sh": null,
-    "fetched_at": "2026-09-30T09:14:06.665Z",
+    "fetched_at": "2026-10-01T09:41:44.868Z",
     "first_seen_at": "2026-08-17T03:44:44.982Z",
-    "upstream_commit_at": "2026-09-30T17:58:33+09:00",
+    "upstream_commit_at": "2026-10-01T18:17:02+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-09-30T09:14:06.665Z",
+    "generated_at": "2026-10-01T09:41:44.868Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,37 +90,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它把一件大任务拆成有依赖关系的节点图(C 要先等 A、B 完成),按波次并行派子代理执行,每个阶段算一次运行。单个节点失败可以重跑、改指令或发消息救回,已完成的节点结果会复用。",
-    "when": "当你提到 mass-ulw、任务 DAG,或要求「部分任务必须先等其他任务完成」的分批并行工作时触发。完全独立的并行任务用不上它。",
+    "what": "它能把一个多步请求拆成带依赖关系的任务图:某个节点依赖的节点先完成后,才轮到它执行,Claude 按依赖分波并行跑这些子任务;单个节点失败可单独重试、改写指令或调整定义,已完成节点的结果会被复用而不是重跑。",
+    "when": "当你说出「mass-ulw」、要一个任务 DAG,或做分批任务且其中一些任务必须等别的任务先完成时触发。完全互相独立的并行任务,用普通并发就行。",
     "say": [
       {
-        "text": "把这次运行 snapshot 一下,看每个节点现在什么状态。",
-        "note": "读取一次节点状态和数量。"
+        "text": "用 mass-ulw 把这次重构拆成任务图:先审接口,再改实现,最后验证。",
+        "note": "三个节点按依赖顺序分波执行。"
       },
       {
-        "text": "lint 节点跑偏了,send 消息让它跳过 vendored 目录。",
-        "note": "就地引导该子代理。"
+        "text": "把 audit 节点重试一次,指令改成只检查 src/ 目录。",
+        "note": "该节点用新指令重试,其余结果复用。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:557f6ee6e5100d0299e1765c5c9cb01fcede21640a539df2ee9dcb975e71895d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-09-30T09:19:23.913Z",
+    "generated_at": "2026-10-01T09:46:54.927Z",
     "lint_pass": true,
-    "what_en": "It splits a job into a dependency-ordered node graph (C waits for A and B) and runs it in parallel waves as child agents, one run per phase. A failed node can be retried, amended or messaged; finished nodes keep cached results.",
-    "when_en": "Triggers when you ask for mass-ulw, a task DAG, or fan-out work where some tasks must wait on others. Fully independent parallel tasks do not need it.",
+    "what_en": "It turns a multi-step request into a dependency graph: nodes run in parallel waves once their dependencies finish, one run per phase, and one failed node can be retried, steered, or amended without redoing finished work.",
+    "when_en": "Triggers when you ask for \"mass-ulw\", a task DAG, or fan-out work where some tasks must wait on others. Fully independent work is simpler as plain parallel spawns.",
     "say_en": [
       {
-        "text": "Build a task DAG with mass-ulw: audit first, rewrite depends on it, then verify.",
-        "note": "Defines a three-node graph and starts the run."
+        "text": "Use mass-ulw to graph this refactor: audit, then rewrite, then verify.",
+        "note": "Runs the three nodes in dependency order."
       },
       {
-        "text": "Snapshot the run so I can see where each node stands.",
-        "note": "Reads node states and counts once."
+        "text": "Add a verify node to the docs-refresh run, depending on rewrite.",
+        "note": "Only new or changed nodes re-run."
       },
       {
-        "text": "The lint node drifted - send it a message to skip the vendored dir.",
-        "note": "Steers that child in place."
+        "text": "Retry the audit node and change its prompt to only inspect src/.",
+        "note": "That node retries with the new prompt."
       }
     ]
   }
