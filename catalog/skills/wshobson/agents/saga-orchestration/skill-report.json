@@ -5,7 +5,7 @@
     "name": "saga-orchestration",
     "description": "Implement saga patterns for distributed transactions and cross-aggregate workflows. Use this skill when implementing distributed transactions across microservices where 2PC is unavailable, designing compensating actions for failed order workflows that span inventory, payment, and shipping services, building event-driven saga coordinators for travel booking systems that must roll back hotel, flight, and car rental reservations atomically, or debugging stuck saga states in production where compensation steps never complete.",
     "upstream": "https://github.com/wshobson/agents/tree/main/plugins/backend-development/skills/saga-orchestration",
-    "upstream_commit": "38e19c20d2b154510b0e624a2e3e186b19b5c527",
+    "upstream_commit": "156b7a5e7a8b93642628a339ee4039c925b34c7f",
     "content_hash": "sha256:43d968df3307409d4cabcc2ce64fee5621f8234c43e2380e4ac208bbf251538b",
     "license": "MIT",
     "hosting": "indexed",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 39184,
+    "stars_github": 40072,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:08.572Z",
+    "fetched_at": "2026-09-29T09:24:03.080Z",
     "first_seen_at": "2026-08-27T13:37:08.572Z",
-    "upstream_commit_at": "2026-08-26T08:14:08-04:00",
-    "repo_skill_count": 181,
+    "upstream_commit_at": "2026-09-28T20:45:26-04:00",
+    "repo_skill_count": 184,
     "bulk_source": true
   },
   "context_size": {
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:08.572Z",
+    "generated_at": "2026-09-29T09:24:03.080Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会帮你把跨多个服务的分布式事务设计成 saga 模式：生成有序步骤、失败时的补偿回滚、超时配置，并给出监控和恢复卡住任务的方法。",
-    "when": "当你要在微服务间实现分布式事务、设计失败补偿操作，或排查补偿步骤卡住的问题时，Claude 会启用这个技能。",
+    "what": "Claude 会为跨微服务的分布式事务生成 saga 方案：有序步骤与补偿命令、编排器或协同式实现、每步超时配置和状态监控。",
+    "when": "当你在没有 2PC 的微服务间实现分布式事务、为跨库存/支付/发货的订单流程设计补偿动作，或排查生产中卡住的 saga 状态时触发。",
     "say": [
       {
-        "text": "帮我设计一个订单支付的 saga，包含库存回滚。",
-        "note": "生成带补偿步骤的 saga 定义和实现。"
+        "text": "帮我为跨库存、支付、发货的订单流程设计 saga 补偿步骤。",
+        "note": "会产出步骤与补偿命令清单。"
       },
       {
-        "text": "我的 saga 卡在补偿状态，如何排查？",
-        "note": "给出卡住原因和 DLQ 恢复建议。"
-      },
-      {
-        "text": "为旅行预订系统写一个 saga 协调器，回滚酒店和航班。",
-        "note": "生成协调器代码和监控配置。"
+        "text": "给这个协同式 saga 的每一步加上幂等键和超时配置。",
+        "note": "会补上幂等与逐步超时设置。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:43d968df3307409d4cabcc2ce64fee5621f8234c43e2380e4ac208bbf251538b",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:55:05.852Z",
+    "generated_at": "2026-09-29T09:32:39.895Z",
     "lint_pass": true,
-    "what_en": "Claude designs sagas for distributed transactions: ordered steps, compensating rollbacks, timeout settings, and monitoring/recovery for stuck states.",
-    "when_en": "Triggers when you're implementing distributed transactions across microservices, designing compensation actions, or debugging stuck saga compensation states.",
+    "what_en": "Claude produces saga designs for distributed transactions: ordered steps with action and compensation commands, orchestrator or choreography code, per-step timeouts, and state monitoring.",
+    "when_en": "Triggered when implementing distributed transactions across services without 2PC, designing compensations for order workflows, or debugging stuck sagas in production.",
     "say_en": [
       {
-        "text": "Design a saga for my order payment with inventory rollback.",
-        "note": "Generates saga definition with compensating steps."
+        "text": "Design saga compensation steps for an order spanning inventory and payment.",
+        "note": "Returns steps and compensation commands."
       },
       {
-        "text": "My saga is stuck in compensation, how do I debug it?",
-        "note": "Provides diagnosis and DLQ recovery advice."
+        "text": "My saga is stuck in COMPENSATING and never reaches FAILED — how to debug?",
+        "note": "Suggests DLQ and event handling fixes."
       },
       {
-        "text": "Write a saga coordinator for a travel booking system to roll back hotel and flight.",
-        "note": "Generates coordinator code and monitoring setup."
+        "text": "Add idempotency keys and per-step timeouts to my choreography saga.",
+        "note": "Adds idempotency and step deadlines."
       }
     ]
   }

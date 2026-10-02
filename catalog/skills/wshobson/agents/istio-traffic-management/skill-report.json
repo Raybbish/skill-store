@@ -5,7 +5,7 @@
     "name": "istio-traffic-management",
     "description": "Configure Istio traffic management including routing, load balancing, circuit breakers, and canary deployments. Use when implementing service mesh traffic policies, progressive delivery, or resilience patterns.",
     "upstream": "https://github.com/wshobson/agents/tree/main/plugins/cloud-infrastructure/skills/istio-traffic-management",
-    "upstream_commit": "38e19c20d2b154510b0e624a2e3e186b19b5c527",
+    "upstream_commit": "156b7a5e7a8b93642628a339ee4039c925b34c7f",
     "content_hash": "sha256:44629d4366c29fcd47a7c7b1ccfaa4269069bf9b39c0e8561850f098b210fce8",
     "license": "MIT",
     "hosting": "indexed",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 39184,
+    "stars_github": 40072,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:08.572Z",
+    "fetched_at": "2026-09-29T09:24:03.080Z",
     "first_seen_at": "2026-08-27T13:37:08.572Z",
-    "upstream_commit_at": "2026-08-26T08:14:08-04:00",
-    "repo_skill_count": 181,
+    "upstream_commit_at": "2026-09-28T20:45:26-04:00",
+    "repo_skill_count": 184,
     "bulk_source": true
   },
   "context_size": {
@@ -37,7 +37,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:08.572Z",
+    "generated_at": "2026-09-29T09:24:03.080Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -91,37 +91,36 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "配置Istio流量管理时，Claude会生成VirtualService、DestinationRule、Gateway等YAML资源，实现路由、负载均衡、熔断、金丝雀、重试、镜像、故障注入等策略。",
-    "when": "当你说要设置服务路由、金丝雀部署、熔断重试等流量管理策略时触发。",
+    "what": "Claude 会针对 Istio 服务网格产出可直接用的 YAML 模板:虚拟服务路由、金丝雀发布、熔断、重试超时、流量镜像、故障注入、入口网关,并给出 istioctl 分析与排查命令。",
+    "when": "当你配置服务间路由、实施金丝雀或蓝绿发布,或设置熔断、重试等弹性模式时触发。",
     "say": [
       {
-        "text": "给my-service配置熔断器，最大连接数100，连续5次5xx就剔除。",
-        "note": "会生成对应的DestinationRule。"
+        "text": "帮我把 reviews 服务 10% 的流量切到 canary 版本"
       },
       {
-        "text": "给ratings服务加10%概率延迟5秒的故障注入。",
-        "note": "生成含fault注入的VirtualService。"
+        "text": "给 ratings 服务配置超时 10s、重试 3 次的 YAML",
+        "note": "写出超时与重试的配置片段"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:44629d4366c29fcd47a7c7b1ccfaa4269069bf9b39c0e8561850f098b210fce8",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-28T15:09:50.221Z",
+    "generated_at": "2026-09-29T09:32:31.038Z",
     "lint_pass": true,
-    "what_en": "When configuring Istio traffic management, Claude generates YAML definitions for VirtualService, DestinationRule, Gateway, etc., covering routing, load balancing, circuit breaking, canary, retry, mirroring, and fault injection.",
-    "when_en": "Triggers when you ask to set up service routing, canary deployment, circuit breakers/retries, or other Istio traffic management policies.",
+    "what_en": "Claude produces ready-to-apply Istio YAML templates: VirtualService routing, canary releases, circuit breakers, retries/timeouts, traffic mirroring, fault injection and ingress Gateways, plus istioctl analyze and debug commands.",
+    "when_en": "Triggers when you set up service-to-service routing, canary or blue-green deployments, or resilience patterns like circuit breakers and retries in Istio.",
     "say_en": [
       {
-        "text": "Generate a canary VirtualService for reviews service, v2 gets 10%.",
-        "note": "Outputs a canary YAML template."
+        "text": "Shift 10% of reviews traffic to the canary version",
+        "note": "Produces the VirtualService and DestinationRule YAML"
       },
       {
-        "text": "Configure a circuit breaker for my-service: max 100 connections, eject after 5 consecutive 5xx.",
-        "note": "Generates the corresponding DestinationRule."
+        "text": "Give ratings a 10s timeout and 3 retries in YAML",
+        "note": "Writes the timeout and retry config"
       },
       {
-        "text": "Add fault injection to ratings: 10% chance of 5s delay.",
-        "note": "Creates a VirtualService with fault injection."
+        "text": "Mirror 100% of my-service traffic to subset v2",
+        "note": "Generates the mirror VirtualService"
       }
     ]
   }
