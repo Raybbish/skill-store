@@ -3,10 +3,10 @@
   "meta": {
     "id": "k-dense-ai/scientific-agent-skills/esm",
     "name": "esm",
-    "description": "Use when working directly with the `esm` Python SDK, ESM3 or ESMC model IDs, Forge/Biohub inference clients, or ESMFold2 folding workflows.",
+    "description": "Uses the Biohub esm Python SDK for ESM3 protein generation, ESMC embeddings, and ESMFold2 all-atom folding. Applies to local model inference and Biohub hosted clients, including former Forge workflows; distinguishes the separate legacy fair-esm distribution.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/esm",
-    "upstream_commit": "91497e335489dcb544ec8ddc8f6b7ce5fd6d1121",
-    "content_hash": "sha256:5474e6a4c06cf20631dd5b2d968154bcdf85d8c7394f7b5f70938b2c6db22943",
+    "upstream_commit": "154988403bb5a18e9d3c0ce4e6d5e2e4b184a298",
+    "content_hash": "sha256:ffb26f0bf9b4ccedf2f8752ec67e48320c981395896b85287f142d7146b5998a",
     "license": "MIT",
     "hosting": "indexed",
     "category": "science",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47250,
+    "stars_github": 47339,
     "installs_skills_sh": null,
-    "fetched_at": "2026-10-01T09:41:50.980Z",
+    "fetched_at": "2026-10-02T09:16:19.626Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-30T17:14:55-07:00",
-    "repo_skill_count": 181,
+    "upstream_commit_at": "2026-10-01T15:42:40-07:00",
+    "repo_skill_count": 177,
     "bulk_source": true
   },
   "context_size": {
@@ -34,16 +34,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-10-01T09:41:50.980Z",
+    "generated_at": "2026-10-02T09:16:19.626Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 13770,
-        "chars": 13770,
-        "tokens": 2707
+        "bytes": 10740,
+        "chars": 10740,
+        "tokens": 2187
       },
       "activation_with_declared_refs": {
         "files": [
@@ -52,12 +52,14 @@
           "references/esm-c-api.md",
           "references/esm3-api.md",
           "references/forge-api.md",
-          "references/workflows.md"
+          "references/review.md",
+          "references/workflows.md",
+          "scripts/esm_embeddings.py"
         ],
-        "text_files": 6,
-        "bytes": 87346,
-        "chars": 87346,
-        "tokens": 16327
+        "text_files": 8,
+        "bytes": 54565,
+        "chars": 54563,
+        "tokens": 11072
       },
       "package_total_text": {
         "files": [
@@ -66,73 +68,77 @@
           "references/esm-c-api.md",
           "references/esm3-api.md",
           "references/forge-api.md",
-          "references/workflows.md"
+          "references/review.md",
+          "references/workflows.md",
+          "scripts/esm_embeddings.py"
         ],
-        "text_files": 6,
-        "bytes": 87346,
-        "chars": 87346,
-        "tokens": 16327
+        "text_files": 8,
+        "bytes": 54565,
+        "chars": 54563,
+        "tokens": 11072
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "调用蛋白质语言模型预测蛋白结构、生成序列,跑折叠与推理任务",
+    "tagline": "输入序列或结构需求,生成蛋白质序列、嵌入向量与全原子折叠结果。",
     "scene_tags": [
-      "蛋白结构预测",
-      "序列设计",
-      "计算生物研究"
+      "蛋白质设计",
+      "结构预测",
+      "序列嵌入",
+      "科研建模"
     ],
-    "fit_line": "适合你,如果 你在做蛋白质计算研究,需要用 ESM 模型跑推理与折叠",
-    "tagline_en": "Predict protein structures and generate sequences with protein language models",
+    "fit_line": "适合你,如果要在本地或托管服务上跑蛋白质生成、嵌入与折叠计算。",
+    "tagline_en": "Generate protein sequences, embeddings, and all-atom folded structures.",
     "scene_tags_en": [
-      "protein structure prediction",
-      "sequence design",
-      "computational biology"
+      "protein design",
+      "structure prediction",
+      "sequence embedding",
+      "research modeling"
     ],
-    "fit_line_en": "For you if you run protein-model inference and folding in research",
+    "fit_line_en": "For you if you run protein generation, embedding, or folding jobs locally or via hosted clients.",
     "source": "llm",
-    "content_hash": "sha256:5474e6a4c06cf20631dd5b2d968154bcdf85d8c7394f7b5f70938b2c6db22943",
+    "content_hash": "sha256:ffb26f0bf9b4ccedf2f8752ec67e48320c981395896b85287f142d7146b5998a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:45:00.434Z",
+    "generated_at": "2026-10-02T09:20:14.145Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会按 esm Python SDK 的写法帮你写代码并执行:用 ESM3 生成或补全蛋白序列、做功能条件生成,用 ESM C 算嵌入向量,做结构预测与反向折叠,也能走 Forge/Biohub 客户端批量推理。",
-    "when": "当你直接使用 `esm` Python SDK、提到 ESM3/ESMC 模型 ID,或涉及 Forge/Biohub 推理客户端等场景时触发。",
+    "what": "装上后 Claude 会用 esm Python SDK 跑 ESM3 蛋白质序列生成、ESMC 嵌入向量提取和 ESMFold2 结构折叠,可用本地权重或 Biohub/Forge 托管推理。",
+    "when": "当你直接使用 esm Python SDK、提到 ESM3 或 ESMC 模型 ID、或做 Forge/Biohub 推理与结构折叠时触发。",
     "say": [
       {
-        "text": "用 esm3-open 补全这条 MPRT___KEND 序列,把结果打印出来",
-        "note": "本地加载权重后生成补全序列"
+        "text": "用 esm3-open 补全这段带下划线掩码的蛋白序列。",
+        "note": "返回补全后的完整序列。"
       },
       {
-        "text": "用 esmc_300m 算这条序列的嵌入向量并返回",
-        "note": "返回 embeddings 张量"
+        "text": "用 esmc_300m 算这批蛋白序列的嵌入向量。",
+        "note": "输出可供下游分析的嵌入。"
       },
       {
-        "text": "把 target_structure.pdb 反向折叠成序列,温度设 0.7",
-        "note": "按目标结构设计序列"
+        "text": "把这段序列跑结构预测,给我 PDB 坐标。",
+        "note": "返回 3D 坐标和 PDB 字符串。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:5474e6a4c06cf20631dd5b2d968154bcdf85d8c7394f7b5f70938b2c6db22943",
+    "content_hash": "sha256:ffb26f0bf9b4ccedf2f8752ec67e48320c981395896b85287f142d7146b5998a",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:48:18.363Z",
+    "generated_at": "2026-10-02T09:23:38.492Z",
     "lint_pass": true,
-    "what_en": "Claude writes and runs esm Python SDK code: ESM3 for sequence generation and completion, ESMC for embeddings, structure prediction and inverse folding, plus Forge/Biohub batch inference.",
-    "when_en": "Triggers when you work directly with the `esm` Python SDK, ESM3 or ESMC model IDs, or Forge/Biohub inference clients and ESMFold2 folding workflows.",
+    "what_en": "Once installed, Claude uses the esm Python SDK to run ESM3 protein sequence generation, ESMC embeddings, and ESMFold2 folding, via local weights or Biohub/Forge hosted inference.",
+    "when_en": "Triggers when you work directly with the esm Python SDK, cite ESM3 or ESMC model IDs, or use Forge/Biohub inference clients and folding workflows.",
     "say_en": [
       {
-        "text": "Complete the masked sequence MPRT___KEND with esm3-open and print it",
-        "note": "Loads local weights, generates a completion"
+        "text": "Complete this masked protein sequence with esm3-open.",
+        "note": "Returns the completed sequence."
       },
       {
-        "text": "Compute embeddings for this sequence with esmc_300m",
-        "note": "Returns the embedding tensor"
+        "text": "Compute ESMC embeddings for these sequences with esmc_300m.",
+        "note": "Outputs embeddings for downstream analysis."
       },
       {
-        "text": "Inverse fold target_structure.pdb into a sequence, temperature 0.7",
-        "note": "Designs a sequence for that structure"
+        "text": "Predict the structure of this sequence and give me the PDB.",
+        "note": "Returns 3D coordinates and a PDB string."
       }
     ]
   }

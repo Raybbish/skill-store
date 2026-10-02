@@ -5,7 +5,7 @@
     "name": "doc-parse",
     "description": "将 PDF/PPT/Excel/Word 等多格式文档解析为结构化 Markdown，并输出元数据与解析置信度，作为 RAG 与四色卡片的数据底座。",
     "upstream": "https://github.com/anbeime/skill/tree/main/antinet-agentteams/skills/doc-parse",
-    "upstream_commit": "7fd9e028dbfc7c01654071746db0e8205f6963a1",
+    "upstream_commit": "8b98b345f9e6efc13b9340551c7856d3bfd04689",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "license": "none(all-rights-reserved)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 7451,
+    "stars_github": 7480,
     "installs_skills_sh": null,
-    "fetched_at": "2026-10-01T09:42:17.758Z",
+    "fetched_at": "2026-10-02T09:16:50.239Z",
     "first_seen_at": "2026-09-02T07:32:35.252Z",
-    "upstream_commit_at": "2026-10-01T08:26:41Z",
+    "upstream_commit_at": "2026-10-02T08:02:29Z",
     "repo_skill_count": 84,
     "bulk_source": true
   },
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-10-01T09:42:17.758Z",
+    "generated_at": "2026-10-02T09:16:50.239Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -88,41 +88,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会把 PDF、PPT、Excel、Word 等文档解析成结构化 Markdown,并附上标题、页数、表格数等元数据和 0–1 的解析置信度。",
-    "when": "当密卷房 Worker 收到已通过安全扫描的文件时调用;首选解析器失败会自动降级,三级全失败则标记人工介入并回传 BLOCKED。",
+    "what": "把 PDF、PPT、Excel、Word 等文档解析成结构化 Markdown,同时给出标题、页数、表格数等元数据和一个 0–1 的解析置信度;主解析器失败会自动降到下一档。",
+    "when": "当密卷房 Worker 收到已通过安全扫描的文件时调用;也可直接运行 scripts/run_doc_parse.py,或执行 run_stage(\"doc-parse\")。",
     "say": [
       {
-        "text": "把这份 PDF 解析成结构化 Markdown,并给出置信度",
-        "note": "输出正文、元数据、置信度与所用解析器"
+        "text": "把这个 PDF 解析成结构化 Markdown,并给出置信度。",
+        "note": "走三级 fallback,返回置信度与生效解析器。"
       },
       {
-        "text": "解析这份 Excel 的表格,输出元数据和页数",
-        "note": "表格文本抽取后返回 metadata"
+        "text": "把这份 Word 和 Excel 转成 Markdown 加元数据。",
+        "note": "可用 formats 白名单限定格式。"
       },
       {
-        "text": "这个文档解析失败时,换成 pdfplumber 兜底再试",
-        "note": "失败会自动降级到下一档解析器"
+        "text": "解析这份合同,置信度低的部分标出来,别给残缺结果。",
+        "note": "三级全失败会标记人工介入并回传 BLOCKED。"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:28da2c531f89ab82d5322f58a647c217547ee1484a0c77a10a156d9faa979983",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:46:16.182Z",
+    "generated_at": "2026-10-02T09:21:29.060Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude parses PDF, PPT, Excel, Word and other documents into structured Markdown, plus metadata (title, page count, table count) and a 0-1 parse confidence score.",
-    "when_en": "Called when the Mijuanfang Worker receives a file that passed security scanning; if the primary parser fails it auto-falls back through the tiers, and if all three fail it marks manual intervention and returns BLOCKED.",
+    "what_en": "Parses PDF, PPT, Excel, Word and other files into structured Markdown, plus metadata (title, pages, tables, author) and a 0–1 confidence score. If the primary parser fails, it falls back to the next one automatically.",
+    "when_en": "Called by the 密卷房 Worker when it receives a file that has passed security scan; can also run via scripts/run_doc_parse.py or run_stage(\"doc-parse\").",
     "say_en": [
       {
-        "text": "Parse this PDF into structured Markdown and give me the confidence score",
-        "note": "Returns body, metadata, confidence and parser used"
+        "text": "Parse this PDF into structured Markdown and give me the confidence score.",
+        "note": "Uses the three-level fallback and returns confidence plus parser."
       },
       {
-        "text": "Parse the tables in this Excel and output metadata and page count",
-        "note": "Table/text extraction returns metadata"
+        "text": "Convert this Word and Excel file to Markdown with metadata.",
+        "note": "A formats whitelist can limit which formats are handled."
       },
       {
-        "text": "If parsing fails, retry with pdfplumber as the fallback",
-        "note": "Failures auto-downgrade to the next parser"
+        "text": "Parse this contract; flag low-confidence parts, no partial output.",
+        "note": "If all three levels fail it marks manual review and returns BLOCKED."
       }
     ]
   }

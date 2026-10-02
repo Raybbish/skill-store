@@ -5,7 +5,7 @@
     "name": "remove-ai-slops",
     "description": "Removes AI-generated code smells from branch changes or an explicit file list behind regression tests. Use when the user asks to clean up, deslop, or remove AI-slop patterns from recent changes.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/remove-ai-slops",
-    "upstream_commit": "ed421cce50fbcf9f96c4c90fc36fc42e96c666c1",
+    "upstream_commit": "61086739c3b00f0990cbcdcdfde9146791e243db",
     "content_hash": "sha256:31a09bb4e3c25b5a05e732b1a07497edf2384323f142b35c7febbdebabcd1a70",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69710,
+    "stars_github": 69754,
     "installs_skills_sh": null,
-    "fetched_at": "2026-10-01T09:41:44.868Z",
+    "fetched_at": "2026-10-02T09:16:06.062Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-10-01T18:17:02+09:00",
+    "upstream_commit_at": "2026-10-02T17:59:53+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-10-01T09:41:44.868Z",
+    "generated_at": "2026-10-02T09:16:06.062Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -90,41 +90,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会先用回归测试锁定现有行为,再对改动文件按类别清理(如多余注释、过度防御、死代码),跑完 lint、类型检查和测试后复检,验证不通过就回滚。",
-    "when": "当你说「清理」「deslop」「去掉 AI 味」等词,或要求清理最近改动时接管。默认范围是分支相对 main 的 diff,也可传入文件列表指定。",
+    "what": "先给改动文件补回归测试锁住行为，再按类别清理 AI 代码味道（冗余注释、过度防御、死代码等），最后跑质量门禁和审查，验证不通过就回退或直接修改。",
+    "when": "当你要求清理、deslop 或移除最近改动里的 AI 生成痕迹时触发。默认范围是分支与 main 的 merge-base 差异，也可传入文件列表。",
     "say": [
       {
-        "text": "帮我把这个分支的改动 deslop 一下",
-        "note": "先跑测试锁行为,再分轮清理。"
+        "text": "帮我把当前分支相对 main 的改动去一下 AI slop",
+        "note": "会先写回归测试再逐类清理"
       },
       {
-        "text": "清理 src/foo.py 里的 AI 味代码",
-        "note": "只处理你指定的文件。"
-      },
-      {
-        "text": "清掉最近改动里的多余注释和死代码",
-        "note": "质量门禁不通过就回滚。"
+        "text": "把这次改动里的死代码和冗余注释清掉",
+        "note": "需先有绿色的测试基线"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:31a09bb4e3c25b5a05e732b1a07497edf2384323f142b35c7febbdebabcd1a70",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:46:59.839Z",
+    "generated_at": "2026-10-02T09:22:09.142Z",
     "lint_pass": true,
-    "what_en": "It first locks existing behavior with regression tests, then cleans the changed files by category (obvious comments, over-defensive code, dead code), runs lint, typecheck and tests, and reverts when verification fails.",
-    "when_en": "Triggers when you ask to clean up, deslop, or remove AI-slop patterns from recent changes. Default scope is the branch diff vs main; you can also pass a file list.",
+    "what_en": "Locks behavior with regression tests first, then runs a categorized cleanup of AI-generated smells (obvious comments, over-defensive code, dead code, etc.), then verifies with quality gates and review; reverts or edits directly on failure.",
+    "when_en": "Triggers when you ask to clean up, deslop, or remove AI-slop patterns from recent changes. Default scope is the branch diff vs merge-base main; you can also pass a file list.",
     "say_en": [
       {
-        "text": "Deslop my branch changes.",
-        "note": "Locks behavior with tests, then cleans."
+        "text": "Clean the AI slop out of my branch diff against main.",
+        "note": "Writes regression tests before cleanup."
       },
       {
-        "text": "Clean up the AI slop in src/foo.py.",
-        "note": "Only touches the files you name."
+        "text": "Run remove-ai-slops on src/foo.py and src/bar.py.",
+        "note": "Processes the passed file list."
       },
       {
-        "text": "Remove redundant comments and dead code from recent changes.",
-        "note": "Reverts if quality gates fail."
+        "text": "Remove dead code and obvious comments from these changes.",
+        "note": "Needs a green test baseline first."
       }
     ]
   }

@@ -3,10 +3,10 @@
   "meta": {
     "id": "k-dense-ai/scientific-agent-skills/diffdock",
     "name": "diffdock",
-    "description": "DiffDock and DiffDock-L molecular docking. Use for protein-small-molecule pose prediction from PDB or sequence plus SMILES/SDF/MOL2, batch docking, virtual screening, and pose-confidence interpretation. Not for binding affinity prediction.",
+    "description": "Predicts protein-small-molecule binding poses with DiffDock and DiffDock-L from PDB or sequence plus SMILES/SDF/MOL2. Covers batch docking, pose triage, confidence interpretation, and validation. Use for molecular docking and virtual-screening pose generation, not binding-affinity prediction.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/diffdock",
-    "upstream_commit": "91497e335489dcb544ec8ddc8f6b7ce5fd6d1121",
-    "content_hash": "sha256:fe6af1d7243e37a973e66b37cdad1ff717c7b48cca5e7fdb0ee6c18978b503a4",
+    "upstream_commit": "154988403bb5a18e9d3c0ce4e6d5e2e4b184a298",
+    "content_hash": "sha256:735fb3ad37239c8d0af230942cdcbce8da3de4cab5f8642a5a749a89ab65527e",
     "license": "MIT",
     "hosting": "indexed",
     "category": "science",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47250,
+    "stars_github": 47339,
     "installs_skills_sh": null,
-    "fetched_at": "2026-10-01T09:41:50.980Z",
+    "fetched_at": "2026-10-02T09:16:19.626Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-30T17:14:55-07:00",
-    "repo_skill_count": 181,
+    "upstream_commit_at": "2026-10-01T15:42:40-07:00",
+    "repo_skill_count": 177,
     "bulk_source": true
   },
   "context_size": {
@@ -34,31 +34,28 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-10-01T09:41:50.980Z",
+    "generated_at": "2026-10-02T09:16:19.626Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 17632,
-        "chars": 17567,
-        "tokens": 3433
+        "bytes": 11830,
+        "chars": 11830,
+        "tokens": 2431
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md",
-          "assets/custom_inference_config.yaml",
           "references/confidence_and_limitations.md",
           "references/parameters_reference.md",
-          "scripts/analyze_results.py",
-          "scripts/prepare_batch_csv.py",
-          "scripts/setup_check.py"
+          "references/workflows_examples.md"
         ],
-        "text_files": 7,
-        "bytes": 62547,
-        "chars": 62477,
-        "tokens": 11456
+        "text_files": 4,
+        "bytes": 27054,
+        "chars": 27054,
+        "tokens": 5457
       },
       "package_total_text": {
         "files": [
@@ -73,72 +70,34 @@
           "scripts/setup_check.py"
         ],
         "text_files": 9,
-        "bytes": 73845,
-        "chars": 73667,
-        "tokens": 13496
+        "bytes": 60850,
+        "chars": 60850,
+        "tokens": 11433
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "从蛋白结构和小分子结构预测结合姿态,支持批量对接与虚拟筛选",
+    "tagline": "输入蛋白结构与分子结构,批量生成并筛选可能的结合姿势",
     "scene_tags": [
       "分子对接",
       "虚拟筛选",
       "药物设计",
-      "姿态置信度"
+      "结合姿势评估"
     ],
-    "fit_line": "适合你,如果要用已知蛋白结构快速预测小分子结合位置,并批量筛选化合物库",
+    "fit_line": "适合你,如果做药物发现,需要批量生成候选分子的对接构象",
+    "tagline_en": "Run protein-ligand docking to generate and triage candidate binding poses",
     "scene_tags_en": [
       "molecular docking",
       "virtual screening",
       "drug design",
-      "pose confidence"
+      "pose triage"
     ],
-    "fit_line_en": "For you if you need to predict small-molecule binding poses and screen compound libraries at scale",
+    "fit_line_en": "For you if you do drug discovery and need batch docking poses for candidate molecules",
     "source": "llm",
-    "content_hash": "sha256:fe6af1d7243e37a973e66b37cdad1ff717c7b48cca5e7fdb0ee6c18978b503a4",
+    "content_hash": "sha256:735fb3ad37239c8d0af230942cdcbce8da3de4cab5f8642a5a749a89ab65527e",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:44:55.756Z",
+    "generated_at": "2026-10-02T09:20:11.912Z",
     "lint_pass": true
-  },
-  "howto": {
-    "what": "它会调用 DiffDock 做分子对接:给定蛋白的 PDB 文件或氨基酸序列,加上配体的 SMILES 或结构文件,预测小分子在蛋白上的 3D 结合姿态并给出置信度分数,支持单条与批量虚拟筛选。",
-    "when": "当你要求把配体对接进蛋白、预测结合位点或做虚拟筛选,或提供 PDB/序列加 SMILES 时接管。不用于结合亲和力预测。",
-    "say": [
-      {
-        "text": "把这个配体对接进蛋白,输出前几名姿态和置信度",
-        "note": "运行单复合物对接,结果按 rank 命名"
-      },
-      {
-        "text": "用 batch_input.csv 跑批量对接,再汇总置信度",
-        "note": "批量模式输出到结果目录并生成汇总"
-      },
-      {
-        "text": "帮我看看哪些姿态置信度高于 0,值得保留",
-        "note": "按 >0、-1.5~0、<-1.5 分级"
-      }
-    ],
-    "source": "llm",
-    "content_hash": "sha256:fe6af1d7243e37a973e66b37cdad1ff717c7b48cca5e7fdb0ee6c18978b503a4",
-    "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:48:15.851Z",
-    "lint_pass": true,
-    "what_en": "It runs DiffDock molecular docking: given a protein PDB file or sequence plus a ligand SMILES or structure file, it predicts 3D binding poses and confidence scores, and supports batch runs and virtual screening.",
-    "when_en": "Triggers when you ask to dock a ligand to a protein, predict a binding site or run virtual screening, or supply a PDB/sequence plus SMILES. Not for binding affinity prediction.",
-    "say_en": [
-      {
-        "text": "Dock this ligand into the protein and list the top poses with confidence",
-        "note": "Runs single-complex docking; outputs rank-named SDF files"
-      },
-      {
-        "text": "Run batch docking with batch_input.csv and summarize the confidence scores",
-        "note": "Batch mode writes to the output dir and builds a summary"
-      },
-      {
-        "text": "Which poses have confidence above 0 and are worth keeping?",
-        "note": "Grades poses as high, moderate or low"
-      }
-    ]
   }
 }

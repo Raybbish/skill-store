@@ -5,7 +5,7 @@
     "name": "refactor",
     "description": "Guides a refactor, cleanup, or restructure with the right decomposition. Use when the user asks to refactor, simplify, extract, or modernize code.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/refactor",
-    "upstream_commit": "ed421cce50fbcf9f96c4c90fc36fc42e96c666c1",
+    "upstream_commit": "61086739c3b00f0990cbcdcdfde9146791e243db",
     "content_hash": "sha256:fe231dce9c12ded1f17485375cde1c36a2a5986990b7ef0b78353e1ca0fdced6",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -21,11 +21,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69710,
+    "stars_github": 69754,
     "installs_skills_sh": null,
-    "fetched_at": "2026-10-01T09:41:44.868Z",
+    "fetched_at": "2026-10-02T09:16:06.062Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-10-01T18:17:02+09:00",
+    "upstream_commit_at": "2026-10-02T17:59:53+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -35,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-10-01T09:41:44.868Z",
+    "generated_at": "2026-10-02T09:16:06.062Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,41 +89,37 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "当你要求重构代码时,Claude 会先分析代码库、画出依赖关系与影响范围,评估测试覆盖,再生成分步计划,逐步修改并在每步后跑测试和类型检查验证,最后做整体回归检查。",
-    "when": "当你说要重构、简化、抽取或现代化某段代码时触发;若目标或范围不明确,它会先反问确认再动手。",
+    "what": "装上后,Claude 会按固定六阶段流程做重构:先分析代码库、画依赖图、评估测试覆盖,再分步改代码,每步之后跑测试和类型检查确认没有破坏。测试覆盖过低时会先暂停并建议补测试。",
+    "when": "当你要求重构、简化、抽取或现代化代码时触发。可用参数控制范围(--scope=file/module/project)和风险(--strategy=safe/aggressive)。",
     "say": [
       {
-        "text": "/refactor src/auth/handler.ts",
-        "note": "指定单文件作为重构目标,默认 scope 为 module"
+        "text": "把 AuthService 里的校验逻辑抽成单独模块",
+        "note": "先分析依赖与测试,再分步实施"
       },
       {
-        "text": "把 AuthService 类重构一下",
-        "note": "它会先确认目标和期望结果,再给出计划"
-      },
-      {
-        "text": "提取验证逻辑到单独模块 --scope=module",
-        "note": "按模块范围执行,默认 strategy 为 safe"
+        "text": "重构这个模块,用 --strategy=aggressive",
+        "note": "允许更大改动,但仍需测试覆盖足够"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:fe231dce9c12ded1f17485375cde1c36a2a5986990b7ef0b78353e1ca0fdced6",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:46:58.201Z",
+    "generated_at": "2026-10-02T09:22:07.647Z",
     "lint_pass": true,
-    "what_en": "When you ask for a refactor, Claude analyzes the codebase, maps dependencies and impact, checks test coverage, plans steps, executes them one by one, and verifies each step with tests and type checks.",
-    "when_en": "Triggers when you ask to refactor, simplify, extract, or modernize code. If the target or scope is unclear, it asks clarifying questions before starting.",
+    "what_en": "Once installed, Claude runs a fixed six-phase refactor: analyze the codebase, build a dependency map, assess test coverage, then change code step by step, running tests and type checks after each step. If coverage is too low it pauses and suggests adding tests first.",
+    "when_en": "Triggers when you ask to refactor, simplify, extract, or modernize code. Scope and risk are adjustable via --scope=file/module/project and --strategy=safe/aggressive.",
     "say_en": [
       {
-        "text": "/refactor src/auth/handler.ts",
-        "note": "Target one file; scope defaults to module"
+        "text": "/refactor src/auth/handler.ts --scope=file",
+        "note": "Changes only this file, default safe strategy"
       },
       {
-        "text": "Refactor the AuthService class",
-        "note": "It confirms goal and outcome before planning"
+        "text": "Extract the validation logic in AuthService into its own module",
+        "note": "Maps dependencies and tests, then works step by step"
       },
       {
-        "text": "Extract validation into its own module --scope=module",
-        "note": "Runs at module scope; strategy defaults to safe"
+        "text": "Refactor this module with --strategy=aggressive",
+        "note": "Allows broader changes, still needs adequate test coverage"
       }
     ]
   }

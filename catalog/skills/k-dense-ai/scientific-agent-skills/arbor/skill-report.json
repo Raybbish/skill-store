@@ -3,10 +3,10 @@
   "meta": {
     "id": "k-dense-ai/scientific-agent-skills/arbor",
     "name": "arbor",
-    "description": "Autonomously improve a real artifact (code, training recipe, agent harness, data pipeline, prompt) against an objective and an evaluator, using Hypothesis Tree Refinement (HTR) from the Arbor paper. Use this whenever someone wants to iteratively optimize something over many experiments without overfitting — e.g. \"get my model's eval score up\", \"improve this agent/harness\", \"tune this pipeline\", \"beat the baseline on this benchmark\", \"run a search over approaches and keep the best\", \"do an MLE-bench / Kaggle-style optimization\", or any long-horizon \"make this artifact better and don't just memorize the dev set\" task. Trigger it even when the user doesn't say \"Arbor\" or \"hypothesis tree\" but describes repeated experiment-and-evaluate loops, branching exploration of competing ideas, or worries about a dev/test gap. Runs Claude itself as the coordinator with subagent executors in isolated git worktrees; for the standalone `arbor` CLI tool see references/arbor-upstream.md.",
+    "description": "Applies Arbor Hypothesis Tree Refinement to research artifacts with repeatable evaluators, including model training, agent harnesses, data synthesis and benchmark optimization. Uses persistent hypotheses, isolated experiments, evidence propagation and held-out candidate comparison for multi-experiment research runs. Includes a standard-library state manager and guidance for the RUC-NLPIR Arbor CLI.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arbor",
-    "upstream_commit": "91497e335489dcb544ec8ddc8f6b7ce5fd6d1121",
-    "content_hash": "sha256:5a26b59b6d89deeb18cd54cac8cd562453e712375f3264d96b8f7b8dc441bc87",
+    "upstream_commit": "154988403bb5a18e9d3c0ce4e6d5e2e4b184a298",
+    "content_hash": "sha256:e120ba91792150ea5fc68bd392429697541ad47d794f0fe7e1b096af7be0223d",
     "license": "MIT",
     "hosting": "indexed",
     "category": "data-ai",
@@ -15,18 +15,20 @@
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "optimization"
+      "automation",
+      "cli",
+      "python"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47250,
+    "stars_github": 47339,
     "installs_skills_sh": null,
-    "fetched_at": "2026-10-01T09:41:50.980Z",
+    "fetched_at": "2026-10-02T09:16:19.626Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-30T17:14:55-07:00",
-    "repo_skill_count": 181,
+    "upstream_commit_at": "2026-10-01T15:42:40-07:00",
+    "repo_skill_count": 177,
     "bulk_source": true
   },
   "context_size": {
@@ -36,16 +38,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-10-01T09:41:50.980Z",
+    "generated_at": "2026-10-02T09:16:19.626Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 15036,
-        "chars": 14972,
-        "tokens": 3321
+        "bytes": 17075,
+        "chars": 17015,
+        "tokens": 3672
       },
       "activation_with_declared_refs": {
         "files": [
@@ -57,9 +59,9 @@
           "scripts/tree.py"
         ],
         "text_files": 6,
-        "bytes": 56519,
-        "chars": 56312,
-        "tokens": 12224
+        "bytes": 63503,
+        "chars": 63368,
+        "tokens": 13560
       },
       "package_total_text": {
         "files": [
@@ -71,71 +73,72 @@
           "scripts/tree.py"
         ],
         "text_files": 6,
-        "bytes": 56519,
-        "chars": 56312,
-        "tokens": 12224
+        "bytes": 63503,
+        "chars": 63368,
+        "tokens": 13560
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "让代码、模型或流程自动跑大量实验,越改越好且不靠死记测试集",
+    "tagline": "组织多轮模型实验,让每个假设都有证据、可对比",
     "scene_tags": [
-      "反复迭代实验",
-      "评测提分",
-      "多方案对比",
-      "防止过拟合"
+      "模型训练",
+      "实验对比",
+      "评测调优",
+      "假设验证"
     ],
-    "fit_line": "适合你,如果有个模型或脚本想靠不断试错调到更好,又怕只记住了测试集。",
+    "fit_line": "适合你,如果在反复训练模型或跑基准测试,却理不清每轮实验的来龙去脉",
+    "tagline_en": "Turn repeated model experiments into reproducible, comparable hypothesis runs",
     "scene_tags_en": [
-      "iterative experiments",
-      "score improvement",
-      "comparing approaches",
-      "avoid overfitting"
+      "model training",
+      "experiment comparison",
+      "benchmark tuning",
+      "hypothesis checks"
     ],
-    "fit_line_en": "For you if you have a model or script to tune through many trials and fear overfitting.",
+    "fit_line_en": "For you if you keep retraining models or running benchmarks and lose track of each run",
     "source": "llm",
-    "content_hash": "sha256:5a26b59b6d89deeb18cd54cac8cd562453e712375f3264d96b8f7b8dc441bc87",
+    "content_hash": "sha256:e120ba91792150ea5fc68bd392429697541ad47d794f0fe7e1b096af7be0223d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:44:41.140Z",
+    "generated_at": "2026-10-02T09:19:53.558Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "Claude 会以你现有的代码、提示或训练配方为起点，按你给的目标和评分命令反复做实验，把假设与结论记在一棵持久假设树上，只有通过留出测试评分才把改动合并成新版本。",
-    "when": "当你要反复做实验来优化某个具体产物（如模型评分、agent 表现、数据管道等），并且有明确目标和可运行的评分命令时触发，即使你没提到 Arbor。只想要一次性修改时不用它。",
+    "what": "Claude 会围绕你已有的产物(代码、训练配方、提示词等)建一棵持久假设树:派子代理在隔离 git worktree 里逐个跑实验,记录并向上归纳证据;只有通过留出测试评估的改动才并入最优版本,最后给出报告和可运行产物。",
+    "when": "当你要在多轮实验中迭代改进一个有明确评分方式的产物(模型训练、agent 框架、数据流程等),或你描述反复「实验—评估」循环、分支探索多个想法、担心 dev/test 差距时触发。",
     "say": [
       {
-        "text": "用 Arbor 把这套 agent 的通过率优化上去",
-        "note": "它会先和你确认目标与 dev/test 评分命令"
+        "text": "帮我把这个模型的评测分数提上去",
+        "note": "它会先和你确认目标、dev 评估器和留出测试评估器。"
       },
       {
-        "text": "给这个训练配方做多轮实验，出分最高的保留",
-        "note": "每轮在隔离 worktree 里跑，过测试门才合并"
+        "text": "用 Arbor 优化这个 agent 的通过率,别只在 dev 上调",
+        "note": "搜索用 dev 打分,并入前必须过测试门槛。"
       },
       {
-        "text": "跑完后给我报告：哪些假设通过、哪些被剪枝",
-        "note": "输出假设树状态和最终产物的分支"
+        "text": "给我看假设树状态和最优产物所在分支",
+        "note": "输出审计轨迹,并告诉你怎么检出产物。"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:5a26b59b6d89deeb18cd54cac8cd562453e712375f3264d96b8f7b8dc441bc87",
+    "content_hash": "sha256:e120ba91792150ea5fc68bd392429697541ad47d794f0fe7e1b096af7be0223d",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:47:52.833Z",
+    "generated_at": "2026-10-02T09:23:15.021Z",
     "lint_pass": true,
-    "what_en": "Claude runs an autonomous optimization loop on your existing artifact: it proposes hypotheses, tests each in an isolated git worktree, and merges a change into the new best only when a held-out test evaluator confirms it.",
-    "when_en": "Use when you want repeated experiment-and-evaluate passes to improve a concrete artifact (code, agent, pipeline, prompt) you can modify and score. Not for one-shot fixes or ideation.",
+    "what_en": "Claude keeps a persistent hypothesis tree for your artifact: subagents test one hypothesis each in isolated git worktrees, lessons are abstracted upward, and only changes passing a held-out test evaluator merge into the best version.",
+    "when_en": "Use it when iteratively improving an artifact that has an objective and a scoring method, or when the user describes repeated experiment-and-evaluate loops, branching exploration, or a dev/test gap.",
     "say_en": [
       {
-        "text": "Use Arbor to raise this agent's pass rate",
-        "note": "It first confirms the goal and dev/test eval commands"
+        "text": "Raise this model's eval score",
+        "note": "It first pins down the objective and the dev/test evaluators."
       },
       {
-        "text": "Run many experiment rounds on this training recipe and keep the best",
-        "note": "Each runs in an isolated worktree; only test-gated wins merge"
+        "text": "Use Arbor to improve this agent's pass rate, without overfitting dev",
+        "note": "Dev scores steer search; the test gate admits changes."
       },
       {
-        "text": "After the run, report which hypotheses passed and which were pruned",
-        "note": "It prints the hypothesis tree and the final artifact branch"
+        "text": "Show me the hypothesis tree status and the best artifact's branch",
+        "note": "It prints the audit trail and how to check the artifact out."
       }
     ]
   }

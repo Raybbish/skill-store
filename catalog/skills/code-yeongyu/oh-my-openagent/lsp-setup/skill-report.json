@@ -5,7 +5,7 @@
     "name": "lsp-setup",
     "description": "Configures a language server so editor/agent tooling (diagnostics, go-to-definition, references, rename) works. Use when a project needs an LSP installed or wired, or a 'no LSP server configured' error appears.",
     "upstream": "https://github.com/code-yeongyu/oh-my-openagent/tree/dev/packages/shared-skills/skills/lsp-setup",
-    "upstream_commit": "ed421cce50fbcf9f96c4c90fc36fc42e96c666c1",
+    "upstream_commit": "61086739c3b00f0990cbcdcdfde9146791e243db",
     "content_hash": "sha256:7adc089e342fabb946780a9bce01edc1b4541df80b3be5cea2f75099c03cc764",
     "license": "local-file(needs-review)",
     "hosting": "indexed",
@@ -19,11 +19,11 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 69710,
+    "stars_github": 69754,
     "installs_skills_sh": null,
-    "fetched_at": "2026-10-01T09:41:44.868Z",
+    "fetched_at": "2026-10-02T09:16:06.062Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-10-01T18:17:02+09:00",
+    "upstream_commit_at": "2026-10-02T17:59:53+09:00",
     "repo_skill_count": 50
   },
   "context_size": {
@@ -33,7 +33,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-10-01T09:41:44.868Z",
+    "generated_at": "2026-10-02T09:16:06.062Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -134,40 +134,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "它会先识别项目用的编程语言，安装匹配的语言服务器并写好配置，再跑一次真实诊断往返确认可用。完成后跳转定义、查找引用、重命名、诊断等工具才能正常工作。",
-    "when": "当项目需要安装或接入语言服务器，或出现 “no LSP server configured” 这类报错时触发。它会先按文件扩展名判断语言，再读对应参考文档。",
+    "what": "Claude 会先检测项目里有哪些语言,再安装对应的语言服务器并写入配置,最后跑一次真实诊断往返验证,让 lsp 的跳转定义、查找引用、重命名等工具真正能用。",
+    "when": "当项目需要安装或接入语言服务器,或出现「no LSP server configured」错误时接管。",
     "say": [
       {
-        "text": "检测这个项目需要哪个语言服务器",
-        "note": "输出语言、服务器 id、安装与配置状态"
+        "text": "帮我检测这个项目用了哪些语言,缺哪个语言服务器",
+        "note": "会扫描目录并报告安装与配置状态"
       },
       {
-        "text": "帮我安装并配置这个项目的语言服务器"
+        "text": "给这个 Go 项目装好并配置语言服务器",
+        "note": "按 references/go 的安装命令配置"
       },
       {
-        "text": "验证 src/index.ts 的语言服务器能正常工作",
-        "note": "跑一次诊断往返，返回 OK 或 FAIL"
+        "text": "验证一下 src/index.ts 的语言服务器能否返回诊断",
+        "note": "跑一次真实诊断往返,输出 OK 或 FAIL"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:7adc089e342fabb946780a9bce01edc1b4541df80b3be5cea2f75099c03cc764",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:46:50.582Z",
+    "generated_at": "2026-10-02T09:22:01.525Z",
     "lint_pass": true,
-    "what_en": "It detects the project's language, installs the matching language server, writes the config, then runs a real diagnostics roundtrip. Only then do go-to-definition, find-references, rename, and diagnostics work.",
-    "when_en": "Triggers when a project needs an LSP installed or wired, or a 'no LSP server configured' error appears. It identifies the language by file extension first.",
+    "what_en": "Claude detects a project's languages, installs the matching language server, writes its config, and runs a real diagnostics roundtrip so the lsp tools (go-to-definition, references, rename, diagnostics) work.",
+    "when_en": "Use when a project needs an LSP installed or wired up, or when a 'no LSP server configured' error appears.",
     "say_en": [
       {
-        "text": "Detect which language server this project needs",
-        "note": "Reports language, server id, install and config status"
+        "text": "Check which languages this project uses and which language servers are missing",
+        "note": "Scans the directory and reports install and config status"
       },
       {
-        "text": "Install and configure the language server for this project",
-        "note": "Writes .codex/lsp-client.json or .opencode/lsp.json"
+        "text": "Install and configure the language server for this Go project",
+        "note": "Runs the install command from references/go"
       },
       {
-        "text": "Verify the language server works on src/index.ts",
-        "note": "Runs a diagnostics roundtrip, returns OK or FAIL"
+        "text": "Verify the language server for src/index.ts returns diagnostics",
+        "note": "Runs a real roundtrip and prints OK or FAIL"
       }
     ]
   }

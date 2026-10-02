@@ -5,7 +5,7 @@
     "name": "cavecrew",
     "description": "When to delegate to `cavecrew-investigator` (locate code), `cavecrew-builder` (1-2 file edit) or `cavecrew-reviewer` (diff review) instead of working inline or using `Explore`. Their output is compressed, so main context lasts longer.\n",
     "upstream": "https://github.com/juliusbrussee/caveman/tree/main/skills/cavecrew",
-    "upstream_commit": "f5d729488caa8f6a5b6c8086fe2cccd3e8a63f91",
+    "upstream_commit": "b39c90862855ad2f0813ce775b8bf07a9d6d2a50",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "license": "Apache-2.0",
     "hosting": "indexed",
@@ -22,10 +22,10 @@
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 329700,
-    "fetched_at": "2026-10-01T09:43:33.877Z",
+    "installs_skills_sh": 331400,
+    "fetched_at": "2026-10-02T09:18:12.333Z",
     "first_seen_at": "2026-07-05T06:40:23Z",
-    "upstream_commit_at": "2026-10-01T00:32:02+02:00"
+    "upstream_commit_at": "2026-10-01T21:57:23+02:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +34,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-10-01T09:43:33.877Z",
+    "generated_at": "2026-10-02T09:18:12.333Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -89,40 +89,41 @@
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会把三类活分派给子代理:定位代码、改 1-2 个文件的编辑、审查 diff。子代理返回的是压缩后的结构化结果,而不是大段文字,所以主对话的上下文占用更少,能撑更久。",
-    "when": "当你要找某个定义或调用点、做范围明确的小改动(≤2 个文件),或审查 diff/分支时,分别交给 investigator、builder、reviewer;已知答案的一行问题仍由主线程处理。",
+    "what": "装上后,Claude 会把「定位代码、改 1-2 个文件、审 diff」这类活派给三个子代理(cavecrew-investigator、cavecrew-builder、cavecrew-reviewer),它们返回压缩后的结构化结果,所以主上下文占用更小。",
+    "when": "当你要定位代码定义或调用、做不超过 2 个文件的定点修改、或审阅 diff 时,会交给对应的 cavecrew 子代理;若你想要带议论的分析、新增功能或 3 文件以上重构,则不派。",
     "say": [
       {
-        "text": "帮我找一下 X 定义在哪儿,以及谁调用了它"
+        "text": "找出 X 在哪里定义、被谁调用",
+        "note": "investigator 返回路径:行号清单"
       },
       {
-        "text": "把 path:line 这里的代码改成 Y",
-        "note": "交给 cavecrew-builder,附验证结果"
+        "text": "把 src/a.py:20-35 这段改掉",
+        "note": "builder 改完会回读校验"
       },
       {
-        "text": "审查一下当前 diff,看有没有 bug",
-        "note": "交给 cavecrew-reviewer,按文件行号列问题"
+        "text": "审一下这次改动有没有 bug",
+        "note": "reviewer 按文件、行序列问题"
       }
     ],
     "source": "llm",
     "content_hash": "sha256:ff0c94ede472567cd69b427afdacb10b95130e59552c5d373c41b837e9b5fc58",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:47:37.635Z",
+    "generated_at": "2026-10-02T09:23:00.521Z",
     "lint_pass": true,
-    "what_en": "Once installed, Claude routes three jobs to subagents: locating code, editing 1-2 files, and reviewing a diff. Their results come back compressed instead of as prose, so the main context shrinks per delegation and lasts longer.",
-    "when_en": "Use it when you ask where something is defined or called, request a small edit of 2 files or fewer, or want a diff reviewed — handled by investigator, builder, or reviewer respectively.",
+    "what_en": "After install, Claude delegates code-locating, 1-2 file edits, and diff reviews to three cavecrew subagents (investigator, builder, reviewer). They return compressed structured results, so the main context shrinks per delegation.",
+    "when_en": "Triggered when you need to locate code definitions or callers, edit ≤2 files, or review a diff; for prose suggestions, new features, or 3+ file refactors it is not used.",
     "say_en": [
       {
-        "text": "Find where X is defined and what calls it",
-        "note": "Runs cavecrew-investigator, returns path:line list"
+        "text": "Find where X is defined and who calls it",
+        "note": "investigator returns a path:line list"
       },
       {
-        "text": "Change the code at path:line to Y",
-        "note": "Runs cavecrew-builder with a verified result"
+        "text": "Edit src/a.py:20-35",
+        "note": "builder re-reads to verify"
       },
       {
-        "text": "Review the current diff for bugs",
-        "note": "Runs cavecrew-reviewer, findings by file:line"
+        "text": "Review this diff for bugs",
+        "note": "reviewer lists findings by file and line"
       }
     ]
   }

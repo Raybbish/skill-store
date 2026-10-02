@@ -3,10 +3,10 @@
   "meta": {
     "id": "k-dense-ai/scientific-agent-skills/dask",
     "name": "dask",
-    "description": "Distributed computing for larger-than-RAM pandas/NumPy workflows. Use when you need to scale existing pandas/NumPy code beyond memory or across clusters. Best for parallel file processing, distributed ML, integration with existing pandas code. For out-of-core analytics on single machine use vaex; for in-memory speed use polars.",
+    "description": "Scales pandas, NumPy, and custom Python research workflows beyond memory or across clusters with Dask. Covers DataFrames, Arrays, Bags, Futures, chunking, schedulers, and distributed diagnostics. Use for partitioned file processing, scientific array computation, or parallel tasks whose memory and dependency structure require Dask.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/dask",
-    "upstream_commit": "91497e335489dcb544ec8ddc8f6b7ce5fd6d1121",
-    "content_hash": "sha256:cc8faac8f641bc5693d8a046c0012f34e5df2cc8a03850978017a8141a2169e7",
+    "upstream_commit": "154988403bb5a18e9d3c0ce4e6d5e2e4b184a298",
+    "content_hash": "sha256:1d677588c7c2504c2e3acd8e09ef13319bc46c22830d111f16213d7de9ff83fe",
     "license": "MIT",
     "hosting": "indexed",
     "category": "data-ai",
@@ -22,12 +22,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 47250,
+    "stars_github": 47339,
     "installs_skills_sh": null,
-    "fetched_at": "2026-10-01T09:41:50.980Z",
+    "fetched_at": "2026-10-02T09:16:19.626Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-09-30T17:14:55-07:00",
-    "repo_skill_count": 181,
+    "upstream_commit_at": "2026-10-01T15:42:40-07:00",
+    "repo_skill_count": 177,
     "bulk_source": true
   },
   "context_size": {
@@ -37,16 +37,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-10-01T09:41:50.980Z",
+    "generated_at": "2026-10-02T09:16:19.626Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 16720,
-        "chars": 16687,
-        "tokens": 3458
+        "bytes": 17483,
+        "chars": 17459,
+        "tokens": 3611
       },
       "activation_with_declared_refs": {
         "files": [
@@ -56,12 +56,13 @@
           "references/best-practices.md",
           "references/dataframes.md",
           "references/futures.md",
+          "references/review.md",
           "references/schedulers.md"
         ],
-        "text_files": 7,
-        "bytes": 79574,
-        "chars": 79531,
-        "tokens": 16445
+        "text_files": 8,
+        "bytes": 96899,
+        "chars": 96867,
+        "tokens": 20197
       },
       "package_total_text": {
         "files": [
@@ -71,73 +72,71 @@
           "references/best-practices.md",
           "references/dataframes.md",
           "references/futures.md",
+          "references/review.md",
           "references/schedulers.md"
         ],
-        "text_files": 7,
-        "bytes": 79574,
-        "chars": 79531,
-        "tokens": 16445
+        "text_files": 8,
+        "bytes": 96899,
+        "chars": 96867,
+        "tokens": 20197
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "让装不下的数据处理任务跨多机并行跑完",
+    "tagline": "把超出内存的 pandas/NumPy 计算拆分任务,在本地或集群上并行跑完。",
     "scene_tags": [
-      "超大数据集分析",
-      "集群并行计算",
-      "批量文件处理"
+      "大数据集处理",
+      "内存不够",
+      "并行计算",
+      "集群任务"
     ],
-    "fit_line": "适合你,如果 pandas 代码数据量一大就爆内存",
-    "tagline_en": "Scale pandas and NumPy workloads beyond memory and across clusters",
+    "fit_line": "适合你,如果数据量大到单机内存装不下,还想继续用 pandas 和 NumPy 的写法。",
     "scene_tags_en": [
-      "out-of-memory data",
-      "cluster parallel jobs",
-      "batch file processing"
+      "large datasets",
+      "low memory",
+      "parallel compute",
+      "cluster jobs"
     ],
-    "fit_line_en": "For you if pandas runs out of memory on your datasets",
+    "fit_line_en": "For you if your data outgrows one machine's memory but you still want pandas and NumPy.",
     "source": "llm",
-    "content_hash": "sha256:cc8faac8f641bc5693d8a046c0012f34e5df2cc8a03850978017a8141a2169e7",
+    "content_hash": "sha256:1d677588c7c2504c2e3acd8e09ef13319bc46c22830d111f16213d7de9ff83fe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:44:50.304Z",
+    "generated_at": "2026-10-02T09:20:05.871Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后,Claude 会用 Dask 处理超出内存的 pandas/NumPy 数据,把计算拆成并行任务,在单机多核或多机集群上运行,并且惰性执行直到调用 compute()。",
-    "when": "当数据超出内存、需要把 pandas/NumPy 代码扩展到更大数据集或集群,或要并行处理多个 CSV/Parquet 文件时使用。",
+    "what": "装上后 Claude 会把你的 pandas/NumPy 代码改写成 Dask 版本：读多个文件、按分块并行计算、选调度器，处理超出内存或跨机器的数据；操作是惰性的，调用 compute() 才真正执行。",
+    "when": "当数据超过可用内存、需要把 pandas/NumPy 操作扩展到多核或多机，或要并行处理多个 CSV、Parquet、JSON 文件时触发。",
     "say": [
       {
-        "text": "用 dask 读取 data/2024-*.csv 并做分组统计",
-        "note": "计算惰性,调用 .compute() 才执行"
+        "text": "这段 pandas 代码内存装不下，帮我改成 Dask 版本",
+        "note": "会按分块改写，并提示别先本地读全量数据"
       },
       {
-        "text": "这个 NumPy 数组太大,用 dask.array 分块处理吧",
-        "note": "每块目标约 100 MB"
-      },
-      {
-        "text": "用 Dask 分布式客户端并行跑这个参数扫描",
-        "note": "需先建 Client(),提交即执行"
+        "text": "把 logs/*.json 用 Dask Bag 清洗后转成 DataFrame",
+        "note": "先做非结构化过滤，再转结构化分析"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:cc8faac8f641bc5693d8a046c0012f34e5df2cc8a03850978017a8141a2169e7",
+    "content_hash": "sha256:1d677588c7c2504c2e3acd8e09ef13319bc46c22830d111f16213d7de9ff83fe",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-10-01T09:48:07.920Z",
+    "generated_at": "2026-10-02T09:23:30.953Z",
     "lint_pass": true,
-    "what_en": "After install, Claude uses Dask to run pandas/NumPy workflows on larger-than-RAM data, splitting work into parallel tasks on cores or a cluster. Operations stay lazy until .compute() is called.",
-    "when_en": "Use when data exceeds available RAM, when scaling pandas/NumPy code to larger datasets or clusters, or when processing many CSV/Parquet files in parallel.",
+    "what_en": "Once installed, Claude rewrites your pandas/NumPy code to run on Dask: reading multi-file data, chunked parallel computation with DataFrames, Arrays, Bags and Futures, and picking a scheduler. Work stays lazy until you call compute().",
+    "when_en": "Triggers when data exceeds available RAM, pandas/NumPy work must scale across cores or machines, or you need parallel processing of many CSV/Parquet/JSON files.",
     "say_en": [
       {
-        "text": "Read data/2024-*.csv with Dask and group by category",
-        "note": "Lazy tasks run only at .compute()"
+        "text": "Use Dask to read data/*.csv into one DataFrame and compute group means",
+        "note": "Builds a lazy task graph; results come at compute()"
       },
       {
-        "text": "This NumPy array is too big — process it with dask.array chunks",
-        "note": "Target ~100 MB per chunk"
+        "text": "This pandas code doesn't fit in memory, rewrite it with Dask",
+        "note": "Rewrites by partitions; warns against loading locally first"
       },
       {
-        "text": "Run this parameter sweep in parallel with a Dask distributed client",
-        "note": "Needs a Client(); tasks execute on submit"
+        "text": "Clean logs/*.json with a Dask Bag, then convert to a DataFrame",
+        "note": "Filters unstructured data, then converts for analysis"
       }
     ]
   }
