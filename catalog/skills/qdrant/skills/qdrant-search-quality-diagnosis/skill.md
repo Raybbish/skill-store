@@ -36,9 +36,9 @@ Binary quantization requires rescore. Without it, quality loss is severe. Use ov
 
 Use when: exact search also returns bad results.
 
-Check [Qdrant team recommendations on how to choose an embedding model](https://skills.qdrant.tech/md/articles/how-to-choose-an-embedding-model/).
+Check [Qdrant team recommendations on how to choose an embedding model](https://skills.qdrant.tech/md/documentation/search-patterns/choose-embedding-model/).
 
-Test top 3 MTEB models on 100-1000 sample queries [Hosted Qdrant inference](https://skills.qdrant.tech/md/documentation/inference/). Score them against a labeled set to compare apples to apples [Measuring Retrieval Relevance](https://skills.qdrant.tech/md/documentation/improve-search/retrieval-relevance/).
+Test top 3 MTEB models on 100-1000 sample queries [Hosted Qdrant inference](https://skills.qdrant.tech/md/documentation/inference/). Score them against a labeled set to compare apples to apples [Measuring Retrieval Relevance](https://skills.qdrant.tech/md/documentation/search-evaluation/retrieval-relevance/).
 
 ## Unoptimized Search Pipeline
 
@@ -50,9 +50,9 @@ Optimize search according to advanced search-strategies skill.
 
 Use when: user has no golden set, asks "how do I know if my search is good?", or needs to gate releases on a retrieval metric.
 
-- Build a labeled query set — human, log-based, or LLM-synthetic — and score retrieval with `ranx` [Measuring Retrieval Relevance](https://skills.qdrant.tech/md/documentation/improve-search/retrieval-relevance/)
-- Pick the metric by usage: `Recall@k` for RAG, `MRR`/`Hits@1` for single-answer, `NDCG@k` for re-ranking [Choosing the metric](https://skills.qdrant.tech/md/documentation/improve-search/retrieval-relevance/?s=choosing-the-right-metric)
-- For full RAG pipelines, also score generation with Ragas and use the retrieval-vs-generation 2x2 to isolate regressions [Pipeline Output Quality](https://skills.qdrant.tech/md/documentation/improve-search/pipeline-output-quality/)
+- Build a labeled query set — human, log-based, or LLM-synthetic — and score retrieval with `ranx` [Measuring Retrieval Relevance](https://skills.qdrant.tech/md/documentation/search-evaluation/retrieval-relevance/)
+- Pick the metric by usage: `Recall@k` for RAG, `MRR`/`Hits@1` for single-answer, `NDCG@k` for re-ranking [Choosing the metric](https://skills.qdrant.tech/md/documentation/search-evaluation/retrieval-relevance/?s=choosing-the-right-metric)
+- For full RAG pipelines, also score generation with Ragas and use the retrieval-vs-generation 2x2 to isolate regressions [Pipeline Output Quality](https://skills.qdrant.tech/md/documentation/search-evaluation/pipeline-output-quality/)
 - Gate CI on a per-metric threshold to catch regressions from embedding-model swaps, prompt changes, or index config changes
 
 ## What NOT to Do
