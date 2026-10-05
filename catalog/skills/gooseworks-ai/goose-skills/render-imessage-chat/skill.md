@@ -7,7 +7,7 @@ status: active
 # render-imessage-chat
 
 The free renderer for the **imessage-chat** video ad format — a texting-thread
-reveal where a friend-to-friend conversation animates in on a phone (typing
+reveal where a two-person conversation animates in on a phone (typing
 indicators, composer typing, bubble pops, smooth auto-scroll) and lands on a
 designed brand end card. Deterministic Playwright + ffmpeg assembly; no
 generative video of the UI, so bubble text and the wordmark stay pixel-crisp.
@@ -17,6 +17,22 @@ per-brand `thread`, product image, and `end_card` config, and gates the paid
 calls (product image → create-image-fal, music bed → create-music-elevenlabs) to
 their own capabilities. It bundles the iMessage-mockup HTML generator + the
 send/receive SFX so a chat render is self-contained and $0.
+
+## Choices
+
+The calling recipe asks the user these before any paid step; this capability only renders
+the config it is given. The Wonderbly values in `config.example.json` are a worked example,
+never defaults.
+
+- **relationship** — who is texting whom (friends, siblings, parent + adult kid, coworkers,
+  a couple) → `thread.participants` + the voice of `thread.messages`.
+- **story** — the micro-story in the thread → `thread.messages`.
+- **tone** — casual, funny, sincere, deadpan, hype → the wording of `thread.messages`.
+- **theme** — dark or light iMessage → `theme` (renderer falls back to dark if unset).
+- **music** — none (SFX only) or a bed genre → `stitch.sh --music` (optional).
+
+End-card colours, wordmark, proof, trust trio and CTA are brand facts (brand kit, approved
+copy only). Missing end-card colours fall back to a neutral white/black card.
 
 ## The three defects it fixes (QA GOOSE-2481)
 
@@ -50,8 +66,26 @@ bash stitch.sh --chat <work>/master-chat.mp4 --end <work>/scene-end-endcard.mp4 
 2. **`render-end-card.js`** — fills `end-card.template.html` from `config.end_card`
    (wordmark/`logo_svg`, stars, proof text, trust trio, CTA, colors) → still MP4.
 3. **`stitch.sh`** — crossfades chat → end card, layers the send/receive SFX (from
-   the cue list; the mp3s ship in `assets/sfx`), optionally ducks a music bed
-   under it, and optionally derives a 1:1 variant. All FREE ffmpeg.
+   the cue list), optionally ducks a music bed under it, and optionally derives a
+   1:1 variant. All FREE ffmpeg. A limiter keeps the mix below -1 dBTP, so
+   back-to-back or overlapping chimes never clip.
+
+### Where the SFX come from
+
+The two real iMessage sounds ship twice: as mp3s in `assets/sfx` and as base64 text
+in `scripts/sfx-embedded.json`. A catalog fetch delivers text files only, so a
+fetched copy has no `assets/` folder. `stitch.sh` handles that by itself, in this order:
+
+1. `--sfx-dir <dir>` if passed (must hold `imessage-send.mp3` + `imessage-receive.mp3`).
+2. `assets/sfx`, if both mp3s are real audio (not git-LFS pointers).
+3. Otherwise it decodes `scripts/sfx-embedded.json` (sha256-checked) into a temp dir.
+
+If none is there it stops and names what it looked for. **Never substitute
+made-up pops** — keep `sfx-embedded.json` byte for byte when saving fetched files:
+write it with a program from the fetch output (e.g. a short Python loop over the
+fetched files), never by re-typing it. A damaged copy stops the render with a
+"re-fetch" message.
+After changing an mp3, run `python3 tests/test_stitch.py --write-embedded`.
 
 ## Contract
 
@@ -60,7 +94,7 @@ bash stitch.sh --chat <work>/master-chat.mp4 --end <work>/scene-end-endcard.mp4 
   all real HTML/PIL, never invented by a model.
 - The recipe (DB) supplies the per-brand config: the `thread` (kept short — split
   long lines), the product image bound into the attachment, the `end_card`
-  (prefer a real `logo_svg` wordmark), theme (dark default), and an optional
+  (prefer a real `logo_svg` wordmark), theme (the user's choice; dark if unset), and an optional
   `background_image` (a flat-lay behind the phone) + optional music bed.
 - Craft rules preserved from the reference build (Wonderbly Concept E):
   - Rich-link attachment card (image top-rounded, flush on the gray meta card).
@@ -78,5 +112,19 @@ bash stitch.sh --chat <work>/master-chat.mp4 --end <work>/scene-end-endcard.mp4 
 - **Background flat-lay** is optional; omit it for a clean neutral gradient behind
   the phone, or generate one via `create-image-fal` and point `background_image`
   at it.
-- Requires **ffmpeg/ffprobe** on PATH and Playwright Chromium (`npx playwright
-  install chromium`) — `gooseworks doctor` checks both.
+- Requires **ffmpeg/ffprobe** on PATH and Playwright Chromium. Run
+  `gooseworks doctor --no-browser` for common setup. After installing dependencies
+  in the fetched `scripts/` folder, run
+  `gooseworks doctor --renderer-script "/absolute/path/to/scripts/record-chat.js"`
+  and the same check for `render-end-card.js`, before any paid product-image or music
+  call. Use the actual fetched paths and the render's environment, including `NODE_PATH`
+  and `PLAYWRIGHT_BROWSERS_PATH`. The check launches and closes that script's own
+  Playwright Chromium with default settings; it downloads nothing. On failure, repair
+  the named folder under existing setup permissions, then recheck. An unscoped doctor
+  result or an existing cache folder does not prove these recorders can launch.
+  Without the CLI, or if it lacks these flags, run a bounded free launch/close probe using
+  `require('node:module').createRequire(require('node:path').resolve(actualScript))`
+  to load `playwright`, preserve the same cwd/environment and default launch settings,
+  and await `chromium.launch({ timeout: 15000 })` then `browser.close()` (3-second close
+  limit, 20-second whole-process limit; stop its own process tree on failure/timeout).
+  A missing module, browser, runtime or failed launch stops work before spending.
