@@ -12,6 +12,17 @@ allowed-tools:
 These strategies complement basic vector search. Use them after confirming the embedding model is fitting the task and HNSW config is correct. If exact search returns bad results, verify the selection of the embedding model (retriever) first.
 If the user wants to use a weaker embedding model because it is small, fast, and cheap, use reranking or relevance feedback to improve search quality.
 
+Each symptom needs its own strategy — diagnose and treat them independently. A single project can have more than one symptom at once, and fixing one (e.g. adding hybrid search for keyword misses) does not also fix the others (e.g. redundant results still need MMR; poor precision still needs reranking).
+
+| Symptom | Strategy |
+| --- | --- |
+| Missing exact/keyword matches | Hybrid search |
+| Right documents exist but rank low (good recall, poor precision) | Multistage queries / reranking |
+| Dense retriever misses relevant items entirely, or reranking too costly | Relevance feedback |
+| Results are redundant / near-duplicate | MMR |
+| Need to steer with example points | Recommendation / Discovery API |
+| Need business-logic-based ranking | Score boosting |
+
 ## Missing Keyword Matches or Need to Combine Multiple Search Signals
 
 Use when: pure vector search misses keyword/domain term matches, or the use case benefits from combining searches on multiple representations (including languages and modalities) of the same item.
@@ -45,7 +56,7 @@ Use when: you can provide positive and negative example points to steer search c
 
 - Recommendation API: positive/negative examples to recommend fitting vectors [Recommendation API](https://skills.qdrant.tech/md/documentation/search/explore/?s=recommendation-api)
   - Best score strategy: better for diverse examples, supports negative-only [Best score](https://skills.qdrant.tech/md/documentation/search/explore/?s=best-score-strategy)
-- Discovery API: context pairs (positive/negative) to constrain search regions without a request target [Discovery](https://skills.qdrant.tech/md/documentation/search/explore/?s=discovery-api)
+- Discovery API: context pairs (positive/negative) constrain the search region, either around a target (discovery search) or without one (context search) [Discovery](https://skills.qdrant.tech/md/documentation/search/explore/?s=discovery-api)
 
 ## Have Business Logic Behind Results Relevance
 
@@ -56,4 +67,5 @@ Check how to set up in [Score Boosting docs](https://skills.qdrant.tech/md/docum
 ## What NOT to Do
 
 - Use hybrid search before verifying pure vector search quality (adds complexity, may mask model issues)
-- Skip evaluation when adding relevance feedback — score the end-to-end pipeline to confirm it actually helps [Pipeline Output Quality](https://skills.qdrant.tech/md/documentation/improve-search/pipeline-output-quality/)
+- Apply one strategy (e.g. hybrid search) as a blanket fix for multiple distinct symptoms — diagnose and treat each symptom separately (see table above)
+- Skip evaluation when adding relevance feedback — score the end-to-end pipeline to confirm it actually helps [Pipeline Output Quality](https://skills.qdrant.tech/md/documentation/search-evaluation/pipeline-output-quality/)
