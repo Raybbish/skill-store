@@ -2,6 +2,8 @@
 name: render-street-interview
 description: Write a street-interview ad from a complete inspected commercial interaction and current brand facts. Render product guessing, or prepare mic-only, prepared-sample or visible-task conversation script/prompt previews. Premise, actions and ad connection vary; capture rules stay fixed. Conversation media delivery is unverified.
 status: draft
+version: 2
+updated: 2026-10-06
 ---
 
 # Human version
@@ -98,6 +100,11 @@ python scripts/check-cut.py --episode <render>.episode.json   # free: the ship g
 - Paid calls go **through the GooseWorks proxy** (`scripts/media_proxy.py`), never a local key.
   On a poll timeout, resume with `media_proxy.resume_fal(request_id)`. Never resubmit, since a
   dropped poll has already been billed.
+- A provider **policy rejection** (likeness of a real person, content policy) makes
+  `single_gen.py --yes` exit **3**: surface the reason, do not retry. The take's input digest
+  covers every input by content (prompt, settings, seed, and the sha256 of the product image
+  and the scene reference), so the unchanged request is refused before anything is uploaded,
+  and a changed image, prompt or seed is sent as a new request.
 
 ## Prompt length
 
@@ -192,6 +199,25 @@ Free regression checks:
 ```bash
 python -m unittest discover -s tests -p 'test_*.py' -v
 ```
+
+## Opt-in hold and handover settings
+
+Six `generation` keys on the brand config, all off by default, so every recorded prompt and its
+hash are unchanged. They were paid for on Olipop and Graza (REFERENCE.md items 37-42); start a new
+brand from `brands/olipop-ep3-a.json` (a can) or `brands/graza-ep1-a2.json` (a bottle).
+
+| key | what it does |
+|---|---|
+| `handover_grammar` | every person's first shot opens on the interviewer passing the product |
+| `natural_grammar` | the product is held like a drink someone was just handed, not presented |
+| `real_grammar` | chest-height relaxed hold, one consistent interviewer, nothing printed carried |
+| `level_camera` | removes the glance down from speaking shots, which is what tips the product |
+| `no_signage` | no shops, signs or lettering behind the cast (names park-corner landmarks) |
+| `can_sealed_grammar` | existing flag; holds with the keys above, so the can stays closed |
+
+Episode files take `extra_head_s` (seconds of run-up kept at the head of each take, so the
+handover is not trimmed as silence) and `brand_layer.caption_centre_y`. Transcribe every take with
+word timestamps before assembly: a fast take can repeat, slur or invent a line.
 
 ## Known limits
 
