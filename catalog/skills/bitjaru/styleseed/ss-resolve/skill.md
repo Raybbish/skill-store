@@ -1,13 +1,18 @@
 ---
 name: ss-resolve
-description: Compile a small, deterministic StyleSeed rule bundle for one agent, output grammar, surface adapter, domain, page type, brand recipe, palette recipe, and optional profile. Use before setup or build, when STYLESEED.md changes, when updating StyleSeed, or whenever an agent would otherwise load the full rule handbook.
+description: Compile the effective StyleSeed rule bundle for one artifact, or inspect install and evidence health read-only. Use before setup or build, or to diagnose rule drift.
 ---
+
+Before this workflow, follow the once-per-session [update preflight](../ss-update/references/update-preflight.md).
+
 
 # Resolve effective StyleSeed context
 
 Use the bundled `scripts/resolve-context.mjs`; do not hand-compose the rule stack.
 
-1. Read `STYLESEED.md` when it exists. Confirm missing required selections with the user.
+1. Resolve the project boundary first: if either `.styleseed/project.json` or
+   `.styleseed/artifacts/index.json` exists, require a complete, valid registry. Do not fall back
+   to `STYLESEED.md` on a registry error. Only use that lock when no registry exists.
 2. Keep the working directory at the user's project root. Invoke the script by its installed
    path; do not `cd` into the skill directory.
 3. Legacy single-artifact projects should prefer `--from-lock STYLESEED.md`. Registry projects use
@@ -17,7 +22,35 @@ Use the bundled `scripts/resolve-context.mjs`; do not hand-compose the rule stac
    writes `.styleseed/bundles/<artifact-id>.md`.
 5. Preserve the manifest output: legacy uses `.styleseed/manifest.json`; registry uses
    `.styleseed/manifests/<artifact-id>.json`.
-5. Use `--check` to detect context drift without rewriting files.
+6. Use `--check` to detect context drift without rewriting files.
+
+For spacing recommendations and scoped control, see the [spatial roles guide](references/spacing.md).
+Optional project/artifact `spacing` compiles into a role table and artifact-scoped CSS in the bundle.
+`recommend-spacing.mjs --project-root . --artifact <id>` emits a read-only starting proposal; it does
+not inspect or rewrite implementation tokens and does not establish design acceptance. Optional
+`--measurement <project-relative-report.json>` adds source-bound rendered diagnostics; stale or
+inconsistent reports are rejected, and starting values remain explicitly heuristic.
+
+For installation or project-health questions, run the read-only diagnostic first:
+
+For a requested legacy-to-registry migration, inspect `migrate-project.mjs --dry-run` first.
+Follow the [reviewed migration guide](references/migration.md) for the plan format and apply sequence.
+The bare `--write` path deliberately refuses unreviewed defaults. Applying a migration requires
+a complete human-reviewed plan, the current lock hash, a one-to-one section-to-artifact mapping,
+and `--confirm-plan` matching that plan's exact hash. A valid schema or dry-run is not proof that
+the design decisions were preserved; never infer approval or run a write from a diagnosis request.
+
+```bash
+node <installed-ss-resolve>/scripts/styleseed-doctor.mjs --project-root . --json
+```
+
+It checks the local distribution inventory, project configuration, compiled rules, and stored
+evidence against current inputs. Use `--artifact <id>` to narrow a registry check. It never
+sets up, migrates, recompiles, renders, or updates the project. Follow its `next` actions only
+within the user's authorization. Exit 0 means current evidence for all selected artifacts,
+not an independent visual judgment; exit 1 means attention needed; exit 2 means invalid invocation.
+Legacy projects can have current rules while evidence remains `unsupported`. Installation
+integrity does not prove host discovery, publisher authenticity, or the latest upstream revision.
 
 ```bash
 node <installed-ss-resolve>/scripts/resolve-context.mjs \
