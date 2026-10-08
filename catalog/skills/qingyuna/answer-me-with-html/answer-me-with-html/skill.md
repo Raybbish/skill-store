@@ -25,17 +25,7 @@ Reply to the user, and write the draft, in the user's language.
 
 Arguments for this call: `$ARGUMENTS`
 
-When the arguments start with `config` (for example `/answer-me-with-html config open off`), this turn handles settings only and produces no page:
-
-- `config`: run `am config` to show the current settings, then let the user choose. Where the agent has a choice tool such as AskUserQuestion, use it: at most 4 settings at a time, these first: `open`, `theme`, `mode`, `style`, with the current value marked in the options. Otherwise ask in plain text.
-- `config <key> <value>`: run `am config set <key> <value>`.
-- `config reset [key]`: run `am config reset [key]`.
-
-When the user asks in natural language ("stop opening the browser", "use the card theme by default"), also convert it to `am config set`. Settings: `open` (auto-open the browser), `theme`, `mode`, `style`, `voice` (video narration), `update_check` (new-version notices). Run `am config` to see all descriptions.
-
-When the arguments start with `clean`, or the user asks to clean up pages / the cache: first run `am clean --dry-run` and tell the user how many items and how much space will be deleted. Run `am clean` only after the user agrees (add `--all` to delete all pages and videos, `--days N` to change how many days to keep).
-
-When the arguments start with `update`, or the user asks to update this skill: update according to how it was installed. Installed with `npx skills`: run `npx skills update answer-me-with-html -y`. Installed as a Claude Code plugin: run `claude plugin update answer-me-with-html@answer-me-with-html` (or ask the user to click Update now in `/plugin` → Installed), then ask the user to run `/reload-plugins`. Installed with git clone: run `git pull && npm install` in the repository directory.
+When the arguments start with `config`, `clean` or `update`, or the user asks to change a setting, clean up pages or update this skill: read `${CLAUDE_SKILL_DIR}/references/settings.md` and follow it. That turn produces no page.
 
 ## 1. Decide: produce a page or not
 
@@ -88,7 +78,7 @@ AM_EOF
 4. Read the output:
    - `✓ <path>`: success. Whether the browser opens automatically depends on the user's settings (`am config`); `--no-open` affects only this run.
    - `✗ L<line> [component] …` + `Correct example:`: fix that line following the example, then render again.
-   - `code n warnings`: a code block is longer than 40 lines. Cut it to the lines that make the point and render again, or keep it if every line matters.
+   - `code n warnings`: a code block is longer than 40 lines, or a diff hunk has a different number of lines than its `@@` header says. Cut the block or fix the header to the lines that make the point and render again, or keep it if every line matters.
    - `STE n warnings`: rewrite the flagged lines as suggested, then render again. Retry at most 2 rounds; if warnings remain, keep the page and say so.
    - `! Cleanup hint: …` or `! Update hint: …`: pass it on to the user in one sentence at the end of the reply, and ask whether to clean up / update. **Do not run am clean or the update command yourself**; wait until the user agrees. The CLI throttles these: the cleanup hint appears at most once every 7 days, the update hint at most once every 3 days.
 5. Reply in the terminal with only 2–3 lines: one core conclusion + the page link. Do not paste the draft or the HTML back into the terminal. Write this reply after the render, as the last step of the turn: render the page first, then reply. No tool call comes after the reply.
@@ -145,13 +135,16 @@ Table status words: ok / no / warn (may carry text: "ok approved") → ✓ / ✗
 | Multi-dimension comparison, can / cannot list | Markdown table | write ok / no / warn in the status column |
 | What a real screen, photo or render looks like, as an existing file | image | `![what it shows](/absolute/path.png)` alone on a line |
 | Code that exists in the project | code block that quotes the file | ```` ```ts src=path/to/file.ts lines=18-30 hl=22 ```` and an empty block |
+| A plan, refactor or PR summary that changes structure | `flow` or `tree` with change markers | start a line with `+ ` added, `- ` removed, `~ ` changed (a node only): `+ A -> B`, `- A -> B`, `~ Node`, tree `+ file.js`, `- dir/` |
+| A change to code | diff block | ```` ```diff file=path/to/file.ts ```` and the unified diff inside |
 | Code that does not exist yet, or a command | code block | ```` ```ts title="name · sketch" ```` with the code inside |
 
 Selection rules:
 - Conclusion first. The first panel or the lead gives the core answer; the following panels give the evidence.
 - One panel, one question. With more than 8 panels, split the page or cut panels.
 - `span` is a hint. In a browser the sheet sizes each panel to its content and fills every row, so write no `span` for a wide table or diagram. Write `span` only for a panel that must stand out (`span` = `cols` gives it a row of its own). `rows` applies only to the plain grid (without JavaScript, in print and on narrow screens); the browser layout ignores it.
-- Quote code that exists with `src=` and `lines=`: the CLI reads the lines, so you type no code and the code is real. Use a path inside the current folder; files outside it are refused. Pick the 10–40 lines that make the point. Mark code that does not exist yet as a sketch in `title=`. The render lists every file it embedded; tell the user before they share a page that holds private code. See `am help code`.
+- To show what a plan, refactor or PR summary changes in structure, write one `flow` or `tree` and mark the changed lines with `+ `, `- ` or `~ `, not a before and an after. Leave unchanged lines bare. The page shows colors, badges and counts in its Changes view and adds a Before / After switch that shows the plain diagram on either side. To change a link, remove the old one with `-` and add the new one with `+`. A name that starts with `- ` needs brackets in `flow` (`[- Gateway]`) or `\- item` in `tree`. See `am help flow` and `am help tree`.
+- Quote code that exists with `src=` and `lines=`: the CLI reads the lines, so you type no code and the code is real. Use a path inside the current folder; files outside it are refused. Pick the 10–40 lines that make the point. Mark code that does not exist yet as a sketch in `title=`. In a diff block every line starts with `+`, `-`, a space or `@@`; do not cut lines with `...`, split the diff into two hunks. The render lists every file it embedded; tell the user before they share a page that holds private code. See `am help code`.
 - Use an image only for what a diagram cannot show, such as a real UI. Use an existing file by its absolute path (PNG, JPG, GIF, WebP, AVIF or SVG, up to 5 MB). The alt text is the caption, so write what the picture shows. Never generate or invent an image. See `am help image`.
 - Use `ask` only for a fork that changes what you do next, such as a plan or a choice between options: 1 to 5 per page, each in the panel it changes, the question in 15 words or fewer. Mark the option you would pick with `*`. Every page has a Reply button: the user picks options, comments on any panel and copies one reply back. When a page has asks, say in your reply how many decisions are open and that the suggested options are what you would do.
 - Do not invent data. Without real numbers, do not use limits; mark illustrative data as "illustrative" in the description.
@@ -182,35 +175,4 @@ A reply starts with `# Re: <page title>` and lists `Decisions` and `Comments`, i
 
 Use only when the user explicitly asks for a video ("make a video", "explain it as a video", "3b1b style", "explainer video"). Do not produce a video unasked in always-on mode either.
 
-A video draft has the same format as a page draft, with one extra rule: lines starting with `>` are narration, one beat per line.
-
-````bash
-node "${CLAUDE_SKILL_DIR}/scripts/am.mjs" video - --no-open <<'AM_EOF'
----
-title: The TCP three-way handshake
-subtitle: Why three
----
-> Opening narration (optional).
-
-## Both ends are waiting
-```sequence
-Client -> Server: SYN
-Server -> Client: SYN-ACK
-Client -> Server: ACK
-```
-> First the client sends SYN to ask for a connection.
-> [Server] answers with SYN-ACK.
-> The client replies with ACK, and the connection is open.
-AM_EOF
-````
-
-- One `## ` is one scene. Put one component (or one table, one list) in a scene as the picture, and write 2–5 narration lines below it.
-- When the Nth narration line plays, the picture shows step N. In flow / sequence / tree every source line is one step; timeline, limits, table rows and list items step by entry. So the line order of the component is the order of the explanation. When there are more narration lines than steps, the extra first lines serve as an opening and show nothing new.
-- Write `[name]` in narration: the camera zooms in on the node or actor with that name and highlights it. The name must match how it is written in the component.
-- Nodes with the same name in adjacent scenes move smoothly to their new position. To keep the viewer following one object, reuse the same name in the next scene.
-- 3–6 scenes per video, one or two sentences per narration line.
-- Narration is read aloud, so write it as speech, as if explaining to someone face to face: transitions like `你看`, `那问题来了`, `我们换个角度看` are fine, and characters' "lines" go in quotes. Do not write it like a manual (`客户端发送 SYN 报文以请求建立连接`). Sentence length is still subject to the STE check.
-- The look follows the theme in the settings by default (usually the blueprint drawing style). When the user wants "that dark 3b1b style", write `theme: 3b1b` in the frontmatter.
-- Narration voice: the default is `--voice auto`: ElevenLabs when `ELEVENLABS_API_KEY` is set, otherwise system TTS (macOS say), and subtitles only when neither is available. When the user says "no sound", add `--voice off`. When the user runs a local OpenAI-compatible speech service and has set `AM_TTS_URL`, use `--voice local`.
-- The output is a single-file player page under `~/.answer-me-with-html/videos/` (audio embedded). When the user wants a video file, add `--mp4`; this needs Chrome, ffmpeg and Node.js 22+ on the machine, and export takes about 1.3 times the video length.
-- Full syntax: `am help video`. In the terminal, reply with one sentence plus the player page link (and the MP4 link), written as in step 5 of section 2.
+Before you write a video draft, read `${CLAUDE_SKILL_DIR}/references/video.md` and follow it.
