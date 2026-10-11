@@ -3,10 +3,10 @@
   "meta": {
     "id": "k-dense-ai/scientific-agent-skills/arboreto",
     "name": "arboreto",
-    "description": "Infer gene regulatory networks (GRNs) from gene expression data using scalable algorithms (GRNBoost2, GENIE3). Use when analyzing transcriptomics data (bulk RNA-seq, single-cell RNA-seq) to identify transcription factor-target gene relationships and regulatory interactions. Supports distributed computation for large-scale datasets.",
+    "description": "Infers candidate gene regulatory networks from bulk or single-cell expression data using AertsLab Arboreto GRNBoost2 and GENIE3. Use for transcription factor-target association ranking, compatible Dask execution, sparse expression inputs, and network stability checks.",
     "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/main/skills/arboreto",
-    "upstream_commit": "36d8f13a1e754618794bf42f417884940077b4ae",
-    "content_hash": "sha256:258ed0865c725fd406e34e1740b29be04ab8bdad1d42d6947bbc3c1a5cb7dcd3",
+    "upstream_commit": "92ace75ac21efe19a620434e0ca4e356081fe807",
+    "content_hash": "sha256:f349923b72b358dc072b91fda2ac52795020803b00e42519cc30bbb0ac47cf9f",
     "license": "MIT",
     "hosting": "indexed",
     "category": "science",
@@ -19,12 +19,12 @@
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
-    "stars_github": 35043,
+    "stars_github": 47632,
     "installs_skills_sh": null,
-    "fetched_at": "2026-08-27T13:37:16.869Z",
+    "fetched_at": "2026-10-05T09:55:22.842Z",
     "first_seen_at": "2026-07-04T15:41:07+08:00",
-    "upstream_commit_at": "2026-08-24T09:22:54Z",
-    "repo_skill_count": 163,
+    "upstream_commit_at": "2026-10-05T09:39:10Z",
+    "repo_skill_count": 177,
     "bulk_source": true
   },
   "context_size": {
@@ -34,16 +34,16 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-27T13:37:16.869Z",
+    "generated_at": "2026-10-05T09:55:22.842Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 8459,
-        "chars": 8457,
-        "tokens": 1605
+        "bytes": 10661,
+        "chars": 10661,
+        "tokens": 2312
       },
       "activation_with_declared_refs": {
         "files": [
@@ -54,9 +54,9 @@
           "scripts/basic_grn_inference.py"
         ],
         "text_files": 5,
-        "bytes": 27794,
-        "chars": 27788,
-        "tokens": 5105
+        "bytes": 30396,
+        "chars": 30396,
+        "tokens": 6343
       },
       "package_total_text": {
         "files": [
@@ -67,69 +67,33 @@
           "scripts/basic_grn_inference.py"
         ],
         "text_files": 5,
-        "bytes": 27794,
-        "chars": 27788,
-        "tokens": 5105
+        "bytes": 30396,
+        "chars": 30396,
+        "tokens": 6343
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "从基因表达数据推断转录因子与靶基因的调控关系",
+    "tagline": "把基因表达数据变成候选基因调控网络并排出调控关系",
     "scene_tags": [
-      "转录组分析",
-      "基因调控网络"
+      "基因调控研究",
+      "单细胞分析",
+      "转录因子筛选",
+      "网络稳定性核验"
     ],
-    "fit_line": "适合你，如果你需要分析RNA-seq数据来发现基因间的调控连接",
-    "tagline_en": "Infer transcription factor-target gene relationships from gene expression data",
+    "fit_line": "适合你,如果手头有表达数据、想找出哪些转录因子调控了哪些基因。",
     "scene_tags_en": [
-      "transcriptomics analysis",
-      "gene regulatory network"
+      "gene regulation study",
+      "single-cell analysis",
+      "transcription factor ranking",
+      "network stability check"
     ],
-    "fit_line_en": "For you if you need to discover regulatory interactions from RNA-seq data",
+    "fit_line_en": "For you if you have expression data and want to find which transcription factors regulate which genes.",
     "source": "llm",
-    "content_hash": "sha256:258ed0865c725fd406e34e1740b29be04ab8bdad1d42d6947bbc3c1a5cb7dcd3",
+    "content_hash": "sha256:f349923b72b358dc072b91fda2ac52795020803b00e42519cc30bbb0ac47cf9f",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-27T06:27:44.125Z",
+    "generated_at": "2026-10-02T09:19:51.002Z",
     "lint_pass": true
-  },
-  "howto": {
-    "what": "读取基因表达数据,用 GRNBoost2 或 GENIE3 算法推断哪些转录因子调控哪些靶基因,并输出带有调控重要性分数的结果表。",
-    "when": "当你给出转录组数据(如 bulk RNA-seq 或单细胞 RNA-seq)并要求找出转录因子与靶基因的调控关系时触发。",
-    "say": [
-      {
-        "text": "根据这份单细胞表达数据推断基因调控网络",
-        "note": "使用 GRNBoost2 分析并输出调控链接表"
-      },
-      {
-        "text": "换成 GENIE3 算法再跑一次做对比",
-        "note": "会调用 GENIE3 生成结果"
-      },
-      {
-        "text": "只保留 importance 大于 0.5 的调控关系",
-        "note": "对结果按重要性阈值筛选"
-      }
-    ],
-    "source": "llm",
-    "content_hash": "sha256:258ed0865c725fd406e34e1740b29be04ab8bdad1d42d6947bbc3c1a5cb7dcd3",
-    "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-27T14:30:25.039Z",
-    "lint_pass": true,
-    "what_en": "Reads gene expression data and infers gene regulatory networks using GRNBoost2 or GENIE3, outputting TF-target links with importance scores.",
-    "when_en": "Activates when you supply transcriptomics data (bulk RNA-seq, single-cell RNA-seq) and ask to identify transcription factor-target gene regulatory relationships.",
-    "say_en": [
-      {
-        "text": "Infer a gene regulatory network from this single-cell expression data",
-        "note": "Runs GRNBoost2 and outputs a table of regulatory links"
-      },
-      {
-        "text": "Run it again with GENIE3 for comparison",
-        "note": "Calls GENIE3 to produce results"
-      },
-      {
-        "text": "Keep only regulatory links with importance above 0.5",
-        "note": "Filters the result by importance threshold"
-      }
-    ]
   }
 }

@@ -1,8 +1,11 @@
 ---
 name: render-chatgpt-chat
 description: Assemble a ChatGPT chat-reveal video ad from a thread + timeline JSON — one continuous Playwright recording of a ChatGPT mobile chat (user types with the iOS keyboard up → taps send → keyboard slides down + header cluster swaps in one beat → one gray loading dot → the assistant answer streams in word-by-word) crossfaded into a designed end card, with subliminal ChatGPT SFX and an optional ducked music bed. FREE assembly (Playwright + ffmpeg); the recipe supplies the per-brand thread + timeline + end-card config and gates the paid music call to its own capability. The ChatGPT sibling of render-imessage-chat. Use for the chatgpt-chat format.
-status: active
+status: superseded
+superseded_by: phone-chat@1.1.4
 ---
+
+> **Superseded:** the video kit now does this with the phone-chat part, version 1.1.4, in the parts folder of this repository. Every phone-chat style is a style file that draws the same screen frame by frame from the plan's scenes, with the original sounds, in the kit's browser. This atom stays, unchanged in behaviour, for skills outside the kit until they move; its scripts still run.
 
 # render-chatgpt-chat
 
@@ -17,6 +20,24 @@ ChatGPT is the more credible host for the answer; reach for iMessage when the
 punchline is a peer's reaction in a DM. The template recipe (DB) supplies the
 per-brand `thread` + `timeline` + `end_card` config and gates the paid music call
 (music bed → `create-music-elevenlabs`) to its own capability.
+
+## Choices
+
+The recipe asks these before any paid step; this renderer only draws what the config says. The
+demo's value is an example, never a default:
+
+- **`question_angle`** — the kind of question (symptom "why is this happening", how-to,
+  recommendation, comparison). Sets the `user-text` message, the matching `composer-type` text
+  in the timeline, and the `assistant` answer. Demo: a "why is my stomach so bloated at 47?"
+  symptom question.
+- **`asker`** — whose voice the question is in (the core customer, a busy parent, a
+  first-timer, a skeptic). Sets the `user-text` wording + `keyboard.suggestions`. Demo: a woman
+  in perimenopause.
+- **`product_in_thread`** — whether a real product photo appears in the chat after the answer.
+  Demo: no (text only; the product lands on the end card). The mockup has a `user-image`
+  message type but no assistant-side image yet — a product image after the answer is a gap.
+- **`music`** — the bed passed to `stitch.sh --music` (or none → SFX only). Demo: an
+  instrumental bed.
 
 ## What it renders
 
