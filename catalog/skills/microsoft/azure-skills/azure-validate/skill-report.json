@@ -5,8 +5,8 @@
     "name": "azure-validate",
     "description": "Pre-deployment validation for Azure readiness. Run deep checks on configuration, infrastructure (Bicep or Terraform), RBAC role assignments, managed identity permissions, and prerequisites before deploying. WHEN: validate my app, check deployment readiness, run preflight checks, verify configuration, check if ready to deploy, validate azure.yaml, validate Bicep, test before deploying, troubleshoot deployment errors, validate Azure Functions, validate function app, validate serverless deployment, verify RBAC roles, check role assignments, review managed identity permissions, what-if analysis, validate Container Apps deployment.",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/azure-validate",
-    "upstream_commit": "774caca7effcbc1a5d24bbce523ce523f3cbf438",
-    "content_hash": "sha256:42a8bdaddf5227398e58c65dabbfb8f4418e939313c8a0991772d1ac0489ccea",
+    "upstream_commit": "f8fac821eca9fe691b618f55313b376cb563d5dd",
+    "content_hash": "sha256:0aa80b6a253a8cc508c5f4d08cf4a5f4e3c10bf5bb9ed4301117b1fab631d2bb",
     "license": "MIT",
     "hosting": "indexed",
     "category": "cloud",
@@ -15,17 +15,17 @@
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "cli"
+      "deployment"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 494400,
-    "fetched_at": "2026-08-03T06:19:09.967Z",
+    "installs_skills_sh": 590700,
+    "fetched_at": "2026-09-21T08:32:49.151Z",
     "first_seen_at": "2026-08-03T06:19:09.967Z",
-    "upstream_commit_at": "2026-07-30T14:21:00-07:00"
+    "upstream_commit_at": "2026-09-18T10:41:14-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,28 +34,30 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-08-03T06:19:09.967Z",
+    "generated_at": "2026-09-21T08:32:49.151Z",
     "scopes": {
       "activation_core": {
         "files": [
           "SKILL.md"
         ],
         "text_files": 1,
-        "bytes": 4221,
-        "chars": 4171,
-        "tokens": 847
+        "bytes": 3602,
+        "chars": 3574,
+        "tokens": 715
       },
       "activation_with_declared_refs": {
         "files": [
           "SKILL.md",
           "references/global-rules.md",
           "references/recipes/README.md",
-          "references/role-verification.md"
+          "references/role-verification.md",
+          "references/scripts/workflow.ps1",
+          "references/scripts/workflow.sh"
         ],
-        "text_files": 4,
-        "bytes": 9773,
-        "chars": 9611,
-        "tokens": 1971
+        "text_files": 6,
+        "bytes": 20303,
+        "chars": 20163,
+        "tokens": 3945
       },
       "package_total_text": {
         "files": [
@@ -83,71 +85,75 @@
           "references/region-availability.md",
           "references/role-verification.md",
           "references/scripts/scan-aspire-functions-secrets.ps1",
-          "references/scripts/scan-aspire-functions-secrets.sh"
+          "references/scripts/scan-aspire-functions-secrets.sh",
+          "references/scripts/workflow.ps1",
+          "references/scripts/workflow.sh"
         ],
-        "text_files": 25,
-        "bytes": 82577,
-        "chars": 82181,
-        "tokens": 16743
+        "text_files": 27,
+        "bytes": 93107,
+        "chars": 92733,
+        "tokens": 18717
       }
     }
   },
   "eval": null,
   "copy": {
-    "tagline": "部署前检查 Azure 配置、权限与基础设施,提前发现隐患。",
+    "tagline": "在部署到 Azure 之前,先把配置、权限和基础设施问题查出来",
     "scene_tags": [
       "上线前检查",
-      "部署预检"
+      "权限核对",
+      "部署报错排查"
     ],
-    "fit_line": "适合你,如果你正在准备把应用部署到 Azure,希望提前确认所有配置都正确。",
-    "tagline_en": "Check your Azure config and infra before deploying to catch issues early.",
+    "fit_line": "适合你,如果每次发布到 Azure 前都想先确认配置和权限没坑",
+    "tagline_en": "Catch Azure configuration, permission, and infrastructure problems before you deploy",
     "scene_tags_en": [
-      "pre-deployment check",
-      "release readiness"
+      "pre-release check",
+      "permission review",
+      "deploy error triage"
     ],
-    "fit_line_en": "For you if you are preparing to deploy an app to Azure and want to catch configuration issues beforehand.",
+    "fit_line_en": "For you if you want to confirm Azure config and permissions are sound before every deploy",
     "source": "llm",
-    "content_hash": "sha256:42a8bdaddf5227398e58c65dabbfb8f4418e939313c8a0991772d1ac0489ccea",
+    "content_hash": "sha256:0aa80b6a253a8cc508c5f4d08cf4a5f4e3c10bf5bb9ed4301117b1fab631d2bb",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-03T06:20:45.115Z",
+    "generated_at": "2026-09-21T08:33:56.984Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "装上后，Claude 会在部署前检查 Azure 配置、Bicep/Terraform 基础架构、RBAC 角色与托管身份权限；运行验证命令、构建项目并记录结果，全部通过后才将状态标记为 Validated，需要部署时再交给 azure-deploy。",
-    "when": "当你说“validate my app”“check deployment readiness”“validate Bicep”等，或要求预检、排查部署错误时触发。前提是先运行 azure-prepare 并已生成批准的计划。",
+    "what": "在部署 Azure 应用前,Claude 会按脚本逐项做上线前检查:配置、Bicep 或 Terraform 基础设施、RBAC 角色分配、托管身份权限与前置条件,并把进度写进 .azure/validate-status.json。",
+    "when": "当你要求验证配置、检查部署是否就绪或排查部署错误时触发;它只在前置的 azure-prepare 已产出状态为 Approved 的部署计划后运行,位于 azure-deploy 之前。",
     "say": [
       {
-        "text": "帮我验证应用是否准备好部署",
-        "note": "会运行 Azure 预检并报告结果"
+        "text": "帮我做上线前检查,看看现在能不能部署",
+        "note": "脚本会逐项跑验证并记录进度"
       },
       {
-        "text": "检查 Bicep 中的角色分配",
-        "note": "会做静态角色验证"
+        "text": "验证一下 azure.yaml 和 Bicep 配置有没有问题",
+        "note": "检查会指出配置与基础设施的问题"
       },
       {
-        "text": "部署前先跑一遍检查并记录结果",
-        "note": "通过后状态会标记为 Validated"
+        "text": "检查这个应用的 RBAC 角色分配和托管身份权限",
+        "note": "部署前核对角色与权限"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:42a8bdaddf5227398e58c65dabbfb8f4418e939313c8a0991772d1ac0489ccea",
+    "content_hash": "sha256:0aa80b6a253a8cc508c5f4d08cf4a5f4e3c10bf5bb9ed4301117b1fab631d2bb",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-08-03T06:29:33.683Z",
+    "generated_at": "2026-09-21T08:36:17.328Z",
     "lint_pass": true,
-    "what_en": "After install, Claude runs pre-deploy Azure checks (config, Bicep/Terraform, RBAC, managed identity). It executes validations, builds, records proof, and sets Validated only if all pass; then calls azure-deploy if the user asked to deploy.",
-    "when_en": "Triggers on phrases like \"validate my app\", \"check deployment readiness\", \"validate Bicep\", or when you ask for preflight checks or deploy-error troubleshooting. Requires azure-prepare to have completed and an approved plan to exist.",
+    "what_en": "Before deploying to Azure, Claude runs a preflight check: configuration, Bicep or Terraform infrastructure, RBAC role assignments, managed identity permissions, and prerequisites, recording progress in .azure/validate-status.json.",
+    "when_en": "Triggers when you ask to validate configuration, check deployment readiness, or troubleshoot deployment errors. It runs after azure-prepare produced an Approved deployment plan, and before azure-deploy.",
     "say_en": [
       {
-        "text": "Check if my app is ready to deploy",
-        "note": "Runs Azure preflight and reports results"
+        "text": "Run preflight checks and tell me if this app is ready to deploy",
+        "note": "The script walks through each check and records progress."
       },
       {
-        "text": "Check role assignments in the Bicep file",
-        "note": "Performs static role verification"
+        "text": "Validate my azure.yaml and Bicep configuration",
+        "note": "Reports issues found in config and infrastructure."
       },
       {
-        "text": "Run all checks and record results before deploying",
-        "note": "Status becomes Validated if all pass"
+        "text": "Check the RBAC role assignments and managed identity permissions",
+        "note": "Verifies roles and permissions before deploy."
       }
     ]
   }
