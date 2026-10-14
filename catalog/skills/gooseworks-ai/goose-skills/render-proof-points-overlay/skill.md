@@ -20,5 +20,25 @@ fetch_icons.py --run-dir <run> ; build_overlays.py --config config.json --out-di
 - Deterministic + FREE (PIL + FFmpeg); no paid calls, no AI-rendered text — the score, checks, and wordmark are composited, never generated.
 - Config-driven off one `config.json` (`overlays`, `layout`, `duration_sec`, optional `music`/`post_production`); the template recipe supplies the config from `recipe.config`.
 - Always re-run `build_overlays.py` before `compose_master.py` — the compositor reads pre-rendered PNGs and silently reuses stale ones on a copy change.
-- Headers stay on 0-duration and must not cover the bottle face; proof pills cascade one-per-beat down the diagonal (NOT four-corners) — the cascade is the format's signature.
+- Headers stay on 0-duration and must not cover the product face; proof pills cascade one-per-beat down the diagonal (NOT four-corners) — the cascade is the format's signature.
 - Requires `Pillow` + `ffmpeg`. No API keys.
+- The overlay copy (`overlays.header.lines`, `overlays.subhead.lines`, `overlays.proof_points`) is per brand and must be the brand's own approved claims; `build_overlays.py` exits with a clear message if any of it is empty (the template recipe ships it empty, with `overlays._example_content` as the shape).
+
+## Choices
+This atom renders no people, setting or music. The template's creative choices (whose hand, the setting, the music style) are asked of the user by the recipe and go to the paid keyframe / i2v / music capabilities; this atom only composites the pills over whatever base clip and music bed it is given.
+
+## Music coverage
+
+Read the [music preparation instructions](references/music.md) for the composition options and listening checks.
+
+The bed must cover the complete master, including its end card. Composition checks audio coverage before rendering and stops for missing, short or prematurely silent music. A silent preview requires the explicit no-music option.
+
+Use a full-length approved bed first. For an approved instrumental that can repeat cleanly, the loop-music option trims silent edges and extends it locally with crossfades. It preserves the source and puts the final half-second fade at the master ending. Do not loop speech, lyrics or a musical ending that makes the join obvious. Do not regenerate paid music automatically.
+
+Listen to every join and the final seconds before delivery. The automated check detects silence and insufficient duration; it does not judge musical phrasing, a gradual early fade or how the bed sounds under dialogue.
+
+## Local layout checks
+
+The renderer preserves the bold text font and falls back to an installed symbol font for missing glyphs such as ★. Trailing icons sit beyond the longest line of the pill. The composer reserves at least 120 px at the right edge for platform controls and stops if copy does not fit; wrap the text or reduce its font size before rendering.
+
+Run the free regressions with `python -m unittest discover -s tests -p 'test_*.py' -v`.
