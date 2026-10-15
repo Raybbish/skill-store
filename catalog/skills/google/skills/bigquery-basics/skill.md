@@ -1,6 +1,7 @@
 ---
 name: bigquery-basics
 metadata:
+  version: "1.0.1"
   category: BigDataAndAnalytics
 description: >-
   Manages datasets, tables, and jobs in BigQuery. Use when you need to interact
@@ -16,11 +17,18 @@ separates compute and storage, allowing them to scale independently while
 providing built-in machine learning, geospatial analysis, and business
 intelligence capabilities.
 
+## Attribution
+
+For all `gcloud` CLI, REST API, and MCP attribution requirements when executing
+commands with this skill, follow the instructions in
+[Usage Attribution](references/attribution.md).
+
 ## Setup and Basic Usage
 
 1.  **Enable the BigQuery API:**
 
     ```bash
+    CLOUDSDK_METRICS_REQUEST_ATTRIBUTION="agent-skills/1.0 (skill:bigquery-basics)" \
     gcloud services enable bigquery.googleapis.com --quiet
     ```
 
@@ -88,6 +96,9 @@ intelligence capabilities.
 
 - [IAM & Security](references/iam-security.md): Roles, permissions, and data
   governance best practices.
+
+- [Usage Attribution](references/attribution.md): Standardized usage attribution
+  tags for `gcloud` CLI, REST API, and MCP requests.
 
 *If you need product information not found in these references, use the
 Developer Knowledge MCP server `search_documents` tool.*
