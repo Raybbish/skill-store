@@ -9,7 +9,7 @@ Vertical first: simpler operations, no network overhead, good up to ~100M vector
 
 ## Most basic distributed configuration
 
-- 3 nodes, 3 shards with `replication_factor: 2` for zero-downtime scaling
+- 3 nodes with `replication_factor: 2` for zero-downtime scaling, and at least 2 shards per node (6 shards) so you can add nodes later without resharding [Sharding](https://skills.qdrant.tech/md/documentation/scaling/distributed_deployment/?s=sharding)
 
 Minimum of 3 nodes is important for consensus and fault tolerance. With 3 nodes, you can lose 1 node without downtime. With 2 nodes, losing 1 node causes downtime for collection operations.
 Replication factor of 2 means each shard has 1 replica, so you have 2 copies of data. This allows for zero-downtime scaling and maintenance. With `replication_factor: 1`, zero-downtime is not guaranteed even for point-level operations, and cluster maintenance requires downtime.
@@ -26,10 +26,7 @@ This allows for 2-4 shards per node, which balances distribution and overhead.
 
 Use when: shard count isn't evenly divisible by node count, causing uneven distribution, or need to rebalance.
 
-Resharding is expensive and time-consuming, it should be used as a last resort if regular data distribution is not possible.
-Resharding is designed to be transparent for user operations, updates and searches should still work during resharding with some small performance impact.
-
-But resharding operation itself is time-consuming and requires to move large amounts of data between nodes.
+Resharding is expensive and time-consuming, so use it as a last resort if regular data distribution is not possible. The collection stays available during resharding, with slightly reduced performance, but a lot of data moves between nodes [Resharding](https://skills.qdrant.tech/md/documentation/cloud/cluster-scaling/?s=resharding).
 
 - Available in Qdrant Cloud [Resharding](https://skills.qdrant.tech/md/documentation/scaling/distributed_deployment/?s=resharding)
 - Resharding is not available for self-hosted deployments.
@@ -42,6 +39,6 @@ Better alternatives: over-provision shards initially, or spin up new cluster wit
 - Do not jump to horizontal before exhausting vertical (adds complexity for no gain)
 - Do not set `shard_number` that isn't a multiple of node count (uneven distribution)
 - Do not use `replication_factor: 1` in production if you need fault tolerance
-- Do not add nodes without rebalancing shards (use shard move API to redistribute)
+- Do not add nodes to a self-hosted cluster without rebalancing shards (use the shard move API to redistribute); Qdrant Cloud rebalances shards automatically [Cluster scaling](https://skills.qdrant.tech/md/documentation/cloud/cluster-scaling/)
 - Do not scale down RAM without load testing (cache eviction causes days-long latency incidents)
 - Do not hit the collection limit by using one collection per tenant (use payload partitioning)
