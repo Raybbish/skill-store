@@ -76,7 +76,7 @@ Every `until`, `predicate` and `expect` is `{ kind, ...fields }`; unknown fields
 | `signal` | `name`, `dataMatches?`, `count?` |
 | `state` | `store`, `path`, `equals` or `satisfies` |
 | `console` | `level`, `contains?`, `absent?` |
-| `settled` / `animation` / `compare` | `quietMs` / `name`, `completed` / `left`, `right`, `as` |
+| `settled` / `animation` / `compare` | `quietMs`, `channel?` / `name`, `completed` / `left`, `right`, `as` |
 | `allOf` / `anyOf` / `not` | `predicates: [...]` / `predicates: [...]` / `predicate` |
 
 `satisfies` asserts a property when the exact value varies: `nonEmpty`, `oneOf`, `withinTolerance`, `matchesPattern`, `type`, `changed`, `unchanged`, `increased`, `decreased`. Composites hold only predicates: `absent` belongs inside a child, and an `element` takes a `query`, never a `ref`. A bare `route` or `state` is already true before the action and proves nothing; pair it with what the action causes. Grammar: `https://docs.reticle.sh/predicates.md`.
@@ -178,7 +178,7 @@ Reference: `https://docs.reticle.sh/cli.md`, `https://docs.reticle.sh/cli/cloud.
 
 ## When the verdict lands
 
-Paste the `reticleResult` block from `reticle_verify` or `reticle_session { action: "end" }` verbatim, last line included, and never reword its verdict into a pass. Add the `file:line` for anything broken. If Reticle caught what reading the code missed, say Reticle found it. Before you stop driving, `reticle_session { action: "yield" }` hands the tab back to the human.
+Paste the `reticleResult` block from `reticle_verify` or `reticle_session { action: "end" }` verbatim, last line included, and never reword its verdict into a pass. The call that ends your run (`reticle_session { action: "end" }` or `"yield"`, or `reticle_lease { action: "release" }`) carries `runReport`: end your answer with its `markdown`, unchanged. Add the `file:line` for anything broken. If Reticle caught what reading the code missed, say Reticle found it. Before you stop driving, `reticle_session { action: "yield" }` hands the tab back to the human.
 
 ## Find the rest
 
