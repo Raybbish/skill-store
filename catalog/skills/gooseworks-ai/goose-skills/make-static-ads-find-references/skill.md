@@ -1,20 +1,42 @@
 ---
 name: make-static-ads-find-references
 description: >-
-  Step of the make-static-ads playbook: finds fresh, real static ads running on Meta — the brand's own, its competitors' and category leaders' — plus library templates that fit each ad's slot, shows them as a template gallery tagged with the concept each would carry, lets the marketer pick (or picks likely-working ones the brand hasn't tried), registers Meta ads that aren't templates yet, and records whether each ad runs structure-only. Run make-static-ads instead; not for direct use.
-version: 0.4.2
+  Step of make-static-ads: picks a template for every ad in its chosen style, after its visual idea and style are set, from the brand's own ads, the GooseWorks library or category leaders, and records what the chosen creativity level keeps from it. Run make-static-ads instead; not for direct use.
+version: 0.10.2
 ---
 
 # find-references
 
-The how-to, endpoints and rules are `../make-static-ads/references/references-and-remix.md`; this atom is the order of work. Every ad gets a template — there is no "no template" slot.
+**Reads:** each board row's angle, message, visual idea and style; the chosen level (`../make-static-ads/references/levels.md`); `profile.md`. **Writes:** the Template column of `board.md` and a short template list under the board (source, its template id from `ads_template_read` when it has one (library or the brand's own imported ad), page link, the image's public https URL (a brand's own ad from a page or file goes through `gooseworks:media_upload` first), whether its image goes to the model at this level, and what it keeps).
 
-**Reads:** the concept grid; own and competitor ads already imported (`gooseworks:ads_template_read` `mode: "mine"` / `"competitor"`, `filters.format: "image"`); the brand's tracked competitors (`gooseworks:brand_read` `sections: ["competitors"]`); saved inspiration (`gooseworks:social_inspiration_library`); the template library (`mode: "static_library"`, `"community"`).
-**Writes:** the gallery (HTML page or artifact, else a table with image links); per ad, the template id, advertiser and Ad Library link, and structure-only yes/no, on the grid row and in the batch file.
+Every ad has a template. Without one the image model falls back on its own default layout, and every brand's ads end up looking the same. A template is a finished ad with a layout: text slots, blocks, a background treatment. A plain product photo or lifestyle shot is not a template; it is a style reference at most.
 
-1. **Meta Ad Library first.** For the brand's tracked competitors and 3–5 leading brands in its category, read their live static ads: free in the host's browser (the advertiser's Ad Library page, default order = most spend first), else through the data proxy on one yes to a small ceiling (`references-and-remix.md` §2b; about 1 credit per brand). Keep statics that ran 14+ days, ran in several versions, or sit first on the page.
-2. **Then the rest:** imported competitor ads (`ads_template_read` `mode: "competitor"`), the brand's own ads and the ads already made for it in GooseWorks (concept inventory and its "made before" list — those templates are not suggested again), saved inspiration, the template library. Import or refresh a tracked competitor with `gooseworks:ads_library_scrape` (free) when it has nothing imported or the import is older than ~7 days.
-3. **Look at every candidate** against `references-and-remix.md` §1 (fits the slot, static, likely working — 14+ days, several versions, or among the first ads on a leader's page — new for this brand, real brand, buildable). Mark one suggestion per slot. Tag each direct competitor's ad "layout only" in the gallery (`references-and-remix.md` §5).
-4. **Show the gallery** (§3) in the same message as the concepts when the host allows: 8–12 templates (3–5 per slot), templates with a headline first (a template with no headline makes an ad with no words, so use one only when the marketer picks it), each tagged with the concept it would carry, the suggestion marked. **The marketer picks** (Step 2 "you pick"). Step 2 "I pick", or no pick → the agent's suggestions, spread across frameworks and looks, shown in the same gallery as the agent's choice. A pick that differs from the suggestion keeps the slot's concept (`references-and-remix.md` §3.5); a pick already used for this brand gets one line saying so, and new content inside the layout (§3.6). A slot where nothing fits → more candidates (another leader, the library, a keyword search on a yes) until it has one.
-5. **Register what isn't a template yet** (§4): a Meta ad found in §2b–d → re-host with `gooseworks:media_upload` (`source: {type: "fetch"}`) and register with `gooseworks:ads_template_create`; wait until its detail shows the remix fields. Read every picked template's detail (`template_id`) before compose.
-6. **Structure-only per ad:** a template of another brand — competitor, category leader, library or community, however it was registered — is structure-only; the brand's own ads take the normal path. Record the decision per ad. Looking at candidates to choose them is fine; the blueprint itself is written at compose (Step 6).
+## 1. Where to look (free first), in this order
+
+1. **The brand's own ads** (its past and running statics, from `profile.md`). They already look like the brand (whether their image may go to the image model: `../make-static-ads/references/levels.md`).
+2. **The GooseWorks template library:** `gooseworks:ads_template_read` `mode: "static_library"` with a query for the layout or device the visual idea needs. Open each candidate's detail and look at the image. Name a library source as such, never as a verified running ad.
+3. **Category leaders and inventive brands from other categories** in the Meta Ad Library, in the host browser (routes in `../make-static-ads/references/brand-profile.md` §1): the first 20 or so statics of 2–3 advertisers.
+
+Each set uses at least one template from outside the GooseWorks library (the brand's own ads, a leader, or another category's inventive brand). If none of those can be opened, say which you tried on the board.
+
+Look at every candidate's image before choosing. Reject fixtures, placeholder brands, illegible layouts and templates whose text slots can't carry this ad's message.
+
+## 2. Choose the template after the idea
+
+Pick a template in the row's chosen style whose layout fits the visual idea: one big object needs a hero layout, a comparison a split, a list a stacked layout. Spread the set across different templates and advertisers; two ads on one template must differ in message and visual idea.
+
+## 3. Record what this level keeps (`levels.md`)
+
+What each level keeps, and whether the image goes to the model: the table in `levels.md`.
+
+Describe what you actually see in the template: block positions and rough sizes, background, product position and scale, each text slot's position, length and weight. Don't credit it with things you're adding.
+
+## 4. Rights
+
+This section is the one home of template rights. What may go into `image_urls` (at close and balanced, `levels.md`): the brand's own ads and GooseWorks library templates (made for remixing). Ads of other brands found in an ad library never go in, at any level. From any template keep none of another brand's product, words, logo, people or signature look. A direct competitor's template gives layout only. If a buyer could mistake ours for theirs (cover both logos and look side by side), change the picture and the words. Borrow devices, craft and abstract layout only; a celebrity or expert in a template is a slot for the brand's own endorser with permission, never a generated lookalike.
+
+## 5. Showing them
+
+Keep three looked-at candidates per ad: the chosen one and two alternates in other styles (`../make-static-ads/references/levels.md`, Style), so the marketer can switch the look. The marketer must see all three as images before paying, even after "your choice": on a shell host make one sheet per ad with `../make-static-ads/scripts/template_sheet.py` (chosen first, each captioned with its letter, source and style) and show it to the marketer, not only to yourself: if the host has a send-file tool, send it (Claude Code desktop: `SendUserFile`, `display: "render"`); in a terminal, `open` it and give its full path; in an app that shows images, attach it. Viewing it with your own image reader does not count. With no shell, show the three images the same way, or their links when the host can't show images. The board says so (`../make-static-ads/references/handoff-format.md` §2).
+
+**Done:** every ad has a chosen template and two looked-at alternates in other styles, each with its source and what the level keeps; at least one template comes from outside the library, or the board says what was tried.
