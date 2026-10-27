@@ -60,6 +60,15 @@ the aligned problem and requirements from the brainstorm phase.
     strictly one question (`len(questions) == 1`), be the sole tool call in the
     turn, and provide clear, action-oriented options without `(Recommended)`
     prefixes.
+13. **Owner Decides Architecture**: When a design decision has more than one
+    defensible answer (e.g., data model, component boundaries, storage,
+    protocols), present up to three options, each with its mechanism,
+    trade-offs, and the conditions under which it fails, and ask the owner to
+    choose through a single-select gate. Do not rank the options, mark a
+    default, or pick one. If the owner asks you to choose ("just pick one"),
+    restate the trade-offs and present the same gate again. Decide mechanical
+    choices with one defensible answer (e.g., file naming, formatting)
+    yourself.
 
 ## Inputs
 

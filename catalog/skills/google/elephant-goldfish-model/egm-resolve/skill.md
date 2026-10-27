@@ -53,13 +53,33 @@ The caller or orchestration driver provides exactly these parameters:
 
 ### Step 2: Evaluate & Categorize
 
-For each finding in the list, determine:
+Give each finding exactly one category:
 
 *   **CONTEST**: The critique is inaccurate or relies on a misunderstanding of
-    the codebase. Provide exact code or design doc evidence defending current
-    text.
+    the codebase. Cite evidence that the reviewer could read: a file and
+    symbol, or a decision recorded in the document.
+*   **ESCALATE**: The critique is inaccurate, but the evidence is outside every
+    file the reviewer could read (for example, a team convention or a verbal
+    decision). State that fact. Do not fix the finding. Give it to the user.
 *   **PROPOSE FIX**: The critique is valid. Define precise textual replacements
     or structural formatting adjustments to resolve the gap.
+*   **DECLINE**: The finding is a Nit. Record it. Do not fix it. You can use
+    PROPOSE FIX for a Nit if the fix is worth it.
+
+Apply these rules:
+
+*   **A contest must be checkable.** "This was intentional" is not evidence.
+    If you cannot cite evidence the reviewer could read, use ESCALATE or
+    PROPOSE FIX.
+*   **Do not add context only to satisfy a reviewer.** Add context when a human
+    reader of the document needs it. If only a zero-context subagent needs it,
+    use ESCALATE.
+*   **Do not contest a comprehension gap.** If a fresh reader could not follow
+    the document, the document is missing context.
+*   **Do not change a severity.** If you think a Blocker is a Nit, CONTEST it
+    and state the reason.
+*   You wrote the document under review. A wish to contest is not evidence
+    that the reviewer is wrong.
 
 ### Step 3: Report Fixes
 
@@ -79,7 +99,7 @@ using your file-writing tool. Use this layout:
 *   **Affected Scope:** [Lines Start-End]([RelativePath]#L[Start]-L[End]) ([Sub-header])
 *   **Discrepancy Description:** [copied from FindingsList]
 *   **Rationale:** [copied from FindingsList]
-*   ***AI Suggestion:*** [CONTEST | PROPOSE FIX]
+*   ***AI Suggestion:*** [CONTEST | ESCALATE | PROPOSE FIX | DECLINE]
 *   ***Justification:*** [Detailed reason]
 *   ***Proposed Edit:***
     *   Location: [Line/Header]
@@ -88,6 +108,9 @@ using your file-writing tool. Use this layout:
 ```
 
 ### Step 4: Interactive Resolution Gate
+
+If any finding is `ESCALATE`, list those findings first in the chat message.
+They need the user's knowledge, not only approval.
 
 Before proceeding, output a visible chat message to the user: *"I have compiled
 the audit findings into `goldfish_review_report.md`. Please review the findings there and choose how you would like to
@@ -115,12 +138,12 @@ Interpret the user's action/response as follows:
 -   **"Auto accept" / "Accept all suggestions" / User clicks "Proceed" without
     contesting**: Apply all fixes where the AI suggestion was `PROPOSE FIX`
     directly to `TargetFile` at `LineRange` in a single batch using
-    your file-editing tool. Any items categorized as `CONTEST` are explicitly
-    bypassed. Then proceed to Step 5.
+    your file-editing tool. Any items categorized as `CONTEST`, `ESCALATE`, or
+    `DECLINE` are explicitly bypassed. Then proceed to Step 5.
 -   **"Continue to next phase" / "No changes"**: Do not apply any automated
     fixes. Then proceed to Step 5.
 -   **"Interactive breakdown"**: Enter a sequential breakdown loop over ALL
-    finding items (both `PROPOSE FIX` and `CONTEST`):
+    finding items (all categories except `DECLINE`):
 
     1.  For each item `i`, output a visible chat message formatting the full
         finding details and explanation in rich markdown:
@@ -129,7 +152,7 @@ Interpret the user's action/response as follows:
         ### Breakdown Item [i]: [Issue Title] [`[ReviewerPersona]`]
         * **Scope:** [Lines Start-End]([RelativePath]#L[Start]-L[End]) ([Sub-header])
         * **Description:** [Description]
-        * **AI Suggestion:** [CONTEST | PROPOSE FIX]
+        * **AI Suggestion:** [CONTEST | ESCALATE | PROPOSE FIX]
         * **Explanation & Justification:** [Detailed reason and background explaining why the fix is proposed or why the finding is contested]
         * **Proposed Edit:** [Precise replacement text or deletion note]
         ```
@@ -141,6 +164,8 @@ Interpret the user's action/response as follows:
             fix**, **Skip / ignore**, or **Discuss**.
         *   If `CONTEST`: Ask the user to reply with **Skip / agree with
             contest**, **Overrule contest (propose fix)**, or **Discuss**.
+        *   If `ESCALATE`: Ask the user to reply with **Confirm (no change)**,
+            **Add the fact to the document**, or **Discuss**.
 
     2.  Record the user's decisions in an internal memory checklist (e.g., *Item
         1: Accepted*, *Item 2: Ignored*, *Item 3: Overruled*). **Do NOT call any
@@ -158,5 +183,5 @@ Interpret the user's action/response as follows:
     file remains structurally coherent and valid markdown.
 2.  Mark the report as resolved (add a `Status: resolved` line at the top).
 3.  **Handoff**: Exit cleanly back to the caller (such as `egm-review-loop`)
-    with the count of accepted fixes, contested items, and remaining unaddressed
-    issues.
+    with the count of accepted fixes, contested items, escalated items,
+    declined items, and remaining unaddressed issues.
