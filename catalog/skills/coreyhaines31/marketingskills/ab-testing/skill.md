@@ -2,7 +2,7 @@
 name: ab-testing
 description: When the user wants to plan, design, or implement an A/B test or experiment, or build a growth experimentation program. Also use when the user mentions "A/B test," "split test," "experiment," "test this change," "variant copy," "multivariate test," "hypothesis," "should I test this," "which version is better," "test two versions," "statistical significance," "how long should I run this test," "growth experiments," "experiment velocity," "experiment backlog," "ICE score," "experimentation program," or "experiment playbook." Use this whenever someone is comparing two approaches and wants to measure which performs better, or when they want to build a systematic experimentation practice. For tracking implementation, see analytics. For page-level conversion optimization, see cro.
 metadata:
-  version: 2.0.0
+  version: 2.0.3
 ---
 
 # A/B Test Setup
@@ -82,10 +82,12 @@ We'll know this is true when [metrics].
 
 | Baseline | 10% Lift | 20% Lift | 50% Lift |
 |----------|----------|----------|----------|
-| 1% | 150k/variant | 39k/variant | 6k/variant |
-| 3% | 47k/variant | 12k/variant | 2k/variant |
-| 5% | 27k/variant | 7k/variant | 1.2k/variant |
-| 10% | 12k/variant | 3k/variant | 550/variant |
+| 1% | 160k/variant | 43k/variant | 7.7k/variant |
+| 3% | 53k/variant | 14k/variant | 2.5k/variant |
+| 5% | 31k/variant | 8.2k/variant | 1.5k/variant |
+| 10% | 15k/variant | 3.8k/variant | 690/variant |
+
+Per variant, for 95% confidence (two-sided) and 80% power. Lift is relative (3% → 3.6% is a 20% lift).
 
 **Calculators:**
 - [Evan Miller's](https://www.evanmiller.org/ab-testing/sample-size.html)
@@ -193,9 +195,12 @@ Looking at results before reaching sample size and stopping early leads to false
 ## Analyzing Results
 
 ### Statistical Significance
-- 95% confidence = p-value < 0.05
-- Means <5% chance result is random
-- Not a guarantee—just a threshold
+- For a pre-specified fixed-horizon test, compare its p-value with the chosen significance level (commonly α = 0.05).
+- A p-value describes how incompatible the data are with the null model: the probability, **assuming that model and its assumptions**, of a result at least as extreme as the observed one. It is not the probability that the result is random, that the null is true, or that a variant will win again.
+- A 95% confidence interval comes from a procedure with 95% coverage over repeated samples under its assumptions. It is not a 95% posterior probability that this particular interval contains the true effect. Report the interval and effect size alongside the p-value.
+- Use the planned analysis and stopping rule. Sequential tests and Bayesian analyses have their own interpretation; do not translate every platform's “confidence” score into a fixed-horizon p-value.
+
+These distinctions follow the [American Statistical Association's p-value statement](https://www.amstat.org/asa/files/pdfs/p-valuestatement.pdf). Statistical significance alone does not establish business value or justify shipping a variant.
 
 ### Analysis Checklist
 
@@ -210,10 +215,10 @@ Looking at results before reaching sample size and stopping early leads to false
 
 | Result | Conclusion |
 |--------|------------|
-| Significant winner | Implement variant |
+| Significant winner | Check effect size, uncertainty and guardrails before implementing |
 | Significant loser | Keep control, learn why |
-| No significant difference | Need more traffic or bolder test |
-| Mixed signals | Dig deeper, maybe segment |
+| No significant difference | Report the effect interval: it may still allow meaningful benefit and harm, or may exclude effects worth pursuing. Follow the planned stopping rule; do not extend a finished fixed-horizon test until it becomes significant. Plan a new test if needed. |
+| Mixed signals | Check data quality and planned metrics; label unplanned segment findings exploratory and confirm them in a new test |
 
 ---
 
