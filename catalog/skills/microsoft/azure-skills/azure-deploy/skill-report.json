@@ -5,8 +5,8 @@
     "name": "azure-deploy",
     "description": "Execute Azure deployments for ALREADY-PREPARED applications that have existing .azure/deployment-plan.md and infrastructure files. DO NOT use this skill when the user asks to CREATE a new application — use azure-prepare instead. This skill runs azd up, azd deploy, terraform apply, and az deployment commands with built-in error recovery. Requires .azure/deployment-plan.md from azure-prepare and validated status from azure-validate. WHEN: \"run azd up\", \"run azd deploy\", \"execute deployment\", \"push to production\", \"push to cloud\", \"go live\", \"ship it\", \"bicep deploy\", \"terraform apply\", \"publish to Azure\", \"launch on Azure\". DO NOT USE WHEN: \"create and deploy\", \"build and deploy\", \"create a new app\", \"set up infrastructure\", \"create and deploy to Azure using Terraform\" — use azure-prepare for these.",
     "upstream": "https://github.com/microsoft/azure-skills/tree/main/skills/azure-deploy",
-    "upstream_commit": "013b97d8aab03ce8cd88944976e9988f8c829746",
-    "content_hash": "sha256:080d6f1e49f160582f6c211caff559f89b7acdf28456e0a6b95ecb1f5fe75c5e",
+    "upstream_commit": "f8fac821eca9fe691b618f55313b376cb563d5dd",
+    "content_hash": "sha256:e52b1e0c54d14eef470b6475ae43196fcb3d1b3fb2fbd620c3e2d0171332a5db",
     "license": "MIT",
     "hosting": "indexed",
     "category": "cloud",
@@ -15,17 +15,18 @@
     "publisher_verified": false,
     "duplicate_of": null,
     "tags": [
-      "deployment"
+      "deployment",
+      "cli"
     ]
   },
   "frontmatter_valid": true,
   "frontmatter_issues": [],
   "signals": {
     "stars_github": null,
-    "installs_skills_sh": 478900,
-    "fetched_at": "2026-07-27T06:26:00.925Z",
+    "installs_skills_sh": 591200,
+    "fetched_at": "2026-09-21T08:32:49.151Z",
     "first_seen_at": "2026-07-27T06:26:00.925Z",
-    "upstream_commit_at": "2026-07-24T10:02:15-07:00"
+    "upstream_commit_at": "2026-09-18T10:41:14-07:00"
   },
   "context_size": {
     "version": "1",
@@ -34,7 +35,7 @@
       "method": "heuristic",
       "description": "静态文本估算: CJK 字符 + 拉丁词 + 符号混合计数;不代表任一模型真实 tokenizer。单文本文件 >256KB 或 symlink 逃逸包外的不计入。"
     },
-    "generated_at": "2026-07-27T06:26:00.925Z",
+    "generated_at": "2026-09-21T08:32:49.151Z",
     "scopes": {
       "activation_core": {
         "files": [
@@ -119,54 +120,62 @@
   },
   "eval": null,
   "copy": {
-    "tagline": "一键部署已准备好的应用至 Azure 云",
+    "tagline": "把已经准备好的应用发布到云端,出错自动恢复继续部署",
     "scene_tags": [
-      "上线发布",
-      "云环境部署",
-      "生产环境推送"
+      "应用上线",
+      "生产环境发布",
+      "云端部署"
     ],
-    "fit_line": "适合你，如果已有 Azure 部署计划文件，需要自动执行部署命令",
-    "tagline_en": "Deploy prepared applications to Azure with one command",
+    "fit_line": "适合你,如果应用已开发完毕,只差把它推到云端正式环境。",
+    "tagline_en": "Ship a ready app to the cloud and recover automatically when a deploy step fails",
     "scene_tags_en": [
+      "go live",
       "production release",
-      "cloud deployment",
-      "go live"
+      "cloud deployment"
     ],
-    "fit_line_en": "For you if you have an Azure deployment plan and need to automate the deploy process",
+    "fit_line_en": "For you if your app is finished and only needs to be pushed to production.",
     "source": "llm",
-    "content_hash": "sha256:080d6f1e49f160582f6c211caff559f89b7acdf28456e0a6b95ecb1f5fe75c5e",
+    "content_hash": "sha256:e52b1e0c54d14eef470b6475ae43196fcb3d1b3fb2fbd620c3e2d0171332a5db",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-27T06:28:46.756Z",
+    "generated_at": "2026-09-21T08:33:55.356Z",
     "lint_pass": true
   },
   "howto": {
-    "what": "执行已准备好应用的 Azure 部署，运行 azd up、azd deploy、terraform apply 或 az deployment 等命令，并自动处理错误恢复。部署前必须确保已通过 azure-prepare 和 azure-validate 技能。",
-    "when": "当用户要求执行部署，如说“运行 azd up”、“部署到生产环境”等，且应用已准备好并通过验证时触发。",
+    "what": "装上后,Claude 会读取 .azure/deployment-plan.md 并确认状态为 Validated,按配方执行 azd up、azd deploy 等部署命令,带内置错误恢复,最后把端点以完整 https:// 链接报给你。",
+    "when": "当你说“run azd up”“execute deployment”“push to production”等关键词,或要部署已有 .azure/deployment-plan.md 与基础设施的应用时触发;要求新建应用的场景不使用本技能。",
     "say": [
       {
-        "text": "运行 azd up 部署我的应用",
-        "note": "Claude 将执行部署并报告结果。"
+        "text": "run azd up,把准备好的应用部署到 Azure",
+        "note": "先查计划状态,再按配方执行部署"
       },
       {
-        "text": "将应用推送到生产环境",
-        "note": "会先检查验证状态，然后执行部署。"
+        "text": "执行部署,把已构建的代码推到生产环境",
+        "note": "走预部署检查与错误恢复流程"
+      },
+      {
+        "text": "terraform apply 部署这个项目,完成后给我端点链接",
+        "note": "会以完整 https:// 链接汇报结果"
       }
     ],
     "source": "llm",
-    "content_hash": "sha256:080d6f1e49f160582f6c211caff559f89b7acdf28456e0a6b95ecb1f5fe75c5e",
+    "content_hash": "sha256:e52b1e0c54d14eef470b6475ae43196fcb3d1b3fb2fbd620c3e2d0171332a5db",
     "model": "deepseek-v4-flash",
-    "generated_at": "2026-07-27T06:32:40.997Z",
+    "generated_at": "2026-09-21T08:36:14.572Z",
     "lint_pass": true,
-    "what_en": "Execute Azure deployments for already-prepared applications by running commands like azd up, azd deploy, terraform apply, or az deployment with built-in error recovery. Requires prior completion of azure-prepare and azure-validate skills.",
-    "when_en": "Triggered when the user asks to execute a deployment, e.g., \"run azd up\", \"push to production\", etc., and the application is already prepared and validated.",
+    "what_en": "Once installed, Claude reads .azure/deployment-plan.md, confirms status is Validated, then runs azd up, azd deploy and similar commands per the recipe with built-in error recovery, and reports endpoint URLs as full https:// links.",
+    "when_en": "Triggers when you say things like “run azd up”, “execute deployment” or “push to production”, or want to deploy an app that already has .azure/deployment-plan.md. Not for creating new apps.",
     "say_en": [
       {
-        "text": "Run azd up to deploy my app",
-        "note": "Claude will execute the deployment and report results."
+        "text": "Run azd up and deploy the prepared app to Azure",
+        "note": "Checks plan status, then runs the recipe"
       },
       {
-        "text": "Push the app to production",
-        "note": "It will check validation status first, then deploy."
+        "text": "Execute the deployment and push the built code to production",
+        "note": "Runs pre-deploy checks and error recovery"
+      },
+      {
+        "text": "Run terraform apply and give me the endpoint links when done",
+        "note": "Reports results as full https:// links"
       }
     ]
   }
