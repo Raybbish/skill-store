@@ -65,17 +65,17 @@ If `.env` doesn't exist, create it from `.env.example`. Ask the user for:
 
 After resolving config, assign the global config directory with the exact
 `obsidian_wiki_config_dir` algorithm from the Config Resolution Protocol in
-`.skills/llm-wiki/SKILL.md`. Create the shared writing profile only when it does not
+`skills/llm-wiki/SKILL.md`. Create the shared writing profile only when it does not
 already exist. Preserve an existing `$GLOBAL_CONFIG_DIR/WRITING.md`; never overwrite it
 and do not ask additional writing-style questions.
 
 Use `OBSIDIAN_WIKI_REPO` when it was loaded from config. When it is absent, derive the
-absolute repository/data root from this loaded skill's absolute path, distinguishing the
-packaged `<root>/skills/wiki-setup/SKILL.md` layout from the source
-`<root>/.skills/wiki-setup/SKILL.md` layout. Then check both canonical template layouts:
+absolute repository/data root from this loaded skill's absolute path. Packaged installs
+and source checkouts both use `<root>/skills/wiki-setup/SKILL.md`; checkouts from before
+the rename used `<root>/.skills/wiki-setup/SKILL.md`. Then check both template layouts:
 
-- Packaged install: `<root>/skills/llm-wiki/references/WRITING.md`
-- Source checkout: `<root>/.skills/llm-wiki/references/WRITING.md`
+- Current: `<root>/skills/llm-wiki/references/WRITING.md`
+- Older checkout: `<root>/.skills/llm-wiki/references/WRITING.md`
 
 ```bash
 GLOBAL_CONFIG_DIR="$(obsidian_wiki_config_dir)"

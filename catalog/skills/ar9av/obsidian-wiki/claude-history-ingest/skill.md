@@ -421,7 +421,7 @@ omit it to leave the previous takeaways untouched.
 If an ongoing project is now better understood, record the thread so the next
 session picks it up: `obsidian-wiki memory todo add "<thread>" --origin projects/<name>.md`.
 
-See `.skills/llm-wiki/references/MEMORY.md` for the full procedure.
+See `skills/llm-wiki/references/MEMORY.md` for the full procedure.
 
 ## Privacy
 

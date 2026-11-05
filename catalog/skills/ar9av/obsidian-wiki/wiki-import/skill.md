@@ -241,7 +241,7 @@ obsidian-wiki memory sync IMPORT \
 
 Omit `--takeaways` if the import does not shift the overall picture; the previous takeaways carry across. Never hand-edit `index.md`, `log.md`, or `hot.md` — the command takes the lock that keeps a parallel writer from dropping your update.
 
-See `.skills/llm-wiki/references/MEMORY.md` for the full procedure.
+See `skills/llm-wiki/references/MEMORY.md` for the full procedure.
 
 ## Step 6: Print Summary
 

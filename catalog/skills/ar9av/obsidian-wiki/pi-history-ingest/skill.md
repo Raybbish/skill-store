@@ -265,7 +265,7 @@ obsidian-wiki memory sync PI_HISTORY_INGEST \
 Never hand-edit `index.md`, `log.md`, or `hot.md` — the command takes the lock that keeps a parallel writer from dropping your update. `--takeaways` is the one-line conceptual summary that used to go in Recent Activity;
 omit it to leave the previous takeaways untouched.
 
-See `.skills/llm-wiki/references/MEMORY.md` for the full procedure.
+See `skills/llm-wiki/references/MEMORY.md` for the full procedure.
 
 ## Privacy and Compliance
 

@@ -329,7 +329,7 @@ obsidian-wiki memory sync CAPTURE \
 ```
 
 Never hand-edit `index.md`, `log.md`, or `hot.md` — see
-`.skills/llm-wiki/references/MEMORY.md`. Omit `--takeaways` when the capture
+`skills/llm-wiki/references/MEMORY.md`. Omit `--takeaways` when the capture
 does not shift the overall picture; the previous takeaways carry across.
 
 ## Step 7: Confirm to User

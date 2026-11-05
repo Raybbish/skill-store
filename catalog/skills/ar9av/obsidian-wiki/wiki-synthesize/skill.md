@@ -159,7 +159,7 @@ Open questions the synthesis surfaced are threads, not takeaways — record each
 
 Never hand-edit `index.md`, `log.md`, or `hot.md` — the command takes the lock that keeps a parallel writer from dropping your update.
 
-See `.skills/llm-wiki/references/MEMORY.md` for the full procedure.
+See `skills/llm-wiki/references/MEMORY.md` for the full procedure.
 
 ## Quality Checklist
 

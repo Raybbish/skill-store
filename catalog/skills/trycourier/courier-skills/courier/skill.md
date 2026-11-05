@@ -1,6 +1,6 @@
 ---
 name: courier
-description: "Use when building notifications with Courier across email, SMS, push, in-app inbox, Slack, Teams, and WhatsApp: sends, templates, translations, email client previews, Elemental, journeys, preferences, routing, CLI and MCP."
+description: "Builds and debugs notifications with Courier. Use when sending through Courier on email, SMS, push, in-app inbox, Slack, Teams or WhatsApp: templates, translations, journeys, preferences, routing."
 license: MIT
 ---
 
@@ -39,7 +39,7 @@ If the project already has `@trycourier/courier` or `trycourier` installed, skip
 Above 500 ad-hoc recipients, a `to` array returns `400 message.to has N recipients. Max is 500`.
 Use a list, an audience, or a [Bulk API job](./references/guides/bulk.md) instead.
 
-Multi-tenant sends carry the tenant as `tenant_id`, either on the recipient (`to.tenant_id`) or in `message.context.tenant_id`. Both load that tenant's brand and preference defaults; pick one and use it consistently.
+Multi-tenant sends carry the tenant in a `context`, either on the recipient (`to: { user_id, context: { tenant_id } }`) or on the message (`message.context.tenant_id`). Both load that tenant's brand and preference defaults; pick one and use it consistently. Never put `tenant_id` directly in `to` beside `user_id`: the SDK types allow it, but the API returns `400 'message.to' cannot contain both 'tenant_id' and 'user_id'`. A `to` with only `tenant_id` sends to every member of the tenant.
 
 ## Canonical SDK Shape
 
@@ -103,7 +103,7 @@ Sub-namespaces: `automations.invoke`, `automations.runs`, `digests.schedules`, `
 |---|---|
 | Archive a sent message | `client.requests.archive(requestId)` |
 | Delete a provider | `client.providers.delete(id)` |
-| Change one provider setting, the title, or the alias | `client.providers.patch(id, { settings: { … } })` |
+| Change one provider setting, the title, or the alias | `client.providers.patch(id, { patch: [{ op: "replace", path: "/settings/…", value }] })` (JSON Patch) |
 | Replace a provider's whole config (full PUT) | `client.providers.update(id, …)` |
 | Subscribe a user to a list | `client.lists.subscriptions.subscribeUser(userId, { list_id })` |
 | Set a user's topic preference | `client.users.preferences.updateOrCreateTopic(topicId, { user_id, topic })` |
@@ -120,9 +120,11 @@ Sub-namespaces: `automations.invoke`, `automations.runs`, `digests.schedules`, `
 ## Universal Rules
 
 - Use idempotency keys for sends where duplicates would be harmful (payments, security alerts, OTPs)
+- Send one-time codes (OTPs) immediately, never through a batch, digest or delay, even when asked to. A late code has expired and locks the user out, so say so and send it on its own
 - Use E.164 format for phone numbers
 - Only send to channels the user has asked for or that make sense for the use case. Don't blast every channel by default
 - For template sends, pass the Courier-generated `nt_...` ID or a template alias as `template`; treat IDs as opaque, workspace-specific values
+- Never put JSON or literal curly braces in inline `message.content`. Courier reads `{path}` in inline content as a variable, so the innermost `{…}` of a JSON string renders as `[Error]`. Put structured payloads in `message.data` as an object and keep `title` and `body` readable text, see the [before and after](./references/guides/templates.md#inline-vs-templated-sending)
 
 ### See also (not duplicated here)
 

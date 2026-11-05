@@ -13,7 +13,7 @@ conversation into a page; the factory turns a body of pages into a reusable skil
 
 ## Hard guardrails (read first)
 
-- **Never write into `.skills/`** and **never run `setup.sh`** or create symlinks into any global
+- **Never write into `skills/`** and **never run `setup.sh`** or create symlinks into any global
   skill directory (`~/.claude/skills`, `~/.codex/skills`, …). Generated skills go to the review
   dir only. Installation is a separate, explicit human decision.
 - **Never auto-install.** End by telling the user where the skill is and how to install it
@@ -58,7 +58,7 @@ candidates.
 From the cluster, decide:
 
 - **`name`** — kebab-case, derived from the cluster's subject (e.g. `french-theory-expert`,
-  `peptide-protocols`). Must not collide with an existing skill in `.skills/`.
+  `peptide-protocols`). Must not collide with an existing skill in `skills/`.
 - **`description`** — the trigger. Write it "pushy" (per `skill-creator`): state **when** to use it
   (all the phrasings a user might say) **and** what it does. This field is what makes the skill fire.
 - **Reasoning approach** — how an agent should *use* this knowledge: the questions it answers, the
@@ -100,7 +100,7 @@ checkout, so check both layouts under `$OBSIDIAN_WIKI_REPO` and use the first th
 
 - `$OBSIDIAN_WIKI_REPO/skills/skill-creator/scripts/` — packaged install (`OBSIDIAN_WIKI_REPO` points
   at the bundled `_data/` dir, which ships the skills under `skills/`).
-- `$OBSIDIAN_WIKI_REPO/.skills/skill-creator/scripts/` — source checkout.
+- `$OBSIDIAN_WIKI_REPO/skills/skill-creator/scripts/` — source checkout.
 
 Whichever resolves, it holds:
 
@@ -118,15 +118,15 @@ Tell the user:
 - the trigger `description`
 - **How to install if they want it (their decision, project-local only):**
   ```
-  ln -s ../../.skills/<name> <repo>/.claude/skills/<name>   # after copying <name>/ into .skills/, sans SKILL_FACTORY.md
+  ln -s ../../skills/<name> <repo>/.claude/skills/<name>   # after copying <name>/ into skills/, sans SKILL_FACTORY.md
   ```
   Note explicitly: review first; do not run `setup.sh` (it fans skills into global dirs); never global-install without explicit agreement.
 
-Do **not** install it yourself. Do not write to `.skills/`. Done.
+Do **not** install it yourself. Do not write to `skills/`. Done.
 
 ## Quality checklist
 
-- [ ] Output went to `$SKILL_FACTORY_OUTPUT_DIR`, never `.skills/` or a global dir
+- [ ] Output went to `$SKILL_FACTORY_OUTPUT_DIR`, never `skills/` or a global dir
 - [ ] Cluster confirmed with the user; only mature pages (per `SKILL_FACTORY_MATURITY` / `tier: core`)
 - [ ] `description` is pushy and accurate (when + what)
 - [ ] SKILL.md body is lean; depth lives in `references/`
