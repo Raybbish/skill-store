@@ -1,0 +1,231 @@
+---
+name: dr-drive-harness
+description: The driving manual for DeepReason - how to run the harness properly (session preflight, the public CLI lifecycle, live-run ladders) and where to look before modifying anything or when diagnosing a problem. An index over the owning authorities (CLAUDE.md, docs/map, the workflow skills), not a replacement for them. Load at the start of any session that will run, modify, or diagnose the harness, especially a first session in this repo.
+---
+
+# Drive the harness
+
+You are operating a Popperian reasoning harness whose entire epistemology
+rests on one rule: **the typed record is the only admissible evidence**.
+`log.jsonl`, `objects/`, `progress.jsonl`, `run-status.json`,
+`REPLAY_VALIDATION.json`, `verify_root` — those are evidence. Model prose,
+including yours, is not. Every section below is an index: it tells you the
+load-bearing command and WHERE the full authority lives, so you never
+operate from a half-remembered copy.
+
+## 1. Session preflight (before anything else)
+
+The cloud container rolls back silently — stale checkout, dead processes,
+deleted gitignored files. CLAUDE.md's "Environment" section is the
+authority; the sequence is:
+
+    git log --oneline -1                      # stale head? resync:
+    git fetch origin <branch> && git checkout -B <branch> origin/<branch>
+    python -c "import deepreason" || pip install -e . --break-system-packages -q
+    ls experiments/*/env 2>/dev/null          # gitignored credentials survive?
+
+**No live launch without a green soak on the launch config**: run
+`python -u scripts/cycle_soak.py --case <case>` before any ladder launch.
+It drives the managed path to cycle 8 on the launch configuration's own
+shape against the deterministic stub, and carries a named assertion for
+each of the four 2026-08-22 cycle-0-to-2 operational deaths. It has
+REPRODUCED one of them offline (the reservation-bound seam); the other
+three are asserted, not demonstrated — read that tranche's RESULTS.md
+before treating a green soak as full coverage
+(`experiments/2026-08-23-change-cycle-soak-instrument/`).
+
+Always `python -m pytest`, never bare `pytest` (PATH shim). Credentials
+are recreated from the operator's handover, never committed — `env`
+files are gitignored; check with `git check-ignore <path>` before
+writing near them. Commit and push at every phase boundary — work
+between pushes is work at risk. Then read, in order: CLAUDE.md, the
+newest `experiments/*/RESULTS.md` segments, `docs/ERRATA.md`.
+
+Where the truth lives, in reading order: CLAUDE.md (law) →
+`docs/map/INDEX.md` (navigation) → `experiments/*/RESULTS.md` (what is
+proven) → `docs/ERRATA.md` (what was corrected) → each tranche's
+PARKED.md (what is deliberately not done).
+
+Re-entering mid-tranche needs no conversation history: every tranche is
+resumable from its committed artifacts alone. Read the tranche dir's
+CHECKLIST.md `State:` line, then REQUEST.md/SPEC.md, and continue. The
+whole fresh-window prompt is one line — "Resume tranche <dir> from its
+artifacts." If a session cannot resume from the artifacts, the previous
+session under-committed; record that gap, reconstruct, and commit.
+
+## 2. Running it — the public lifecycle
+
+The supported product surface (authority: `README.md`):
+
+    deepreason setup                 # one strict provider profile
+    deepreason qualify --yes         # explicit; tier ladder full/shallow/unqualified
+    deepreason status [--json]       # readiness + the one next action
+                                     # NB: provider readiness, NOT a run's
+                                     # outcome — for that, `results` below
+    deepreason results ROOT-OR-HOME [--json] [--verify]
+                                     # read a run's typed results: id, state,
+                                     # stop_reason, cycles, tokens vs budget,
+                                     # artifact/survivor/frontier counts,
+                                     # defended-trial + judge-call counts, the
+                                     # STORED verify_root verdict (--verify
+                                     # re-derives), amendment epochs, and
+                                     # whether the root is amend-ready.
+                                     # Read-only; absent facts print as typed
+                                     # absences, never omitted. This is the
+                                     # ONE retrieval surface — do not go
+                                     # hunting through root files for it.
+    deepreason reason "QUESTION" [--cycles N] [--token-budget N]
+    deepreason reason "Q" --attach file.pdf        # frozen evidence, dossier digest
+    deepreason --root ROOT amend --attach f --reshape-question "Q2"
+    deepreason --root ROOT continue --budget cycles=N
+    deepreason reason --shallow "Q"  # MiniReason reduced engine
+    deepreason web                   # loopback-only page over the MCP facade
+
+Facts that bite (authority: CLAUDE.md "Live runs"): qualification caches
+by subject digest — same home + profile + opt-ins is a ~1s cache hit,
+any change reruns a ~14-minute battery; qualify opt-ins must match reason
+opt-ins (`--attached-evidence` ⇔ `--attach`); provider reasoning must be
+EXPLICITLY disabled for ollama when required (unset is not off — the
+refusal is typed).
+
+## 3. Running it — live experiment ladders
+
+Ladders are shell scripts (`experiments/*/**_run.sh`): setup → qualify →
+reason → audit against a `DEEPREASON_HOME`. The rules, each learned the
+expensive way (authority: CLAUDE.md "Live runs"):
+
+- **Run identity is deterministic.** Same question + config → same run
+  id; a leftover root refuses with RUN_ALREADY_STARTED. Retire by rename
+  (`git mv run-<id> <state>-epochN-run-<id>`) and COMMIT THE RENAME FIRST.
+  Never edit a committed root — to change the question or add evidence,
+  `deepreason amend` then `continue`.
+- **Launch detached, never foreground:** from the ladder's directory,
+  `setsid nohup ./<ladder>.sh & disown`. Arm the snapshot loop
+  (`snapshot_loop.sh`) and a monitor on the newest root's
+  `progress.jsonl` plus the driver log's `rc=` lines — alert on failure
+  signatures, not just success.
+- **Judge only typed outcomes:** run state, stop_reason, the audit JSON,
+  `verify_root`, FINDINGS.md. Capability-channel use is stochastic across
+  identical runs — one live miss is inconclusive; the offline regression
+  is the proof.
+
+## 4. Where to look BEFORE modifying anything
+
+Never scope a change by grepping 125k lines. The map is the navigation
+layer, and the reading order is fixed:
+
+1. `docs/map/INDEX.md` — resolve the work to ids (`DR-SUB-<pkg>`,
+   `DR-CON-<concept>`, `DR-SEAM-<a>-x-<b>`).
+2. `docs/map/INV-frozen-surfaces.md` — **first, always**: five surfaces
+   are not yours to change (state digests, harness event application,
+   replay-validation formats, manifest schemas + validators,
+   qualification subjects). Readers may be fixed; formats may not.
+3. If the change spans two things, the seam document BEFORE either
+   subsystem: the file is `docs/map/SEAM-<a>-x-<b>.md`, sides in
+   alphabetical order. It names the small fraction of each side actually
+   involved. The worked recipe for any seam change is
+   `docs/map/REC-change-a-seam.md`.
+4. `docs/map/SCHEMA.md` before writing or editing any map document. The
+   map moves in the SAME commit as the code, or it becomes a document
+   that lies.
+5. Record the resolved ids in the tranche's first artifact (GOAL.md or
+   REQUEST.md) — every later phase starts from the same map. If the map
+   has no id for something the work touches, that is a finding, not a
+   blocker: say so, and creating the missing document becomes part of
+   the tranche.
+
+Instruments that prove you broke nothing: the full gate
+(`python -m pytest tests/ -q -n 4`, 0 failed only) and the root sweep
+(`python tools/root_sweep.py` — no committed root's verdict may move).
+Third instrument, which NO gate runs for you: the wheel smokes
+(`python scripts/wheel_smoke.py`; `python -u
+scripts/wheel_operational_smoke.py`) — build-and-operate checks over
+the INSTALLED package. They pin the public surface (console entry
+points, MCP tool set + schema sha, wheel layout), so any change to that
+surface updates the pins and re-runs the smoke in the SAME commit, or
+the instrument rots silently and nothing else will catch it.
+`python tools/docs_verify.py` is the same gate for the map — and its
+`--fast` mode reuses cached results, so it CANNOT catch a document your
+`src/` change just broke. Iterate with `--fast`; run the FULL mode at
+least once before any commit that touches `src/`.
+
+## 5. Where to look WHEN something breaks
+
+Record first, code second, theory last. In order:
+
+| Look at | It tells you |
+|---|---|
+| `deepreason stop-report <root-or-home>` | **run this first.** What actually ran per seat, what qualification already knew, provider health, the stop classified into CONFIGURATION / ENVIRONMENT / MODEL / HARNESS ranked by evidence, and whether `continue` would be accepted. Derives the four rows below and the qualification rows hand-reading skips. `dr-diagnose` gates on its section 4 |
+| `<root>/run-status.json` | state, stop_reason, message — often the whole answer |
+| `<root>/progress.jsonl` | which cycle/phase/token count it died at |
+| `<root>/REPLAY_VALIDATION.json`, `verify_root(<root>)` | typed violations: check name + detail (open the root READ-ONLY — a writable open repairs, i.e. destroys, the evidence) |
+| the violation's blob under `<root>/blobs/` | the verbatim error and the rejected value — read this BEFORE theorizing; both recorded cycle-0 deaths were misattributed by readers who skipped it |
+| the covering map document's **Traps** section | whether this exact failure happened before — the cheapest diagnosis available |
+| `docs/ERRATA.md` | whether the document you are trusting was already corrected |
+
+Two instruments can disagree and both be right (`verify_root` vs
+`verify_root_report` vs the sweep) — always cite the instrument with the
+number. When the cause is located, do not fix it inline: route it.
+
+## 5b. Process hygiene (each rule paid for in the record)
+
+- **Kill by PID, never by pattern.** `pkill -f`/`pgrep -f` can match
+  your own shell's command line and kill your own session.
+- **Never run the full gate concurrently with `docs_verify`** (or any
+  other worker-spawning instrument): both fan out processes, and the
+  contention manufactures failures. One instrument at a time, on an
+  otherwise idle box.
+- **A surprising measurement taken under load is not a measurement.**
+  Re-run idle before recording it, and say which run you recorded.
+- **Long work launches detached** (`setsid nohup ... & disown`, §3) —
+  a foreground process dies with the session.
+- Scratch and temp files go to the session scratchpad, never the repo.
+
+## 6. Routing to the workflows
+
+All substantive work goes through a workflow family — that is repo law
+(CLAUDE.md), not preference. This section is the index of all of them
+(CLAUDE.md's "Which workflow to use" carries the same summary).
+
+- Something is broken or suspicious → `deepreason-orchestrator`
+  (dr-set-goal → dr-diagnose → dr-reproduce → dr-propose-fix →
+  dr-implement-fix → dr-verify-outcome). Diagnosis from the typed record
+  BEFORE code reading.
+- The operator suggests a change → `dr-change-orchestrator`
+  (dr-capture-request → dr-spec-change → dr-plan-steps → dr-execute-step
+  → dr-validate-change → dr-deliver-change). Authority is the operator's
+  verbatim words, ledgered in REQUEST.md.
+- The operator's message is ambiguous or terse, a phase says "stop and
+  ask", or evidence contradicts your expectation →
+  `dr-ask-the-right-question` first: route the question to the cheapest
+  authority (record → framework → operator) before spending operator
+  attention.
+
+Cross-routing is strict: a defect found mid-change is PARKED, not fixed;
+a change wished for mid-defect is PARKED, not implemented. One tranche,
+one goal.
+
+**Calibration for less capable executors.** The documents this manual
+points at are complete by design — execute them literally rather than
+improvising a summary of them. Never generalize an instruction beyond its
+stated scope; if a spec seems silent about your case, that is a question
+(load `dr-ask-the-right-question`), not an invitation to infer — an
+accepted, judgment-only exception to authoring-skills' GATE-every-
+negation rule, `docs/ERRATA.md` E24. A
+multi-step program (a handover, a checklist, a ladder) runs one step per
+tranche — finishing a step early is never a reason to start the next in
+the same tranche. Stop conditions and DESIGN-AND-STOP gates are hard
+stops: the deliverable at a gate is a committed document and an ended
+turn, not an implementation. And every stop presented to the operator
+leads with the decision needed in ONE sentence, the options priced, and
+a recommendation with its reason — the operator should be able to
+answer with a word. Style, per the operator's recorded preference
+(CLAUDE.md, Conventions): answer their actual worry first; say what a
+scary finding does NOT mean before what it does; own the workflow's own
+contribution to any confusion; and close hard explanations with one
+short, accurate everyday analogy.
+
+**Exit criterion.** You know you are driving properly when every claim
+you make about a run ends in a typed artifact, every modification you
+plan started from `INDEX.md` and `INV-frozen-surfaces.md`, and every
+problem you chase entered a workflow tranche with its evidence committed.
