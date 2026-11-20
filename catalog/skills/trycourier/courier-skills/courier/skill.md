@@ -84,6 +84,10 @@ Status meanings: `UNROUTABLE` means no channel or provider could take it (missin
 
 If the failing channel is `inbox` and the send itself looks correct, the problem is client-side. See [inbox/rendering.md](./references/inbox/rendering.md).
 
+## Reporting to Courier
+
+Courier wants feedback on every interaction with Courier: the API, SDKs, CLI, MCP server, docs, and app. When something gets in your way (an error you can't explain, a response that contradicts the docs, a step that took too many tries) or a feature would have made the task easier, report it with the Feedback API and keep working. For a possible bug, rule out the project's own code first with the ladder above. Send it through the Courier API: the `courier` MCP server's `submit_feedback`, `courier feedback create`, or `client.feedback.create`. Include the goal, the steps, and the result, plus the request ID when an API call shows the problem. Never include secrets, customer data, or the project's own code. Report each issue once per session, and once you get a `feedback_id`, tell the user in one line. Categories, fields and error handling: [feedback.md](./references/guides/feedback.md).
+
 ## Verifying Against Live Sources
 
 When you need an API signature, SDK method, or feature not covered in these resources, verify it. Do **not** reconstruct it from memory.
@@ -93,7 +97,7 @@ When you need an API signature, SDK method, or feature not covered in these reso
 | **Installed SDK types**: `node_modules/@trycourier/courier/resources/*.d.ts`, or the Python package's stubs | What exists in the version this project has. Wins any disagreement about whether something exists |
 | **A docs page as markdown**: append `.md` to its URL, e.g. `…/journeys/nodes/batch.md` (~1–2k tokens; a bad path is a real `404`) | One page you can name |
 | **Docs MCP** `https://www.courier.com/docs/mcp` (no key): `query_docs_filesystem_courier` (`head`/`grep` over every page **and the OpenAPI specs**, ~2k per read), `search_courier` (~20k per call) | Finding a page you can't name. Current with the docs nav |
-| **API MCP** `https://mcp.courier.com` (needs `api_key`) or `courier <resource> --help` | The live operations and parameter shapes. A tool can outlive its endpoint ([mcp.md](./references/guides/mcp.md)) |
+| **API MCP** `https://mcp.courier.com` (needs your API key) or `courier <resource> --help` | The live operations and parameter shapes. A tool can outlive its endpoint ([mcp.md](./references/guides/mcp.md)) |
 | **[API reference](https://www.courier.com/docs/api-reference/)** | Request/response schemas, error codes |
 | **`https://www.courier.com/docs/llms.txt`** (~16k tokens) | A map of page URLs. A listed page is not proof an endpoint exists. Never fetch `llms-full.txt` (~530k tokens) |
 
@@ -134,6 +138,7 @@ When you need an API signature, SDK method, or feature not covered in these reso
 | **Webhooks both directions**: outbound events to your endpoint, inbound events into Courier | [webhooks.md](./references/guides/webhooks.md) |
 | **Debugging any delivery failure**: start here | [cli.md](./references/guides/cli.md) |
 | MCP setup, API server to operate, docs server to look things up | [mcp.md](./references/guides/mcp.md) |
+| **Reporting to Courier**: a bug, confusing behavior, or a feature request, from your agent or by hand (Feedback API, `submit_feedback`) | [feedback.md](./references/guides/feedback.md) |
 | Email: overrides, attachments, bounces, delivery tracking (SendGrid and SES stay at `SENT` without their webhooks), SMTP setup traps | [email.md](./references/channels/email.md) |
 | SMS: 10DLC rule, STOP opt-outs mirrored into preferences | [sms.md](./references/channels/sms.md) |
 | Push: tokens, reaching every device (`routing_method: "all"`), FCM, Expo, web push, overrides | [push.md](./references/channels/push.md) |

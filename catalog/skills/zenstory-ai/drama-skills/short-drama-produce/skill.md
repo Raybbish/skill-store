@@ -6,15 +6,15 @@ license: MIT
 
 # 确认后生产
 
-本技能负责把定稿提示词与生成参数发往运行环境配置好的生成接口（adapter）。图片提示词归 `$short-drama-image-prompts`，视频提示词归 `$short-drama-video-prompts`，台词归 `$short-drama-write`，角色音色设定归 `$short-drama-assets`。
+本技能负责把定稿提示词与生成参数发往运行环境配置好的生成接口。图片提示词归 `$short-drama-image-prompts`，视频提示词归 `$short-drama-video-prompts`，台词归 `$short-drama-write`，角色音色设定归 `$short-drama-assets`。
 
 ## 快速开始
 
 只有在用户明确要求调用接口生成后，才建立临时生成任务单（结果写入 `剧集/<EP>/制作成果/`，任务单本身不作为第六份创作文档留存）：
 
-- **来源提取与参考绑定**：指定 `source` 与 `source_entry`（`IMG-*`、`SHOT-*`、`MOTION-*` 或 `GROUP-*`）时自动从该二级标题段落提取可复制提示词与已落盘 `REF-...` 绑定，并按条目段落计算摘要（修改后续镜头不会连坐作废前序确认码）；同图多用途绑定、`SHOT-*` 跳过未落盘 `PLAN-...`、`GROUP-*` 可选组级参考图与 `reference_audio` 放行细则见 [生成接口协议规范](references/adapter-contract.md#任务单格式job-json)。
+- **来源提取与参考绑定**：指定 `source` 与 `source_entry`（`IMG-*`、`SHOT-*`、`MOTION-*` 或 `GROUP-*`）时自动从该二级标题段落提取可复制提示词与项目内已有的 `REF-...` 绑定，并按条目段落计算摘要（修改后续镜头不会令前面镜头的确认码一并失效）；同图多用途绑定、`SHOT-*` 跳过尚未生成文件的 `PLAN-...`、`GROUP-*` 可选组级参考图与 `reference_audio` 放行细则见 [生成接口协议规范](references/adapter-contract.md#任务单格式job-json)。
 
-多条资产优先走**批次确认工作流**，先汇总预览整批清单，未确认前绝不发起任何外部扣费调用：
+多条媒体任务优先走**批次确认流程**，先汇总预览整批清单，未确认前绝不发起任何外部扣费调用：
 
 ```bash
 python3 {技能目录}/scripts/production_tool.py prepare-batch <project> --jobs <job-1.json> <job-2.json>
@@ -58,7 +58,7 @@ python3 {技能目录}/scripts/production_tool.py audit <project>
 - **配音（`tts`）**：从 `剧本.md` 读取台词原句与情绪括注，不改台词正文。支持参考录音的外部语音接口可固定角色定稿参考音频；内置 MiniMax 语音按预设 `voice_id` 与情绪/语速/音量/音高参数合成。
 - **音乐（`music`）**：读取 `视频提示词.md` 已确认的成片配乐章节；人声歌曲传定稿 `lyrics`，纯配乐不传歌词。音轨铺入时间线、循环与人声闪避交 `$short-drama-edit` 处理。
 
-批量生产建议按单集（或单集内的首帧、视频镜头）建立 `prepare-batch` 批次，避免把整季几十集塞进同一个确认包。额度有限时按集拆批，一集的镜头全部跑完再建下一集的任务，避免按资产类别横铺多集导致额度中途用完时手里没有能剪的整集。
+批量生产建议按单集（或单集内的首帧、视频镜头）建立 `prepare-batch` 批次，避免把整季几十集塞进同一个确认包。额度有限时按集拆批，一集的镜头全部跑完再建下一集的任务，避免按媒体类别横铺多集导致额度中途用完时手里没有能剪的整集。
 
 ## 生成接口与凭据安全
 
@@ -72,7 +72,7 @@ python3 {技能目录}/scripts/production_tool.py audit <project>
 
 ## 中断恢复与下游衔接
 
-异步任务拿到供应商返回的任务 ID 后，会在开始轮询前先落盘写入 `handle_path`。中途断网或轮询中断时，先运行 `audit` 检查是否存在 `orphaned_provider_job`（`action: collect_before_retry`），再用 `collect` 直接取回原远端任务结果（不重复扣费，也不消耗新确认码）；仅当远端任务确已失败且无法取回时，才对 `retryable` 任务重新确认重跑。
+异步任务拿到供应商返回的任务 ID 后，会在开始轮询前先写入 `handle_path`。中途断网或轮询中断时，先运行 `audit` 检查是否存在 `orphaned_provider_job`（`action: collect_before_retry`），再用 `collect` 直接取回原远端任务结果（不重复扣费，也不消耗新确认码）；仅当远端任务确已失败且无法取回时，才对 `retryable` 任务重新确认重跑。
 
 运行完成后如实汇报产出路径、媒体类型与运行状态；若问题出在提示词或参考素材本身，退回对应上游技能修订。后续套剪成片转 `$short-drama-edit`，成片审片转 `$short-drama-review`。
 
