@@ -11,12 +11,27 @@ description: Install or uninstall memU for whatever agent you are — identify y
 > and is always in sync with the installed code. Do not install from memory or
 > from blog posts; print the guide and follow it to the letter.
 
-memU integrates with a host agent through two seams: **record** (a scheduled
-bridging task mines your session log into durable memory) and **inject** (a
-standing instruction in your instruction file makes you retrieve before
-answering). Each supported host has its own adapter binary carrying its own
+memU integrates with a host agent through two seams: **record** saves session
+information into durable memory, and **inject** retrieves relevant memory before
+answering. Each supported host has its own adapter binary carrying its own
 install guide. Your job here is three steps: install the package, pick your
 binary, print and follow its guide.
+
+## Before installing
+
+Identify the agent executing this skill and check the supported-host table in
+Step 2 before installing the package. If the host is unknown or absent from the
+table, report that it is currently unsupported and stop the installation.
+
+## Before installing with Codex
+
+If you are Codex, check the session's effective sandbox mode before Step 1.
+Continue only with `danger-full-access`; approval policy alone is not sufficient.
+If restricted or unknown, pause and show both ways to continue: enable **Full
+access** in Codex Desktop, or restart Codex CLI with
+`codex --dangerously-bypass-approvals-and-sandbox`. Recheck the effective mode
+before proceeding. After installation, remind the user to restore their previous
+permission mode.
 
 ## Step 1 — install the package
 
@@ -53,21 +68,16 @@ executing this skill):
 | OpenClaw | `memu-openclaw` |
 | Hermes Agent | `memu-hermes` |
 | WorkBuddy | `memu-workbuddy` |
-| Cola | `memu-cola` |
-| anything else | `memu-agent` |
+| pi | `memu-pi` |
 
-Unsure, or not in the table? You are `memu-agent`. Run:
+If you cannot identify your host or it is not in the table, report that it is
+currently unsupported and stop the installation.
 
-```
-memu-agent detect
-```
+For Codex, Claude Code, and pi, continue directly to Step 3: their installers handle backend configuration
+and verification in one invocation. Pass any user-supplied backend inputs to that
+installer when the guide requests them.
 
-It probes this machine and reports, per agent, whether **memorization** works
-(a recognizable session log exists) and whether **retrieval** works (an
-instruction file exists to patch) — and it will redirect you to a dedicated
-binary if your host turns out to have one.
-
-Then, holding your binary, finish this step by creating memU's configuration
+For other hosts, holding your binary, finish this step by creating memU's configuration
 file.
 
 ```
@@ -83,11 +93,9 @@ device, run bare `<your-binary> init` and Step 3's guide will set up local memor
 <your-binary> docs install
 ```
 
-Read what it prints, top to bottom, and follow it exactly. Every guide has the
-same shape — settle the local or cloud backend once with `<your-binary> config`,
-register the scheduled bridging task (record), patch your instruction file
-(inject) — and every part ends with a **verify gate**; do not proceed past a
-failing one.
+Read what it prints, top to bottom, and follow it exactly. The host guide defines
+how to configure the backend and enable automatic recording and retrieval. Follow
+its verification gates and final report.
 
 Three rules that hold for every host:
 
@@ -102,7 +110,8 @@ Three rules that hold for every host:
   behind it (another agent on this machine is already integrated), reuse it as
   is. A second mode or local store would split record and retrieval so the two
   installs no longer share memory.
-- **Report the outcome — with the exact template below.** After installation,
+- **Report the outcome — with the exact template below.** If the host guide
+  specifies its own final report, use that report instead. Otherwise, after installation,
   run:
 
   ```
@@ -147,14 +156,12 @@ Three rules that hold for every host:
   sees it as a suggested reply, and the exact phrase inside them is what they
   type back to you to start the uninstall flow.
 
-  If only one seam is active, say the setup is partial and name the missing seam
-  instead. For `memu-agent`, use the detect report to decide which seams are active.
+  If only one seam is active, report a partial setup and name the missing seam.
 
 ## Uninstall
 
-Same routing, in reverse. If the user asked to **uninstall** memU instead:
-identify your binary exactly as in Step 2, then print and follow its removal
-guide —
+If the user asked to **uninstall** memU, identify your binary as in Step 2,
+then print and follow its removal guide —
 
 ```
 <your-binary> docs uninstall
