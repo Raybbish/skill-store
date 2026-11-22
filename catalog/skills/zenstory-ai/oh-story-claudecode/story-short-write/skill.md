@@ -29,7 +29,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 > 专业 agent 只查当前宿主：Claude `.claude/agents`（`subagent_type`）、OpenCode `.opencode/agents`（`subagent` 的 `agent`）、Codex `.codex/agents` TOML（`agent_type`）、Antigravity `.agents/agents`（`invoke_subagent` + `TypeName`）；ZCode 查插件注册的同名角色，用 `Agent` 按实际 schema 派发，不要求 `.zcode/agents`。主会话自己写正文、去味是常态，不报；作者明确要交给写作助手而角色/工具缺失或返回 unknown agent 时，由主会话接手，对作者只说「这次我自己写」。
 >
-> 版本：项目根 `.story-deployed` 的 `agents_version` 与本版 `agents_version: 44` 不一致（缺失、非整数、更小或更大）时照常按当前宿主角色来源检查并 spawn，只对作者说一句「写作助手是旧版，运行 /story-setup（ZCode 先更新插件）后新开会话」；大于 44 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有当前宿主角色缺失或不暴露调用能力时才降级 solo/direct，对作者只说「这次我自己写」。
+> 版本：项目根 `.story-deployed` 的 `agents_version` 与本版 `agents_version: 45` 不一致（缺失、非整数、更小或更大）时照常按当前宿主角色来源检查并 spawn，只对作者说一句「写作助手是旧版，运行 /story-setup（ZCode 先更新插件）后新开会话」；大于 45 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有当前宿主角色缺失或不暴露调用能力时才降级 solo/direct，对作者只说「这次我自己写」。
 
 ## 执行规则
 
@@ -48,7 +48,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 ## 核心方法
 
 - **按题材选写法**：确定题材后选用[题材包](references/genre-styles/)的腔调、开篇、钩子、情绪烈度、金句、套路与收尾；追妻按时代变体及小三/死人文学分支选择。冷门题材用公式安排结构，腔调按 `short-craft.md`。写法冲突时的先后见 short-craft 开头。
-- **复用作者习惯**：有作者记忆时，正文前用 `scripts/author_memory_commit.py query --workspace {工作区} --book-root {项目目录} --kind prose_style --kind story_design [--genre {题材}] [--workflow 短篇]`（改写、去味只带 `--kind prose_style`），把输出的 `lines` 原样交正文/改写 agent 作自然倾向，不逐条追求命中，不牺牲连贯、节奏和字数；硬门禁、当前请求和本篇设定优先；没装下的交稿时用原话告诉作者。长期声明在收尾按上方作者记忆管理入口处理。
+- **复用作者习惯**：有作者记忆时，正文前用 `scripts/author_memory_commit.js query --workspace {工作区} --book-root {项目目录} --kind prose_style --kind story_design [--genre {题材}] [--workflow 短篇]`（改写、去味只带 `--kind prose_style`），把输出的 `lines` 原样交正文/改写 agent 作自然倾向，不逐条追求命中，不牺牲连贯、节奏和字数；硬门禁、当前请求和本篇设定优先；没装下的交稿时用原话告诉作者。长期声明在收尾按上方作者记忆管理入口处理。
 
 ---
 
@@ -99,15 +99,15 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### Phase 3 完成门槛（进入 Phase 4 前必须通过）
 
-- [ ] 总字数（交付检查报的非空白字数）进入锁定的用户范围；作者没给时进入 `设定.md` 的目标字数
+- [ ] 总字数（交付检查非空白字数）不得低于下限一半（硬底线），尽量落在锁定范围或 `设定.md` 目标内（边缘字数出软提醒）
 - [ ] 每节完成其批准情节点或状态变化；没有为拉齐长度补冲突、对话、回忆或旁人反应
-- [ ] 节数 = 小节大纲规划节数（不得合并/省略；某节确实不需要独立存在，回构思改大纲，不在写正文时偷减）
+- [ ] 节号连续不跳（硬底线），节数按小节大纲（偏差出软提醒；删并回构思改大纲，不偷减）
 - [ ] 身体细节按叙事功能判断，不设次数上限；不对“手、眼、心”等单字计数改稿
 - [ ] 「像/好像/仿佛/如同」不成片堆叠；超过 10 处需逐处复核功能，不机械全删
-- [ ] `node {skill 根}/scripts/check-ai-patterns.js --check --fail-on=blocking {短篇目录}/正文.md` 无 blocking 命中；其余提示先通读，确属问题再改
+- [ ] `node {skill 根}/scripts/check-ai-patterns.js --check --fail-on=review_required {短篇目录}/正文.md` 的 `review_required` 优先改写，确有功能入白名单或说明理由；其余提示按需改
 - [ ] `node {skill 根}/scripts/check-degeneration.js --check {短篇目录}/正文.md` 无 blocking 退化命中（复读/截断/工程词泄漏）
 
-**不通过 → 回退补足，不得进入精修。**
+**硬底线（退化、低于下限一半、节号错乱）不过 → 回退补足再进精修；软提醒复核后合理可留。**
 
 ---
 
