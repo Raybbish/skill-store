@@ -216,7 +216,7 @@ Add entries for any new pages created.
 One locked call, not three hand edits:
 
 ```bash
-obsidian-wiki memory sync WIKI_UPDATE project=<project-name> \
+obsidian-wiki memory sync WIKI_UPDATE project='<project-name>' \
   pages_created=X pages_updated=Y \
   source_repo=github.com/owner/<project-name> \
   --takeaways "Synced obsidian-wiki — wiki-capture and wiki-research added; the new capabilities are autonomous web research and conversation capture." --expect-takeaways-sha256 "$TAKEAWAYS_REVISION"
@@ -230,7 +230,7 @@ If this project is an ongoing focus, record the thread so the next session picks
 it up:
 
 ```bash
-obsidian-wiki memory todo add "<the open thread>" --origin projects/<project-name>.md
+obsidian-wiki memory todo add '<the open thread>' --origin projects/<project-name>.md
 ```
 
 See `skills/llm-wiki/references/MEMORY.md` for the full procedure.

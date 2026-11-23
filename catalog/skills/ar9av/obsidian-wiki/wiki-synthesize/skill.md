@@ -150,12 +150,12 @@ One locked call updates the index, the log, and the hot cache:
 
 ```bash
 obsidian-wiki memory sync WIKI_SYNTHESIZE \
-  pages_scanned=<N> synthesis_created=<M> candidates_skipped=<K> \
+  pages_scanned='<N>' synthesis_created='<M>' candidates_skipped='<K>' \
   --takeaways "Synthesized 5 cross-cutting pages: Caching × Consistency, Testing × Observability, …" --expect-takeaways-sha256 "$TAKEAWAYS_REVISION"
 ```
 
 Open questions the synthesis surfaced are threads, not takeaways — record each one:
-`obsidian-wiki memory todo add "<question>" --origin synthesis/<page>.md`.
+`obsidian-wiki memory todo add '<question>' --origin synthesis/<page>.md`.
 
 Never hand-edit `index.md`, `log.md`, or `hot.md` — the command takes the lock that keeps a parallel writer from dropping your update.
 
