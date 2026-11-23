@@ -1,0 +1,94 @@
+---
+name: formatting-and-linting
+description: Run CSharpier and the repo's pre-commit enforcement for DxCommandTerminal (dotnet tools, formatting C# files, style linters, fixing format-check or lint failures). Use when formatting code, adding pre-commit hooks, or when a commit is rejected by the csharpier, dotnet-tool-restore, or any lint-* hook.
+metadata:
+  category: Core
+---
+
+# Formatting And Linting
+
+## Toolchain
+
+| Tool            | Source                      | Command                                                                          |
+| --------------- | --------------------------- | -------------------------------------------------------------------------------- |
+| CSharpier 1.1.2 | `.config/dotnet-tools.json` | `dotnet tool run csharpier format`                                               |
+| pre-commit      | `.pre-commit-config.yaml`   | `pre-commit run --all-files`                                                     |
+| uv              | `tooling~/pyproject.toml`   | `uv run --project tooling~ python ...` (the python linter hooks hard-require it) |
+
+Restore tools first (`dotnet tool restore`) - the `dotnet-tool-restore` pre-commit hook runs it on every commit and fails fast when tools are missing.
+
+## Formatting
+
+1. Format only the files you touched: `dotnet tool run csharpier format -- <file1> <file2>`
+2. Whole repo check: `dotnet tool run csharpier check .` (or run pre-commit).
+3. For Markdown C# samples, use stdin with `--write-stdout --stdin-path /absolute/Example.cs`. Ignored temporary files can be skipped by the formatter.
+4. NEVER hand-adjust CSharpier output (spacing, braces, wrapping). If output looks wrong, the fix is upstream CSharpier config, not manual edits.
+
+## Style contract (from `.editorconfig` + README)
+
+- `using` directives inside the namespace block; `#if` blocks inside namespace.
+- Explicit types over `var`; explicit access modifiers everywhere.
+- Braces always: methods, constructors, operators, local functions, property/indexer accessors, and lambdas use block bodies. Small forwarding methods follow the same rule.
+  `csharp_prefer_braces` covers control flow; `csharp_style_expression_bodied_* = false` covers function/member bodies. CSharpier preserves the chosen body form, so formatting
+  alone cannot enforce this rule. Sweep touched C# files for expression bodies after formatting. Keep the required `=>` syntax in switch-expression arms.
+- Preserve callback return semantics when adding braces: `Action` callbacks execute statements; `Func` callbacks return values. Preserve `async`, `ref` returns, and exception flow.
+  Use syntax-aware review to distinguish methods/properties, expression lambdas, block lambdas, and switch arms; a raw `=>` match does not classify them.
+- Modifier order: `public private protected internal file new static abstract virtual sealed readonly override extern unsafe volatile async required`.
+- Files: UTF-8 BOM + CRLF for C# assets (repo default). Do not "fix" line endings on untouched files - that pollutes diffs. Exceptions: `.llm/**` and `tooling~/scripts/**` are
+  UTF-8 no BOM + LF (enforced by `.editorconfig` overrides and the LLM linters).
+
+## Enum and Unity object review
+
+- Give every enum member an explicit value. Reserve `Unknown = 0` or `None = 0` with `[Obsolete("Use a valid value")]`; use named valid defaults for optional APIs.
+- Preserve shipped nonzero numeric identities. `TerminalLogType` keeps Unity's serialized `LogType` mapping, including `Error = 0`; never renumber it silently.
+- Flags can still use typed `default` for an empty mask. Obsolete marks source references; it does not reject runtime values. Validate state at its boundary.
+- Whitelist valid execution environments before checking flag membership: `HasFlag(0)` is true and cannot establish a valid execution context.
+- When moving a former valid zero, audit optional builder defaults, serialized fields, and struct defaults. An invalid allocation verdict must not report zero.
+- Prefer `obj == null` / `obj != null` for Unity objects. These include destroyed native objects; `is null` and `ReferenceEquals` only test managed identity.
+- Do not add redundant null guards to fresh synchronous Find results. Keep guards on public inputs and retained objects that may have been destroyed.
+- Verify APIs against each version gate's actual documentation or references; a shim compilation cannot prove an overload exists in older Unity versions.
+
+## Preflight cache inputs
+
+- Treat each preflight check as a cache input contract. Inventory its source files, generated files, package ignore files, environment/config, installed dependencies/tools, and Git
+  state.
+- `cachePaths` walks the real filesystem. Include ignored files when the command can read them. Do not derive its contents from `git ls-files`.
+- A change outside a check's declared inputs may reuse its cache. A change inside one must invalidate it.
+- Hash installed dependency and tool contents, not only lockfiles or version strings. Disable caching when an opaque external input cannot be fingerprinted.
+- The node suite runs as two cached gates (`node-tests-tooling`, `node-tests-csharp`) with per-file input enumeration (#307): assign each new suite file to the gate whose key spans
+  its read surface, and put a file whose inputs reach outside `tooling~` in `node-tests-csharp` - worst case it re-runs, and a stale pass is the hazard that matters. The python
+  gates (`python-tests`, `devcontainer-contract`) key the suite files, the modules they exercise, and the python runtime (`cachePython`).
+- Opt into `startBeforeCache` only when fixture writes stay outside every other gate's inputs; cache-ineligible checks otherwise wait for keying.
+- Environment inputs are per check. Key raw values, path contents, and effective config files only when the child command reads them.
+- Add a contract test for every new input category. Cover content changes, ignored files, missing paths, generated symlinks, dependencies, tools, and config.
+
+## Pre-commit hooks
+
+`.pre-commit-config.yaml` currently runs:
+
+1. `dotnet-tool-restore` (pre-commit, pre-push, post-checkout, post-rewrite)
+2. `csharpier` on staged `*.cs` files
+3. C# style linters (Node, whole-tree scans; each has a contract-test suite under `tooling~/scripts/tests/` and a CI step; invoke with `node tooling~/scripts/lint-<name>.mjs`):
+    - `comparison-direction` (only `<`, `<=`, `==`; `:fix` swaps operands)
+    - `member-ordering` (member order, nested types last, explicit enum values and obsolete zero sentinels; `:fix` only reorders members, never renumbers enums)
+    - `multiline-comments` (stacked `//` become one `/* */` block; `:fix` converts)
+    - `minimal-comments` (comments state why, never what - a comment whose every content word appears in the line it annotates, or one with no content at all, fails; no `:fix`;
+      issue #255)
+    - `unity-null-patterns` (bans `Assert.IsNull`/`Assert.IsNotNull`; `:fix` converts to `Assert.That(x == null / x != null)`; issue #100)
+    - `linq-production` (no LINQ in `Runtime/`, `Editor/`; no `:fix`)
+    - `string-equality` (no `==`/`!=` on string literals or `string.Empty` in shipped code; use `string.Equals` with an explicit `StringComparison`; no `:fix`)
+    - `out-param-discipline` (assign each `out` value on every return path; no `:fix`)
+    - `exception-tostring` (a Debug.Log-family call logs the exception itself, never `.Message`; no `:fix`)
+    - `theme-palette-tokens` (USS theme tokens + palette fallbacks)
+4. LLM-context linters: `lint_llm_instructions.py`, `lint_skill_sizes.py` (see [manage-skills](../manage-skills/SKILL.md))
+
+Hook scoping rule: repo-wide linters run on `files:` patterns that match their input domain (a staged change outside the domain cannot change the verdict), and CI runs every linter
+unconditionally as the backstop. Do not add `always_run` back to a scoped hook - the whole-repo scan on every commit was ~25 s of commit tax, paid again at pre-push (PR #216).
+`unity-meta-lint` keeps `always_run` because any tracked file can orphan a `.meta`, and `dotnet-tool-restore` because it spans four stages.
+
+Fixer rule: every `:fix` rewriter splices at offsets its own scan recorded (token `.start`/`.end`, scan-walk indices), never at offsets recomputed from token text widths. Trivia
+between tokens (spaces, comments, line breaks) is legal C# the tokenizer skips silently, so a width-derived cut lands inside a token and the rewrite emits invalid C# (Bugbot on PR
+#102; pinned by the trivia-splice contract test in `lint-unity-null-patterns.test.mjs`). When adding a fixer, contract-test at least one shape with trivia between every token the
+fixer consumes.
+
+Run everything manually with `pre-commit run --all-files`. If a hook rewrites files, re-stage and retry the commit.
