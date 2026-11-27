@@ -1,6 +1,6 @@
 ---
 name: qdrant-search-strategies
-description: "Guides Qdrant search strategy selection. Use when someone asks 'should I use hybrid search?', 'how to rerank?', 'results are not relevant', 'I don't get needed results from my dataset but they're there', 'retrieval quality is not good enough', 'results too similar', 'need diversity', 'MMR', 'relevance feedback', 'recommendation API', 'discovery API', or 'missing keyword matches'"
+description: "Guides Qdrant search strategy selection. Use when someone asks 'should I use hybrid search?', 'how to rerank?', 'results are not relevant', 'I don't get needed results from my dataset but they're there', 'retrieval quality is not good enough', 'results too similar', 'need diversity', 'MMR', 'relevance feedback', 'recommendation API', 'discovery API', 'sort search results by price', or 'missing keyword matches'"
 allowed-tools:
   - Read
   - Grep
@@ -12,11 +12,22 @@ allowed-tools:
 These strategies complement basic vector search. Use them after confirming the embedding model is fitting the task and HNSW config is correct. If exact search returns bad results, verify the selection of the embedding model (retriever) first.
 If the user wants to use a weaker embedding model because it is small, fast, and cheap, use reranking or relevance feedback to improve search quality.
 
+Each symptom may require a different strategy: diagnose and address them independently. A single project can have multiple symptoms at once, and fixing one (e.g. adding hybrid search for keyword misses) may not fix the others (e.g. redundant results may still need MMR; poor precision may still need reranking).
+
+| Symptom | Strategy |
+| --- | --- |
+| Missing exact/keyword matches | Hybrid search |
+| Right documents exist but rank low (good recall, poor precision) | Multistage queries / reranking |
+| Dense retriever misses relevant items entirely, or reranking too costly | Relevance feedback |
+| Results are redundant / near-duplicate | MMR |
+| Need to steer with example points | Recommendation / Discovery API |
+| Need business-logic-based ranking | Score boosting |
+
 ## Missing Keyword Matches or Need to Combine Multiple Search Signals
 
 Use when: pure vector search misses keyword/domain term matches, or the use case benefits from combining searches on multiple representations (including languages and modalities) of the same item.
 
-See how to use [hybrid search](https://skills.qdrant.tech/qdrant-search-quality/search-strategies/hybrid-search/SKILL.md)
+See how to use [hybrid search](hybrid-search/SKILL.md)
 
 ## Right Documents Found But Not in the Top Results
 
@@ -24,12 +35,14 @@ Use when: good recall but poor precision (right docs in top-100, not top-10).
 
 - See how to use [Multistage queries](https://skills.qdrant.tech/md/documentation/search/hybrid-queries/?s=multi-stage-queries), for example with late interaction rerankers through [Multivectors](https://skills.qdrant.tech/md/documentation/manage-data/vectors/?s=multivectors).
 - Cross-encoder rerankers via FastEmbed [Rerankers](https://skills.qdrant.tech/md/documentation/fastembed/fastembed-rerankers/)
+- Before adding a ranking stage: score your candidate pool as if perfectly ordered and compare it to what you return today. A small gap means ranking is near its ceiling, so fix retrieval or candidate depth instead.
+- See [how to choose, test and size a reranker, and how to tell a real gain from a false one](https://skills.qdrant.tech/md/documentation/search-tuning/when-a-reranker-is-worth-it/)
 
 ## Dense Retriever Misses Relevant Items or Reranking Is Too Costly
 
 Use when: dense retriever misses relevant items you know exist in the collection; relevant documents lie outside the initial ANN retrieval pool; reranking a large candidate pool is too slow or expensive; using a small/cheap embedding model but need quality close to a larger model; or want to improve top-1/3 precision without the full cost of reranking.
 
-See [Relevance Feedback in Qdrant](https://skills.qdrant.tech/qdrant-search-quality/search-strategies/relevance-feedback/SKILL.md)
+See [Relevance Feedback in Qdrant](relevance-feedback/SKILL.md)
 
 ## Results Too Similar
 
@@ -45,7 +58,7 @@ Use when: you can provide positive and negative example points to steer search c
 
 - Recommendation API: positive/negative examples to recommend fitting vectors [Recommendation API](https://skills.qdrant.tech/md/documentation/search/explore/?s=recommendation-api)
   - Best score strategy: better for diverse examples, supports negative-only [Best score](https://skills.qdrant.tech/md/documentation/search/explore/?s=best-score-strategy)
-- Discovery API: context pairs (positive/negative) to constrain search regions without a request target [Discovery](https://skills.qdrant.tech/md/documentation/search/explore/?s=discovery-api)
+- Discovery API: context pairs (positive/negative) constrain the search region, either around a target (discovery search) or without one (context search) [Discovery](https://skills.qdrant.tech/md/documentation/search/explore/?s=discovery-api)
 
 ## Have Business Logic Behind Results Relevance
 
@@ -53,7 +66,12 @@ Use when: results should be additionally ranked according to some business logic
 
 Check how to set up in [Score Boosting docs](https://skills.qdrant.tech/md/documentation/search/search-relevance/?s=score-boosting)
 
+When the user wants relevant results sorted strictly by a payload field (for example "cheapest matching products first"), keep the vector search with its filter in a prefetch and use `order_by` as the main query [Sort results by a payload field](https://skills.qdrant.tech/md/documentation/search/hybrid-queries/?s=sort-results-by-a-payload-field).
+- `order_by` sorts only the prefetched candidates, so the prefetch `limit` decides which points can reach the top. Set it from how many relevant candidates should compete, not from the final `limit`.
+- `order_by` needs a range-capable payload index (`integer` or `float`) on the field. A formula query that ranks by the field (for example `-price`) gives the same order and also works without an index.
+
 ## What NOT to Do
 
 - Use hybrid search before verifying pure vector search quality (adds complexity, may mask model issues)
-- Skip evaluation when adding relevance feedback — score the end-to-end pipeline to confirm it actually helps [Pipeline Output Quality](https://skills.qdrant.tech/md/documentation/improve-search/pipeline-output-quality/)
+- Sort the final top-k client-side by a payload field: it reorders only those few results. Sort a larger prefetch pool server-side with `order_by` instead
+- Skip evaluation when adding relevance feedback: score the end-to-end pipeline to confirm it actually helps [Pipeline Output Quality](https://skills.qdrant.tech/md/documentation/search-evaluation/pipeline-output-quality/)
